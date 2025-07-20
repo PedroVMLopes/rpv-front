@@ -6,28 +6,55 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { ChevronsUpDown } from "lucide-react"
+
+import { LuChevronsUpDown, LuSwords } from "react-icons/lu";
+import { IoAddCircleOutline } from "react-icons/io5";
+import { LucidePlus } from "lucide-react";
 
 export default function IniciativeHeader() {
+    const [position, setPosition] = React.useState("Encouter 1");
+
     return (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild className={`bg-sidebar-accent w-full rounded flex flex-row p-2`}>
-            <div className="">
-                Teste
-            </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width)"
-            align="start"
-          >
-            <ul>
-                <li>test 1</li>
-                <li>test 2</li>
-                <li>test 3</li>
-            </ul>
-          </DropdownMenuContent>
+            {/* Header Info */}
+            <DropdownMenuTrigger asChild className={`bg-sidebar w-full rounded-lg flex flex-row p-2`}>
+                <div className="flex flex-row items-center">
+                    <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                        <LuSwords className="size-4" />
+                    </div>
+                    <div className="flex flex-col pl-2">
+                        <span className="font-medium text-sm">Encouter 1</span>
+                        <span className="text-xs">Hard</span>
+                    </div>
+                    <LuChevronsUpDown className="ml-auto size-4" />
+                </div>
+            </DropdownMenuTrigger>
+
+            {/* Dropdown Info */}
+            <DropdownMenuContent
+                className="w-(--radix-dropdown-menu-trigger-width)"
+                align="start"
+            >
+                <DropdownMenuLabel className="text-xs opacity-60 font-medium">Active Encounters</DropdownMenuLabel>
+                <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
+                    <DropdownMenuRadioItem value={"Encouter 1"}>Encouter 1</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value={"Encouter 2"}>Encouter 2</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value={"Encouter 3"}>Encouter 3</DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                    <div className="flex flex-row gap-2 items-center">
+                        <LucidePlus className="ml-auto" />
+                        <p className="leading-none">New Encounter</p>
+                    </div>
+                </DropdownMenuItem>
+            </DropdownMenuContent>
         </DropdownMenu>
     )
 }

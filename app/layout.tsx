@@ -42,7 +42,7 @@ export default function RootLayout({
           </aside>
 
           {/* Main Content to the right */}
-          <div className="flex-1 bg-muted rounded shadow-inner p-6 pt-3 m-1">
+          <div className="flex-1 bg-muted rounded-lg shadow-inner p-6 pt-3 md:m-2 md:ml-0 ml-0">
             <MainLayout>
               {children}
             </MainLayout>
