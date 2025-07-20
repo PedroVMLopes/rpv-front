@@ -1,5 +1,9 @@
+import IniciativeHeader from "./IniciativeHeader";
+
 export default function Iniciative() {
     return (
-        <div>Iniciative</div>
+        <div className="">
+            <IniciativeHeader />
+        </div>
     )
 }

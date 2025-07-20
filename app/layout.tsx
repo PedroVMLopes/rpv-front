@@ -37,12 +37,12 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {/* Sidebar to the left */}
-          <aside className="hidden md:flex w-xs lg:w-sm p-4">
+          <aside className="hidden md:flex w-xs lg:w-sm p-2">
             <Sidebar />
           </aside>
 
           {/* Main Content to the right */}
-          <div className="flex-1 bg-muted rounded-lg shadow-inner p-6 pt-3 m-1">
+          <div className="flex-1 bg-muted rounded shadow-inner p-6 pt-3 m-1">
             <MainLayout>
               {children}
             </MainLayout>
