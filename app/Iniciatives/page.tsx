@@ -1,3 +1,7 @@
+import Iniciative from "@/components/iniciative/Iniciative";
+
 export default function Iniciatives() {
-    return <div>Iniciatives</div>
+    return <div>
+        <Iniciative />
+    </div>
 }

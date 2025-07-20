@@ -1,5 +1,9 @@
+import Iniciative from "../iniciative/Iniciative";
+
 export default function Sidebar() {
     return (
-        <div className="">Sidebar</div>
+        <div className="">
+            <Iniciative />
+        </div>
     )
 }
