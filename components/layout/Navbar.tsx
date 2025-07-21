@@ -32,6 +32,16 @@ export default function Navbar() {
                         <Link href="/encounters">Encounters</Link>
                     </NavigationMenuLink>
                 </NavigationMenuItem>
+                <NavigationMenuItem>
+                    <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                        <Link href="/enemies">Enemies</Link>
+                    </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                    <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                        <Link href="/players">Players</Link>
+                    </NavigationMenuLink>
+                </NavigationMenuItem>
             </NavigationMenuList>
         </ NavigationMenu>
     )
