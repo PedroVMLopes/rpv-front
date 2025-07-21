@@ -11,11 +11,12 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 import { LuChevronsUpDown, LuSwords } from "react-icons/lu";
 import { IoAddCircleOutline } from "react-icons/io5";
-import { LucidePlus } from "lucide-react";
+import { LucidePlus, LucidePencil, LucideChevronRight } from "lucide-react";
 
 export default function IniciativeHeader() {
     const [position, setPosition] = React.useState("Encouter 1");
@@ -23,7 +24,7 @@ export default function IniciativeHeader() {
     return (
         <DropdownMenu>
             {/* Header Info */}
-            <DropdownMenuTrigger asChild className={`bg-sidebar w-full rounded-lg flex flex-row p-2`}>
+            <DropdownMenuTrigger asChild className={`bg-sidebar hover:bg-sidebar-accent w-full rounded-lg flex flex-row p-2`}>
                 <div className="flex flex-row items-center">
                     <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                         <LuSwords className="size-4" />
@@ -52,6 +53,12 @@ export default function IniciativeHeader() {
                     <div className="flex flex-row gap-2 items-center">
                         <LucidePlus className="ml-auto" />
                         <p className="leading-none">New Encounter</p>
+                    </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="mt-1">
+                    <div className="flex flex-row gap-2 items-center">
+                        <LucidePencil className="ml-auto size-4" />
+                        <p className="leading-none">Edit Encounter</p>
                     </div>
                 </DropdownMenuItem>
             </DropdownMenuContent>
