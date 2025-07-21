@@ -12,11 +12,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
 
 import { LuChevronsUpDown, LuSwords } from "react-icons/lu";
-import { IoAddCircleOutline } from "react-icons/io5";
-import { LucidePlus, LucidePencil, LucideChevronRight } from "lucide-react";
+import { LucidePlus, LucidePencil } from "lucide-react";
 
 export default function IniciativeHeader() {
     const [position, setPosition] = React.useState("Encouter 1");
@@ -29,8 +27,8 @@ export default function IniciativeHeader() {
                     <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                         <LuSwords className="size-4" />
                     </div>
-                    <div className="flex flex-col pl-2">
-                        <span className="font-medium text-sm">Encouter 1</span>
+                    <div className="flex flex-col pl-2 gap-0.5">
+                        <span className="font-medium text-sm leading-none">Encouter 1</span>
                         <span className="text-xs">Hard</span>
                     </div>
                     <LuChevronsUpDown className="ml-auto size-4" />
