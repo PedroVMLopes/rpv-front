@@ -5,9 +5,9 @@ import { GiHeartPlus, GiShatteredHeart } from "react-icons/gi";
 
 export default function IniciativeCard() {
     return (
-        <div className="flex flex-col bg-card rounded-lg p-2 py-1 pr-0 border">
+        <div className="flex flex-col bg-card rounded-lg p-2 py-1 pr-1 border">
             {/* Header Info */}
-            <div className="flex flex-row justify-between items-center pr-1">
+            <div className="flex flex-row justify-between items-center">
                 <div className="flex flex-row gap-1 pl-1.5 items-center">
                     <p className="font-semibold">Nome</p>
                 </div>
@@ -31,11 +31,11 @@ export default function IniciativeCard() {
                     </div>
                     {/* Health Controllers */}
                     <div className="flex flex-row gap-1 items-center">
-                        <Button variant="ghost" className="py-0 size-8">
+                        <Button variant="ghost" className="py-0 size-6">
                             <GiHeartPlus className="text-emerald-600"/>
                         </Button>
-                        <Input type="number" className="w-16 py-0 h-8 border-none"/>
-                        <Button variant="ghost" className="py-0 size-8">
+                        <Input type="number" className="w-16 py-0 h-6 border-none"/>
+                        <Button variant="ghost" className="py-0 size-6">
                             <GiShatteredHeart className="text-red-700" />
                         </Button>
                     </div>
