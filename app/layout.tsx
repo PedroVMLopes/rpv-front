@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased flex min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased flex min-h-screen bg-sidebar`}
       >
         <ThemeProvider
           attribute="class"
@@ -37,12 +37,12 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {/* Sidebar to the left */}
-          <aside className="hidden md:flex w-xs lg:w-sm p-2">
+          <aside className="hidden md:flex w-xs lg:w-sm p-3 pt-2">
             <Sidebar />
           </aside>
 
           {/* Main Content to the right */}
-          <div className="flex-1 bg-muted rounded-lg shadow-inner p-6 pt-3 md:m-2 md:ml-0 ml-0">
+          <div className="flex-1 rounded-lg shadow-inner p-3 md:m-2 md:ml-0 ml-0 bg-background">
             <MainLayout>
               {children}
             </MainLayout>

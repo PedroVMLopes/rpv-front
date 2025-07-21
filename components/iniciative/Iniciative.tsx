@@ -3,7 +3,7 @@ import IniciativeHeader from "./IniciativeHeader";
 
 export default function Iniciative() {
     return (
-        <div className="">
+        <div>
             <IniciativeHeader />
             <div className="mt-4 gap-2">
                 <IniciativeCard />
