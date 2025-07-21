@@ -11,15 +11,18 @@ import {
 export default function IniciativeCard() {
     return (
         <div className="flex flex-col bg-card rounded-lg p-2 pt-1 pr-1 border">
+
             {/* Header Info */}
             <div className="flex flex-row justify-between items-center">
                 <div className="flex flex-row gap-1 pl-1.5 items-center">
                     <p className="font-semibold">Nome</p>
                 </div>
+                {/* Expand Info Button */}
                 <Button className="size-6" variant={"default"}><LucideChevronRight className="size-5"/></Button>
             </div>
 
             <div className="flex flex-col mt-2">
+
                 {/* Shield */}
                 <div className="flex flex-row gap-3">
                     <div className="flex flex-row items-center gap-2 ml-1">
@@ -37,7 +40,7 @@ export default function IniciativeCard() {
 
                     <div className="flex flex-row gap-1 items-center">
                         {/* Health Controller */}
-                        <Tooltip>
+                        <Tooltip delayDuration={500}>
                             <TooltipTrigger asChild>
                                 <Button variant="ghost" className="py-0 size-6">
                                     <GiHeartPlus className="text-emerald-600"/>
@@ -48,11 +51,19 @@ export default function IniciativeCard() {
                             </TooltipContent>
                         </Tooltip>
 
-                        {/* Damage Controller */}
                         <Input type="number" className="w-16 py-0 h-6"/>
-                        <Button variant="ghost" className="py-0 size-6">
-                            <GiShatteredHeart className="text-red-600" />
-                        </Button>
+                        {/* Damage Controller */}
+                        
+                        <Tooltip delayDuration={500}>
+                            <TooltipTrigger asChild>
+                                <Button variant="ghost" className="py-0 size-6">
+                                    <GiShatteredHeart className="text-red-600" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Damage</p>
+                            </TooltipContent>
+                        </Tooltip>
                     </div>
                 </div>
             </div>

@@ -24,7 +24,7 @@ export default function IniciativeHeader() {
             {/* Header Info */}
             <DropdownMenuTrigger asChild className={`bg-sidebar hover:bg-sidebar-accent w-full rounded-lg flex flex-row p-2`}>
                 <div className="flex flex-row items-center">
-                    <div className="bg-sidebar-accent text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                    <div className="bg-sidebar-accent text-accent-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                         <LuSwords className="size-4" />
                     </div>
                     <div className="flex flex-col pl-2 gap-0.5">
