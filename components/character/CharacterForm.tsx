@@ -16,6 +16,8 @@ import {
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 
+type CharacterFormData = z.infer<typeof characterSchema>;
+
 type CharacterFormProps = {
   type: "player" | "enemy" | "npc";
   defaultValues?: Partial<z.infer<typeof characterSchema>>;
@@ -23,7 +25,7 @@ type CharacterFormProps = {
 };
 
 export default function CharacterForm({ type, defaultValues, onSubmit}: CharacterFormProps) {
-  const form = useForm<z.infer<typeof characterSchema>>({
+  const form = useForm<CharacterFormData>({
     resolver: zodResolver(characterSchema),
     defaultValues: {
       ...defaultValues,
@@ -35,7 +37,7 @@ export default function CharacterForm({ type, defaultValues, onSubmit}: Characte
 
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="name"
@@ -43,7 +45,11 @@ export default function CharacterForm({ type, defaultValues, onSubmit}: Characte
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="Character's Name" {...field} />
+                <Input 
+                  placeholder="Character's Name" {...field}
+                  value={field.value?.toString() || ""}
+                  onChange={(e) => field.onChange(e.target.value)}
+                />
               </FormControl>
             </FormItem>
           )}
@@ -52,23 +58,84 @@ export default function CharacterForm({ type, defaultValues, onSubmit}: Characte
         <input type="hidden" value={type} {...form.register("type")} />
 
         <div className="grid grid-cols-3 gap-4">
-          {["hp", "maxHp", "ac", "initiative"].map((key) => (
-            <FormField
-              key={key}
-              control={form.control}
-              name={key as "hp" | "maxHp" | "ac" | "initiative"}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{key}</FormLabel>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          ))}
+          <FormField
+            control={form.control}
+            name="hp"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>HP</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number" 
+                    value={field.value?.toString() || ""}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="maxHp"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>MAX HP</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number" 
+                    value={field.value?.toString() || ""}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="ac"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>AC</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number" 
+                    value={field.value?.toString() || ""}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === "" ? undefined : Number(value));
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
+
+        <FormField
+          control={form.control}
+          name="initiative"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Initiative</FormLabel>
+              <FormControl>
+                <Input 
+                  type="number" 
+                  value={field.value?.toString() || ""}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    field.onChange(value === "" ? undefined : Number(value));
+                  }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
          {/* Player Specific Fields */}
         {type === "player" && (

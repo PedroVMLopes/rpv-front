@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const characterSchema = z.object({
-  name: z.string().min(1, "Nome é obrigatório"),
+  name: z.string().min(1, "Name is required"),
   type: z.enum(["player", "enemy", "npc"]),
   hp: z.number().min(0),
   maxHp: z.number().min(1),
