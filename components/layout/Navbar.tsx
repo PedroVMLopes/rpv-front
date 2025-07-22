@@ -15,34 +15,36 @@ import {
 
 export default function Navbar() {
     return (
-        <NavigationMenu viewport={false}>
-            <NavigationMenuList>
-                <NavigationMenuItem className={`md:hidden`}>
-                    <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                        <Link href="/iniciatives">Iniciatives</Link>
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                    <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                        <Link href="/tests">Tests</Link>
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                    <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                        <Link href="/encounters">Encounters</Link>
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                    <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                        <Link href="/enemies">Enemies</Link>
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                    <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                        <Link href="/players">Players</Link>
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-            </NavigationMenuList>
-        </ NavigationMenu>
+        <div className="w-full flex md:justify-center">
+            <NavigationMenu viewport={false}>
+                <NavigationMenuList>
+                    <NavigationMenuItem className={`md:hidden`}>
+                        <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                            <Link href="/iniciatives">Iniciatives</Link>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem>
+                        <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                            <Link href="/tests">Tests</Link>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem>
+                        <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                            <Link href="/encounters">Encounters</Link>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem>
+                        <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                            <Link href="/enemies">Enemies</Link>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem>
+                        <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                            <Link href="/players">Players</Link>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+                </NavigationMenuList>
+            </ NavigationMenu>
+        </div>
     )
 }
