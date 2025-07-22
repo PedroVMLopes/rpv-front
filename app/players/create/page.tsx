@@ -1,6 +1,6 @@
 "use client"
 
-import CharacterForm from "@/components/character/CharacterForm";
+import CharacterForm from "@/components/character-form/CharacterForm";
 import { Button } from "@/components/ui/button";
 import { characterSchema } from "@/lib/zodSchemas";
 import Link from "next/link";

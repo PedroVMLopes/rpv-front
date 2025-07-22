@@ -14,3 +14,5 @@ export const characterSchema = z.object({
   cr: z.number().optional(),
   notes: z.string().optional(),
 });
+
+export type CharacterFormData = z.infer<typeof characterSchema>;
