@@ -3,13 +3,16 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
-import { CharacterFormData } from "@/lib/zodSchemas";
+import { characterSchemasByType } from "@/lib/zodSchemas";
+import type * as z from "zod";
 
-type Props = {
-  form: UseFormReturn<CharacterFormData>;
-};
+type EnemyData = z.infer<typeof characterSchemasByType.enemy>;
 
-export default function EnemyFields({ form }: Props) {
+type EnemyFieldsProps = {
+    form: UseFormReturn<EnemyData>;
+}
+
+export default function EnemyFields({ form }: EnemyFieldsProps) {
     return (
         <>
             <>
@@ -20,7 +23,7 @@ export default function EnemyFields({ form }: Props) {
                     <FormItem>
                     <FormLabel>Tipo de criatura</FormLabel>
                     <FormControl>
-                        <Input placeholder="Ex: Morto-vivo" {...field} />
+                        <Input placeholder="" {...field} />
                     </FormControl>
                     </FormItem>
                 )}

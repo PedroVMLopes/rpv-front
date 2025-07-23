@@ -7,13 +7,9 @@ import { characterSchemasByType } from "@/lib/zodSchemas";
 import type * as z from "zod";
 
 type PlayerData = z.infer<typeof characterSchemasByType.player>;
-type EnemyData = z.infer<typeof characterSchemasByType.enemy>;
-type NpcData = z.infer<typeof characterSchemasByType.npc>;
-
-type CharacterData = PlayerData | EnemyData | NpcData;
 
 type PlayerFieldsProps = {
-  form: UseFormReturn<CharacterData>;
+  form: UseFormReturn<PlayerData>;
 };
 
 export default function PlayerFields({ form }: PlayerFieldsProps) {
