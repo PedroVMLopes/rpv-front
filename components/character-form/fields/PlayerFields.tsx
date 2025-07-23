@@ -19,7 +19,7 @@ export default function PlayerFields({ form }: Props) {
                     <FormItem>
                     <FormLabel>Class</FormLabel>
                     <FormControl>
-                        <Input placeholder="Ex: Mage" {...field} />
+                        <Input placeholder="" {...field} />
                     </FormControl>
                     </FormItem>
                 )}

@@ -32,18 +32,26 @@ export default function CommonFields({ form, type}:Props) {
 
             <input type="hidden" value={type} {...form.register("type")} />
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4">
                 <FormField
                     control={form.control}
                     name="hp"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>HP</FormLabel>
+                            <FormLabel>Health</FormLabel>
                             <FormControl>
                             <Input 
                                 type="number" 
                                 value={field.value?.toString() || ""}
-                                onChange={(e) => field.onChange(Number(e.target.value))}
+                                onChange={(e) => {
+                                    const value = Number(e.target.value);
+
+                                    // Atualiza o valor de hp no formulário
+                                    field.onChange(value);
+
+                                    // Atualiza o valor de maxHp de forma invisível
+                                    form.setValue("maxHp", value);
+                                }}
                             />
                             </FormControl>
                             <FormMessage />
@@ -53,28 +61,10 @@ export default function CommonFields({ form, type}:Props) {
 
                 <FormField
                     control={form.control}
-                    name="maxHp"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>MAX HP</FormLabel>
-                        <FormControl>
-                        <Input 
-                            type="number" 
-                            value={field.value?.toString() || ""}
-                            onChange={(e) => field.onChange(Number(e.target.value))}
-                        />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-
-                <FormField
-                    control={form.control}
                     name="ac"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>AC</FormLabel>
+                        <FormLabel>Armor</FormLabel>
                         <FormControl>
                         <Input 
                             type="number" 
