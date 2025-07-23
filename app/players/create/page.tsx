@@ -1,10 +1,13 @@
 "use client"
 
+import { useCharacterStore } from "@/store/useCharacterStore";
 import CharacterForm from "@/components/character-form/CharacterForm";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function CreatePlayer() {
+    const addCharacter = useCharacterStore((state) => state.addCharacter);
+
     return (
         <div>
             <Link href={"/players"}>
@@ -12,11 +15,10 @@ export default function CreatePlayer() {
             </Link>
             <div className="mt-4 w-full flex flex-col items-center">
                 <h1 className="mb-4">Create a New Player</h1>
-                <p>Besides the name all of the informations below are optional. You can add everything now or save it and add the rest later.</p>
                 <CharacterForm 
                     type="player" 
                     onSubmit={(data) => {
-                        console.log("Novo jogador:", data);
+                        addCharacter(data, "player");
                     }}
                 />
             </div>

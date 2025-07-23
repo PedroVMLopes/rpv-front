@@ -9,8 +9,6 @@ import CommonFields from "./fields/CommonFields";
 import PlayerFields from "./fields/PlayerFields";
 import EnemyFields from "./fields/EnemyFields";
 
-type CharacterType = keyof typeof characterSchemasByType;
-
 // Schema specific types
 type PlayerData = z.infer<typeof characterSchemasByType.player>;
 type EnemyData = z.infer<typeof characterSchemasByType.enemy>;

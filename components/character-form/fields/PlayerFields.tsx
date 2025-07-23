@@ -38,7 +38,7 @@ export default function PlayerFields({ form }: PlayerFieldsProps) {
             
             <FormField
                 control={form.control}
-                name="class"
+                name="characterClass"
                 render={({ field }) => (
                     <FormItem>
                         <FormLabel>Class</FormLabel>

@@ -3,10 +3,10 @@ import { z } from "zod";
 export const commonFieldsSchema = z.object({
   name: z.string().min(1, "Name is required"),
   type: z.enum(["player", "enemy", "npc"]),
-  hp: z.number().optional(),
-  maxHp: z.number().optional(),
-  ac: z.number().optional(),
-  initiative: z.number().optional(),
+  hp: z.coerce.number().optional(),
+  maxHp: z.coerce.number().optional(),
+  ac: z.coerce.number().optional(),
+  initiative: z.coerce.number().optional(),
 
   attributes: z
     .array(
@@ -22,7 +22,6 @@ export const commonFieldsSchema = z.object({
         value: z.number().min(0).max(20).default(10).optional(),
       })
     )
-    .optional()
     .default([
       { name: "strength", value: 10 },
       { name: "dexterity", value: 10 },
@@ -34,14 +33,14 @@ export const commonFieldsSchema = z.object({
 })
 
 export const playerFieldsSchema = z.object({
-  level: z.number().optional(),
-  class: z.string().optional(),
+  level: z.coerce.number().optional(),
+  characterClass: z.string().optional(),
   subclass: z.string().optional(),
 })
 
 export const enemyFieldsSchema = z.object({
   creatureType: z.string().optional(),
-  cr: z.number().optional(),
+  cr: z.coerce.number().optional(),
   notes: z.string().optional(),
 })
 
