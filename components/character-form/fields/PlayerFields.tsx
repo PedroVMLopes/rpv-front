@@ -14,24 +14,57 @@ export default function PlayerFields({ form }: Props) {
         <>
             <FormField
                 control={form.control}
-                name="class"
+                name="level"
                 render={({ field }) => (
                     <FormItem>
-                    <FormLabel>Class</FormLabel>
+                    <FormLabel>Level</FormLabel>
                     <FormControl>
-                        <Input placeholder="" {...field} />
+                        <Input 
+                            type="number" 
+                            value={field.value?.toString() || ""}
+                                onChange={(e) => {
+                                const value = e.target.value;
+                                field.onChange(value === "" ? undefined : Number(value));
+                            }}
+                        />
                     </FormControl>
                     </FormItem>
                 )}
             />
             <FormField
                 control={form.control}
-                name="level"
+                name="class"
                 render={({ field }) => (
                     <FormItem>
-                    <FormLabel>Level</FormLabel>
+                    <FormLabel>Class</FormLabel>
                     <FormControl>
-                        <Input type="number" {...field} />
+                        <Input 
+                            type="string" 
+                            value={field.value?.toString() || ""}
+                            onChange={(e) => {
+                            const value = e.target.value;
+                            field.onChange(value === "" ? undefined : value);
+                            }}
+                        />
+                    </FormControl>
+                    </FormItem>
+                )}
+            />
+            <FormField
+                control={form.control}
+                name="subclass"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Subclass</FormLabel>
+                    <FormControl>
+                        <Input 
+                            type="string" 
+                            value={field.value?.toString() || ""}
+                            onChange={(e) => {
+                            const value = e.target.value;
+                            field.onChange(value === "" ? undefined : value);
+                            }}
+                        />
                     </FormControl>
                     </FormItem>
                 )}

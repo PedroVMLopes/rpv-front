@@ -46,10 +46,10 @@ export default function CommonFields({ form, type}:Props) {
                                 onChange={(e) => {
                                     const value = Number(e.target.value);
 
-                                    // Atualiza o valor de hp no formulário
+                                    // Updates the HP value in the form
                                     field.onChange(value);
 
-                                    // Atualiza o valor de maxHp de forma invisível
+                                    // Updates the maxHp value using the HP value
                                     form.setValue("maxHp", value);
                                 }}
                             />
@@ -69,9 +69,9 @@ export default function CommonFields({ form, type}:Props) {
                         <Input 
                             type="number" 
                             value={field.value?.toString() || ""}
-                            onChange={(e) => {
-                            const value = e.target.value;
-                            field.onChange(value === "" ? undefined : Number(value));
+                                onChange={(e) => {
+                                const value = e.target.value;
+                                field.onChange(value === "" ? undefined : Number(value));
                             }}
                         />
                         </FormControl>
