@@ -7,7 +7,6 @@ import { CharacterFormData } from "@/lib/zodSchemas";
 
 type Props = {
   form: UseFormReturn<CharacterFormData>;
-  type: "player" | "enemy" | "npc";
 };
 
 export default function PlayerFields({ form }: Props) {
