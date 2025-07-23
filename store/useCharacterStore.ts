@@ -30,34 +30,44 @@ interface CharacterStore {
   addCharacter: (data: PlayerData | EnemyData | NpcData, type: CharacterType) => void;
   removeCharacter: (id: string) => void;
   clearCharacters: () => void;
+  updateCharacter: (id: string, updatedData: Partial<PlayerData | EnemyData | NpcData>) => void;
+  updateHp: (id: string, amount: number) => void;
 }
 
 export const useCharacterStore = create<CharacterStore>()(
   persist(
     (set) => ({
-      characters: [],
-      addCharacter: (data, type) =>
-        set((state) => ({
-          characters: [
-            ...state.characters,
-            {
-              ...data,
-              type,
-              id: crypto.randomUUID(),
-            },
-          ],
-        })),
-      removeCharacter: (id) =>
-        set((state) => ({
-          characters: state.characters.filter((c) => c.id !== id),
-        })),
-      clearCharacters: () => set({ characters: [] }),
-      updateCharacter: (id: string, updatedData: Partial<PlayerData | EnemyData | NpcData>) =>
-        set((state) => ({
-            characters: state.characters.map((char) =>
-            char.id === id ? { ...char, ...updatedData } : char
-            ),
-        })),
+        characters: [],
+        addCharacter: (data, type) =>
+            set((state) => ({
+            characters: [
+                ...state.characters,
+                {
+                ...data,
+                type,
+                id: crypto.randomUUID(),
+                },
+            ],
+            })),
+        removeCharacter: (id) =>
+            set((state) => ({
+            characters: state.characters.filter((c) => c.id !== id),
+            })),
+        clearCharacters: () => set({ characters: [] }),
+        updateCharacter: (id: string, updatedData: Partial<PlayerData | EnemyData | NpcData>) =>
+            set((state) => ({
+                characters: state.characters.map((char) =>
+                char.id === id ? { ...char, ...updatedData } : char
+                ),
+            })),
+        updateHp: (id: string, amount: number) =>
+            set((state) => ({
+                characters: state.characters.map((char) => 
+                    char.id === id
+                    ? { ...char, hp: Math.max(0, Math.min((char.hp ?? 0) + amount, char.maxHp ?? 0)) }
+                    : char
+                ),
+            }))
     }),
     {
       name: "character-storage", // localStorage key

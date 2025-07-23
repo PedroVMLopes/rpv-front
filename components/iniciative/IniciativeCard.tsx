@@ -1,5 +1,7 @@
+"use client"
+
 import { LucideChevronRight, LucideHeart, LucideShield } from "lucide-react";
-import { GiHeartPlus, GiShatteredHeart } from "react-icons/gi";
+import { GiHeartPlus, GiHeartMinus } from "react-icons/gi";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import {
@@ -7,15 +9,36 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { Character, useCharacterStore } from "@/store/useCharacterStore";
+import { useState } from "react";
 
-export default function IniciativeCard() {
+interface IniciativeCardProps {
+    character: Character;
+}
+
+export default function IniciativeCard({ character }: IniciativeCardProps) {
+    const [ amount, setAmount ] = useState<number>(0);
+    const updateHp = useCharacterStore((state) => state.updateHp);
+
+    function handleHeal() {
+        if (amount > 0) {
+            updateHp(character.id, amount);
+            setAmount(0);
+        }
+    }
+
+    function handleDamage() {
+        updateHp(character.id, -amount);
+        setAmount(0);
+    }
+
     return (
         <div className="flex flex-col bg-card rounded-lg p-2 pt-1 pr-1 border">
 
             {/* Header Info */}
             <div className="flex flex-row justify-between items-center">
                 <div className="flex flex-row gap-1 pl-1.5 items-center">
-                    <p className="font-semibold">Nome</p>
+                    <p className="font-semibold">{character.name}</p>
                 </div>
                 {/* Expand Info Button */}
                 <Button className="size-6" variant={"default"}><LucideChevronRight className="size-5"/></Button>
@@ -27,7 +50,7 @@ export default function IniciativeCard() {
                 <div className="flex flex-row gap-3">
                     <div className="flex flex-row items-center gap-2 ml-1">
                         <LucideShield className="size-4 text-cyan-600"/>
-                        <p>10</p>
+                        <p>{character.ac}</p>
                     </div>
                 </div>
 
@@ -35,15 +58,15 @@ export default function IniciativeCard() {
                 <div className="flex flex-row justify-between">
                     <div className="flex flex-row items-center gap-2 ml-1">
                         <LucideHeart className="size-4 text-red-600"/>
-                        <p>20<span className="opacity-50"> / 20</span></p>
+                        <p>{character.hp}<span className="opacity-50"> / {character.maxHp}</span></p>
                     </div>
 
                     <div className="flex flex-row gap-1 items-center">
                         {/* Health Controller */}
                         <Tooltip delayDuration={500}>
                             <TooltipTrigger asChild>
-                                <Button variant="ghost" className="py-0 size-6">
-                                    <GiHeartPlus className="text-emerald-600"/>
+                                <Button onClick={handleHeal} variant="ghost" className="py-0 size-6">
+                                    <GiHeartPlus className="text-emerald-500"/>
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -51,13 +74,18 @@ export default function IniciativeCard() {
                             </TooltipContent>
                         </Tooltip>
 
-                        <Input type="number" className="w-16 py-0 h-6"/>
+                        <Input 
+                            type="number" 
+                            className="w-16 py-0 h-6"
+                            value={amount}
+                            onChange={(e) => setAmount(Number(e.target.value))}
+                        />
+
                         {/* Damage Controller */}
-                        
                         <Tooltip delayDuration={500}>
                             <TooltipTrigger asChild>
-                                <Button variant="ghost" className="py-0 size-6">
-                                    <GiShatteredHeart className="text-red-600" />
+                                <Button onClick={handleDamage} variant="ghost" className="py-0 size-6">
+                                    <GiHeartMinus className="text-red-600" />
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent>

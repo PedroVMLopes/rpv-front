@@ -15,13 +15,12 @@ export default function Players() {
             <Link href={"/players/create"}>
                 <Button>Create New Player</Button>
             </Link>
-                <h1>Players</h1>
-                <div className="grid grid-cols-2">
-                    {players.map((char) => (
-                        <IniciativeCard key={char.id}/>
-                    ))}
-                </div>
+            <h1>Players</h1>
+            <div className="grid grid-cols-2">
+                {players?.map((char) => (
+                    <IniciativeCard key={char.id} character={char}/>
+                ))}
+            </div>
         </div>
-
     )
 }
