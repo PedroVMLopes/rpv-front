@@ -52,6 +52,12 @@ export const useCharacterStore = create<CharacterStore>()(
           characters: state.characters.filter((c) => c.id !== id),
         })),
       clearCharacters: () => set({ characters: [] }),
+      updateCharacter: (id: string, updatedData: Partial<PlayerData | EnemyData | NpcData>) =>
+        set((state) => ({
+            characters: state.characters.map((char) =>
+            char.id === id ? { ...char, ...updatedData } : char
+            ),
+        })),
     }),
     {
       name: "character-storage", // localStorage key
