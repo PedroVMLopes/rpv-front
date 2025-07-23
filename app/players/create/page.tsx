@@ -12,6 +12,7 @@ export default function CreatePlayer() {
             </Link>
             <div className="mt-4 w-full flex flex-col items-center">
                 <h1 className="mb-4">Create a New Player</h1>
+                <p>Besides the name all of the informations below are optional. You can add everything now or save it and add the rest later.</p>
                 <CharacterForm 
                     type="player" 
                     onSubmit={(data) => {
