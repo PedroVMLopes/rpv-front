@@ -5,15 +5,7 @@ import { characterSchema } from "@/lib/zodSchemas"
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage
-} from "@/components/ui/form";
-import { Input } from "../ui/input";
+import { Form } from "@/components/ui/form";
 import { Button } from "../ui/button";
 import CommonFields from "./fields/CommonFields";
 import PlayerFields from "./fields/PlayerFields";
