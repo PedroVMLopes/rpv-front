@@ -2,9 +2,7 @@
 
 import CharacterForm from "@/components/character-form/CharacterForm";
 import { Button } from "@/components/ui/button";
-import { characterSchema } from "@/lib/zodSchemas";
 import Link from "next/link";
-import { output } from "zod";
 
 export default function CreatePlayer() {
     return (

@@ -1,51 +1,66 @@
 "use client"
-
 import { useForm } from "react-hook-form";
-import { characterSchema } from "@/lib/zodSchemas"
+import { characterSchemasByType } from "@/lib/zodSchemas"
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-
 import { Form } from "@/components/ui/form";
 import { Button } from "../ui/button";
 import CommonFields from "./fields/CommonFields";
 import PlayerFields from "./fields/PlayerFields";
 import EnemyFields from "./fields/EnemyFields";
 
-type CharacterFormData = z.infer<typeof characterSchema>;
+type CharacterType = keyof typeof characterSchemasByType;
 
-type CharacterFormProps = {
-  type: "player" | "enemy" | "npc";
-  defaultValues?: Partial<z.infer<typeof characterSchema>>;
-  onSubmit: (data: z.infer<typeof characterSchema>) => void;
+// Schema specific types
+type PlayerData = z.infer<typeof characterSchemasByType.player>;
+type EnemyData = z.infer<typeof characterSchemasByType.enemy>;
+type NpcData = z.infer<typeof characterSchemasByType.npc>;
+
+// Type specific props
+type PlayerFormProps = {
+  type: 'player';
+  defaultValues?: Partial<PlayerData>;
+  onSubmit: (data: PlayerData) => void;
 };
 
-export default function CharacterForm({ type, defaultValues, onSubmit}: CharacterFormProps) {
-  const form = useForm<CharacterFormData>({
-    resolver: zodResolver(characterSchema),
+type EnemyFormProps = {
+  type: 'enemy';
+  defaultValues?: Partial<EnemyData>;
+  onSubmit: (data: EnemyData) => void;
+};
+
+type NpcFormProps = {
+  type: 'npc';
+  defaultValues?: Partial<NpcData>;
+  onSubmit: (data: NpcData) => void;
+};
+
+type CharacterFormProps = PlayerFormProps | EnemyFormProps | NpcFormProps;
+
+export default function CharacterForm(props: CharacterFormProps) {
+  const { type, defaultValues, onSubmit } = props;
+  const schema = characterSchemasByType[type];
+  
+  const form = useForm({
+    resolver: zodResolver(schema),
     defaultValues: {
       ...defaultValues,
       type,
-    },
-  })
-
-  const { handleSubmit } = form;
+    } as any,
+  });
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        
         {/* Common Fields */}
         <CommonFields form={form} type={type} />
-
-        {/* Player Specific Fields */}
+        
+        {/* Type Specific Fields */}
         {type === "player" && <PlayerFields form={form} />}
-
-        {/* Enemy Specific Fields */}
         {type === "enemy" && <EnemyFields form={form} />}
-
+        
         <Button type="submit">Salvar</Button>
-
       </form>
     </Form>
-  )
+  );
 }

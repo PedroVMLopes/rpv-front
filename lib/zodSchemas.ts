@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const characterSchema = z.object({
+export const commonFieldsSchema = z.object({
   name: z.string().min(1, "Name is required"),
   type: z.enum(["player", "enemy", "npc"]),
   hp: z.number().optional(),
@@ -31,16 +31,26 @@ export const characterSchema = z.object({
       { name: "wisdom", value: 10 },
       { name: "charisma", value: 10 },
     ]).optional(),
+})
 
-  // Player Fields
+export const playerFieldsSchema = z.object({
   level: z.number().optional(),
   class: z.string().optional(),
   subclass: z.string().optional(),
+})
 
-  // Enemy Fields
+export const enemyFieldsSchema = z.object({
   creatureType: z.string().optional(),
   cr: z.number().optional(),
   notes: z.string().optional(),
-});
+})
 
-export type CharacterFormData = z.infer<typeof characterSchema>;
+export const npcFieldsSchema = z.object({
+  job: z.string().optional(),
+})
+
+export const characterSchemasByType = {
+  player: commonFieldsSchema.extend(playerFieldsSchema.shape),
+  enemy: commonFieldsSchema.extend(enemyFieldsSchema.shape),
+  npc: commonFieldsSchema.extend(npcFieldsSchema.shape),
+};
