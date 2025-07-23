@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/tooltip"
 import { Character, useCharacterStore } from "@/store/useCharacterStore";
 import { useState } from "react";
+import Link from "next/link";
 
 interface IniciativeCardProps {
     character: Character;
@@ -41,7 +42,9 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
                     <p className="font-semibold">{character.name}</p>
                 </div>
                 {/* Expand Info Button */}
-                <Button className="size-6" variant={"default"}><LucideChevronRight className="size-5"/></Button>
+                <Link href={`/players/edit/${character.id}`}>
+                    <Button className="size-6" variant={"default"}><LucideChevronRight className="size-5"/></Button>
+                </Link>
             </div>
 
             <div className="flex flex-col mt-2">
