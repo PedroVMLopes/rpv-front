@@ -12,7 +12,6 @@ import {
 import { Character, useCharacterStore } from "@/store/useCharacterStore";
 import { useState } from "react";
 import Link from "next/link";
-import { Slider } from "../ui/slider";
 import { HealthSlider } from "../ui/HealthSlider";
 
 interface IniciativeCardProps {
@@ -62,7 +61,7 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
                 {/* Health */}
                 <div className="flex flex-row justify-between mt-1">
                     <div className="flex flex-row items-center gap-2 ml-1 font-semibold">
-                        <LucideHeart className="size-4 text-red-600"/>
+                        <LucideHeart className="size-4 text-emerald-600"/>
                         <p>{character.hp}<span className="opacity-50"> / {character.maxHp}</span></p>
                     </div>
 
@@ -71,7 +70,7 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
                         <Tooltip delayDuration={500}>
                             <TooltipTrigger asChild>
                                 <Button onClick={handleHeal} variant="ghost" className="py-0 size-6">
-                                    <GiHeartPlus className="text-emerald-500"/>
+                                    <GiHeartPlus className="text-emerald-600"/>
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -103,9 +102,17 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
                 {/* Health Slider */}
                 <HealthSlider 
                     className="mt-2 px-1"
-                    defaultValue={[20]}
-                    max={20}
+                    defaultValue={[character.hp || 0]}
+                    max={character.maxHp}
                     step={1}
+                    onValueChange={(value) => {
+                        // Transforms the slider value into an increment(+) or decrement(-) to be handled by the updateHp()
+                        const newValue = value[0];
+                        const diff = character.hp !== undefined ? newValue - character.hp : 0;
+                        if (diff !== 0) {
+                            updateHp(character.id, diff);
+                        }
+                    }}
                 />
 
             </div>

@@ -12,7 +12,7 @@ export function HealthSlider({ className, thumbClassName, ...props }: HealthSlid
       <SliderPrimitive.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-red-700">
         <SliderPrimitive.Range className="absolute h-full bg-emerald-600" />
       </SliderPrimitive.Track>
-      <SliderPrimitive.Thumb className={cn("block size-2 rounded-full bg-white", thumbClassName)} />
+      <SliderPrimitive.Thumb className={cn("block size-2 rounded-full bg-white", thumbClassName)} aria-label="Character Health" />
     </SliderPrimitive.Root>
   );
 }
