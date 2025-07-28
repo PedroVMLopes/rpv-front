@@ -12,6 +12,8 @@ import {
 import { Character, useCharacterStore } from "@/store/useCharacterStore";
 import { useState } from "react";
 import Link from "next/link";
+import { Slider } from "../ui/slider";
+import { HealthSlider } from "../ui/HealthSlider";
 
 interface IniciativeCardProps {
     character: Character;
@@ -51,15 +53,15 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
 
                 {/* Shield */}
                 <div className="flex flex-row gap-3">
-                    <div className="flex flex-row items-center gap-2 ml-1">
+                    <div className="flex flex-row items-center gap-2 ml-1 font-semibold">
                         <LucideShield className="size-4 text-cyan-600"/>
                         <p>{character.ac}</p>
                     </div>
                 </div>
 
                 {/* Health */}
-                <div className="flex flex-row justify-between">
-                    <div className="flex flex-row items-center gap-2 ml-1">
+                <div className="flex flex-row justify-between mt-1">
+                    <div className="flex flex-row items-center gap-2 ml-1 font-semibold">
                         <LucideHeart className="size-4 text-red-600"/>
                         <p>{character.hp}<span className="opacity-50"> / {character.maxHp}</span></p>
                     </div>
@@ -97,6 +99,15 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
                         </Tooltip>
                     </div>
                 </div>
+
+                {/* Health Slider */}
+                <HealthSlider 
+                    className="mt-2 px-1"
+                    defaultValue={[20]}
+                    max={20}
+                    step={1}
+                />
+
             </div>
         </div>
     )

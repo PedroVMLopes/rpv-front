@@ -11,7 +11,7 @@ export default function EditPlayer() {
   const updateCharacter = useCharacterStore((state) => state.updateCharacter);
 
   const character = characters.find((c) => c.id === id);
-  if (!character) return <p>Personagem não encontrado</p>;
+  if (!character) return <p>Character not found</p>;
 
   return (
     <CharacterForm

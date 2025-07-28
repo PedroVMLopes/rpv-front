@@ -57,7 +57,7 @@ export default function CharacterForm(props: CharacterFormProps) {
         {type === "player" && <PlayerFields form={form} />}
         {type === "enemy" && <EnemyFields form={form} />}
         
-        <Button type="submit">Salvar</Button>
+        <Button type="submit">Save</Button>
       </form>
     </Form>
   );
