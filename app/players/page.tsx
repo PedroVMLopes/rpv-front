@@ -16,7 +16,7 @@ export default function Players() {
                 <Button>Create New Player</Button>
             </Link>
             <h1>Players</h1>
-            <div className="grid grid-cols-2">
+            <div className="grid grid-cols-2 gap-2">
                 {players?.map((char) => (
                     <IniciativeCard key={char.id} character={char}/>
                 ))}
