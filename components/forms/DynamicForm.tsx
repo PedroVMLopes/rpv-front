@@ -16,55 +16,62 @@ interface FieldConfig {
 interface DynamicFormProps {
   form: UseFormReturn<any>;
   fields: FieldConfig[];
+  onSubmit?: (data: any) => void;
 }
 
-export function DynamicForm({ form, fields }: DynamicFormProps) {
+export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
 
   if (!fields || fields.length === 0) {
-    return <div>Nenhum campo para renderizar</div>;
+    return <div>No fields to render</div>;
   }
+
+  const handleSubmit = form.handleSubmit((data) => {
+    if (onSubmit) {
+        onSubmit(data);
+    }
+  })
 
   return (
     <Form {...form}>
-      <form 
-        onSubmit={form.handleSubmit((data) => console.log(data))} 
-        className="space-y-4"
-      >
-        {fields.map((fieldConfig) => (
-          <FormField
-            key={fieldConfig.name}
-            control={form.control}
-            name={fieldConfig.name}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{fieldConfig.label}</FormLabel>
-                <FormControl>
-                  <div>
-                    {fieldConfig.type === "text" && <Input {...field} />}
-                    {fieldConfig.type === "number" && <Input type="number" {...field} />}
-                    {fieldConfig.type === "select" && (
-                      <select {...field} className="border rounded px-2 py-1 w-full">
-                        <option value="">Selecione uma opção</option>
-                        {fieldConfig.options?.map((opt: string) => (
-                          <option key={opt} value={opt}>
-                            {opt}
-                          </option>
-                        ))}
-                      </select>
+        <form 
+            onSubmit={form.handleSubmit(handleSubmit)} 
+            className="space-y-4"
+        >
+            {fields.map((fieldConfig) => (
+                <FormField
+                    key={fieldConfig.name}
+                    control={form.control}
+                    name={fieldConfig.name}
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>{fieldConfig.label}</FormLabel>
+                        <FormControl>
+                        <div>
+                            {fieldConfig.type === "text" && <Input {...field} />}
+                            {fieldConfig.type === "number" && <Input type="number" {...field} />}
+                            {fieldConfig.type === "select" && (
+                            <select {...field} className="border rounded px-2 py-1 w-full">
+                                <option value="">Selecione uma opção</option>
+                                {fieldConfig.options?.map((opt: string) => (
+                                <option key={opt} value={opt}>
+                                    {opt}
+                                </option>
+                                ))}
+                            </select>
+                            )}
+                            {/* Fallback para tipos não reconhecidos */}
+                            {!["text", "number", "select"].includes(fieldConfig.type) && (
+                            <Input {...field} />
+                            )}
+                        </div>
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
                     )}
-                    {/* Fallback para tipos não reconhecidos */}
-                    {!["text", "number", "select"].includes(fieldConfig.type) && (
-                      <Input {...field} />
-                    )}
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        ))}
-        <Button type="submit">Save</Button>
-      </form>
+                />
+            ))}
+            <Button type="submit">Save</Button>
+        </form>
     </Form>
   );
 }

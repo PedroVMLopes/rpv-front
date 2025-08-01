@@ -7,8 +7,10 @@ import { createDynamicSchema } from "@/lib/schema/zodDynamic";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { DynamicForm } from "@/components/forms/DynamicForm";
+import { useCharacterStore } from "@/store/useCharacterStore";
 
 export default function CreatePlayer() {
+    const addCharacter = useCharacterStore((state) => state.addCharacter);
     
     const system = "dnd";
     const type = "player";
@@ -22,6 +24,11 @@ export default function CreatePlayer() {
         defaultValues: {}
     });
 
+    function handleSave(data: any) {
+        addCharacter(data, type);
+        console.log("Character Saved: ", data);
+    }
+
     return (
         <div>
             <Button asChild variant={"destructive"} className="font-semibold">
@@ -29,7 +36,7 @@ export default function CreatePlayer() {
             </Button>
             <div className="mt-4 w-full flex flex-col items-center">
                 <h1 className="mb-4">Create a New Player</h1>
-                <DynamicForm form={form} fields={fields} />
+                <DynamicForm form={form} fields={fields} onSubmit={handleSave} />
             </div>
         </div>
     )
