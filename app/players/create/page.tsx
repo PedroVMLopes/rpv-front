@@ -26,6 +26,7 @@ export default function CreatePlayer() {
 
     function handleSave(data: any) {
         addCharacter(data, type);
+        console.log("new character: ", {...data})
     }
 
     return (

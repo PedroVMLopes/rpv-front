@@ -43,9 +43,9 @@ export const useCharacterStore = create<CharacterStore>()(
             characters: [
                 ...state.characters,
                 {
-                ...data,
-                type,
-                id: crypto.randomUUID(),
+                  ...data,
+                  type,
+                  id: crypto.randomUUID(),
                 },
             ],
             })),
