@@ -1,0 +1,70 @@
+"use client";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { UseFormReturn } from "react-hook-form";
+
+interface FieldConfig {
+  name: string;
+  label: string;
+  type: string;
+  required?: boolean;
+  defaultValue?: any;
+  options?: string[];
+}
+
+interface DynamicFormProps {
+  form: UseFormReturn<any>;
+  fields: FieldConfig[];
+}
+
+export function DynamicForm({ form, fields }: DynamicFormProps) {
+
+  if (!fields || fields.length === 0) {
+    return <div>Nenhum campo para renderizar</div>;
+  }
+
+  return (
+    <Form {...form}>
+      <form 
+        onSubmit={form.handleSubmit((data) => console.log(data))} 
+        className="space-y-4"
+      >
+        {fields.map((fieldConfig) => (
+          <FormField
+            key={fieldConfig.name}
+            control={form.control}
+            name={fieldConfig.name}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{fieldConfig.label}</FormLabel>
+                <FormControl>
+                  <div>
+                    {fieldConfig.type === "text" && <Input {...field} />}
+                    {fieldConfig.type === "number" && <Input type="number" {...field} />}
+                    {fieldConfig.type === "select" && (
+                      <select {...field} className="border rounded px-2 py-1 w-full">
+                        <option value="">Selecione uma opção</option>
+                        {fieldConfig.options?.map((opt: string) => (
+                          <option key={opt} value={opt}>
+                            {opt}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                    {/* Fallback para tipos não reconhecidos */}
+                    {!["text", "number", "select"].includes(fieldConfig.type) && (
+                      <Input {...field} />
+                    )}
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        ))}
+        <Button type="submit">Save</Button>
+      </form>
+    </Form>
+  );
+}

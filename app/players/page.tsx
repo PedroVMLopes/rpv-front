@@ -12,9 +12,9 @@ export default function Players() {
     return (
         <div className="flex flex-col">
             <p>Players Page</p>
-            <Link href={"/players/create"}>
-                <Button>Create New Player</Button>
-            </Link>
+            <Button asChild className="font-semibold">
+                <Link href={"/players/create"}>Create new Player</Link>
+            </Button>
             <h1>Players</h1>
             <div className="grid grid-cols-2 gap-2">
                 {players?.map((char) => (
