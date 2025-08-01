@@ -4,7 +4,7 @@ import { z } from "zod";
 import { characterSchemasByType } from "@/lib/zodSchemas";
 
 // Data flux
-// Form (zod) -> PlayerData - without an ID
+// Form (zod) creates-> PlayerData without an ID
 // Generates an unique ID
 // Saves everything as a Character in the array characters: Character[]
 
