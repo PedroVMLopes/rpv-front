@@ -1,6 +1,6 @@
 "use client"
 import { useForm } from "react-hook-form";
-import { characterSchemasByType } from "@/lib/zodSchemas"
+import { characterSchemasByType } from "@/lib/oldZodSchemas"
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Form } from "@/components/ui/form";

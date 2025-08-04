@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { z } from "zod";
-import { characterSchemasByType } from "@/lib/zodSchemas";
+import { characterSchemasByType } from "@/presets/dnd/characterSchema";
 
 // Data flux
 // Form (zod) creates-> PlayerData without an ID

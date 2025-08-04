@@ -1,10 +1,11 @@
 import { z } from "zod";
 
 export const dndCharacterSchema = {
-  common: {
+  common: z.object({
     name: z.string().min(1, "Name is required"),
-    hp: z.coerce.number().optional(),
-    maxHp: z.coerce.number().optional(),
+    type: z.enum(["player", "enemy", "npc"]).optional(),
+    hp: z.coerce.number().optional().default(0),
+    maxHp: z.coerce.number().optional().default(0),
     ac: z.coerce.number().optional(),
     initiative: z.coerce.number().optional(),
 
@@ -30,16 +31,22 @@ export const dndCharacterSchema = {
       { name: "wisdom", value: 10 },
       { name: "charisma", value: 10 },
     ]).optional(),
-  },
-  player: {
+  }),
+  player: z.object({
     level: z.coerce.number().optional(),
     characterClass: z.string().optional()
-  },
-  enemy: {
+  }),
+  enemy: z.object({
     creatureType: z.string().optional(),
     cr: z.coerce.number().optional()
-  },
-  npc: {
+  }),
+  npc: z.object({
     job: z.string().optional()
-  }
+  })
 };
+
+export const characterSchemasByType = {
+  player: dndCharacterSchema.common.extend(dndCharacterSchema.player.shape),
+  enemy: dndCharacterSchema.common.extend(dndCharacterSchema.enemy.shape),
+  npc: dndCharacterSchema.common.extend(dndCharacterSchema.npc.shape)
+}
