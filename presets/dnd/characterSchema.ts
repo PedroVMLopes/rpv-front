@@ -6,7 +6,8 @@ export const dndCharacterSchema = {
     hp: z.coerce.number().optional(),
     maxHp: z.coerce.number().optional(),
     ac: z.coerce.number().optional(),
-    
+    initiative: z.coerce.number().optional(),
+
     attributes: z
     .array(
       z.object({

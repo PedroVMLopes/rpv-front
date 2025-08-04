@@ -43,29 +43,29 @@ export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
                     control={form.control}
                     name={fieldConfig.name}
                     render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>{fieldConfig.label}</FormLabel>
-                        <FormControl>
-                            <div>
-                                {fieldConfig.type === "text" && <Input {...field} value={field.value ?? ""} />}
-                                {fieldConfig.type === "number" && <Input type="number" {...field} value={field.value ?? ""} />}
-                                {fieldConfig.type === "select" && (
-                                    <select {...field} className="border rounded px-2 py-1 w-full">
-                                        <option value="">Selecione uma opção</option>
-                                        {fieldConfig.options?.map((opt: string) => (
-                                            <option key={opt} value={opt}>
-                                                {opt}
-                                            </option>
-                                        ))}
-                                    </select>
-                                )}
-                                {!["text", "number", "select"].includes(fieldConfig.type) && (
-                                <Input {...field} />
-                                )}
-                            </div>
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
+                        <FormItem>
+                            <FormLabel>{fieldConfig.label}</FormLabel>
+                            <FormControl>
+                                <div>
+                                    {fieldConfig.type === "text" && <Input {...field} value={field.value ?? ""} />}
+                                    {fieldConfig.type === "number" && <Input type="number" {...field} value={field.value ?? ""} />}
+                                    {fieldConfig.type === "select" && (
+                                        <select {...field} className="border rounded px-2 py-1 w-full">
+                                            <option value="">Selecione uma opção</option>
+                                            {fieldConfig.options?.map((opt: string) => (
+                                                <option key={opt} value={opt}>
+                                                    {opt}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    )}
+                                    {!["text", "number", "select"].includes(fieldConfig.type) && (
+                                        <Input {...field} />
+                                    )}
+                                </div>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
                     )}
                 />
             ))}
