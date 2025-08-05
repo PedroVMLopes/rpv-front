@@ -44,6 +44,7 @@ export const useCharacterStore = create<CharacterStore>()(
               ...state.characters,
               {
                 ...data,
+                maxHp: data.maxHp ?? data.hp,
                 type,
                 id: crypto.randomUUID(),
               },
