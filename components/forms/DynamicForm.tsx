@@ -50,7 +50,7 @@ export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
                                     {fieldConfig.type === "text" && <Input {...field} value={field.value ?? ""} />}
                                     {fieldConfig.type === "number" && <Input type="number" {...field} value={field.value ?? ""} />}
                                     {fieldConfig.type === "select" && (
-                                        <select {...field} className="border rounded px-2 py-1 w-full">
+                                        <select {...field} className="border rounded px-2 py-1 w-full bg-background">
                                             <option value="">Selecione uma opção</option>
                                             {fieldConfig.options?.map((opt: string) => (
                                                 <option key={opt} value={opt}>

@@ -17,6 +17,7 @@ type CharacterType = "player" | "enemy" | "npc";
 interface CharacterBase {
   id: string;
   type: CharacterType;
+  system: string;
 }
 
 type PlayerCharacter = CharacterBase & PlayerData;
@@ -27,7 +28,7 @@ export type Character = PlayerCharacter | EnemyCharacter | NpcCharacter;
 
 interface CharacterStore {
   characters: Character[];
-  addCharacter: (data: PlayerData | EnemyData | NpcData, type: CharacterType) => void;
+  addCharacter: (data: PlayerData | EnemyData | NpcData, type: CharacterType, system: string) => void;
   removeCharacter: (id: string) => void;
   clearCharacters: () => void;
   updateCharacter: (id: string, updatedData: Partial<PlayerData | EnemyData | NpcData>) => void;
@@ -38,7 +39,7 @@ export const useCharacterStore = create<CharacterStore>()(
   persist(
     (set) => ({
         characters: [],
-        addCharacter: (data, type) =>
+        addCharacter: (data, type, system) =>
           set((state) => ({
             characters: [
               ...state.characters,
@@ -46,6 +47,7 @@ export const useCharacterStore = create<CharacterStore>()(
                 ...data,
                 maxHp: data.maxHp ?? data.hp,
                 type,
+                system,
                 id: crypto.randomUUID(),
               },
             ],

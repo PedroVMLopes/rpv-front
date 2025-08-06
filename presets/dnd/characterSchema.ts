@@ -4,6 +4,7 @@ export const dndCharacterSchema = {
   common: z.object({
     name: z.string().min(1, "Name is required"),
     type: z.enum(["player", "enemy", "npc"]).optional(),
+    system: z.string().optional(),
     hp: z.coerce.number().optional().default(0),
     maxHp: z.coerce.number().optional(),
     ac: z.coerce.number().optional(),
