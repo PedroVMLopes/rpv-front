@@ -2,22 +2,24 @@
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { presets } from "@/presets";
+import { presets, SystemKey } from "@/presets";
 import { createDynamicSchema } from "@/lib/schema/zodDynamic";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { DynamicForm } from "@/components/forms/DynamicForm";
 import { useCharacterStore } from "@/store/useCharacterStore";
+import { useState } from "react";
 
 export default function CreatePlayer() {
     const addCharacter = useCharacterStore((state) => state.addCharacter);
     
-    const system = "dnd";
+    const [system, setSystem] = useState<SystemKey>("dnd");
     const type = "player";
     
-    const preset = presets[system];
-    const schema = createDynamicSchema(preset.characters.schema, type);
-    const fields = [...preset.characters.fields.common, ...(preset.characters.fields[type] || [])];
+    const presetData = presets[system].presetData;
+
+    const schema = createDynamicSchema(presetData.characters.schema, type);
+    const fields = [...presetData.characters.fields.common, ...(presetData.characters.fields[type] || [])];
 
     const form = useForm({
         resolver: zodResolver(schema),
@@ -36,6 +38,13 @@ export default function CreatePlayer() {
             </Button>
             <div className="mt-4 w-full flex flex-col items-center">
                 <h1 className="mb-4">Create a New Player</h1>
+                <select className="bg-background" value={system} onChange={(e) => setSystem(e.target.value as any)}>
+                    {Object.entries(presets).map(([key, preset]) => (
+                        <option key={key} value={key}>
+                            {preset.name}
+                        </option>
+                    ))}
+                </select>
                 <DynamicForm form={form} fields={fields} onSubmit={handleSave} />
             </div>
         </div>

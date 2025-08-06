@@ -2,7 +2,7 @@
 
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { useParams } from "next/navigation";
-import CharacterForm from "@/components/character-form/CharacterForm";
+import { DynamicForm } from "@/components/forms/DynamicForm";
 
 export default function EditPlayer() {
   const params = useParams<{ id: string}>();
@@ -14,7 +14,7 @@ export default function EditPlayer() {
   if (!character) return <p>Character not found</p>;
 
   return (
-    <CharacterForm
+    <DynamicForm
       type={character.type}
       defaultValues={character}
       onSubmit={(data: Partial<typeof character>) => updateCharacter(id, data)}

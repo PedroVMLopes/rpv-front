@@ -1,5 +1,10 @@
 import { dndPreset } from "./dnd";
 
 export const presets = {
-  dnd: dndPreset
+  dnd: {
+    name: "Dungeons & Dragons",
+    presetData: dndPreset,
+  },
 };
+
+export type SystemKey = keyof typeof presets;
