@@ -5,31 +5,31 @@ import { Button } from "@/components/ui/button";
 import { UseFormReturn } from "react-hook-form";
 
 interface FieldConfig {
-  name: string;
-  label: string;
-  type: string;
-  required?: boolean;
-  defaultValue?: any;
-  options?: string[];
+    name: string;
+    label: string;
+    type: string;
+    required?: boolean;
+    defaultValue?: any;
+    options?: string[];
 }
 
 interface DynamicFormProps {
-  form: UseFormReturn<any>;
-  fields: FieldConfig[];
-  onSubmit?: (data: any) => void;
+    form: UseFormReturn<any>;
+    fields: FieldConfig[];
+    onSubmit?: (data: any) => void;
 }
 
 export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
 
-  if (!fields || fields.length === 0) {
-    return <div>No fields to render</div>;
-  }
-
-  const handleSubmit = form.handleSubmit((data) => {
-    if (onSubmit) {
-        onSubmit(data);
+    if (!fields || fields.length === 0) {
+        return <div>No fields to render</div>;
     }
-  })
+
+    const handleSubmit = form.handleSubmit((data) => {
+        if (onSubmit) {
+            onSubmit(data);
+        }
+    })
 
   return (
     <Form {...form}>
