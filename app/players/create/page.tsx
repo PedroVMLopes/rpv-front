@@ -36,9 +36,9 @@ export default function CreatePlayer() {
             <Button asChild variant={"destructive"} className="font-semibold">
                 <Link href={"/players"}>Cancel</Link>
             </Button>
-            <div className="mt-4 w-full flex flex-col items-center">
-                <h1 className="mb-4">Create a New Player</h1>
-                <select className="bg-background" value={system} onChange={(e) => setSystem(e.target.value as any)}>
+            <div className="mt-4 w-full flex flex-col items-center gap-4">
+                <h1 className="mb-2 text-lg font-bold bg-muted p-1 px-2 rounded">Create a New Player</h1>
+                <select className="bg-background font-semibold" value={system} onChange={(e) => setSystem(e.target.value as any)}>
                     {Object.entries(presets).map(([key, preset]) => (
                         <option key={key} value={key}>
                             {preset.name}
