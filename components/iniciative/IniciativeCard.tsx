@@ -10,7 +10,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Character, useCharacterStore } from "@/store/useCharacterStore";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { HealthSlider } from "../ui/HealthSlider";
 
@@ -19,19 +19,21 @@ interface IniciativeCardProps {
 }
 
 export default function IniciativeCard({ character }: IniciativeCardProps) {
-    const [ amount, setAmount ] = useState<number>(0);
+    const [ amount, setAmount ] = useState<number | undefined>();
     const updateHp = useCharacterStore((state) => state.updateHp);
 
     function handleHeal() {
-        if (amount > 0) {
+        if (amount && amount > 0) {
             updateHp(character.id, amount);
-            setAmount(0);
+            setAmount(undefined);
         }
     }
 
     function handleDamage() {
-        updateHp(character.id, -amount);
-        setAmount(0);
+        if (amount) {
+            updateHp(character.id, -amount);
+            setAmount(undefined);
+        }
     }
 
     return (
@@ -66,24 +68,6 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
                     </div>
 
                     <div className="flex flex-row gap-1 items-center">
-                        {/* Health Controller */}
-                        <Tooltip delayDuration={500}>
-                            <TooltipTrigger asChild>
-                                <Button onClick={handleHeal} variant="ghost" className="py-0 size-6">
-                                    <GiHeartPlus className="text-emerald-600"/>
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>Heal</p>
-                            </TooltipContent>
-                        </Tooltip>
-
-                        <Input 
-                            type="number" 
-                            className="w-16 py-0 h-6"
-                            value={amount}
-                            onChange={(e) => setAmount(Number(e.target.value))}
-                        />
 
                         {/* Damage Controller */}
                         <Tooltip delayDuration={500}>
@@ -96,6 +80,29 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
                                 <p>Damage</p>
                             </TooltipContent>
                         </Tooltip>
+
+                        <Input 
+                            type="number" 
+                            className="w-16 py-0 h-6"
+                            value={amount ?? ''}
+                            onChange={(e) => {
+                                const newValue = e.target.value;
+                                setAmount(newValue === '' ? undefined : Number(newValue));
+                            }}
+                        />
+
+                        {/* Health Controller */}
+                        <Tooltip delayDuration={500}>
+                            <TooltipTrigger asChild>
+                                <Button onClick={handleHeal} variant="ghost" className="py-0 size-6">
+                                    <GiHeartPlus className="text-emerald-600"/>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Heal</p>
+                            </TooltipContent>
+                        </Tooltip>
+                        
                     </div>
                 </div>
 
