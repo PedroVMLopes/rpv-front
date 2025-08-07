@@ -10,8 +10,7 @@ export default function Players() {
     const players = characters.filter((c) => c.type === "player");
 
     return (
-        <div className="flex flex-col">
-            <p>Players Page</p>
+        <div className="flex flex-col gap-4 pt-2">
             <Button asChild className="font-semibold">
                 <Link href={"/players/create"}>Create new Player</Link>
             </Button>

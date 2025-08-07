@@ -12,7 +12,9 @@ export default function Iniciative() {
             <IniciativeHeader />
             <div className="mt-4 gap-2">
                 {characters.map((character) => (
-                    <IniciativeCard key={character.id} character={character} />
+                    <div key={character.id} className="mt-2">
+                        <IniciativeCard key={character.id} character={character} />
+                    </div>
                 ))}
             </div>
         </div>
