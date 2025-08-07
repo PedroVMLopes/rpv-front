@@ -33,7 +33,7 @@ export default function CreateEnemy() {
     return (
         <div>
             <Button asChild variant={"destructive"} className="font-semibold">
-                <Link href={"/players"}>Cancel</Link>
+                <Link href={"/player"}>Cancel</Link>
             </Button>
             <div className="mt-4 w-full flex flex-col gap-4">
                 <h1 className="mb-2 text-lg font-bold bg-muted p-1 px-2 rounded">Create a New Enemy</h1>

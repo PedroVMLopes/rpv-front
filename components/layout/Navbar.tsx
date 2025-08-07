@@ -47,17 +47,25 @@ export default function Navbar() {
                     <NavigationMenuItem>
                         <NavigationMenuLink 
                             asChild 
-                            className={`${navigationMenuTriggerStyle()} ${isActive("/enemies") ? "bg-muted" : ""}`}
+                            className={`${navigationMenuTriggerStyle()} ${isActive("/npc") ? "bg-muted" : ""}`}
                         >
-                            <Link href="/enemies">Enemies</Link>
+                            <Link href="/npc">NPCs</Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
                     <NavigationMenuItem>
                         <NavigationMenuLink 
                             asChild 
-                            className={`${navigationMenuTriggerStyle()} ${isActive("/players") ? "bg-muted" : ""}`}
+                            className={`${navigationMenuTriggerStyle()} ${isActive("/enemy") ? "bg-muted" : ""}`}
                         >
-                            <Link href="/players">Players</Link>
+                            <Link href="/enemy">Enemies</Link>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem>
+                        <NavigationMenuLink 
+                            asChild 
+                            className={`${navigationMenuTriggerStyle()} ${isActive("/player") ? "bg-muted" : ""}`}
+                        >
+                            <Link href="/player">Players</Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
                 </NavigationMenuList>

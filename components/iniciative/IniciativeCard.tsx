@@ -21,6 +21,7 @@ interface IniciativeCardProps {
 export default function IniciativeCard({ character }: IniciativeCardProps) {
     const [ amount, setAmount ] = useState<number | undefined>();
     const updateHp = useCharacterStore((state) => state.updateHp);
+    let borderColor = ""
 
     function handleHeal() {
         if (amount && amount > 0) {
@@ -36,8 +37,20 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
         }
     }
 
+    switch (character.type) {
+        case "enemy":
+            borderColor = "border-l-red-800 border-b-red-900"
+            break;
+        case "player":
+            borderColor = "border-l-cyan-700 border-b-cyan-800"
+            break;
+        case "npc":
+            borderColor = "border-l-amber-600 border-b-amber-700"
+            break;
+    }
+
     return (
-        <div className={`flex flex-col bg-card rounded-lg p-1 pb-2 border border-l-2 border-l-amber-300 ${character.type === "player" ? "border-l-cyan-700" : "border-l-red-800"}`}>
+        <div className={`flex flex-col bg-card rounded-lg p-1 pb-2 border border-l-2 ${borderColor}`}>
 
             {/* Header Info */}
             <div className="flex flex-row justify-between items-center">
@@ -45,7 +58,7 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
                     <p className="font-semibold">{character.name}</p>
                 </div>
                 {/* Expand Info Button */}
-                <Link href={`/players/edit/${character.id}`}>
+                <Link href={`/${character.type}/edit/${character.id}`}>
                     <Button className="size-6" variant={"default"}><LucideChevronRight className="size-5"/></Button>
                 </Link>
             </div>

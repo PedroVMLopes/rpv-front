@@ -10,12 +10,12 @@ import { DynamicForm } from "@/components/forms/DynamicForm";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { useState } from "react";
 
-export default function CreatePlayer() {
+export default function CreateNpc() {
     const addCharacter = useCharacterStore((state) => state.addCharacter);
     
     const [system, setSystem] = useState<SystemKey>("dnd");
-    const type = "player";
-    
+    const type = "npc";
+
     const presetData = presets[system].presetData;
 
     const schema = createDynamicSchema(presetData.characters.schema, type);
@@ -33,10 +33,10 @@ export default function CreatePlayer() {
     return (
         <div>
             <Button asChild variant={"destructive"} className="font-semibold">
-                <Link href={"/players"}>Cancel</Link>
+                <Link href={"/npc"}>Cancel</Link>
             </Button>
             <div className="mt-4 w-full flex flex-col gap-4">
-                <h1 className="mb-2 text-lg font-bold bg-muted p-1 px-2 rounded">Create a New Player</h1>
+                <h1 className="mb-2 text-lg font-bold bg-muted p-1 px-2 rounded">Create a New NPC</h1>
                 <select className="bg-background font-semibold" value={system} onChange={(e) => setSystem(e.target.value as any)}>
                     {Object.entries(presets).map(([key, preset]) => (
                         <option key={key} value={key}>
