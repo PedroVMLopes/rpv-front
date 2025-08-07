@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { DynamicForm } from "@/components/forms/DynamicForm";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { useState } from "react";
+import CharacterForm from "@/components/forms/dnd/characters/CharacterForm";
 
 export default function CreatePlayer() {
     const addCharacter = useCharacterStore((state) => state.addCharacter);
@@ -45,6 +46,7 @@ export default function CreatePlayer() {
                     ))}
                 </select>
                 <DynamicForm form={form} fields={fields} onSubmit={handleSave} />
+                {/* <CharacterForm form={form} fields={fields} onSubmit={handleSave} system={system} type={type}/> */}
             </div>
         </div>
     )

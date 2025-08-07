@@ -12,7 +12,7 @@ import { SystemKey } from "@/presets";
 type PlayerData = z.infer<typeof characterSchemasByType.player>;
 type EnemyData = z.infer<typeof characterSchemasByType.enemy>;
 type NpcData = z.infer<typeof characterSchemasByType.npc>;
-type CharacterType = "player" | "enemy" | "npc";
+export type CharacterType = "player" | "enemy" | "npc";
 
 interface CharacterBase {
     id: string;

@@ -42,7 +42,7 @@ export const dndCharacterSchema = {
     cr: z.coerce.number().optional()
   }),
   npc: z.object({
-    job: z.string().optional()
+    occupation: z.string().optional()
   })
 };
 
