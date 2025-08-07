@@ -29,7 +29,7 @@ export default function IniciativeHeader() {
     return (
         <DropdownMenu>
             {/* Header Info */}
-            <DropdownMenuTrigger asChild className={`bg-muted hover:bg-sidebar-accent w-full rounded-lg flex flex-row p-2`}>
+            <DropdownMenuTrigger asChild className={`bg-muted hover:bg-sidebar-accent w-full rounded-lg flex flex-row border p-2`}>
                 <div className="flex flex-row items-center">
                     <div className="bg-sidebar-accent text-accent-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                         <LuSwords className="size-4" />
