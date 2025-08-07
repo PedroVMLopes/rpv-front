@@ -10,7 +10,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Character, useCharacterStore } from "@/store/useCharacterStore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { HealthSlider } from "../ui/HealthSlider";
 
@@ -105,6 +105,7 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
                     defaultValue={[character.hp || 0]}
                     max={character.maxHp}
                     step={1}
+                    value={[character.hp]}
                     onValueChange={(value) => {
                         // Transforms the slider value into an increment(+) or decrement(-) to be handled by the updateHp()
                         const newValue = value[0];
