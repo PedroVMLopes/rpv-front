@@ -33,7 +33,7 @@ export default function Navbar() {
                             asChild 
                             className={`${navigationMenuTriggerStyle()} ${isActive("/tests") ? "bg-muted" : ""}`}
                         >
-                            <Link href="/tests">Shield</Link>
+                            <Link href="/tests">Main</Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
                     <NavigationMenuItem>
