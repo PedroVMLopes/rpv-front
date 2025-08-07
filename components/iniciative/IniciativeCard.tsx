@@ -39,18 +39,18 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
 
     switch (character.type) {
         case "enemy":
-            borderColor = "border-l-red-800 border-b-red-900"
+            borderColor = "border-l-red-800 border-red-950"
             break;
         case "player":
-            borderColor = "border-l-cyan-700 border-b-cyan-800"
+            borderColor = "border-l-cyan-700 border-cyan-950"
             break;
         case "npc":
-            borderColor = "border-l-amber-600 border-b-amber-700"
+            borderColor = "border-l-amber-700 border-amber-950"
             break;
     }
 
     return (
-        <div className={`flex flex-col bg-card rounded-lg p-1 pb-2 border border-l-2 ${borderColor}`}>
+        <div className={`flex flex-col bg-card rounded-lg p-1 pb-2 border ${borderColor}`}>
 
             {/* Header Info */}
             <div className="flex flex-row justify-between items-center">
