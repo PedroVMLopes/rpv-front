@@ -6,6 +6,7 @@ import { UseFormReturn } from "react-hook-form";
 import { presets } from "@/presets";
 
 interface FieldConfig {
+    [x: string]: any;
     name: string;
     label: string;
     type: string;
@@ -76,6 +77,34 @@ export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
                         )}
                     />
                 ))}
+
+                {fields
+                    .filter(field => field.type == "attributeGroup")
+                    .map((attField) => (
+                        <div key={attField.name}>
+                            <h3 className="text-md font-medium mb-2">{attField.label}</h3>
+                            <div className="grid grid-cols-3 gap-4">
+                                {attField.attributes?.map((_attField: any, index: any) => (
+                                    <FormField
+                                        key={`${_attField.name}-${index}`}
+                                        name={`attributes.${index}.value`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>
+                                                    {_attField.label}
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Input type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))}/>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    ))
+                }
 
                 <Button type="submit">Save</Button>
             </form>

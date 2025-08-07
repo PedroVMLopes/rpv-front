@@ -7,6 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { createDynamicSchema } from "@/lib/schema/zodDynamic";
 import { presets } from "@/presets";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function EditNpc() {
     const params = useParams<{ id: string}>();
@@ -30,10 +32,15 @@ export default function EditNpc() {
     });
 
     return (
-        <DynamicForm 
-            form={form}
-            fields={fields}
-            onSubmit={(data) => updateCharacter(id, data)}
-        />
+        <div className="flex flex-col gap-2">
+            <Button asChild variant={"destructive"} className="font-semibold mt-2 mb-4">
+                <Link href={"/npc"}>Return</Link>
+            </Button>
+            <DynamicForm 
+                form={form}
+                fields={fields}
+                onSubmit={(data) => updateCharacter(id, data)}
+            />
+        </div>
     );
 }
