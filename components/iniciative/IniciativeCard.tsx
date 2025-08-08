@@ -120,21 +120,24 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
                 </div>
 
                 {/* Health Slider */}
-                <HealthSlider 
-                    className="mt-2 px-1"
-                    defaultValue={[character.hp || 0]}
-                    max={character.maxHp}
-                    step={1}
-                    value={[character.hp]}
-                    onValueChange={(value) => {
-                        // Transforms the slider value into an increment(+) or decrement(-) to be handled by the updateHp()
-                        const newValue = value[0];
-                        const diff = character.hp !== undefined ? newValue - character.hp : 0;
-                        if (diff !== 0) {
-                            updateHp(character.id, diff);
-                        }
-                    }}
-                />
+                {character.hp ? 
+                    <HealthSlider 
+                        className="mt-2 px-1"
+                        defaultValue={[character.hp || 0]}
+                        max={character.maxHp}
+                        step={1}
+                        value={[character.hp]}
+                        onValueChange={(value) => {
+                            // Transforms the slider value into an increment(+) or decrement(-) to be handled by the updateHp()
+                            const newValue = value[0];
+                            const diff = character.hp !== undefined ? newValue - character.hp : 0;
+                            if (diff !== 0) {
+                                updateHp(character.id, diff);
+                            }
+                        }}
+                    />
+                    :""
+                }
 
             </div>
         </div>
