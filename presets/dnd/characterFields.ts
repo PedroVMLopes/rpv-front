@@ -57,7 +57,7 @@ export const dndCharacterFields = {
             options: ["Fighter", "Wizard", "Rogue"],
             group: "general",
             order: 2,
-            inlineGroup: "line1"
+            inlineGroup: "line2"
         },
         {
             name: "subclass",
@@ -65,7 +65,7 @@ export const dndCharacterFields = {
             type: "text",
             group: "general",
             order: 3,
-            inlineGroup: "line1"
+            inlineGroup: "line2"
         },
         {
             name: "level",
@@ -73,8 +73,8 @@ export const dndCharacterFields = {
             type: "number",
             defaultValue: 1,
             group: "general",
-            order: 4,
-            inlineGroup: "line3"
+            order: 1,
+            inlineGroup: "line2"
         }
     ],
     enemy: [
