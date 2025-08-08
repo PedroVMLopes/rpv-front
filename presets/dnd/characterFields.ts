@@ -1,35 +1,105 @@
 export const dndCharacterFields = {
-  common: [
-    { name: "name", label: "Name", type: "text", required: true },
-    { name: "hp", label: "Hit Points", type: "number" },
-    { name: "maxHp", label: "Max Hit Points", type: "number" },
-    { name: "ac", label: "Armor Class", type: "number" },
-    {
-      name: "attributes",
-      label: "Attributes",
-      type: "attributeGroup",
-      attributes: [
-        { name: "strength", label: "Strength" },
-        { name: "dexterity", label: "Dexterity" },
-        { name: "constitution", label: "Constitution" },
-        { name: "intelligence", label: "Intelligence" },
-        { name: "wisdom", label: "Wisdom" },
-        { name: "charisma", label: "Charisma" }
-      ]
-    }
-  ],
-  player: [
-    { name: "level", label: "Level", type: "number", defaultValue: 1 },
-    {
-      name: "characterClass",
-      label: "Class",
-      type: "select",
-      options: ["Fighter", "Wizard", "Rogue"]
-    }
-  ],
-  enemy: [
-    { name: "creatureType", label: "Creature Type", type: "text" },
-    { name: "cr", label: "Challenge Rating", type: "number" }
-  ],
-  npc: [{ name: "occupation", label: "Occupation", type: "text" }]
+    common: [
+        {
+            name: "name",
+            label: "Name",
+            type: "text",
+            required: true,
+            group: "general",
+            order: 1,
+            inlineGroup: "line1"
+        },
+        {
+            name: "hp",
+            label: "Hit Points",
+            type: "number",
+            group: "combat",
+            order: 1,
+            inlineGroup: "line2"
+        },
+        {
+            name: "maxHp",
+            label: "Max Hit Points",
+            type: "number",
+            group: "combat",
+            order: 2,
+            inlineGroup: "line2"
+        },
+        {
+            name: "ac",
+            label: "Armor Class",
+            type: "number",
+            group: "combat",
+            order: 3,
+            inlineGroup: "line2"
+        },
+        {
+            name: "attributes",
+            label: "Attributes",
+            type: "attributeGroup",
+            group: "attributes",
+            order: 1,
+            attributes: [
+              { name: "strength", label: "Strength" },
+              { name: "dexterity", label: "Dexterity" },
+              { name: "constitution", label: "Constitution" },
+              { name: "intelligence", label: "Intelligence" },
+              { name: "wisdom", label: "Wisdom" },
+              { name: "charisma", label: "Charisma" }
+            ]
+        }
+    ],
+    player: [
+        {
+            name: "characterClass",
+            label: "Class",
+            type: "select",
+            options: ["Fighter", "Wizard", "Rogue"],
+            group: "general",
+            order: 2,
+            inlineGroup: "line1"
+        },
+        {
+            name: "subclass",
+            label: "Subclass",
+            type: "text",
+            group: "general",
+            order: 3,
+            inlineGroup: "line1"
+        },
+        {
+            name: "level",
+            label: "Level",
+            type: "number",
+            defaultValue: 1,
+            group: "general",
+            order: 4,
+            inlineGroup: "line3"
+        }
+    ],
+    enemy: [
+        {
+            name: "creatureType",
+            label: "Creature Type",
+            type: "text",
+            group: "enemy",
+            order: 1
+        },
+        {
+            name: "cr",
+            label: "Challenge Rating",
+            type: "number",
+            group: "enemy",
+            order: 2
+        }
+      ],
+      npc: [
+        {
+            name: "occupation",
+            label: "Occupation",
+            type: "text",
+            group: "npc",
+            order: 1
+        }
+    ]
 };
