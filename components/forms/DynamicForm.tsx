@@ -99,7 +99,7 @@ export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
                 <FormItem>
                     <FormLabel>
                         {fieldConfig.label}
-                        {fieldConfig.required && <span className="text-red-500 ml-1">*</span>}
+                        {fieldConfig.required && <span className="text-red-500">*</span>}
                     </FormLabel>
                     <FormControl>
                         {(() => {
@@ -162,7 +162,7 @@ export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
 
     return (
         <Form {...form}>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-8">
 
                 {/* Renderiza grupos de campos regulares */}
                 {Object.entries(groupedFields).map(([groupName, groupFields]) => (
@@ -196,7 +196,7 @@ export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
                 {/* Renderiza grupos de atributos */}
                 {attributeGroupFields.map((attField) => (
                     <div key={attField.name} className="space-y-4">
-                        <h3 className="text-md font-medium">{attField.label}</h3>
+                        <h3 className="text-lg font-semibold">{attField.label}</h3>
                         <div className="grid grid-cols-3 gap-4">
                             {attField.attributes?.map((attribute, index) => (
                                 <div key={`${attribute.name}-${index}`} className="space-y-2">
@@ -243,7 +243,7 @@ export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
 
                 <Button 
                     type="submit" 
-                    className="w-full"
+                    className="font-semibold"
                 >
                     Save Character
                 </Button>

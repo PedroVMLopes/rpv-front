@@ -92,8 +92,8 @@ export const dndCharacterFields = {
             group: "enemy",
             order: 2
         }
-      ],
-      npc: [
+    ],
+    npc: [
         {
             name: "occupation",
             label: "Occupation",
