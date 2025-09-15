@@ -41,7 +41,7 @@ export default function Navbar() {
                             asChild 
                             className={`${navigationMenuTriggerStyle()} ${isActive("/encounters") ? "bg-muted" : ""}`}
                         >
-                            <Link href="/encounters">Encounters</Link>
+                            <Link href="/encounters">Encounters & Events</Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
                     <NavigationMenuItem>
