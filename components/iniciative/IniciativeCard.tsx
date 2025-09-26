@@ -1,7 +1,8 @@
 "use client"
 
-import { LucideChevronRight, LucideHeart, LucideShield } from "lucide-react";
+import { Ghost, LucideChevronRight, LucideHeart, LucideShield } from "lucide-react";
 import { GiHeartPlus, GiHeartMinus } from "react-icons/gi";
+import { FaPlus, FaMinus } from "react-icons/fa6";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import {
@@ -21,7 +22,11 @@ interface IniciativeCardProps {
 export default function IniciativeCard({ character }: IniciativeCardProps) {
     const [ amount, setAmount ] = useState<number | undefined>();
     const updateHp = useCharacterStore((state) => state.updateHp);
+
     let borderColor = ""
+    let textColor = ""
+    let backgroundColor = ""
+    let backgroundColorHover = ""
 
     function handleHeal() {
         if (amount && amount > 0) {
@@ -39,18 +44,27 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
 
     switch (character.type) {
         case "enemy":
-            borderColor = "border-l-red-900 border-red-950"
+            borderColor = "border-red-900"
+            textColor = "text-red-500"
+            backgroundColor = "bg-red-950/20"
+            backgroundColorHover = "hover:bg-red-950/60"
             break;
         case "player":
-            borderColor = "border-l-cyan-900 border-cyan-950"
+            borderColor = "border-cyan-800"
+            textColor = "text-cyan-400"
+            backgroundColor = "bg-cyan-800/10"
+            backgroundColorHover = "hover:bg-cyan-800/60"
             break;
         case "npc":
-            borderColor = "border-l-amber-800 border-amber-950"
+            borderColor = "border-yellow-800"
+            textColor = "text-yellow-400"
+            backgroundColor = "bg-yellow-800/10"
+            backgroundColorHover = "hover:bg-yellow-800/60"
             break;
     }
 
     return (
-        <div className={`flex flex-col bg-card rounded-lg p-1 pb-2 border ${borderColor}`}>
+        <div className={`flex flex-col bg-card rounded-lg p-2 pt-1.5 border`}>
 
             {/* Header Info */}
             <div className="flex flex-row justify-between items-center">
@@ -59,7 +73,7 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
                 </div>
                 {/* Expand Info Button */}
                 <Link href={`/${character.type}/edit/${character.id}`}>
-                    <Button className="size-6" variant={"default"}><LucideChevronRight className="size-5"/></Button>
+                    <Button className={`h-6 w-8 border-1 ${borderColor} ${textColor} ${backgroundColor} ${backgroundColorHover}`} ><LucideChevronRight className="size-4 opacity-70"/></Button>
                 </Link>
             </div>
 
@@ -68,7 +82,7 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
                 {/* Shield */}
                 <div className="flex flex-row gap-3">
                     <div className="flex flex-row items-center gap-2 ml-1 font-semibold">
-                        <LucideShield className="size-4 text-cyan-600"/>
+                        <LucideShield className={`size-4 ${textColor}`}/>
                         <p>{character.ac}</p>
                     </div>
                 </div>
@@ -76,7 +90,7 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
                 {/* Health */}
                 <div className="flex flex-row justify-between mt-1">
                     <div className="flex flex-row items-center gap-2 ml-1 font-semibold">
-                        <LucideHeart className="size-4 text-emerald-600"/>
+                        <LucideHeart className={`size-4 ${textColor}`}/>
                         <p>{character.hp}<span className="opacity-50"> / {character.maxHp}</span></p>
                     </div>
 
@@ -85,8 +99,8 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
                         {/* Damage Controller */}
                         <Tooltip delayDuration={500}>
                             <TooltipTrigger asChild>
-                                <Button onClick={handleDamage} variant="ghost" className="py-0 size-6">
-                                    <GiHeartMinus className="text-red-600" />
+                                <Button onClick={handleDamage} variant="ghost" className="py-0 size-6 hover:bg-red-950/30">
+                                    <FaMinus className={`text-card-foreground`} />
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -96,7 +110,7 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
 
                         <Input 
                             type="number" 
-                            className="w-16 py-0 h-6"
+                            className={`w-16 py-0 h-6`}
                             value={amount ?? ''}
                             onChange={(e) => {
                                 const newValue = e.target.value;
@@ -108,7 +122,7 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
                         <Tooltip delayDuration={500}>
                             <TooltipTrigger asChild>
                                 <Button onClick={handleHeal} variant="ghost" className="py-0 size-6">
-                                    <GiHeartPlus className="text-emerald-600"/>
+                                    <FaPlus className="text-card-foreground"/>
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent>

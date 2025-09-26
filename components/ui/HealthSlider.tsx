@@ -9,10 +9,10 @@ interface HealthSliderProps extends React.ComponentPropsWithoutRef<typeof Slider
 export function HealthSlider({ className, thumbClassName, ...props }: HealthSliderProps) {
   return (
     <SliderPrimitive.Root className={cn("relative flex w-full touch-none select-none items-center", className)} {...props}>
-      <SliderPrimitive.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-red-700">
-        <SliderPrimitive.Range className="absolute h-full bg-emerald-600" />
+      <SliderPrimitive.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-red-900/50">
+        <SliderPrimitive.Range className="absolute h-full bg-emerald-600/50" />
       </SliderPrimitive.Track>
-      <SliderPrimitive.Thumb className={cn("block size-2 rounded-full bg-emerald-700", thumbClassName)} aria-label="Character Health" />
+      <SliderPrimitive.Thumb className={cn("block size-3 rounded-full hover:bg-accent-foreground", thumbClassName)} aria-label="Character Health" />
     </SliderPrimitive.Root>
   );
 }
