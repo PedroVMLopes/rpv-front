@@ -63,7 +63,7 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
     }
 
     return (
-        <div className={`flex flex-col bg-card rounded-lg p-2 pt-1.5 border border-stone-800`}>
+        <div className={`flex flex-col bg-card rounded-xl p-2 pt-1.5 border border-stone-800`}>
 
             {/* Header Info */}
             <div className="flex flex-row justify-between items-center">

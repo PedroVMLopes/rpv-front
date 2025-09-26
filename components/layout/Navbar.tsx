@@ -4,6 +4,8 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { FaUser } from "react-icons/fa6";
+
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -11,6 +13,7 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
+import { Separator } from "@/components/ui/separator";
 
 export default function Navbar() {
     const pathname = usePathname();
@@ -23,7 +26,7 @@ export default function Navbar() {
                     <NavigationMenuItem className={`md:hidden`}>
                         <NavigationMenuLink 
                             asChild 
-                            className={`${navigationMenuTriggerStyle()} ${isActive("/iniciatives") ? "bg-muted text-primary" : ""}`}
+                            className={`${navigationMenuTriggerStyle()} ${isActive("/iniciatives") ? "bg-muted" : ""}`}
                         >
                             <Link href="/iniciatives">Iniciatives</Link>
                         </NavigationMenuLink>
@@ -66,6 +69,25 @@ export default function Navbar() {
                             className={`${navigationMenuTriggerStyle()} ${isActive("/player") ? "bg-muted" : ""}`}
                         >
                             <Link href="/player">Players</Link>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem>
+                        <NavigationMenuLink 
+                            asChild 
+                            className={`text-orange-300 ${navigationMenuTriggerStyle()} ${isActive("/player") ? "bg-orange-300 text-black" : ""}`}
+                        >
+                            <Link href="/player">Community</Link>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem>
+                        <div className="h-6 w-[1px] bg-muted"></div>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem>
+                        <NavigationMenuLink 
+                            asChild 
+                            className={`${navigationMenuTriggerStyle()} ${isActive("/player") ? "bg-muted" : ""}`}
+                        >
+                            <Link href="/player"><FaUser className="size-4 text-amber-100" /></Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
                 </NavigationMenuList>
