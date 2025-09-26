@@ -1,8 +1,7 @@
 "use client"
 
-import { Ghost, LucideChevronRight, LucideHeart, LucideShield } from "lucide-react";
-import { GiHeartPlus, GiHeartMinus } from "react-icons/gi";
-import { FaPlus, FaMinus } from "react-icons/fa6";
+import { LucideHeart, LucideShield } from "lucide-react";
+import { FaPlus, FaMinus, FaChevronRight } from "react-icons/fa6";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import {
@@ -45,26 +44,26 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
     switch (character.type) {
         case "enemy":
             borderColor = "border-red-900"
-            textColor = "text-red-500"
-            backgroundColor = "bg-red-950/20"
-            backgroundColorHover = "hover:bg-red-950/60"
+            textColor = "text-red-600"
+            backgroundColor = "bg-red-900"
+            backgroundColorHover = "hover:bg-red-950"
             break;
         case "player":
-            borderColor = "border-cyan-800"
-            textColor = "text-cyan-400"
-            backgroundColor = "bg-cyan-800/10"
-            backgroundColorHover = "hover:bg-cyan-800/60"
+            borderColor = "border-cyan-900"
+            textColor = "text-cyan-500"
+            backgroundColor = "bg-cyan-900"
+            backgroundColorHover = "hover:bg-cyan-900/60"
             break;
         case "npc":
             borderColor = "border-yellow-800"
-            textColor = "text-yellow-400"
-            backgroundColor = "bg-yellow-800/10"
-            backgroundColorHover = "hover:bg-yellow-800/60"
+            textColor = "text-yellow-500"
+            backgroundColor = "bg-yellow-800"
+            backgroundColorHover = "hover:bg-yellow-900/60"
             break;
     }
 
     return (
-        <div className={`flex flex-col bg-card rounded-lg p-2 pt-1.5 border`}>
+        <div className={`flex flex-col bg-card rounded-lg p-2 pt-1.5 border border-stone-800`}>
 
             {/* Header Info */}
             <div className="flex flex-row justify-between items-center">
@@ -73,7 +72,7 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
                 </div>
                 {/* Expand Info Button */}
                 <Link href={`/${character.type}/edit/${character.id}`}>
-                    <Button className={`h-6 w-8 border-1 ${borderColor} ${textColor} ${backgroundColor} ${backgroundColorHover}`} ><LucideChevronRight className="size-4 opacity-70"/></Button>
+                    <Button className={`h-6 w-10 border-1 text-card-foreground shadow-2xl ${borderColor} ${backgroundColor} ${backgroundColorHover}`} ><FaChevronRight className="size-3 opacity-70"/></Button>
                 </Link>
             </div>
 
