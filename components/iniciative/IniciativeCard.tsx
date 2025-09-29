@@ -71,7 +71,7 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
                     <p className="font-semibold">{character.name}</p>
                 </div>
                 {/* Expand Info Button */}
-                <Link href={`/${character.type}/edit/${character.id}`}>
+                <Link href={`characters/${character.type}/edit/${character.id}`}>
                     <Button className={`h-6 w-10 border-1 text-card-foreground shadow-2xl ${borderColor} ${backgroundColor} ${backgroundColorHover}`} ><FaChevronRight className="size-3 opacity-70"/></Button>
                 </Link>
             </div>
