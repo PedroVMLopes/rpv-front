@@ -21,15 +21,15 @@ export const CharacterCreationCard = (char: CharType) => {
                 <Separator className="mt-2 mb-3" orientation="horizontal" />
             </CardHeader>
             <CardFooter className="flex-col gap-2">
+
                 <Link href={`/characters/${CharTypeLink}`} className="w-full">
-                    <Button className="w-full" variant={"outline"}><FaList /> Your {char.btnTitle}</Button>
+                    <Button className="w-full font-bold" variant={"outline"}><FaList /> Your {char.btnTitle}</Button>
                 </Link>
+                
                 <Link href={`/characters/${CharTypeLink}/create/`} className="w-full">
-                    <Button className="w-full" variant={"outline"}><FaPlus />Create New</Button>
+                    <Button className="w-full font-bold" variant={"outline"}><FaPlus />Create New</Button>
                 </Link>
-                <Link href={"/forge"} className="w-full">
-                    <Button className="w-full bg-orange-300 font-bold"><GiAnvilImpact />Explore {char.btnTitle}</Button>
-                </Link>
+                
             </CardFooter>
         </Card>
     )
