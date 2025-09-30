@@ -69,24 +69,27 @@ export default function Navbar() {
                                     >
                                         <Link href="/characters">All Characters</Link>
                                     </NavigationMenuLink>
-                                    <NavigationMenuLink 
-                                        asChild 
-                                        className={`${navigationMenuTriggerStyle()} hover:bg-chart-1 ${isActive("/characters/player") ? "bg-chart-1" : "bg-popover"}`}
-                                    >
-                                        <Link href="/characters/player">Players</Link>
-                                    </NavigationMenuLink>
-                                    <NavigationMenuLink 
-                                        asChild 
-                                        className={`${navigationMenuTriggerStyle()} hover:bg-chart-2 ${isActive("/characters/enemy") ? "bg-char-2" : "bg-popover"}`}
-                                    >
-                                        <Link href="/characters/enemy">Enemies</Link>
-                                    </NavigationMenuLink>
-                                    <NavigationMenuLink 
-                                        asChild 
-                                        className={`${navigationMenuTriggerStyle()} hover:bg-chart-3 hover:text-foreground ${isActive("/characters/npc") ? "bg-char-3" : "bg-popover"}`}
-                                    >
-                                        <Link href="/characters/npc">NPC's</Link>
-                                    </NavigationMenuLink>
+                                    <div className="h-[1px] w-full bg-muted my-1" />
+                                    <div className="flex flex-col gap-1">
+                                        <NavigationMenuLink 
+                                            asChild 
+                                            className={`${navigationMenuTriggerStyle()} hover:bg-chart-1 ${isActive("/characters/player") ? "bg-chart-1" : "bg-popover"}`}
+                                        >
+                                            <Link href="/characters/player">Players</Link>
+                                        </NavigationMenuLink>
+                                        <NavigationMenuLink 
+                                            asChild 
+                                            className={`${navigationMenuTriggerStyle()} hover:bg-chart-2 ${isActive("/characters/enemy") ? "bg-char-2" : "bg-popover"}`}
+                                        >
+                                            <Link href="/characters/enemy">Enemies</Link>
+                                        </NavigationMenuLink>
+                                        <NavigationMenuLink 
+                                            asChild 
+                                            className={`${navigationMenuTriggerStyle()} hover:bg-chart-3 hover:text-foreground ${isActive("/characters/npc") ? "bg-char-3" : "bg-popover"}`}
+                                        >
+                                            <Link href="/characters/npc">NPC's</Link>
+                                        </NavigationMenuLink>
+                                    </div>
                                 </li>
                             </ul>
                         </NavigationMenuContent>
