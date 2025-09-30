@@ -68,9 +68,9 @@ export default function Navbar() {
                     <NavigationMenuItem>
                         <NavigationMenuLink 
                             asChild 
-                            className={`text-orange-300 ${navigationMenuTriggerStyle()} ${isActive("/") ? "bg-orange-300 text-black" : ""}`}
+                            className={`text-orange-300 ${navigationMenuTriggerStyle()} ${isActive("/forge") ? "bg-orange-300 text-black" : ""}`}
                         >
-                            <Link className="flex flex-row" href="/"><GiAnvilImpact />Forge</Link>
+                            <Link className="flex flex-row" href="/forge"><GiAnvilImpact />Forge</Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
 

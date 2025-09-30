@@ -34,7 +34,7 @@ export default function EditNpc() {
     return (
         <div className="gap-2">
             <Button asChild variant={"destructive"} className="font-semibold mt-2 mb-4">
-                <Link href={"/npc"}>Return</Link>
+                <Link href={"/characters/npc"}>Return</Link>
             </Button>
             <DynamicForm 
                 form={form}
