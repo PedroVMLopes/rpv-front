@@ -7,7 +7,10 @@ import { GiAnvilImpact } from "react-icons/gi";
 export default function Characters() {
     
     return (
-        <div className="flex flex-col mt-4">
+        <div className="flex flex-col">
+
+            <h1 className="text-4xl font-semibold mb-6 pl-2">Characters</h1>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
                 <div className="flex-col">

@@ -44,7 +44,7 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
     switch (character.type) {
         case "enemy":
             borderColor = "border-red-900"
-            textColor = "text-chart-2"
+            textColor = "text-red-700"
             backgroundColor = "bg-chart-2"
             backgroundColorHover = "hover:bg-chart-2/50"
             break;
