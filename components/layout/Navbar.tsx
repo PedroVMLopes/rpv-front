@@ -9,9 +9,11 @@ import { GiAnvilImpact } from "react-icons/gi";
 
 import {
   NavigationMenu,
+  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
+  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import { Separator } from "@/components/ui/separator";
@@ -57,12 +59,37 @@ export default function Navbar() {
                     </NavigationMenuItem>
 
                     <NavigationMenuItem>
-                        <NavigationMenuLink 
-                            asChild 
-                            className={`${navigationMenuTriggerStyle()} ${isActive("/characters") ? "bg-muted" : ""}`}
-                        >
-                            <Link href="/characters">Characters</Link>
-                        </NavigationMenuLink>
+                        <NavigationMenuTrigger className="font-bold">Characters</NavigationMenuTrigger>
+                        <NavigationMenuContent>
+                            <ul className="grid gap-4">
+                                <li className="z-10">
+                                    <NavigationMenuLink 
+                                        asChild 
+                                        className={`${navigationMenuTriggerStyle()} hover:bg-secondary ${isActive("/characters") ? "bg-secondary" : "bg-popover"}`}
+                                    >
+                                        <Link href="/characters">All Characters</Link>
+                                    </NavigationMenuLink>
+                                    <NavigationMenuLink 
+                                        asChild 
+                                        className={`${navigationMenuTriggerStyle()} hover:bg-chart-1 ${isActive("/characters/player") ? "bg-chart-1" : "bg-popover"}`}
+                                    >
+                                        <Link href="/characters/player">Players</Link>
+                                    </NavigationMenuLink>
+                                    <NavigationMenuLink 
+                                        asChild 
+                                        className={`${navigationMenuTriggerStyle()} hover:bg-chart-2 ${isActive("/characters/enemy") ? "bg-char-2" : "bg-popover"}`}
+                                    >
+                                        <Link href="/characters/enemy">Enemies</Link>
+                                    </NavigationMenuLink>
+                                    <NavigationMenuLink 
+                                        asChild 
+                                        className={`${navigationMenuTriggerStyle()} hover:bg-chart-3 hover:text-foreground ${isActive("/characters/npc") ? "bg-char-3" : "bg-popover"}`}
+                                    >
+                                        <Link href="/characters/npc">NPC's</Link>
+                                    </NavigationMenuLink>
+                                </li>
+                            </ul>
+                        </NavigationMenuContent>
                     </NavigationMenuItem>
 
                     <NavigationMenuItem>

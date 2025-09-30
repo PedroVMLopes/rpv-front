@@ -72,7 +72,7 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
                 </div>
                 {/* Expand Info Button */}
                 <Link href={`/characters/${character.type}/edit/${character.id}`}>
-                    <Button className={`h-6 w-10 text-card-foreground shadow-2xl ${backgroundColor} ${backgroundColorHover}`} ><FaChevronRight className="size-3 opacity-70"/></Button>
+                    <Button className={`h-6 w-10 text-card-foreground shadow-2xl ${backgroundColor} ${backgroundColorHover}`} ><FaChevronRight className="size-3 opacity-70 z-0"/></Button>
                 </Link>
             </div>
 
