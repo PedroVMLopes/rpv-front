@@ -12,7 +12,7 @@ export default function NPCs() {
     return (
         <div className="flex flex-col gap-4 pt-2">
             <Button asChild className="font-semibold">
-                <Link href={"/npc/create"}>Create new NPC</Link>
+                <Link href={"/characters/npc/create"}>Create new NPC</Link>
             </Button>
             <h1>NPCs</h1>
             <div className="grid grid-cols-2 gap-2">

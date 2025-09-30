@@ -12,7 +12,7 @@ export default function Players() {
     return (
         <div className="flex flex-col gap-4 pt-2">
             <Button asChild className="font-semibold">
-                <Link href={"/player/create"}>Create new Player</Link>
+                <Link href={"/characters/player/create"}>Create new Player</Link>
             </Button>
             <h1>Players</h1>
             <div className="grid grid-cols-2 gap-2">

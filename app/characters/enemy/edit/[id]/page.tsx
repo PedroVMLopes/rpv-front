@@ -32,9 +32,9 @@ export default function EditEnemy() {
     });
 
     return (
-        <div className="flex flex-col gap-2">
+        <div className="gap-2">
             <Button asChild variant={"destructive"} className="font-semibold mt-2 mb-4">
-                <Link href={"/enemy"}>Return</Link>
+                <Link href={"/characters/enemy"}>Return</Link>
             </Button>
             <DynamicForm 
                 form={form}

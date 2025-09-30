@@ -34,7 +34,7 @@ export default function EditPlayer() {
     return (
         <div className="">
             <Button asChild variant={"destructive"} className="font-semibold mt-2 mb-4">
-                <Link href={"/player"}>Return</Link>
+                <Link href={"/characters/player"}>Return</Link>
             </Button>
             <DynamicForm 
                 form={form}

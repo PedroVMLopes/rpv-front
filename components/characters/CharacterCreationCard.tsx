@@ -1,7 +1,36 @@
-export const CharacterCreationCard = () => {
+import Link from "next/link";
+import { Button } from "../ui/button"
+import { Card, CardFooter, CardHeader, CardTitle } from "../ui/card"
+import { Separator } from "../ui/separator";
+
+import { GiAnvilImpact } from "react-icons/gi";
+import { FaPlus, FaList } from "react-icons/fa6";
+
+interface CharType {
+    type: string
+    btnTitle: string
+}
+
+export const CharacterCreationCard = (char: CharType) => {
+    const CharTypeLink = char.type.toLowerCase();
+
     return (
-        <div className="bg-card rounded-2xl p-2 flex flex-col">
-            <h1>Player</h1>
-        </div>
+        <Card className="shadow-2xl">
+            <CardHeader>
+                <CardTitle className="text-3xl font-bold pl-1">{char.type}</CardTitle>
+                <Separator className="mt-2 mb-3" orientation="horizontal" />
+            </CardHeader>
+            <CardFooter className="flex-col gap-2">
+                <Link href={`/characters/${CharTypeLink}`} className="w-full">
+                    <Button className="w-full" variant={"outline"}><FaList /> Your {char.btnTitle}</Button>
+                </Link>
+                <Link href={`/characters/${CharTypeLink}/create/`} className="w-full">
+                    <Button className="w-full" variant={"outline"}><FaPlus />Create New</Button>
+                </Link>
+                <Link href={"/forge"} className="w-full">
+                    <Button className="w-full bg-orange-300 font-bold"><GiAnvilImpact />Explore {char.btnTitle}</Button>
+                </Link>
+            </CardFooter>
+        </Card>
     )
 }

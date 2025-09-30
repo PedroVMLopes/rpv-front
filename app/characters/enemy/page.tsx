@@ -12,7 +12,7 @@ export default function Enemies() {
     return (
         <div className="flex flex-col gap-4 pt-2">
             <Button asChild className="font-semibold">
-                <Link href={"/enemy/create"}>Create new Enemy</Link>
+                <Link href={"/characters/enemy/create"}>Create new Enemy</Link>
             </Button>
             <h1>Enemies</h1>
             <div className="grid grid-cols-2 gap-2">
