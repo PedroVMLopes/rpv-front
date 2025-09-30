@@ -23,15 +23,15 @@ export const CharacterCreationCard = (char: CharType) => {
             <CardFooter className="flex-col gap-2">
 
                 <Link href={`/characters/${CharTypeLink}`} className="w-full">
-                    <Button className="w-full font-bold" variant={"outline"}><FaList /> Your {char.btnTitle}</Button>
+                    <Button className="w-full font-bold hover:bg-accent hover:text-accent-foreground border" variant={"ghost"}><FaList /> Your {char.btnTitle}</Button>
                 </Link>
 
                 <Link href={`/characters/${CharTypeLink}/create/`} className="w-full">
-                    <Button className="w-full font-bold" variant={"outline"}><FaPlus />Create New</Button>
+                    <Button className="w-full font-bold hover:bg-accent hover:text-accent-foreground border" variant={"ghost"}><FaPlus />Create New</Button>
                 </Link>
 
                 <Link href={"/forge"} className="w-full">
-                    <Button className="w-full bg-orange-300/30 hover:bg-orange-300 hover:text-black font-bold text-card-foreground border border-orange-300/20"><GiAnvilImpact />Explore {char.btnTitle}</Button>
+                    <Button className="w-full bg-orange-300/10 hover:bg-accent hover:text-accent-foreground font-bold text-card-foreground border border-orange-300/30"><GiAnvilImpact />Explore {char.btnTitle}</Button>
                 </Link>
                 
             </CardFooter>
