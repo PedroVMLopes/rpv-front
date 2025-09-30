@@ -14,10 +14,7 @@ export default function Characters() {
                     <CharacterCreationCard type={"Player"} btnTitle="Players" />
                     <Card className="bg-orange-300/10 border-orange-300/50 mt-2 py-3">
                         <CardContent>
-                            <Link href={"/forge"}>
-                                <Button className="w-full bg-orange-300 font-bold border"><GiAnvilImpact />Explore Player Content</Button>
-                            </Link>
-                            <p className="text-sm opacity-80 mt-2">Explore new <span className="font-bold">classes, subclasses</span>, and <span className="font-bold">premade characters</span> created by the community.</p>
+                            <p className="text-sm opacity-80">Explore new <span className="font-bold">classes, subclasses</span>, and <span className="font-bold">premade characters</span> created by the community.</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -26,10 +23,7 @@ export default function Characters() {
                     <CharacterCreationCard type={"Enemy"} btnTitle="Enemies" />
                     <Card className="bg-orange-300/10 border-orange-300/50 mt-2 py-3">
                         <CardContent>
-                            <Link href={"/forge"}>
-                                <Button className="w-full bg-orange-300 font-bold border"><GiAnvilImpact />Explore Enemies</Button>
-                            </Link>
-                            <p className="text-sm opacity-80 mt-2">Explore all kinds of homebrew <span className="font-bold">monsters</span> and <span className="font-bold">villains</span> to surprise your players. </p>
+                            <p className="text-sm opacity-80">Explore all kinds of homebrew <span className="font-bold">monsters</span> and <span className="font-bold">villains</span> to surprise your players. </p>
                         </CardContent>
                     </Card>
                 </div>
@@ -38,14 +32,11 @@ export default function Characters() {
                     <CharacterCreationCard type={"NPC"} btnTitle="NPCs" />
                     <Card className="bg-orange-300/10 border-orange-300/50 mt-2 py-3">
                         <CardContent>
-                            <Link href={"/forge"}>
-                                <Button className="w-full bg-orange-300 font-bold border"><GiAnvilImpact />Explore NPC's</Button>
-                            </Link>
-                            <p className="text-sm opacity-80 mt-2">Explore a list of <span className="font-bold">diverse NPC's</span> that could fit your adventure perfectly. </p>
+                            <p className="text-sm opacity-80">Explore a list of <span className="font-bold">diverse NPC's</span> that could fit your adventure perfectly. </p>
                         </CardContent>
                     </Card>
                 </div>
-                
+
             </div>
         </div>
     )

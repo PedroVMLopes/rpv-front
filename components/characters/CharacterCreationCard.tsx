@@ -25,9 +25,13 @@ export const CharacterCreationCard = (char: CharType) => {
                 <Link href={`/characters/${CharTypeLink}`} className="w-full">
                     <Button className="w-full font-bold" variant={"outline"}><FaList /> Your {char.btnTitle}</Button>
                 </Link>
-                
+
                 <Link href={`/characters/${CharTypeLink}/create/`} className="w-full">
                     <Button className="w-full font-bold" variant={"outline"}><FaPlus />Create New</Button>
+                </Link>
+
+                <Link href={"/forge"} className="w-full">
+                    <Button className="w-full bg-orange-300/30 hover:bg-orange-300 hover:text-black font-bold text-card-foreground border border-orange-300/20"><GiAnvilImpact />Explore {char.btnTitle}</Button>
                 </Link>
                 
             </CardFooter>

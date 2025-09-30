@@ -44,21 +44,21 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
     switch (character.type) {
         case "enemy":
             borderColor = "border-red-900"
-            textColor = "text-red-600"
-            backgroundColor = "bg-red-900"
-            backgroundColorHover = "hover:bg-red-950"
+            textColor = "text-chart-2"
+            backgroundColor = "bg-chart-2"
+            backgroundColorHover = "hover:bg-chart-2/50"
             break;
         case "player":
             borderColor = "border-cyan-900"
-            textColor = "text-cyan-500"
-            backgroundColor = "bg-cyan-900"
-            backgroundColorHover = "hover:bg-cyan-900/60"
+            textColor = "text-chart-1"
+            backgroundColor = "bg-chart-1"
+            backgroundColorHover = "hover:bg-chart-1/50"
             break;
         case "npc":
             borderColor = "border-yellow-800"
-            textColor = "text-yellow-500"
-            backgroundColor = "bg-yellow-800"
-            backgroundColorHover = "hover:bg-yellow-900/60"
+            textColor = "text-chart-3"
+            backgroundColor = "bg-chart-3"
+            backgroundColorHover = "hover:bg-chart-3/50"
             break;
     }
 
@@ -72,7 +72,7 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
                 </div>
                 {/* Expand Info Button */}
                 <Link href={`/characters/${character.type}/edit/${character.id}`}>
-                    <Button className={`h-6 w-10 border-1 text-card-foreground shadow-2xl ${borderColor} ${backgroundColor} ${backgroundColorHover}`} ><FaChevronRight className="size-3 opacity-70"/></Button>
+                    <Button className={`h-6 w-10 text-card-foreground shadow-2xl ${backgroundColor} ${backgroundColorHover}`} ><FaChevronRight className="size-3 opacity-70"/></Button>
                 </Link>
             </div>
 
