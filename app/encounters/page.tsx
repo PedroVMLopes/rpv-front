@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { GiAnvilImpact } from "react-icons/gi";
 import { FaPlus, FaList } from "react-icons/fa6";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import Link from "next/link";
 
 export default function Encounters() {
     return (
@@ -29,8 +30,12 @@ export default function Encounters() {
                         </div>
                     </CardHeader>
                     <CardContent className="flex flex-col gap-2 justify-center">
-                        <Button variant={"outline"} className="w-full "><FaList />Your Encounters</Button>
-                        <Button variant={"outline"} className="w-full "><FaPlus />New Encounter</Button>
+                        <Link href={"/encounters/encounter"}>
+                            <Button variant={"outline"} className="w-full "><FaList />Your Encounters</Button>
+                        </Link>
+                        <Link href={"/encounters/encounter/create"}>
+                            <Button variant={"outline"} className="w-full "><FaPlus />New Encounter</Button>
+                        </Link>
                         <Button className="w-full bg-orange-300/10 border border-orange-300/20 hover:bg-accent hover:text-accent-foreground font-bold text-card-foreground"><GiAnvilImpact />Explore Encounters</Button>
                     </CardContent>
                 </Card>
@@ -74,9 +79,9 @@ export default function Encounters() {
                         </div>
                     </CardHeader>
                     <CardContent className="flex flex-col gap-2 justify-center">
-                        <Button variant={"outline"} className="w-full "><FaList />Your Events</Button>
-                        <Button variant={"outline"} className="w-full "><FaPlus />New Event</Button>
-                        <Button className="w-full bg-orange-300/10 border border-orange-300/20 hover:bg-accent hover:text-accent-foreground font-bold text-card-foreground"><GiAnvilImpact />Explore Events</Button>
+                        <Button variant={"outline"} className=" "><FaList />Your Events</Button>
+                        <Button variant={"outline"} className=" "><FaPlus />New Event</Button>
+                        <Button className=" bg-orange-300/10 border border-orange-300/20 hover:bg-accent hover:text-accent-foreground font-bold text-card-foreground"><GiAnvilImpact />Explore Events</Button>
                     </CardContent>
                 </Card>
             </div>
