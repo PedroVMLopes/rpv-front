@@ -1,7 +1,9 @@
+import { CarouselItem } from "@/components/ui/characterCarousel";
+
 export default function CharacterCardInventory() {
     return (
-        <div>
+        <CarouselItem>
             Inventory
-        </div>
+        </CarouselItem>
     )
 }

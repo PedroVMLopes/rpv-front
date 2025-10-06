@@ -4,7 +4,7 @@ import * as React from "react";
 import { Button } from "../../ui/button";
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card";
 
-import { FaHeart, FaBookmark, FaCopy } from "react-icons/fa6";
+import { FaHeart, FaBookmark, FaCopy, FaShield } from "react-icons/fa6";
 import CharacterCardInfoBlocks from "./CharacterCardInfoBlocks";
 import { Carousel, CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/characterCarousel";
 import CharacterCardGameInfo from "./CharacterCardGameInfo";
@@ -59,8 +59,17 @@ export default function CharacterCard() {
                 </CardAction>
             </CardHeader>
             <CardContent className="p-0">
-                <div className="flex flex-col items-center overflow-hidden rounded-2xl max-h-96 max-w-96">
-                    <img src={`https://i.imgur.com/8FXMtTG.png`}></img>
+                <div className="flex flex-col items-center overflow-hidden rounded-2xl max-h-96 max-w-96 relative">
+                    <img src={`https://i.imgur.com/8FXMtTG.png`} className="relative"></img>
+                    {/* HP & AC Icons */}
+                    <div className="absolute bottom-1 left-1 flex flex-col gap-0.5">
+                        <div className="flex flex-row items-center backdrop-blur bg-black/15 rounded-2xl p-0.5 px-1.5 font-bold">
+                            <FaHeart className="mr-1" /> 5 <span className="opacity-60">/10</span>
+                        </div>
+                        <div className="flex flex-row items-center backdrop-blur-2xl bg-black/15 rounded-2xl p-0.5 px-1.5 font-bold">
+                            <FaShield className="mr-1" /> 5
+                        </div>
+                    </div>
                 </div>
 
                 <Carousel setApi={setApi} opts={{loop: true}}>
@@ -70,18 +79,15 @@ export default function CharacterCard() {
                         {pageName}
                     </div>
                     <CarouselContent>
-                        <CarouselItem>
-                            <CharacterCardInfoBlocks />
-                        </CarouselItem>
-                        <CarouselItem>
-                            <CharacterCardGameInfo />
-                        </CarouselItem>
-                        <CarouselItem>
-                            <CharacterCardAbilities />
-                        </CarouselItem>
-                        <CarouselItem>
-                            <CharacterCardInventory />
-                        </CarouselItem>
+
+                        <CharacterCardInfoBlocks />
+
+                        <CharacterCardGameInfo />
+
+                        <CharacterCardAbilities />
+
+                        <CharacterCardInventory />
+
                     </CarouselContent>
                 </Carousel>
 

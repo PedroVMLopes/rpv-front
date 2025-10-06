@@ -1,6 +1,8 @@
+import { CarouselItem } from "@/components/ui/characterCarousel";
+
 export default function CharacterCardInfoBlocks() {
     return (
-        <>
+        <CarouselItem>
             {/* Top Info Blocks */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 my-2">
                 {/* Class & Subclass */}
@@ -40,6 +42,6 @@ export default function CharacterCardInfoBlocks() {
                     </div>
                 </div>
             </div>
-        </>
+        </CarouselItem>
     )
 }
