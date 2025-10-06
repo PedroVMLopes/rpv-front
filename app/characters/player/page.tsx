@@ -1,6 +1,6 @@
 "use client"
 
-import CharacterCard from "@/components/characters/CharacterCard";
+import CharacterCard from "@/components/characters/CharacterCard/CharacterCard";
 import IniciativeCard from "@/components/iniciative/IniciativeCard";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
