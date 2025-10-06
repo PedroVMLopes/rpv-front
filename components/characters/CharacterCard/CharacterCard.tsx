@@ -6,12 +6,29 @@ import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle }
 
 import { FaHeart, FaBookmark, FaCopy } from "react-icons/fa6";
 import CharacterCardInfoBlocks from "./CharacterCardInfoBlocks";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/characterCarousel";
+import { Carousel, CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/characterCarousel";
 import CharacterCardGameInfo from "./CharacterCardGameInfo";
 import CharacterCardInventory from "./CharacterCardInventory";
 import CharacterCardAbilities from "./CharacterCardAbilities";
 
 export default function CharacterCard() {
+    const [api, setApi] = React.useState<CarouselApi>()
+    const [current, setCurrent] = React.useState(0)
+    const [count, setCount] = React.useState(0)
+
+    React.useEffect(() => {
+        if (!api) {
+        return
+        }
+
+        setCount(api.scrollSnapList().length)
+        setCurrent(api.selectedScrollSnap() + 1)
+
+        api.on("select", () => {
+        setCurrent(api.selectedScrollSnap() + 1)
+        })
+    }, [api])
+
     return (
         <Card className="p-3 max-w-[50%] sm:max-w-sm gap-3">
             <CardHeader className="p-0 pl-1 flex flex-row items-center justify-between">
@@ -27,9 +44,12 @@ export default function CharacterCard() {
                     <img src={`https://i.imgur.com/8FXMtTG.png`}></img>
                 </div>
 
-                <Carousel>
+                <Carousel setApi={setApi}>
                     <CarouselPrevious />
                     <CarouselNext />
+                    <div className="text-muted-foreground text-center text-sm pb-1">
+                        Page {current} of {count}
+                    </div>
                     <CarouselContent>
                         <CarouselItem>
                             <CharacterCardInfoBlocks />
