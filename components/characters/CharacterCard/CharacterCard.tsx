@@ -15,6 +15,25 @@ export default function CharacterCard() {
     const [api, setApi] = React.useState<CarouselApi>()
     const [current, setCurrent] = React.useState(0)
     const [count, setCount] = React.useState(0)
+    const [pageName, setPageName] = React.useState("");
+
+    React.useEffect(() => {
+        switch (current) {
+            case 1:
+                setPageName("Character Info")
+                break;
+            case 2:
+                setPageName("Skills")
+                break;
+            case 3:
+                setPageName("Actions")
+                break;
+            case 4:
+                setPageName("Inventory")
+                break;
+        }
+    }, [current]);
+    
 
     React.useEffect(() => {
         if (!api) {
@@ -44,11 +63,11 @@ export default function CharacterCard() {
                     <img src={`https://i.imgur.com/8FXMtTG.png`}></img>
                 </div>
 
-                <Carousel setApi={setApi}>
+                <Carousel setApi={setApi} opts={{loop: true}}>
                     <CarouselPrevious />
                     <CarouselNext />
                     <div className="text-muted-foreground text-center text-sm pb-1">
-                        Page {current} of {count}
+                        {pageName}
                     </div>
                     <CarouselContent>
                         <CarouselItem>
