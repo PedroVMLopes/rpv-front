@@ -27,6 +27,18 @@ export default function CharacterCardInfoBlocks() {
                     <p className="text-sm opacity-60">Objectives</p>
                     <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi, deserunt?</p>
                 </div>
+                {/* Objectives */}
+                <div className="flex flex-col border rounded-2xl p-2 px-3 gap-1 bg-popover text-popover-foreground">
+                    <p className="text-sm opacity-60">Proficiencies</p>
+                    <div className="grid grid-cols-2">
+                        <p>• Lorem</p>
+                        <p>• Lorem</p>
+                        <p>• Lorem</p>
+                        <p>• Lorem</p>
+                        <p>• Lorem</p>
+                        <p>• Lorem</p>
+                    </div>
+                </div>
             </div>
         </>
     )

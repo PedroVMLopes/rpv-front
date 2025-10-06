@@ -1,10 +1,15 @@
 "use client"
 
+import * as React from "react";
 import { Button } from "../../ui/button";
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card";
 
 import { FaHeart, FaBookmark, FaCopy } from "react-icons/fa6";
 import CharacterCardInfoBlocks from "./CharacterCardInfoBlocks";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/characterCarousel";
+import CharacterCardGameInfo from "./CharacterCardGameInfo";
+import CharacterCardInventory from "./CharacterCardInventory";
+import CharacterCardAbilities from "./CharacterCardAbilities";
 
 export default function CharacterCard() {
     return (
@@ -22,7 +27,26 @@ export default function CharacterCard() {
                     <img src={`https://i.imgur.com/8FXMtTG.png`}></img>
                 </div>
 
-                <CharacterCardInfoBlocks />
+                <Carousel>
+                    <CarouselPrevious />
+                    <CarouselNext />
+                    <CarouselContent>
+                        <CarouselItem>
+                            <CharacterCardInfoBlocks />
+                        </CarouselItem>
+                        <CarouselItem>
+                            <CharacterCardGameInfo />
+                        </CarouselItem>
+                        <CarouselItem>
+                            <CharacterCardAbilities />
+                        </CarouselItem>
+                        <CarouselItem>
+                            <CharacterCardInventory />
+                        </CarouselItem>
+                    </CarouselContent>
+                </Carousel>
+
+                
             </CardContent>
         </Card>
     )
