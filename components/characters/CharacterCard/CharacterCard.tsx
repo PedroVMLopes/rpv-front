@@ -28,7 +28,7 @@ export default function CharacterCard() {
                 setPageName("Skills")
                 break;
             case 3:
-                setPageName("Actions")
+                setPageName("Actions & Abilities")
                 break;
             case 4:
                 setPageName("Inventory")
@@ -55,7 +55,7 @@ export default function CharacterCard() {
             <CardHeader className="p-0 pl-1 flex flex-row items-center justify-between">
                 <CardTitle className="font-bold text-lg">Alma la Verne <span className="text-sm opacity-50 font-semibold">lv 1</span></CardTitle>
                 <CardAction className="flex flex-row gap-0">
-                    <Button variant={"ghost"}>10<FaHeart /></Button>
+                    <Button variant={"ghost"} className="font-bold">10<FaHeart /></Button>
                     <Button size={"icon"} variant={"ghost"}><FaBookmark /></Button>
 
                     {/* Dialog Expanded */}
@@ -63,12 +63,14 @@ export default function CharacterCard() {
                         <DialogTrigger asChild>
                             <Button size={"icon"} variant={"outline"}><FaExpand /></Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-sm h-[90%] items-center">
+                        <DialogContent className="sm:max-w-sm h-[90%] flex flex-col items-center p-3 sm:p-6">
+
                             <DialogHeader>
                                 <DialogTitle className="font-bold text-lg">Alma la Verne <span className="text-sm opacity-50 font-semibold">lv 1</span></DialogTitle>
                             </DialogHeader>
+
                             {/* Dialog Img & Info */}
-                            <div className="flex flex-col items-center overflow-hidden rounded-2xl max-h-96 max-w-[100%] relative">
+                            <div className="flex flex-col items-center justify-center overflow-hidden rounded-2xl max-h-96 max-w-96 relative">
                                 <img src={`https://i.imgur.com/8FXMtTG.png`} className="relative"></img>
                                 {/* HP & AC Icons */}
                                 <div className="absolute bottom-1 left-1 flex flex-col gap-0.5">
@@ -80,13 +82,15 @@ export default function CharacterCard() {
                                     </div>
                                 </div>
                             </div>
+
                             {/* Dialog Carousel */}
-                            <Carousel setApi={setApi} opts={{loop: true}}>
+                            <Carousel className="w-full" setApi={setApi} opts={{loop: true}}>
                                 <CarouselPrevious />
                                 <CarouselNext />
                                 <div className="text-muted-foreground text-center text-sm pb-1 mb-3">
                                     {pageName}
                                 </div>
+
                                 <ScrollArea className="h-80 rounded-2xl">
                                     <CarouselContent>
 
@@ -101,18 +105,21 @@ export default function CharacterCard() {
                                     </CarouselContent>
                                 </ScrollArea>
                             </Carousel>
-                            <DialogFooter className="my-0">
+
+                            <DialogFooter className="my-0 w-full">
                                 <DialogClose asChild>
                                     <Button variant={"destructive"}>Close</Button>
                                 </DialogClose>
                                 <Button>Clone & Save</Button>
                             </DialogFooter>
+
                         </DialogContent>
                     </Dialog>
 
                 </CardAction>
             </CardHeader>
-            <CardContent className="p-0">
+
+            <CardContent className="p-0 flex flex-col items-center">
                 <div className="flex flex-col items-center overflow-hidden rounded-2xl max-h-96 max-w-96 relative">
                     <img src={`https://i.imgur.com/8FXMtTG.png`} className="relative"></img>
                     {/* HP & AC Icons */}
@@ -127,7 +134,7 @@ export default function CharacterCard() {
                 </div>
 
                     {/* Top Info Blocks */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 my-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 my-2 w-full">
                         {/* Class & Subclass */}
                         <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground">
                             <p className="font-bold">Human Rogue</p>
@@ -141,7 +148,7 @@ export default function CharacterCard() {
                     </div>
 
                     {/* Short Description */}
-                    <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground">
+                    <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground w-full">
                         <p className="italic">"Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi, deserunt"</p>
                     </div>
                 

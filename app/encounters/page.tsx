@@ -13,7 +13,7 @@ export default function Encounters() {
     return (
         <div className="flex flex-col gap-4">
             
-            <h1 className="text-4xl font-semibold mb-6 pl-2">Encounters & Events</h1>
+            <h1 className="text-3xl font-semibold my-2 sm:mb-6 pl-2">Encounters & Events</h1>
 
             <div className="flex flex-col">
                 <Card className="grid grid-cols-1 md:grid-cols-2">
@@ -24,9 +24,8 @@ export default function Encounters() {
                         <div className="flex flex-row mt-2 gap-1">
                             <Badge variant={"secondary"}>Combat</Badge>
                             <Badge variant={"secondary"}>Challenge</Badge>
-                            <Badge variant={"secondary"}>Exploration</Badge>
-                            <Badge variant={"secondary"}>Social/Narrative</Badge>
-                            <Badge variant={"secondary"}>Other</Badge>
+                            <Badge variant={"secondary"}>Social</Badge>
+                            <Badge variant={"secondary"}>Others</Badge>
                         </div>
                     </CardHeader>
                     <CardContent className="flex flex-col gap-2 justify-center">
@@ -74,7 +73,7 @@ export default function Encounters() {
                                 </TooltipContent>
                             </Tooltip>
                             
-                            <Badge variant={"secondary"}>Other</Badge>
+                            <Badge variant={"secondary"}>Others</Badge>
                               
                         </div>
                     </CardHeader>

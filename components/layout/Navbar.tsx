@@ -31,13 +31,13 @@ export default function Navbar() {
                             asChild 
                             className={`p-0 ${navigationMenuTriggerStyle()} ${isActive("/") ? "bg-popover" : ""}`}
                         >
-                            <Link href="/"><FaHouse className="p-0" /></Link>
+                            <Link href="/"><FaHouse className="p-0 text-amber-100" /></Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
 
                     <NavigationMenuItem>
                         <NavigationMenuTrigger className="font-bold">
-                            <FaUsers className="md:hidden" />
+                            <FaUsers className="md:hidden text-amber-100" />
                             <p className="hidden md:inline">Characters</p>
                         </NavigationMenuTrigger>
                         <NavigationMenuContent>
@@ -75,24 +75,13 @@ export default function Navbar() {
                         </NavigationMenuContent>
                     </NavigationMenuItem>
 
-                    <NavigationMenuItem className={`md:hidden p-0`}>
-                        <NavigationMenuLink 
-                            asChild 
-                            className={`p-0 ${navigationMenuTriggerStyle()} ${isActive("/iniciatives") ? "bg-popover" : ""}`}
-                        >
-                            <Link href="/iniciatives">
-                                <FaUsersViewfinder />
-                            </Link>
-                        </NavigationMenuLink>
-                    </NavigationMenuItem>
-
                     <NavigationMenuItem>
                         <NavigationMenuLink 
                             asChild 
                             className={`${navigationMenuTriggerStyle()} ${isActive("/encounters") ? "bg-popover" : ""}`}
                         >
                             <Link href="/encounters">
-                                <FaMapLocationDot className="md:hidden" />
+                                <FaMapLocationDot className="md:hidden text-amber-100" />
                                 <p className="hidden md:inline">Encounters</p>
                             </Link>
                         </NavigationMenuLink>
@@ -104,7 +93,7 @@ export default function Navbar() {
                             className={`text-orange-300 ${navigationMenuTriggerStyle()} ${isActive("/forge") ? "bg-orange-300 text-black" : ""}`}
                         >
                             <Link className="flex flex-row" href="/forge">
-                                <GiAnvilImpact className="md:hidden" />
+                                <GiAnvilImpact className="text-amber-100" />
                                 <p className="hidden md:inline">Forge</p>
                             </Link>
                         </NavigationMenuLink>

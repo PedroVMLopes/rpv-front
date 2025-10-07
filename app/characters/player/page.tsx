@@ -14,8 +14,8 @@ export default function Players() {
     return (
         <div className="flex flex-col gap-6 pt-4">
 
-            <div className="flex flex-col md:flex-row justify-between">
-                <h1 className="text-4xl font-semibold pl-2">Player Characters</h1>
+            <div className="flex flex-col md:flex-row gap-4 justify-between">
+                <h1 className="text-3xl font-semibold pl-2">Player Characters</h1>
                 <Link href={"/characters/player/create"}>
                     <Button className="font-bold"> Create New Player </Button>
                 </Link>
