@@ -19,17 +19,13 @@ export default function CharacterCardInfoBlocks() {
             
             {/* Bottom Info Blocks */}
             <div className="flex flex-col gap-2">
-                {/* Description */}
-                <div className="flex flex-col border rounded-2xl p-2 px-3 gap-1 bg-popover text-popover-foreground">
-                    <p className="text-sm opacity-60">Description</p>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi, deserunt?</p>
+
+                {/* Short Description */}
+                <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground">
+                    <p className="italic">"Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi, deserunt"</p>
                 </div>
-                {/* Objectives */}
-                <div className="flex flex-col border rounded-2xl p-2 px-3 gap-1 bg-popover text-popover-foreground">
-                    <p className="text-sm opacity-60">Objectives</p>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi, deserunt?</p>
-                </div>
-                {/* Objectives */}
+
+                {/* Proficiencies */}
                 <div className="flex flex-col border rounded-2xl p-2 px-3 gap-1 bg-popover text-popover-foreground">
                     <p className="text-sm opacity-60">Proficiencies</p>
                     <div className="grid grid-cols-2">
@@ -40,6 +36,21 @@ export default function CharacterCardInfoBlocks() {
                         <p>• Lorem</p>
                         <p>• Lorem</p>
                     </div>
+                </div>
+
+                {/* Objectives */}
+                <div className="flex flex-col border rounded-2xl p-2 px-3 gap-1 bg-popover text-popover-foreground">
+                    <p className="text-sm opacity-60">Objectives</p>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi, deserunt?</p>
+                </div>
+
+                {/* Character Development - 3 pinned ones */}
+                <div className="flex flex-col border rounded-2xl p-2 px-3 gap-1 bg-popover text-popover-foreground">
+                    <p className="text-sm opacity-60">Development</p>
+                    <ul>
+                        <li>Pegou um colar de chave da princesa.</li>
+                        <li>Comeu um x-rato.</li>
+                    </ul>
                 </div>
             </div>
         </CarouselItem>
