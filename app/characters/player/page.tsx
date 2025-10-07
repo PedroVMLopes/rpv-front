@@ -14,19 +14,18 @@ export default function Players() {
     return (
         <div className="flex flex-col gap-6 pt-4">
 
-            <div className="flex flex-col md:flex-row space-x-4 gap-4">
+            <div className="flex flex-col md:flex-row justify-between">
                 <h1 className="text-4xl font-semibold pl-2">Player Characters</h1>
-                <div className="md:border-r" />
                 <Link href={"/characters/player/create"}>
                     <Button className="font-bold"> Create New Player </Button>
                 </Link>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            {/* <div className="grid grid-cols-2 gap-2">
                 {players?.map((char) => (
                     <IniciativeCard key={char.id} character={char}/>
                 ))}
-            </div>
+            </div> */}
 
             <CharacterCard />
             

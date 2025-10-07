@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { FaUser, FaHouse } from "react-icons/fa6";
+import { FaUser, FaHouse, FaUsers, FaMapLocationDot, FaUsersViewfinder } from "react-icons/fa6";
 import { GiAnvilImpact } from "react-icons/gi";
 
 import {
@@ -22,45 +22,26 @@ export default function Navbar() {
     const isActive = (path: string) => pathname === path;
 
     return (
-        <div className="w-full flex md:justify-center">
-            <NavigationMenu viewport={false} className="shadow-2xl">
-                <NavigationMenuList>
+        <div className="w-full flex justify-center">
+            <NavigationMenu viewport={true} className="md:shadow-2xl">
+                <NavigationMenuList className="flex flex-row items-start">
 
                     <NavigationMenuItem>
                         <NavigationMenuLink 
                             asChild 
-                            className={`${navigationMenuTriggerStyle()} ${isActive("/") ? "bg-muted" : ""}`}
+                            className={`p-0 ${navigationMenuTriggerStyle()} ${isActive("/") ? "bg-popover" : ""}`}
                         >
-                            <Link href="/"><FaHouse /></Link>
-                        </NavigationMenuLink>
-                    </NavigationMenuItem>
-                    
-                    <NavigationMenuItem>
-                        <div className="h-6 w-[1px] bg-muted"></div>
-                    </NavigationMenuItem>
-
-                    <NavigationMenuItem className={`md:hidden`}>
-                        <NavigationMenuLink 
-                            asChild 
-                            className={`${navigationMenuTriggerStyle()} ${isActive("/iniciatives") ? "bg-muted" : ""}`}
-                        >
-                            <Link href="/iniciatives">Iniciatives</Link>
+                            <Link href="/"><FaHouse className="p-0" /></Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
 
                     <NavigationMenuItem>
-                        <NavigationMenuLink 
-                            asChild 
-                            className={`${navigationMenuTriggerStyle()} ${isActive("/encounters") ? "bg-muted" : ""}`}
-                        >
-                            <Link href="/encounters">Encounters</Link>
-                        </NavigationMenuLink>
-                    </NavigationMenuItem>
-
-                    <NavigationMenuItem>
-                        <NavigationMenuTrigger className="font-bold">Characters</NavigationMenuTrigger>
+                        <NavigationMenuTrigger className="font-bold">
+                            <FaUsers className="md:hidden" />
+                            <p className="hidden md:inline">Characters</p>
+                        </NavigationMenuTrigger>
                         <NavigationMenuContent>
-                            <ul className="grid gap-4">
+                            <ul className="grid gap-4 z-10">
                                 <li className="z-10">
                                     <NavigationMenuLink 
                                         asChild 
@@ -94,17 +75,39 @@ export default function Navbar() {
                         </NavigationMenuContent>
                     </NavigationMenuItem>
 
+                    <NavigationMenuItem className={`md:hidden p-0`}>
+                        <NavigationMenuLink 
+                            asChild 
+                            className={`p-0 ${navigationMenuTriggerStyle()} ${isActive("/iniciatives") ? "bg-popover" : ""}`}
+                        >
+                            <Link href="/iniciatives">
+                                <FaUsersViewfinder />
+                            </Link>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+
+                    <NavigationMenuItem>
+                        <NavigationMenuLink 
+                            asChild 
+                            className={`${navigationMenuTriggerStyle()} ${isActive("/encounters") ? "bg-popover" : ""}`}
+                        >
+                            <Link href="/encounters">
+                                <FaMapLocationDot className="md:hidden" />
+                                <p className="hidden md:inline">Encounters</p>
+                            </Link>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+
                     <NavigationMenuItem>
                         <NavigationMenuLink 
                             asChild 
                             className={`text-orange-300 ${navigationMenuTriggerStyle()} ${isActive("/forge") ? "bg-orange-300 text-black" : ""}`}
                         >
-                            <Link className="flex flex-row" href="/forge"><GiAnvilImpact />Forge</Link>
+                            <Link className="flex flex-row" href="/forge">
+                                <GiAnvilImpact className="md:hidden" />
+                                <p className="hidden md:inline">Forge</p>
+                            </Link>
                         </NavigationMenuLink>
-                    </NavigationMenuItem>
-
-                    <NavigationMenuItem>
-                        <div className="h-6 w-[1px] bg-muted"></div>
                     </NavigationMenuItem>
 
                     <NavigationMenuItem>
@@ -117,7 +120,7 @@ export default function Navbar() {
                     </NavigationMenuItem>
 
                 </NavigationMenuList>
-            </ NavigationMenu>
+            </NavigationMenu>
         </div>
     )
 }

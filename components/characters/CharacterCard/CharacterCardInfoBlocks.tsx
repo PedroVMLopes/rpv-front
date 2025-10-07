@@ -7,12 +7,12 @@ export default function CharacterCardInfoBlocks() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 my-2">
                 {/* Class & Subclass */}
                 <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground">
-                    <p className="font-bold text-lg">Human Rogue</p>
+                    <p className="font-bold">Human Rogue</p>
                     <p className="text-sm">Circle of the moon</p>
                 </div>
                 {/* Alignment & Background */}
                 <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground">
-                    <p className="font-bold text-lg">Heremita</p>
+                    <p className="font-bold">Heremita</p>
                     <p className="text-sm">Neutral Evil</p>
                 </div>
             </div>

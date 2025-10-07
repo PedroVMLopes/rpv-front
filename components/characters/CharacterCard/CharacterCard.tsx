@@ -4,7 +4,7 @@ import * as React from "react";
 import { Button } from "../../ui/button";
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card";
 
-import { FaHeart, FaBookmark, FaCopy, FaShield } from "react-icons/fa6";
+import { FaHeart, FaBookmark, FaCopy, FaShield, FaExpand } from "react-icons/fa6";
 import CharacterCardInfoBlocks from "./CharacterCardInfoBlocks";
 import { Carousel, CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/characterCarousel";
 import CharacterCardGameInfo from "./CharacterCardGameInfo";
@@ -49,13 +49,13 @@ export default function CharacterCard() {
     }, [api])
 
     return (
-        <Card className="p-3 max-w-[50%] sm:max-w-sm gap-3">
+        <Card className="p-3 max-w-[50%] sm:max-w-xs gap-3">
             <CardHeader className="p-0 pl-1 flex flex-row items-center justify-between">
                 <CardTitle className="font-bold text-lg">Alma la Verne <span className="text-sm opacity-50 font-semibold">lv 1</span></CardTitle>
                 <CardAction className="flex flex-row gap-0">
                     <Button variant={"ghost"}>10<FaHeart /></Button>
                     <Button size={"icon"} variant={"ghost"}><FaBookmark /></Button>
-                    <Button size={"icon"} variant={"ghost"}><FaCopy /></Button>
+                    <Button size={"icon"} variant={"outline"}><FaExpand /></Button>
                 </CardAction>
             </CardHeader>
             <CardContent className="p-0">
@@ -67,7 +67,7 @@ export default function CharacterCard() {
                             <FaHeart className="mr-1" /> 5 <span className="opacity-60">/10</span>
                         </div>
                         <div className="flex flex-row items-center backdrop-blur-2xl bg-black/15 rounded-2xl p-0.5 px-1.5 font-bold">
-                            <FaShield className="mr-1" /> 5
+                            <FaShield className="mr-1" /> 10
                         </div>
                     </div>
                 </div>
