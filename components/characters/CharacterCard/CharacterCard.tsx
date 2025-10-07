@@ -63,12 +63,12 @@ export default function CharacterCard() {
                         <DialogTrigger asChild>
                             <Button size={"icon"} variant={"outline"}><FaExpand /></Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-sm max-h-[90%]">
+                        <DialogContent className="sm:max-w-sm h-[90%]">
                             <DialogHeader>
                                 <DialogTitle className="font-bold text-lg">Alma la Verne <span className="text-sm opacity-50 font-semibold">lv 1</span></DialogTitle>
                             </DialogHeader>
                             {/* Dialog Img & Info */}
-                            <div className="flex flex-col items-center overflow-hidden rounded-2xl max-h-96 max-w-[90%] relative">
+                            <div className="flex flex-col items-center overflow-hidden rounded-2xl max-h-96 max-w-[100%] relative">
                                 <img src={`https://i.imgur.com/8FXMtTG.png`} className="relative"></img>
                                 {/* HP & AC Icons */}
                                 <div className="absolute bottom-1 left-1 flex flex-col gap-0.5">
