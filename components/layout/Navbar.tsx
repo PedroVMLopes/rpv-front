@@ -50,7 +50,7 @@ export default function Navbar() {
                                         <Link href="/characters">All Characters</Link>
                                     </NavigationMenuLink>
                                     <div className="h-[1px] w-full bg-muted my-1" />
-                                    <div className="flex flex-col gap-1">
+                                    <div className="flex flex-col gap-0.5">
                                         <NavigationMenuLink 
                                             asChild 
                                             className={`${navigationMenuTriggerStyle()} hover:bg-chart-1 ${isActive("/characters/player") ? "bg-chart-1" : "bg-popover"}`}
