@@ -63,7 +63,7 @@ export default function CharacterCard() {
                         <DialogTrigger asChild>
                             <Button size={"icon"} variant={"outline"}><FaExpand /></Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-sm h-[90%]">
+                        <DialogContent className="sm:max-w-sm h-[90%] items-center">
                             <DialogHeader>
                                 <DialogTitle className="font-bold text-lg">Alma la Verne <span className="text-sm opacity-50 font-semibold">lv 1</span></DialogTitle>
                             </DialogHeader>
@@ -84,7 +84,7 @@ export default function CharacterCard() {
                             <Carousel setApi={setApi} opts={{loop: true}}>
                                 <CarouselPrevious />
                                 <CarouselNext />
-                                <div className="text-muted-foreground text-center text-sm pb-1">
+                                <div className="text-muted-foreground text-center text-sm pb-1 mb-3">
                                     {pageName}
                                 </div>
                                 <ScrollArea className="h-80 rounded-2xl">
@@ -101,9 +101,9 @@ export default function CharacterCard() {
                                     </CarouselContent>
                                 </ScrollArea>
                             </Carousel>
-                            <DialogFooter>
+                            <DialogFooter className="my-0">
                                 <DialogClose asChild>
-                                    <Button>Cancel</Button>
+                                    <Button variant={"destructive"}>Close</Button>
                                 </DialogClose>
                                 <Button>Clone & Save</Button>
                             </DialogFooter>

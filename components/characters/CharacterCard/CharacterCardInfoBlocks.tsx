@@ -4,7 +4,7 @@ export default function CharacterCardInfoBlocks() {
     return (
         <CarouselItem>
             {/* Top Info Blocks */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 my-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {/* Class & Subclass */}
                 <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground">
                     <p className="font-bold">Human Rogue</p>
@@ -21,7 +21,7 @@ export default function CharacterCardInfoBlocks() {
             <div className="flex flex-col gap-2">
 
                 {/* Short Description */}
-                <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground">
+                <div className="flex flex-col border rounded-2xl mt-2 p-2 px-3 bg-popover text-popover-foreground">
                     <p className="italic">"Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi, deserunt"</p>
                 </div>
 
