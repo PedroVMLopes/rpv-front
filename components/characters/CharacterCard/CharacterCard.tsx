@@ -87,12 +87,12 @@ export default function CharacterCard() {
                             <Carousel className="w-full" setApi={setApi} opts={{loop: true}}>
                                 <CarouselPrevious />
                                 <CarouselNext />
-                                <div className="text-muted-foreground text-center text-sm pb-1 mb-3">
+                                <div className="text-muted-foreground text-center text-sm mb-3">
                                     {pageName}
                                 </div>
 
                                 <ScrollArea className="h-80 rounded-2xl">
-                                    <CarouselContent>
+                                    <CarouselContent className="">
 
                                         <CharacterCardInfoBlocks />
 
