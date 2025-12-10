@@ -2,9 +2,9 @@
 
 import * as React from "react";
 import { Button } from "../../ui/button";
-import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card";
+import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../ui/card";
 
-import { FaHeart, FaBookmark, FaCopy, FaShield, FaExpand } from "react-icons/fa6";
+import { FaHeart, FaBookmark, FaCopy, FaShield, FaExpand, FaGear, FaDownload } from "react-icons/fa6";
 import CharacterCardInfoBlocks from "./CharacterCardInfoBlocks";
 import { Carousel, CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/characterCarousel";
 import CharacterCardGameInfo from "./CharacterCardGameInfo";
@@ -55,8 +55,6 @@ export default function CharacterCard() {
             <CardHeader className="p-0 pl-1 flex flex-row items-center justify-between">
                 <CardTitle className="font-bold text-lg">Alma la Verne <span className="text-sm opacity-50 font-semibold">lv 1</span></CardTitle>
                 <CardAction className="flex flex-row gap-0">
-                    <Button variant={"ghost"} className="font-bold">10<FaHeart /></Button>
-                    <Button size={"icon"} variant={"ghost"}><FaBookmark /></Button>
 
                     {/* Dialog Expanded */}
                     <Dialog>
@@ -70,7 +68,7 @@ export default function CharacterCard() {
                             </DialogHeader>
 
                             {/* Dialog Img & Info */}
-                            <div className="flex flex-col items-center justify-center overflow-hidden rounded-2xl max-h-96 max-w-96 relative">
+                            <div className="flex flex-col items-center justify-center overflow-hidden rounded-2xl min-w-full min-h-20 max-h-96 max-w-96 relative">
                                 <img src={`https://i.imgur.com/8FXMtTG.png`} className="relative"></img>
                                 {/* HP & AC Icons */}
                                 <div className="absolute bottom-1 left-1 flex flex-col gap-0.5">
@@ -106,12 +104,12 @@ export default function CharacterCard() {
                                 </ScrollArea>
                             </Carousel>
 
-                            <DialogFooter className="my-0 w-full">
+                            {/* <DialogFooter className="my-0 w-full">
                                 <DialogClose asChild>
                                     <Button variant={"destructive"}>Close</Button>
                                 </DialogClose>
-                                <Button>Clone & Save</Button>
-                            </DialogFooter>
+                                <Button>Clone to Self</Button>
+                            </DialogFooter> */}
 
                         </DialogContent>
                     </Dialog>
@@ -120,7 +118,7 @@ export default function CharacterCard() {
             </CardHeader>
 
             <CardContent className="p-0 flex flex-col items-center">
-                <div className="flex flex-col items-center overflow-hidden rounded-2xl max-h-96 max-w-96 relative">
+                <div className="flex flex-col items-center overflow-hidden rounded-2xl min-w-full min-h-20 max-h-96 max-w-96 relative">
                     <img src={`https://i.imgur.com/8FXMtTG.png`} className="relative"></img>
                     {/* HP & AC Icons */}
                     <div className="absolute bottom-1 left-1 flex flex-col gap-0.5">
@@ -133,26 +131,35 @@ export default function CharacterCard() {
                     </div>
                 </div>
 
-                    {/* Top Info Blocks */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 my-2 w-full">
-                        {/* Class & Subclass */}
-                        <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground">
-                            <p className="font-bold">Human Rogue</p>
-                            <p className="text-sm">Circle of the moon</p>
-                        </div>
-                        {/* Alignment & Background */}
-                        <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground">
-                            <p className="font-bold">Heremita</p>
-                            <p className="text-sm">Neutral Evil</p>
-                        </div>
+                {/* Top Info Blocks */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 my-2 w-full">
+                    {/* Class & Subclass */}
+                    <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground">
+                        <p className="font-bold">Human Rogue</p>
+                        <p className="text-sm">Circle of the moon</p>
                     </div>
+                    {/* Alignment & Background */}
+                    <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground">
+                        <p className="font-bold">Heremita</p>
+                        <p className="text-sm">Neutral Evil</p>
+                    </div>
+                </div>
 
-                    {/* Short Description */}
-                    <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground w-full">
-                        <p className="italic">"Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi, deserunt"</p>
-                    </div>
+                {/* Short Description */}
+                <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground w-full">
+                    <p className="italic">"Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi, deserunt"</p>
+                </div>
                 
             </CardContent>
+
+            <CardFooter className="px-0">
+                <div className="flex flex-row gap-1 max-w-full">    
+                    <Button variant={"secondary"} className="font-bold w-full">10<FaHeart className="text-chart-2" /></Button>
+                    <Button size={"icon"} variant={"secondary"} className="w-full"><FaBookmark className="text-chart-3" /></Button>
+                    {/* Deixar visível apenas se o usuário tivevr permissão de editar */}
+                    <Button size={"icon"} variant={"secondary"} className=""><FaGear /></Button>
+                </div>
+            </CardFooter>
         </Card>
     )
 }

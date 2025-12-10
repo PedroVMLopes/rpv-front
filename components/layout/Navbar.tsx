@@ -93,7 +93,7 @@ export default function Navbar() {
                             className={`text-orange-300 ${navigationMenuTriggerStyle()} ${isActive("/forge") ? "bg-orange-300 text-black" : ""}`}
                         >
                             <Link className="flex flex-row" href="/forge">
-                                <GiAnvilImpact className="text-amber-100" />
+                                {/* <GiAnvilImpact className="text-amber-100" /> */}
                                 <p className="hidden md:inline">Forge</p>
                             </Link>
                         </NavigationMenuLink>
