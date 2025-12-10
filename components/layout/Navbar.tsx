@@ -94,7 +94,7 @@ export default function Navbar() {
                         >
                             <Link className="flex flex-row" href="/forge">
                                 {/* <GiAnvilImpact className="text-amber-100" /> */}
-                                <p className="hidden md:inline">Forge</p>
+                                <p className="hidden md:inline">Community</p>
                             </Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>

@@ -109,7 +109,6 @@ export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
                                         <Input 
                                             {...field} 
                                             value={field.value ?? ""} 
-                                            placeholder={fieldConfig.label}
                                         />
                                     );
                                 
@@ -119,7 +118,6 @@ export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
                                             type="number"
                                             {...field}
                                             value={field.value ?? ""}
-                                            placeholder={fieldConfig.label}
                                             onChange={(e) => {
                                                 const value = e.target.value;
                                                 field.onChange(value === "" ? "" : Number(value));
@@ -147,8 +145,7 @@ export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
                                     return (
                                         <Input 
                                             {...field} 
-                                            value={field.value ?? ""} 
-                                            placeholder={fieldConfig.label}
+                                            value={field.value ?? ""}
                                         />
                                     );
                             }

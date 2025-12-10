@@ -26,7 +26,7 @@ export default function Characters() {
                     <CharacterCreationCard type={"Enemy"} btnTitle="Enemies" />
                     <Card className="bg-orange-300/10 border-orange-300/50 mt-2 py-3">
                         <CardContent>
-                            <p className="text-sm opacity-80">Explore all kinds of homebrew <span className="font-bold">monsters</span> and <span className="font-bold">villains</span> to surprise your players. </p>
+                            <p className="text-sm opacity-80">Explore all kinds of <span className="font-bold">monsters</span> and <span className="font-bold">villains</span> to surprise your players. </p>
                         </CardContent>
                     </Card>
                 </div>

@@ -153,11 +153,11 @@ export default function CharacterCard() {
             </CardContent>
 
             <CardFooter className="px-0">
-                <div className="flex flex-row gap-1 max-w-full">    
-                    <Button variant={"secondary"} className="font-bold w-full">10<FaHeart className="text-chart-2" /></Button>
-                    <Button size={"icon"} variant={"secondary"} className="w-full"><FaBookmark className="text-chart-3" /></Button>
+                <div className="flex flex-row w-full justify-end gap-1">    
+                    <Button variant={"ghost"} className="font-bold">10<FaHeart /></Button>
+                    <Button variant={"ghost"} className="font-bold">Save<FaBookmark className="text-chart-3" /></Button>
                     {/* Deixar visível apenas se o usuário tivevr permissão de editar */}
-                    <Button size={"icon"} variant={"secondary"} className=""><FaGear /></Button>
+                    <Button size={"icon"} variant={"ghost"} className=""><FaGear /></Button>
                 </div>
             </CardFooter>
         </Card>

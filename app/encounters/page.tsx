@@ -50,10 +50,10 @@ export default function Encounters() {
                         <div className="flex flex-row mt-2 gap-1">
                             <Tooltip >
                                 <TooltipTrigger asChild>
-                                    <Badge variant={"secondary"}>Location</Badge>
+                                    <Badge variant={"secondary"}>Building</Badge>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                    <p>Dungeons, Castles</p>
+                                    <p>Dungeon, Castle</p>
                                 </TooltipContent>
                             </Tooltip>
                             <Tooltip>
@@ -61,7 +61,7 @@ export default function Encounters() {
                                     <Badge variant={"secondary"}>Settlement</Badge>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                    <p>Cities, Settlements</p>
+                                    <p>City, Settlement</p>
                                 </TooltipContent>
                             </Tooltip>
                             <Tooltip>

@@ -10,6 +10,32 @@ export const dndCharacterFields = {
             inlineGroup: "line1"
         },
         {
+            name: "age",
+            label: "Apparent Age",
+            type: "select",
+            options: ["Todler", "Child", "Teenager", "Young Adult", "Adult", "Old Adult", "Old"],
+            group: "general",
+            order: 1,
+            inlineGroup: "line3"
+        },
+        {
+            name: "speed",
+            label: "Speed",
+            type: "number",
+            group: "general",
+            order: 2,
+            inlineGroup: "line3"
+        },
+        {
+            name: "condition",
+            label: "Condition",
+            type: "select",
+            options: ["Todler", "Child", "Teenager", "Young Adult", "Adult", "Old Adult", "Old"],
+            group: "general",
+            order: 3,
+            inlineGroup: "line3"
+        },
+        {
             name: "hp",
             label: "Hit Points",
             type: "number",
