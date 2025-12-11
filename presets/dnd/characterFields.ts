@@ -19,16 +19,17 @@ export const dndCharacterFields = {
             inlineGroup: "line3"
         },
         {
-            name: "speed",
-            label: "Speed",
-            type: "number",
+            name: "race",
+            label: "Race",
+            type: "select",
+            options: ["Todler", "Child", "Teenager", "Young Adult", "Adult", "Old Adult", "Old"],
             group: "general",
             order: 2,
             inlineGroup: "line3"
         },
         {
-            name: "condition",
-            label: "Condition",
+            name: "background",
+            label: "Background",
             type: "select",
             options: ["Todler", "Child", "Teenager", "Young Adult", "Adult", "Old Adult", "Old"],
             group: "general",
@@ -73,6 +74,13 @@ export const dndCharacterFields = {
               { name: "wisdom", label: "Wisdom" },
               { name: "charisma", label: "Charisma" }
             ]
+        },
+        {
+            name: "goals",
+            label: "Goals",
+            type: "text",
+            group: "general",
+            order: '2'
         }
     ],
     player: [
@@ -101,7 +109,51 @@ export const dndCharacterFields = {
             group: "general",
             order: 1,
             inlineGroup: "line2"
-        }
+        },
+        {
+            name: "gold",
+            label: "Gold",
+            type: "number",
+            defaultValue: 0,
+            group: "general",
+            order: 3,
+            inlineGroup: "line4"
+        },
+        {
+            name: "silver",
+            label: "Silver",
+            type: "number",
+            defaultValue: 0,
+            group: "general",
+            order: 3,
+            inlineGroup: "line4"
+        },
+        {
+            name: "bronze",
+            label: "Bronze",
+            type: "number",
+            defaultValue: 0,
+            group: "general",
+            order: 3,
+            inlineGroup: "line4"
+        },
+        {
+            name: "equippedItems",
+            label: "Equipped Items",
+            type: "text",
+            group: "general",
+            order: 3,
+            inlineGroup: "line5"
+        },
+        {
+            name: "inventory",
+            label: "Inventory",
+            type: "number",
+            defaultValue: 0,
+            group: "general",
+            order: 3,
+            inlineGroup: "line5"
+        },
     ],
     enemy: [
         {
