@@ -19,24 +19,6 @@ export const dndCharacterFields = {
             inlineGroup: "line3"
         },
         {
-            name: "race",
-            label: "Race",
-            type: "select",
-            options: ["Todler", "Child", "Teenager", "Young Adult", "Adult", "Old Adult", "Old"],
-            group: "general",
-            order: 2,
-            inlineGroup: "line3"
-        },
-        {
-            name: "background",
-            label: "Background",
-            type: "select",
-            options: ["Todler", "Child", "Teenager", "Young Adult", "Adult", "Old Adult", "Old"],
-            group: "general",
-            order: 3,
-            inlineGroup: "line3"
-        },
-        {
             name: "hp",
             label: "Hit Points",
             type: "number",
@@ -153,6 +135,24 @@ export const dndCharacterFields = {
             group: "general",
             order: 3,
             inlineGroup: "line5"
+        },
+        {
+            name: "race",
+            label: "Race",
+            type: "select",
+            options: ["Todler", "Child", "Teenager", "Young Adult", "Adult", "Old Adult", "Old"],
+            group: "general",
+            order: 2,
+            inlineGroup: "line3"
+        },
+        {
+            name: "background",
+            label: "Background",
+            type: "select",
+            options: ["Todler", "Child", "Teenager", "Young Adult", "Adult", "Old Adult", "Old"],
+            group: "general",
+            order: 3,
+            inlineGroup: "line3"
         },
     ],
     enemy: [
