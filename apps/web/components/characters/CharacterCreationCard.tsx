@@ -6,6 +6,9 @@ import { Separator } from "../ui/separator";
 import { GiAnvilImpact } from "react-icons/gi";
 import { FaPlus, FaList } from "react-icons/fa6";
 
+import { DOMAIN_VERSION } from "@rpv/domain";
+console.log("Domain version: ", DOMAIN_VERSION);
+
 interface CharType {
     type: string
     btnTitle: string
