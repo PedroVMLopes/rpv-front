@@ -1,0 +1,1 @@
+export type ModifierOperation = "add" | "multiply" | "set";
