@@ -1,0 +1,58 @@
+import { CarouselItem } from "@/components/ui/characterCarousel";
+
+export default function CharacterCardInfoBlocks() {
+    return (
+        <CarouselItem>
+            {/* Top Info Blocks */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {/* Class & Subclass */}
+                <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground">
+                    <p className="font-bold">Human Rogue</p>
+                    <p className="text-sm">Circle of the moon</p>
+                </div>
+                {/* Alignment & Background */}
+                <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground">
+                    <p className="font-bold">Heremita</p>
+                    <p className="text-sm">Neutral Evil</p>
+                </div>
+            </div>
+            
+            {/* Bottom Info Blocks */}
+            <div className="flex flex-col gap-2">
+
+                {/* Short Description */}
+                <div className="flex flex-col border rounded-2xl mt-2 p-2 px-3 bg-popover text-popover-foreground">
+                    <p className="italic">"Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi, deserunt"</p>
+                </div>
+
+                {/* Proficiencies */}
+                <div className="flex flex-col border rounded-2xl p-2 px-3 gap-1 bg-popover text-popover-foreground">
+                    <p className="text-sm opacity-60">Proficiencies</p>
+                    <div className="grid grid-cols-2">
+                        <p>• Lorem</p>
+                        <p>• Lorem</p>
+                        <p>• Lorem</p>
+                        <p>• Lorem</p>
+                        <p>• Lorem</p>
+                        <p>• Lorem</p>
+                    </div>
+                </div>
+
+                {/* Objectives */}
+                <div className="flex flex-col border rounded-2xl p-2 px-3 gap-1 bg-popover text-popover-foreground">
+                    <p className="text-sm opacity-60">Objectives</p>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi, deserunt?</p>
+                </div>
+
+                {/* Character Development - 3 pinned ones */}
+                <div className="flex flex-col border rounded-2xl p-2 px-3 gap-1 bg-popover text-popover-foreground">
+                    <p className="text-sm opacity-60">Development</p>
+                    <ul>
+                        <li>Pegou um colar de chave da princesa.</li>
+                        <li>Comeu um x-rato.</li>
+                    </ul>
+                </div>
+            </div>
+        </CarouselItem>
+    )
+}

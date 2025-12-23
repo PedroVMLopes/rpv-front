@@ -1,0 +1,46 @@
+import { CharacterCreationCard } from "@/components/characters/CharacterCreationCard";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import Link from "next/link";
+import { GiAnvilImpact } from "react-icons/gi";
+
+export default function Characters() {
+    
+    return (
+        <div className="flex flex-col">
+
+            <h1 className="text-4xl font-semibold mb-6 pl-2">Characters</h1>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                <div className="flex-col">
+                    <CharacterCreationCard type={"Player"} btnTitle="Players" />
+                    <Card className="bg-orange-300/10 border-orange-300/50 mt-2 py-3">
+                        <CardContent>
+                            <p className="text-sm opacity-80">Explore new <span className="font-bold">classes, subclasses</span>, and <span className="font-bold">premade characters</span> created by the community.</p>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                <div className="flex-col">
+                    <CharacterCreationCard type={"Enemy"} btnTitle="Enemies" />
+                    <Card className="bg-orange-300/10 border-orange-300/50 mt-2 py-3">
+                        <CardContent>
+                            <p className="text-sm opacity-80">Explore all kinds of <span className="font-bold">monsters</span> and <span className="font-bold">villains</span> to surprise your players. </p>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                <div className="flex-col">
+                    <CharacterCreationCard type={"NPC"} btnTitle="NPCs" />
+                    <Card className="bg-orange-300/10 border-orange-300/50 mt-2 py-3">
+                        <CardContent>
+                            <p className="text-sm opacity-80">Explore a list of <span className="font-bold">diverse NPC's</span> that could fit your adventure perfectly. </p>
+                        </CardContent>
+                    </Card>
+                </div>
+
+            </div>
+        </div>
+    )
+}
