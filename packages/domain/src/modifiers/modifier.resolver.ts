@@ -30,5 +30,12 @@ export function resolveStats(
             result[m.stat] += m.value;
         })
 
+    // Subtract
+    modifiers
+        .filter(m => m.operation === "sub")
+        .forEach(m => {
+            result[m.stat] -= m.value
+        })
+
     return result;
 }

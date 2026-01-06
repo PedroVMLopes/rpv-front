@@ -1,1 +1,1 @@
-export type ModifierOperation = "add" | "multiply" | "set";
+export type ModifierOperation = "add" | "multiply" | "set" | "sub";
