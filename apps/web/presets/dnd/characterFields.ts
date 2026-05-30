@@ -1,3 +1,5 @@
+import { dndAbilityFieldAttributes } from "./characterStats";
+
 export const dndCharacterFields = {
     common: [
         {
@@ -48,14 +50,7 @@ export const dndCharacterFields = {
             type: "attributeGroup",
             group: "attributes",
             order: 1,
-            attributes: [
-              { name: "strength", label: "Strength" },
-              { name: "dexterity", label: "Dexterity" },
-              { name: "constitution", label: "Constitution" },
-              { name: "intelligence", label: "Intelligence" },
-              { name: "wisdom", label: "Wisdom" },
-              { name: "charisma", label: "Charisma" }
-            ]
+            attributes: dndAbilityFieldAttributes
         },
         {
             name: "goals",

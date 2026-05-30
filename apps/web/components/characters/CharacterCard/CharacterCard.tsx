@@ -13,7 +13,11 @@ import CharacterCardAbilities from "./CharacterCardAbilities";
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-export default function CharacterCard() {
+interface CharacterCardProps {
+    characterId?: string;
+}
+
+export default function CharacterCard({ characterId }: CharacterCardProps) {
     const [api, setApi] = React.useState<CarouselApi>()
     const [current, setCurrent] = React.useState(0)
     const [count, setCount] = React.useState(0)
@@ -94,7 +98,7 @@ export default function CharacterCard() {
 
                                         <CharacterCardInfoBlocks />
 
-                                        <CharacterCardGameInfo />
+                                        <CharacterCardGameInfo characterId={characterId} />
 
                                         <CharacterCardAbilities />
 

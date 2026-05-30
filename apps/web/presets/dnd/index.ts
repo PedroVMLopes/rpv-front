@@ -1,5 +1,6 @@
-import { dndCharacterFields } from "./characterFields"; 
+import { dndCharacterFields } from "./characterFields";
 import { dndCharacterSchema } from "./characterSchema";
+import { dndStatConfig } from "./characterStats";
 
 export const dndPreset = {
   id: "dnd",
@@ -7,5 +8,6 @@ export const dndPreset = {
   characters: {
     fields: dndCharacterFields,
     schema: dndCharacterSchema
-  }
+  },
+  statConfig: dndStatConfig,
 };

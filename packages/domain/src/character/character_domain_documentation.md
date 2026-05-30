@@ -1,55 +1,105 @@
-character/
 
-----------------------------------------------
+---
 
-Character.types.ts
+### Character.types.ts
 
-Esse arquivo existe para:
-> Definir tipos e contratos.
+**Purpose:**
+Defines types and structural contracts.
 
-Ele deve conter:
-- CharacterType
-- CharacterId
-- Estrutura de BaseStats
-- Interface do CharacterProps
+**Responsibilities:**
+- Define `CharacterType`
+- Define `CharacterId`
+- Define `BaseStats` structure
+- Define `CharacterProps` interface
 
-Ele não contém lógica.
-Só definição estrutural.
+**Important Constraints:**
+- No business logic
+- No calculations
+- Purely structural definitions
 
-Ele responde à pergunta:
-Como um Character é estruturado?
+**Answers:**
+> "What is a Character?"
 
-Ele deve definir algo como:
-- Tipo do personagem
-- Estrutura de baseStats
-- Estrutura geral da entidade
+---
 
-Sem lógica ainda.
+### Character.ts
 
-----------------------------------------------
+**Purpose:**
+Implements the Character entity.
 
-Character.ts
+**Responsibilities:**
+- Create character instances
+- Store internal state
+- Manage modifiers
+- Expose character data
 
-Esse é o arquivo principal.
+**Allowed:**
+- Constructor
+- Methods like:
+  - `addModifier`
+  - `removeModifier`
 
-Ele deve conter:
-> A implementação da entidade Character.
+**Not Allowed:**
+- Heavy stat resolution logic
+- Complex mathematical calculations
 
-Ele será responsável por:
-- Criar personagem
-- Armazenar estado interno
-- Manipular modifiers
-- Expor dados
+Stat resolution must be delegated externally (e.g., `resolveStats`).
 
-Ele pode:
-- Ter constructor
-- Ter métodos como addModifier
-- Ter método removeModifier
+**Answers:**
+> "How does a Character behave?"
 
-Mas não deve conter algoritmo de resolução matemática pesada.
+---
 
-Ele responde à pergunta:
-Como o Character se comporta?
+## Architectural Constraints
 
-----------------------------------------------
+- Stat calculation must be centralized (no duplication)
+- Modifier application must be predictable and deterministic
+- Core logic should be composable and extensible
+- Avoid coupling between Character and resolution logic
 
+---
+
+## Known Problems
+
+- Lack of clear flow between:
+  - Character
+  - Modifiers
+  - Stat resolution
+
+- Possible redundancy in modifier implementation
+
+- Incomplete integration between system parts
+
+---
+
+## Desired Outcome
+
+A working pipeline where:
+
+1. A Character has base stats
+2. A Character has a list of modifiers
+3. `resolveStats` processes:
+   - base stats
+   - modifiers
+4. Final stats are computed in a predictable, pure, and extensible way
+
+---
+
+## Guidance for AI (Cursor)
+
+When generating plans or code:
+
+- Prefer small, incremental steps
+- Avoid overengineering
+- Keep logic decoupled
+- Ensure functions are pure when possible
+- Do not introduce hidden state
+- Respect separation of concerns between:
+  - Types
+  - Entities
+  - Resolvers
+
+When suggesting tasks:
+- Break work into minimal actionable units
+- Always define clear "definition of done"
+- Prioritize completing a full working pipeline over partial abstractions

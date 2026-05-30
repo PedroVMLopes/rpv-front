@@ -27,7 +27,11 @@ export default function Players() {
                 ))}
             </div> */}
 
-            <CharacterCard />
+            {players.length > 0 ? (
+                <CharacterCard characterId={players[0].id} />
+            ) : (
+                <CharacterCard />
+            )}
             
         </div>
     )
