@@ -26,6 +26,15 @@ export const dndStatConfig: PresetStatConfig = {
             defaultValue: 10,
         },
     ],
+    resources: [
+        {
+            name: "hp",
+            label: "HP",
+            formField: "hp",
+            maxStatKey: "hitPoints",
+            defaultValue: 0,
+        },
+    ],
 };
 
 export const dndAbilityAttributeNames = dndStatConfig.abilities.map(

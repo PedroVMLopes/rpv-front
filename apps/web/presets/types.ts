@@ -16,9 +16,18 @@ export type PresetCombatStat = {
     defaultValue: number;
 };
 
+export type PresetResource = {
+    name: string;
+    label: string;
+    formField?: string;
+    maxStatKey?: StatKey;
+    defaultValue: number;
+};
+
 export type PresetStatConfig = {
     abilities: PresetAbilityAttribute[];
     combatStats: PresetCombatStat[];
+    resources: PresetResource[];
     defaultAbilityValue: number;
 };
 

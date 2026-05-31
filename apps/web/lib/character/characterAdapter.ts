@@ -7,39 +7,69 @@ import {
     resolveStats,
 } from "@rpv/domain";
 import { SystemKey } from "@/presets";
-import { buildBaseStatsFromForm } from "./presetStats";
+import {
+    buildBaseStatsFromForm,
+    buildResourcesFromForm,
+    buildSystemDataFromForm,
+    flattenStoredToForm,
+} from "./presetStats";
+import type { StoredCharacter } from "./storedCharacter";
 
-type FormAttribute = {
-    name: string;
-    value?: number;
-};
+function coerceString(value: unknown, fallback: string): string {
+    if (typeof value === "string" && value.length > 0) {
+        return value;
+    }
+    return fallback;
+}
 
-export type CharacterFormData = {
-    name: string;
-    hp?: number;
-    maxHp?: number;
-    ac?: number;
-    attributes?: FormAttribute[];
-};
+export function formDataToStoredCharacter(
+    formData: Record<string, unknown>,
+    id: string,
+    type: CharacterType,
+    system: SystemKey,
+    modifiers: Modifier[] = []
+): StoredCharacter {
+    const processedForm = { ...formData };
 
-export function formDataToBaseStats(data: CharacterFormData, system: SystemKey): Stats {
-    return buildBaseStatsFromForm(data.attributes, data, system);
+    if (
+        processedForm.maxHp === undefined &&
+        processedForm.hp !== undefined
+    ) {
+        processedForm.maxHp = processedForm.hp;
+    }
+
+    return {
+        id,
+        type,
+        system,
+        name: coerceString(formData.name, "Unnamed"),
+        baseStats: buildBaseStatsFromForm(processedForm, system),
+        modifiers,
+        resources: buildResourcesFromForm(processedForm, system),
+        systemData: buildSystemDataFromForm(processedForm, system),
+    };
+}
+
+export function storedCharacterToProps(char: StoredCharacter): CharacterProps {
+    return {
+        id: char.id,
+        type: char.type,
+        name: char.name,
+        baseStats: char.baseStats,
+        modifiers: char.modifiers,
+    };
 }
 
 export function formDataToCharacterProps(
-    data: CharacterFormData,
+    formData: Record<string, unknown>,
     id: string,
     type: CharacterType,
     system: SystemKey,
     modifiers: Modifier[] = []
 ): CharacterProps {
-    return {
-        id,
-        type,
-        name: data.name,
-        baseStats: formDataToBaseStats(data, system),
-        modifiers,
-    };
+    return storedCharacterToProps(
+        formDataToStoredCharacter(formData, id, type, system, modifiers)
+    );
 }
 
 export function characterPropsToDomain(props: CharacterProps): DomainCharacter {
@@ -52,14 +82,72 @@ export function getResolvedStatsForCharacter(
     return resolveStats(props.baseStats, props.modifiers);
 }
 
-export function syncBaseStatsFromForm(
-    existing: CharacterProps,
-    data: CharacterFormData,
-    system: SystemKey
-): CharacterProps {
-    return {
-        ...existing,
-        name: data.name ?? existing.name,
-        baseStats: formDataToBaseStats(data, system),
-    };
+export function isLegacyStoredCharacter(char: unknown): boolean {
+    if (!char || typeof char !== "object") {
+        return false;
+    }
+
+    const record = char as Record<string, unknown>;
+    const hasNewShape =
+        "resources" in record &&
+        "systemData" in record &&
+        typeof record.resources === "object" &&
+        record.resources !== null;
+
+    if (hasNewShape) {
+        return false;
+    }
+
+    return (
+        "hp" in record ||
+        "attributes" in record ||
+        ("name" in record && !("systemData" in record))
+    );
 }
+
+export function migrateLegacyToStored(legacy: Record<string, unknown>): StoredCharacter {
+    const id = String(legacy.id ?? crypto.randomUUID());
+    const type = (legacy.type as CharacterType) ?? "player";
+    const system = (legacy.system as SystemKey) ?? "dnd";
+    const modifiers = (legacy.modifiers as Modifier[]) ?? [];
+
+    const { id: _id, type: _type, system: _system, baseStats, modifiers: _mods, ...formFields } =
+        legacy;
+
+    const formData: Record<string, unknown> = {
+        ...formFields,
+        name: legacy.name,
+        hp: legacy.hp,
+        maxHp: legacy.maxHp,
+        ac: legacy.ac,
+        attributes: legacy.attributes,
+    };
+
+    const stored = formDataToStoredCharacter(formData, id, type, system, modifiers);
+
+    if (baseStats && typeof baseStats === "object") {
+        stored.baseStats = { ...stored.baseStats, ...(baseStats as Stats) };
+    }
+
+    if (typeof legacy.hp === "number") {
+        stored.resources.hp = legacy.hp;
+    }
+
+    return stored;
+}
+
+export function normalizeStoredCharacter(char: unknown): StoredCharacter {
+    if (isLegacyStoredCharacter(char)) {
+        return migrateLegacyToStored(char as Record<string, unknown>);
+    }
+
+    const stored = char as StoredCharacter;
+
+    if (!stored.resources || !stored.systemData) {
+        return migrateLegacyToStored(stored as unknown as Record<string, unknown>);
+    }
+
+    return stored;
+}
+
+export { flattenStoredToForm };

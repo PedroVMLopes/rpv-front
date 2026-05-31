@@ -1,58 +1,106 @@
-import { CarouselItem } from "@/components/ui/characterCarousel";
+"use client";
 
-export default function CharacterCardInfoBlocks() {
+import { CarouselItem } from "@/components/ui/characterCarousel";
+import { useCharacterStore } from "@/store/useCharacterStore";
+
+interface CharacterCardInfoBlocksProps {
+    characterId: string;
+}
+
+function ClassSubclassBlock({
+    race,
+    characterClass,
+    subclass,
+}: {
+    race?: unknown;
+    characterClass?: unknown;
+    subclass?: unknown;
+}) {
+    const raceStr = race ? String(race).trim() : "";
+    const classStr = characterClass ? String(characterClass).trim() : "";
+    const subclassStr = subclass ? String(subclass).trim() : "";
+    const title = [raceStr, classStr].filter(Boolean).join(" ");
+
+    if (!title && !subclassStr) {
+        return null;
+    }
+
+    return (
+        <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground">
+            {title ? <p className="font-bold">{title}</p> : null}
+            {subclassStr ? <p className="text-sm">{subclassStr}</p> : null}
+        </div>
+    );
+}
+
+function BackgroundBlock({ background }: { background?: unknown }) {
+    if (!background || String(background).trim() === "") {
+        return null;
+    }
+
+    return (
+        <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground">
+            <p className="font-bold">{String(background)}</p>
+        </div>
+    );
+}
+
+export default function CharacterCardInfoBlocks({
+    characterId,
+}: CharacterCardInfoBlocksProps) {
+    const stored = useCharacterStore((state) =>
+        state.characters.find((c) => c.id === characterId)
+    );
+
+    if (!stored) {
+        return null;
+    }
+
+    const systemData = stored.systemData;
+    const classBlock = (
+        <ClassSubclassBlock
+            race={systemData.race}
+            characterClass={systemData.characterClass}
+            subclass={systemData.subclass}
+        />
+    );
+    const backgroundBlock = <BackgroundBlock background={systemData.background} />;
+    const goals =
+        systemData.goals !== undefined &&
+        systemData.goals !== null &&
+        String(systemData.goals).trim() !== ""
+            ? String(systemData.goals)
+            : null;
+
+    const hasTopBlocks = classBlock !== null || backgroundBlock !== null;
+
+    if (!hasTopBlocks && !goals) {
+        return (
+            <CarouselItem>
+                <div className="text-muted-foreground text-sm p-2">
+                    No character details yet.
+                </div>
+            </CarouselItem>
+        );
+    }
+
     return (
         <CarouselItem>
-            {/* Top Info Blocks */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {/* Class & Subclass */}
-                <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground">
-                    <p className="font-bold">Human Rogue</p>
-                    <p className="text-sm">Circle of the moon</p>
+            {hasTopBlocks && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {classBlock}
+                    {backgroundBlock}
                 </div>
-                {/* Alignment & Background */}
-                <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground">
-                    <p className="font-bold">Heremita</p>
-                    <p className="text-sm">Neutral Evil</p>
-                </div>
-            </div>
-            
-            {/* Bottom Info Blocks */}
-            <div className="flex flex-col gap-2">
+            )}
 
-                {/* Short Description */}
-                <div className="flex flex-col border rounded-2xl mt-2 p-2 px-3 bg-popover text-popover-foreground">
-                    <p className="italic">"Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi, deserunt"</p>
-                </div>
-
-                {/* Proficiencies */}
-                <div className="flex flex-col border rounded-2xl p-2 px-3 gap-1 bg-popover text-popover-foreground">
-                    <p className="text-sm opacity-60">Proficiencies</p>
-                    <div className="grid grid-cols-2">
-                        <p>• Lorem</p>
-                        <p>• Lorem</p>
-                        <p>• Lorem</p>
-                        <p>• Lorem</p>
-                        <p>• Lorem</p>
-                        <p>• Lorem</p>
+            {goals && (
+                <div className="flex flex-col gap-2">
+                    <div className="flex flex-col border rounded-2xl mt-2 p-2 px-3 gap-1 bg-popover text-popover-foreground">
+                        <p className="text-sm opacity-60">Objectives</p>
+                        <p>{goals}</p>
                     </div>
                 </div>
-
-                {/* Objectives */}
-                <div className="flex flex-col border rounded-2xl p-2 px-3 gap-1 bg-popover text-popover-foreground">
-                    <p className="text-sm opacity-60">Objectives</p>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi, deserunt?</p>
-                </div>
-
-                {/* Character Development - 3 pinned ones */}
-                <div className="flex flex-col border rounded-2xl p-2 px-3 gap-1 bg-popover text-popover-foreground">
-                    <p className="text-sm opacity-60">Development</p>
-                    <ul>
-                        <li>Pegou um colar de chave da princesa.</li>
-                        <li>Comeu um x-rato.</li>
-                    </ul>
-                </div>
-            </div>
+            )}
         </CarouselItem>
-    )
+    );
 }

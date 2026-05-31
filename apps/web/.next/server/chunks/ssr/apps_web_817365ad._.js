@@ -548,7 +548,9 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$hoo
 var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$forms$2f$DynamicForm$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/components/forms/DynamicForm.tsx [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/store/useCharacterStore.ts [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react.js [app-ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/navigation.js [app-ssr] (ecmascript)");
 "use client";
+;
 ;
 ;
 ;
@@ -561,6 +563,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 ;
 function CreatePlayer() {
     const addCharacter = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCharacterStore"])((state)=>state.addCharacter);
+    const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRouter"])();
     const [system, setSystem] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])("dnd");
     const type = "player";
     const presetData = __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$presets$2f$index$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["presets"][system].presetData;
@@ -575,6 +578,7 @@ function CreatePlayer() {
     });
     function handleSave(data) {
         addCharacter(data, type, system);
+        router.push("/characters/player");
     }
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         children: [
@@ -587,12 +591,12 @@ function CreatePlayer() {
                     children: "Cancel"
                 }, void 0, false, {
                     fileName: "[project]/apps/web/app/characters/player/create/page.tsx",
-                    lineNumber: 37,
+                    lineNumber: 42,
                     columnNumber: 17
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/apps/web/app/characters/player/create/page.tsx",
-                lineNumber: 36,
+                lineNumber: 41,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -603,7 +607,7 @@ function CreatePlayer() {
                         children: "Create a New Player"
                     }, void 0, false, {
                         fileName: "[project]/apps/web/app/characters/player/create/page.tsx",
-                        lineNumber: 40,
+                        lineNumber: 45,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -615,12 +619,12 @@ function CreatePlayer() {
                                 children: preset.name
                             }, key, false, {
                                 fileName: "[project]/apps/web/app/characters/player/create/page.tsx",
-                                lineNumber: 43,
+                                lineNumber: 54,
                                 columnNumber: 25
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/apps/web/app/characters/player/create/page.tsx",
-                        lineNumber: 41,
+                        lineNumber: 48,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$forms$2f$DynamicForm$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DynamicForm"], {
@@ -629,19 +633,19 @@ function CreatePlayer() {
                         onSubmit: handleSave
                     }, void 0, false, {
                         fileName: "[project]/apps/web/app/characters/player/create/page.tsx",
-                        lineNumber: 48,
+                        lineNumber: 59,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/apps/web/app/characters/player/create/page.tsx",
-                lineNumber: 39,
+                lineNumber: 44,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/apps/web/app/characters/player/create/page.tsx",
-        lineNumber: 35,
+        lineNumber: 40,
         columnNumber: 9
     }, this);
 }

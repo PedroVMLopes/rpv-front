@@ -1,9 +1,7 @@
 "use client"
 
 import CharacterCard from "@/components/characters/CharacterCard/CharacterCard";
-import IniciativeCard from "@/components/iniciative/IniciativeCard";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import Link from "next/link";
 
@@ -13,7 +11,6 @@ export default function Players() {
 
     return (
         <div className="flex flex-col gap-6 pt-4">
-
             <div className="flex flex-col md:flex-row gap-4 justify-between">
                 <h1 className="text-3xl font-semibold pl-2">Player Characters</h1>
                 <Link href={"/characters/player/create"}>
@@ -21,18 +18,17 @@ export default function Players() {
                 </Link>
             </div>
 
-            {/* <div className="grid grid-cols-2 gap-2">
-                {players?.map((char) => (
-                    <IniciativeCard key={char.id} character={char}/>
-                ))}
-            </div> */}
-
-            {players.length > 0 ? (
-                <CharacterCard characterId={players[0].id} />
+            {players.length === 0 ? (
+                <div className="text-muted-foreground italic px-2">
+                    No players yet. Click &quot;Create New Player&quot; to add one.
+                </div>
             ) : (
-                <CharacterCard />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {players.map((p) => (
+                        <CharacterCard key={p.id} characterId={p.id} />
+                    ))}
+                </div>
             )}
-            
         </div>
-    )
+    );
 }

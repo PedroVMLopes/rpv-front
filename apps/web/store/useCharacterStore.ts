@@ -1,124 +1,53 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { z } from "zod";
-import type { BaseStats, CharacterProps, CharacterType, Modifier, Stats } from "@rpv/domain";
-import { characterSchemasByType } from "@/presets/dnd/characterSchema";
+import type { CharacterProps, CharacterType, Stats } from "@rpv/domain";
 import { SystemKey } from "@/presets";
-import { getDefaultModifiersForCreation } from "@/presets/dnd/modifiers";
 import {
-    formDataToCharacterProps,
+    flattenStoredToForm,
+    formDataToStoredCharacter,
     getResolvedStatsForCharacter,
-    syncBaseStatsFromForm,
-    type CharacterFormData,
+    normalizeStoredCharacter,
+    storedCharacterToProps,
 } from "@/lib/character/characterAdapter";
+import { getDefaultModifiersForCreation } from "@/lib/character/presetModifiers";
+import { getResourceMax } from "@/lib/character/presetStats";
+import type { StoredCharacter } from "@/lib/character/storedCharacter";
 
-// Data flux
-// Form (zod) creates-> PlayerData without an ID
-// Generates an unique ID
-// Saves everything as a StoredCharacter in the array characters
-
-type PlayerData = z.infer<typeof characterSchemasByType.player>;
-type EnemyData = z.infer<typeof characterSchemasByType.enemy>;
-type NpcData = z.infer<typeof characterSchemasByType.npc>;
 export type { CharacterType };
-
-interface CharacterBase {
-    id: string;
-    type: CharacterType;
-    system: SystemKey;
-    baseStats: BaseStats;
-    modifiers: Modifier[];
-}
-
-type PlayerCharacter = CharacterBase & PlayerData;
-type EnemyCharacter = CharacterBase & EnemyData;
-type NpcCharacter = CharacterBase & NpcData;
-
-export type StoredCharacter = PlayerCharacter | EnemyCharacter | NpcCharacter;
+export type { StoredCharacter };
 
 /** @deprecated Use StoredCharacter */
 export type Character = StoredCharacter;
 
 interface CharacterStore {
     characters: StoredCharacter[];
-    addCharacter: (data: PlayerData | EnemyData | NpcData, type: CharacterType, system: SystemKey) => void;
+    addCharacter: (
+        formData: Record<string, unknown>,
+        type: CharacterType,
+        system: SystemKey
+    ) => void;
     removeCharacter: (id: string) => void;
     clearCharacters: () => void;
-    updateCharacter: (id: string, updatedData: Partial<PlayerData | EnemyData | NpcData>) => void;
-    updateHp: (id: string, amount: number) => void;
+    updateCharacter: (id: string, formData: Record<string, unknown>) => void;
+    updateResource: (id: string, resourceName: string, delta: number) => void;
     getResolvedStats: (id: string) => Stats | undefined;
     getCharacterProps: (id: string) => CharacterProps | undefined;
-}
-
-function toFormData(data: PlayerData | EnemyData | NpcData): CharacterFormData {
-    return {
-        name: data.name,
-        hp: data.hp,
-        maxHp: data.maxHp,
-        ac: data.ac,
-        attributes: data.attributes,
-    };
-}
-
-function ensureDomainFields(char: StoredCharacter): StoredCharacter {
-    if (char.baseStats && char.modifiers) {
-        return char;
-    }
-
-    const formData = toFormData(char);
-    const domainProps = formDataToCharacterProps(
-        formData,
-        char.id,
-        char.type,
-        char.system,
-        char.modifiers ?? []
-    );
-
-    return {
-        ...char,
-        baseStats: char.baseStats ?? domainProps.baseStats,
-        modifiers: char.modifiers ?? domainProps.modifiers,
-    };
-}
-
-function storedCharacterToProps(char: StoredCharacter): CharacterProps {
-    const normalized = ensureDomainFields(char);
-    return {
-        id: normalized.id,
-        type: normalized.type,
-        name: normalized.name,
-        baseStats: normalized.baseStats,
-        modifiers: normalized.modifiers,
-    };
+    getFormDefaults: (id: string) => Record<string, unknown> | undefined;
 }
 
 const createStoredCharacter = (
-    data: PlayerData | EnemyData | NpcData,
+    formData: Record<string, unknown>,
     type: CharacterType,
     system: SystemKey
 ): StoredCharacter => {
     const id = crypto.randomUUID();
-    const processedData = {
-        ...data,
-        maxHp: (data as PlayerData).maxHp ?? (data as PlayerData).hp,
-    };
-
-    const domainProps = formDataToCharacterProps(
-        toFormData(processedData),
+    return formDataToStoredCharacter(
+        formData,
         id,
         type,
         system,
-        getDefaultModifiersForCreation()
+        getDefaultModifiersForCreation(system)
     );
-
-    return {
-        id,
-        type,
-        system,
-        baseStats: domainProps.baseStats,
-        modifiers: domainProps.modifiers,
-        ...processedData,
-    } as StoredCharacter;
 };
 
 export const useCharacterStore = create<CharacterStore>()(
@@ -126,9 +55,12 @@ export const useCharacterStore = create<CharacterStore>()(
         (set, get) => ({
             characters: [],
 
-            addCharacter: (data, type, system) =>
+            addCharacter: (formData, type, system) =>
                 set((state) => ({
-                    characters: [...state.characters, createStoredCharacter(data, type, system)],
+                    characters: [
+                        ...state.characters,
+                        createStoredCharacter(formData, type, system),
+                    ],
                 })),
 
             removeCharacter: (id) =>
@@ -138,39 +70,42 @@ export const useCharacterStore = create<CharacterStore>()(
 
             clearCharacters: () => set({ characters: [] }),
 
-            updateCharacter: (id, updatedData) =>
+            updateCharacter: (id, formData) =>
                 set((state) => ({
                     characters: state.characters.map((char) => {
                         if (char.id !== id) return char;
 
-                        const merged = { ...char, ...updatedData } as StoredCharacter;
-                        const props = syncBaseStatsFromForm(
-                            storedCharacterToProps(merged),
-                            toFormData(merged),
-                            merged.system
+                        return formDataToStoredCharacter(
+                            formData,
+                            char.id,
+                            char.type,
+                            char.system,
+                            char.modifiers
                         );
-
-                        return {
-                            ...merged,
-                            baseStats: props.baseStats,
-                            name: props.name,
-                        };
                     }),
                 })),
 
-            updateHp: (id, amount) =>
+            updateResource: (id, resourceName, delta) =>
                 set((state) => ({
-                    characters: state.characters.map((char) =>
-                        char.id === id
-                            ? {
-                                  ...char,
-                                  hp: Math.max(
-                                      0,
-                                      Math.min((char.hp ?? 0) + amount, char.maxHp ?? 0)
-                                  ),
-                              }
-                            : char
-                    ),
+                    characters: state.characters.map((char) => {
+                        if (char.id !== id) return char;
+
+                        const current = char.resources[resourceName] ?? 0;
+                        const max = getResourceMax(char, resourceName);
+                        const next = current + delta;
+                        const clamped =
+                            max !== undefined
+                                ? Math.max(0, Math.min(next, max))
+                                : Math.max(0, next);
+
+                        return {
+                            ...char,
+                            resources: {
+                                ...char.resources,
+                                [resourceName]: clamped,
+                            },
+                        };
+                    }),
                 })),
 
             getResolvedStats: (id) => {
@@ -184,6 +119,12 @@ export const useCharacterStore = create<CharacterStore>()(
                 if (!char) return undefined;
                 return storedCharacterToProps(char);
             },
+
+            getFormDefaults: (id) => {
+                const char = get().characters.find((c) => c.id === id);
+                if (!char) return undefined;
+                return flattenStoredToForm(char, char.system);
+            },
         }),
         {
             name: "character-storage",
@@ -194,7 +135,7 @@ export const useCharacterStore = create<CharacterStore>()(
                 return {
                     ...current,
                     characters: state.characters.map((char) =>
-                        ensureDomainFields(char as StoredCharacter)
+                        normalizeStoredCharacter(char)
                     ),
                 };
             },

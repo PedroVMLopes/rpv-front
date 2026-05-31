@@ -57,7 +57,7 @@ export const dndCharacterFields = {
             label: "Goals",
             type: "text",
             group: "general",
-            order: '2'
+            order: 2
         }
     ],
     player: [
