@@ -10,6 +10,7 @@ import { DynamicForm } from "@/components/forms/DynamicForm";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { listRaceOptions } from "@/lib/catalog/raceCatalog";
 
 export default function CreatePlayer() {
     const addCharacter = useCharacterStore((state) => state.addCharacter);
@@ -21,10 +22,15 @@ export default function CreatePlayer() {
     const presetData = presets[system].presetData;
 
     const schema = createDynamicSchema(presetData.characters.schema, type);
+    const raceOptions = listRaceOptions();
     const fields = [
         ...presetData.characters.fields.common,
         ...(presetData.characters.fields[type] || []),
-    ];
+    ].map((field) =>
+        field.name === "race" && raceOptions.length > 0
+            ? { ...field, options: raceOptions }
+            : field
+    );
 
     const form = useForm({
         resolver: zodResolver(schema),

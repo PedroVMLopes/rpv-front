@@ -1,0 +1,19 @@
+{
+  "name": "@rpv/content",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "test": "jest",
+    "build:catalog": "tsx scripts/buildCatalog.ts",
+    "build:catalog:offline": "tsc -p tsconfig.build.json && CONTENT_PKG_ROOT=\"$PWD\" node dist-tmp/scripts/buildCatalog.js"
+  },
+  "dependencies": {
+    "@rpv/domain": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "tsx": "^4.19.2"
+  }
+}

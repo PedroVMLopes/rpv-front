@@ -1,0 +1,46 @@
+{
+    "name": "Elf",
+    "slug": "elf",
+    "desc": "## Elf Traits\nYour elf character has a variety of natural abilities, the result of thousands of years of elven refinement.",
+    "asi_desc": "**_Ability Score Increase._** Your Dexterity score increases by 2.",
+    "asi": [
+        {
+            "attributes": [
+                "Dexterity"
+            ],
+            "value": 2
+        }
+    ],
+    "age": "**_Age._** Although elves reach physical maturity at about the same age as humans, the elven understanding of adulthood goes beyond physical growth.",
+    "alignment": "**_Alignment._** Elves love freedom, variety, and self-expression, so they lean strongly toward the gentler aspects of chaos.",
+    "size": "**_Size._** Elves range from under 5 to over 6 feet tall and have slender builds. Your size is Medium.",
+    "size_raw": "Medium",
+    "speed": {
+        "walk": 30
+    },
+    "speed_desc": "**_Speed._** Your base walking speed is 30 feet.",
+    "languages": "**_Languages._** You can speak, read, and write Common and Elvish.",
+    "vision": "**_Darkvision._** Accustomed to twilit forests and the night sky, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
+    "traits": "**_Keen Senses._** You have proficiency in the Perception skill.\n\n**_Fey Ancestry._** You have advantage on saving throws against being charmed, and magic can't put you to sleep.\n\n**_Trance._** Elves don't need to sleep. Instead, they meditate deeply, remaining semiconscious, for 4 hours a day.",
+    "subraces": [
+        {
+            "name": "High Elf",
+            "slug": "high-elf",
+            "desc": "As a high elf, you have a keen mind and a mastery of at least the basics of magic.",
+            "asi": [
+                {
+                    "attributes": [
+                        "Intelligence"
+                    ],
+                    "value": 1
+                }
+            ],
+            "traits": "**_Elf Weapon Training._** You have proficiency with the longsword, shortsword, shortbow, and longbow.\n\n**_Cantrip._** You know one cantrip of your choice from the wizard spell list. Intelligence is your spellcasting ability for it.\n\n**_Extra Language._** You can speak, read, and write one extra language of your choice.",
+            "asi_desc": "**_Ability Score Increase._** Your Intelligence score increases by 1.",
+            "document__slug": "wotc-srd",
+            "document__title": "5e Core Rules"
+        }
+    ],
+    "document__slug": "wotc-srd",
+    "document__title": "5e Core Rules"
+}

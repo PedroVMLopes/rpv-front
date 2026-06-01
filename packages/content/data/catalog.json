@@ -1,0 +1,560 @@
+{
+  "generatedAt": "2026-06-01T01:27:48.491Z",
+  "source": "open5e",
+  "races": [
+    {
+      "slug": "dwarf",
+      "name": "Dwarf",
+      "system": "dnd",
+      "sourceDocument": "wotc-srd",
+      "description": "## Dwarf Traits\nYour dwarf character has an assortment of inborn abilities, part and parcel of dwarven nature.",
+      "size": "Medium",
+      "speedWalk": 25,
+      "languagesDesc": "**_Languages._** You can speak, read, and write Common and Dwarvish.",
+      "visionDesc": "**_Darkvision._** Accustomed to life underground, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
+      "asiDesc": "**_Ability Score Increase._** Your Constitution score increases by 2.",
+      "traits": [
+        {
+          "slug": "ability-score-increase",
+          "name": "Ability Score Increase",
+          "description": "**_Ability Score Increase._** Your Constitution score increases by 2.",
+          "category": "ability_score",
+          "grants": [
+            {
+              "grantType": "ability_score",
+              "choose": 0,
+              "targetStat": "constitution",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "slug": "dwarven-resilience",
+          "name": "Dwarven Resilience",
+          "description": "You have advantage on saving throws against poison, and you have resistance against poison damage.",
+          "category": "resistance",
+          "grants": []
+        },
+        {
+          "slug": "dwarven-combat-training",
+          "name": "Dwarven Combat Training",
+          "description": "You have proficiency with the battleaxe, handaxe, light hammer, and warhammer.",
+          "category": "proficiency",
+          "grants": [
+            {
+              "grantType": "weapon_proficiency",
+              "choose": 0,
+              "options": [
+                {
+                  "optionType": "proficiency",
+                  "ref": "battleaxe"
+                },
+                {
+                  "optionType": "proficiency",
+                  "ref": "handaxe"
+                },
+                {
+                  "optionType": "proficiency",
+                  "ref": "light-hammer"
+                },
+                {
+                  "optionType": "proficiency",
+                  "ref": "warhammer"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "tool-proficiency",
+          "name": "Tool Proficiency",
+          "description": "You gain proficiency with the artisan's tools of your choice: smith's tools, brewer's supplies, or mason's tools.",
+          "category": "proficiency",
+          "grants": [
+            {
+              "grantType": "tool_proficiency",
+              "choose": 1,
+              "options": [
+                {
+                  "optionType": "proficiency",
+                  "ref": "smiths-tools"
+                },
+                {
+                  "optionType": "proficiency",
+                  "ref": "brewers-supplies"
+                },
+                {
+                  "optionType": "proficiency",
+                  "ref": "masons-tools"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "stonecunning",
+          "name": "Stonecunning",
+          "description": "Whenever you make an Intelligence (History) check related to the origin of stonework, you are considered proficient in the History skill and add double your proficiency bonus to the check, instead of your normal proficiency bonus.",
+          "category": "other",
+          "grants": []
+        }
+      ],
+      "subraces": [
+        {
+          "slug": "hill-dwarf",
+          "raceSlug": "dwarf",
+          "name": "Hill Dwarf",
+          "description": "As a hill dwarf, you have keen senses, deep intuition, and remarkable resilience.",
+          "asiDesc": "**_Ability Score Increase._** Your Wisdom score increases by 1",
+          "traits": [
+            {
+              "slug": "ability-score-increase",
+              "name": "Ability Score Increase",
+              "description": "**_Ability Score Increase._** Your Wisdom score increases by 1",
+              "category": "ability_score",
+              "grants": [
+                {
+                  "grantType": "ability_score",
+                  "choose": 0,
+                  "targetStat": "wisdom",
+                  "amount": 1
+                }
+              ]
+            },
+            {
+              "slug": "dwarven-toughness",
+              "name": "Dwarven Toughness",
+              "description": "Your hit point maximum increases by 1, and it increases by 1 every time you gain a level.",
+              "category": "other",
+              "grants": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "elf",
+      "name": "Elf",
+      "system": "dnd",
+      "sourceDocument": "wotc-srd",
+      "description": "## Elf Traits\nYour elf character has a variety of natural abilities, the result of thousands of years of elven refinement.",
+      "size": "Medium",
+      "speedWalk": 30,
+      "languagesDesc": "**_Languages._** You can speak, read, and write Common and Elvish.",
+      "visionDesc": "**_Darkvision._** Accustomed to twilit forests and the night sky, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
+      "asiDesc": "**_Ability Score Increase._** Your Dexterity score increases by 2.",
+      "traits": [
+        {
+          "slug": "ability-score-increase",
+          "name": "Ability Score Increase",
+          "description": "**_Ability Score Increase._** Your Dexterity score increases by 2.",
+          "category": "ability_score",
+          "grants": [
+            {
+              "grantType": "ability_score",
+              "choose": 0,
+              "targetStat": "dexterity",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "slug": "keen-senses",
+          "name": "Keen Senses",
+          "description": "You have proficiency in the Perception skill.",
+          "category": "proficiency",
+          "grants": [
+            {
+              "grantType": "skill_proficiency",
+              "choose": 0,
+              "options": [
+                {
+                  "optionType": "skill",
+                  "ref": "perception"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "fey-ancestry",
+          "name": "Fey Ancestry",
+          "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep.",
+          "category": "resistance",
+          "grants": []
+        },
+        {
+          "slug": "trance",
+          "name": "Trance",
+          "description": "Elves don't need to sleep. Instead, they meditate deeply, remaining semiconscious, for 4 hours a day.",
+          "category": "other",
+          "grants": []
+        }
+      ],
+      "subraces": [
+        {
+          "slug": "high-elf",
+          "raceSlug": "elf",
+          "name": "High Elf",
+          "description": "As a high elf, you have a keen mind and a mastery of at least the basics of magic.",
+          "asiDesc": "**_Ability Score Increase._** Your Intelligence score increases by 1.",
+          "traits": [
+            {
+              "slug": "ability-score-increase",
+              "name": "Ability Score Increase",
+              "description": "**_Ability Score Increase._** Your Intelligence score increases by 1.",
+              "category": "ability_score",
+              "grants": [
+                {
+                  "grantType": "ability_score",
+                  "choose": 0,
+                  "targetStat": "intelligence",
+                  "amount": 1
+                }
+              ]
+            },
+            {
+              "slug": "elf-weapon-training",
+              "name": "Elf Weapon Training",
+              "description": "You have proficiency with the longsword, shortsword, shortbow, and longbow.",
+              "category": "proficiency",
+              "grants": [
+                {
+                  "grantType": "weapon_proficiency",
+                  "choose": 0,
+                  "options": [
+                    {
+                      "optionType": "proficiency",
+                      "ref": "longsword"
+                    },
+                    {
+                      "optionType": "proficiency",
+                      "ref": "shortsword"
+                    },
+                    {
+                      "optionType": "proficiency",
+                      "ref": "shortbow"
+                    },
+                    {
+                      "optionType": "proficiency",
+                      "ref": "longbow"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "slug": "cantrip",
+              "name": "Cantrip",
+              "description": "You know one cantrip of your choice from the wizard spell list. Intelligence is your spellcasting ability for it.",
+              "category": "spellcasting",
+              "grants": [
+                {
+                  "grantType": "spell",
+                  "choose": 1,
+                  "selectionFilter": {
+                    "spellLists": [
+                      "wizard"
+                    ],
+                    "levelInt": 0
+                  },
+                  "description": "One cantrip of your choice from the wizard spell list."
+                }
+              ]
+            },
+            {
+              "slug": "extra-language",
+              "name": "Extra Language",
+              "description": "You can speak, read, and write one extra language of your choice.",
+              "category": "language",
+              "grants": [
+                {
+                  "grantType": "language",
+                  "choose": 1,
+                  "selectionFilter": {
+                    "any": true
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "spells": [
+    {
+      "slug": "acid-splash",
+      "name": "Acid Splash",
+      "levelInt": 0,
+      "level": "Cantrip",
+      "school": "Conjuration",
+      "castingTime": "1 action",
+      "range": "60 feet",
+      "components": "V, S",
+      "duration": "Instantaneous",
+      "requiresConcentration": false,
+      "canBeCastAsRitual": false,
+      "description": "You hurl a bubble of acid. Choose one creature within range, or choose two creatures within range that are within 5 feet of each other. A target must succeed on a dexterity saving throw or take 1d6 acid damage.",
+      "higherLevel": "This spell's damage increases by 1d6 when you reach 5th level (2d6), 11th level (3d6), and 17th level (4d6).",
+      "spellLists": [
+        "sorcerer",
+        "wizard"
+      ],
+      "sourceDocument": "wotc-srd"
+    },
+    {
+      "slug": "fire-bolt",
+      "name": "Fire Bolt",
+      "levelInt": 0,
+      "level": "Cantrip",
+      "school": "Evocation",
+      "castingTime": "1 action",
+      "range": "120 feet",
+      "components": "V, S",
+      "duration": "Instantaneous",
+      "requiresConcentration": false,
+      "canBeCastAsRitual": false,
+      "description": "You hurl a mote of fire at a creature or object within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 fire damage.",
+      "higherLevel": "This spell's damage increases by 1d10 when you reach 5th level (2d10), 11th level (3d10), and 17th level (4d10).",
+      "spellLists": [
+        "sorcerer",
+        "wizard"
+      ],
+      "sourceDocument": "wotc-srd"
+    },
+    {
+      "slug": "light",
+      "name": "Light",
+      "levelInt": 0,
+      "level": "Cantrip",
+      "school": "Evocation",
+      "castingTime": "1 action",
+      "range": "Touch",
+      "components": "V, M",
+      "duration": "1 hour",
+      "requiresConcentration": false,
+      "canBeCastAsRitual": false,
+      "description": "You touch one object that is no larger than 10 feet in any dimension. Until the spell ends, the object sheds bright light in a 20-foot radius and dim light for an additional 20 feet.",
+      "higherLevel": "",
+      "spellLists": [
+        "cleric",
+        "bard",
+        "sorcerer",
+        "wizard"
+      ],
+      "sourceDocument": "wotc-srd"
+    },
+    {
+      "slug": "mage-hand",
+      "name": "Mage Hand",
+      "levelInt": 0,
+      "level": "Cantrip",
+      "school": "Conjuration",
+      "castingTime": "1 action",
+      "range": "30 feet",
+      "components": "V, S",
+      "duration": "1 minute",
+      "requiresConcentration": false,
+      "canBeCastAsRitual": false,
+      "description": "A spectral, floating hand appears at a point you choose within range. You can use the hand to manipulate an object, open an unlocked door or container, stow or retrieve an item from an open container, or pour the contents out of a vial.",
+      "higherLevel": "",
+      "spellLists": [
+        "bard",
+        "sorcerer",
+        "warlock",
+        "wizard"
+      ],
+      "sourceDocument": "wotc-srd"
+    }
+  ],
+  "skills": [
+    {
+      "slug": "acrobatics",
+      "name": "Acrobatics",
+      "ability": "dexterity"
+    },
+    {
+      "slug": "animal-handling",
+      "name": "Animal Handling",
+      "ability": "wisdom"
+    },
+    {
+      "slug": "arcana",
+      "name": "Arcana",
+      "ability": "intelligence"
+    },
+    {
+      "slug": "athletics",
+      "name": "Athletics",
+      "ability": "strength"
+    },
+    {
+      "slug": "deception",
+      "name": "Deception",
+      "ability": "charisma"
+    },
+    {
+      "slug": "history",
+      "name": "History",
+      "ability": "intelligence"
+    },
+    {
+      "slug": "insight",
+      "name": "Insight",
+      "ability": "wisdom"
+    },
+    {
+      "slug": "intimidation",
+      "name": "Intimidation",
+      "ability": "charisma"
+    },
+    {
+      "slug": "investigation",
+      "name": "Investigation",
+      "ability": "intelligence"
+    },
+    {
+      "slug": "medicine",
+      "name": "Medicine",
+      "ability": "wisdom"
+    },
+    {
+      "slug": "nature",
+      "name": "Nature",
+      "ability": "intelligence"
+    },
+    {
+      "slug": "perception",
+      "name": "Perception",
+      "ability": "wisdom"
+    },
+    {
+      "slug": "performance",
+      "name": "Performance",
+      "ability": "charisma"
+    },
+    {
+      "slug": "persuasion",
+      "name": "Persuasion",
+      "ability": "charisma"
+    },
+    {
+      "slug": "religion",
+      "name": "Religion",
+      "ability": "intelligence"
+    },
+    {
+      "slug": "sleight-of-hand",
+      "name": "Sleight of Hand",
+      "ability": "dexterity"
+    },
+    {
+      "slug": "stealth",
+      "name": "Stealth",
+      "ability": "dexterity"
+    },
+    {
+      "slug": "survival",
+      "name": "Survival",
+      "ability": "wisdom"
+    }
+  ],
+  "languages": [
+    {
+      "slug": "common",
+      "name": "Common",
+      "type": "standard",
+      "script": "Common"
+    },
+    {
+      "slug": "dwarvish",
+      "name": "Dwarvish",
+      "type": "standard",
+      "script": "Dwarvish"
+    },
+    {
+      "slug": "elvish",
+      "name": "Elvish",
+      "type": "standard",
+      "script": "Elvish"
+    },
+    {
+      "slug": "giant",
+      "name": "Giant",
+      "type": "standard",
+      "script": "Dwarvish"
+    },
+    {
+      "slug": "gnomish",
+      "name": "Gnomish",
+      "type": "standard",
+      "script": "Dwarvish"
+    },
+    {
+      "slug": "goblin",
+      "name": "Goblin",
+      "type": "standard",
+      "script": "Dwarvish"
+    },
+    {
+      "slug": "halfling",
+      "name": "Halfling",
+      "type": "standard",
+      "script": "Common"
+    },
+    {
+      "slug": "orc",
+      "name": "Orc",
+      "type": "standard",
+      "script": "Dwarvish"
+    },
+    {
+      "slug": "abyssal",
+      "name": "Abyssal",
+      "type": "exotic",
+      "script": "Infernal"
+    },
+    {
+      "slug": "celestial",
+      "name": "Celestial",
+      "type": "exotic",
+      "script": "Celestial"
+    },
+    {
+      "slug": "deep-speech",
+      "name": "Deep Speech",
+      "type": "exotic"
+    },
+    {
+      "slug": "draconic",
+      "name": "Draconic",
+      "type": "exotic",
+      "script": "Draconic"
+    },
+    {
+      "slug": "infernal",
+      "name": "Infernal",
+      "type": "exotic",
+      "script": "Infernal"
+    },
+    {
+      "slug": "primordial",
+      "name": "Primordial",
+      "type": "exotic",
+      "script": "Dwarvish"
+    },
+    {
+      "slug": "sylvan",
+      "name": "Sylvan",
+      "type": "exotic",
+      "script": "Elvish"
+    },
+    {
+      "slug": "undercommon",
+      "name": "Undercommon",
+      "type": "exotic",
+      "script": "Elvish"
+    }
+  ]
+}

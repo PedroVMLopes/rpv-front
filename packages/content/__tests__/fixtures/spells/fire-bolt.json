@@ -1,0 +1,25 @@
+{
+    "slug": "fire-bolt",
+    "name": "Fire Bolt",
+    "desc": "You hurl a mote of fire at a creature or object within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 fire damage.",
+    "higher_level": "This spell's damage increases by 1d10 when you reach 5th level (2d10), 11th level (3d10), and 17th level (4d10).",
+    "range": "120 feet",
+    "components": "V, S",
+    "material": "",
+    "can_be_cast_as_ritual": false,
+    "ritual": "no",
+    "duration": "Instantaneous",
+    "concentration": "no",
+    "requires_concentration": false,
+    "casting_time": "1 action",
+    "level": "Cantrip",
+    "level_int": 0,
+    "school": "Evocation",
+    "dnd_class": "Sorcerer, Wizard",
+    "spell_lists": [
+        "sorcerer",
+        "wizard"
+    ],
+    "document__slug": "wotc-srd",
+    "document__title": "5e Core Rules"
+}
