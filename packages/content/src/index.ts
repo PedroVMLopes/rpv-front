@@ -18,4 +18,4 @@ export * from "./catalog/languages.seed";
 
 export * from "./curation/raceGrants.dnd";
 
-export { catalog, listRaces, getRace, getSubrace } from "./catalog/bundled";
+export { catalog, listRaces, getRace, getSubrace, getSpell } from "./catalog/bundled";

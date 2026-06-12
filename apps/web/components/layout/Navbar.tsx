@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 import { FaUser, FaHouse, FaUsers, FaMapLocationDot, FaUsersViewfinder } from "react-icons/fa6";
 import { GiAnvilImpact } from "react-icons/gi";
@@ -20,6 +21,7 @@ import {
 export default function Navbar() {
     const pathname = usePathname();
     const isActive = (path: string) => pathname === path;
+    const t = useTranslations("nav");
 
     return (
         <div className="w-full flex justify-center">
@@ -38,7 +40,7 @@ export default function Navbar() {
                     <NavigationMenuItem>
                         <NavigationMenuTrigger className="font-bold">
                             <FaUsers className="md:hidden text-amber-100" />
-                            <p className="hidden md:inline">Characters</p>
+                            <p className="hidden md:inline">{t("characters")}</p>
                         </NavigationMenuTrigger>
                         <NavigationMenuContent>
                             <ul className="grid gap-4 z-10">
@@ -47,7 +49,7 @@ export default function Navbar() {
                                         asChild 
                                         className={`${navigationMenuTriggerStyle()} hover:bg-secondary ${isActive("/characters") ? "bg-secondary" : "bg-popover"}`}
                                     >
-                                        <Link href="/characters">All Characters</Link>
+                                        <Link href="/characters">{t("allCharacters")}</Link>
                                     </NavigationMenuLink>
                                     <div className="h-[1px] w-full bg-muted my-1" />
                                     <div className="flex flex-col gap-0.5">
@@ -55,19 +57,19 @@ export default function Navbar() {
                                             asChild 
                                             className={`${navigationMenuTriggerStyle()} hover:bg-chart-1 ${isActive("/characters/player") ? "bg-chart-1" : "bg-popover"}`}
                                         >
-                                            <Link href="/characters/player">Players</Link>
+                                            <Link href="/characters/player">{t("players")}</Link>
                                         </NavigationMenuLink>
                                         <NavigationMenuLink 
                                             asChild 
                                             className={`${navigationMenuTriggerStyle()} hover:bg-chart-2 ${isActive("/characters/enemy") ? "bg-char-2" : "bg-popover"}`}
                                         >
-                                            <Link href="/characters/enemy">Enemies</Link>
+                                            <Link href="/characters/enemy">{t("enemies")}</Link>
                                         </NavigationMenuLink>
                                         <NavigationMenuLink 
                                             asChild 
                                             className={`${navigationMenuTriggerStyle()} hover:bg-chart-3 hover:text-foreground ${isActive("/characters/npc") ? "bg-char-3" : "bg-popover"}`}
                                         >
-                                            <Link href="/characters/npc">NPC's</Link>
+                                            <Link href="/characters/npc">{t("npcs")}</Link>
                                         </NavigationMenuLink>
                                     </div>
                                 </li>
@@ -82,7 +84,7 @@ export default function Navbar() {
                         >
                             <Link href="/encounters">
                                 <FaMapLocationDot className="md:hidden text-amber-100" />
-                                <p className="hidden md:inline">Encounters</p>
+                                <p className="hidden md:inline">{t("encounters")}</p>
                             </Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
@@ -94,7 +96,7 @@ export default function Navbar() {
                         >
                             <Link className="flex flex-row" href="/forge">
                                 {/* <GiAnvilImpact className="text-amber-100" /> */}
-                                <p className="hidden md:inline">Community</p>
+                                <p className="hidden md:inline">{t("community")}</p>
                             </Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>

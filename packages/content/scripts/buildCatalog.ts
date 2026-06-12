@@ -33,6 +33,7 @@ const rawSpells = readJsonDir<Open5eSpell>(join(FIXTURES, "spells"));
 const catalog: Catalog = {
     generatedAt: new Date().toISOString(),
     source: "open5e",
+    defaultLocale: "en",
     races: rawRaces.map((race) => mapOpen5eRace(race)).sort(bySlug),
     spells: rawSpells.map(mapOpen5eSpell).sort(bySlug),
     skills: dndSkills,

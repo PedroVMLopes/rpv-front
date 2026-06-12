@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useFormContext } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { SystemKey } from "@/presets";
 import { presets } from "@/presets";
 
@@ -16,10 +17,16 @@ interface FieldsProps {
     system: SystemKey;
 }
 
+type LabeledConfig = { labelKey?: string; label?: string; name?: string };
+
 export default function CommonFields({ system }: FieldsProps) {
     const { control } = useFormContext();
+    const t = useTranslations();
     const presetData = presets[system].presetData.characters;
-    
+
+    const resolveLabel = (item: LabeledConfig) =>
+        item.labelKey ? t(item.labelKey) : item.label ?? item.name ?? "";
+
     // Pega os campos comuns do preset
     const commonFields = presetData.fields.common;
 
@@ -28,7 +35,7 @@ export default function CommonFields({ system }: FieldsProps) {
 
     return (
         <div className="space-y-4">
-            <h2 className="text-lg font-semibold">Common Fields</h2>
+            <h2 className="text-lg font-semibold">{t("character.commonFields")}</h2>
             
             {/* Renderiza todos os campos comuns exceto o attributeGroup */}
             {commonFields
@@ -40,7 +47,7 @@ export default function CommonFields({ system }: FieldsProps) {
                         name={fieldConfig.name}
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>{fieldConfig.label}</FormLabel>
+                                <FormLabel>{resolveLabel(fieldConfig)}</FormLabel>
                                 <FormControl>
                                     <Input 
                                         type={fieldConfig.type} 
@@ -56,7 +63,7 @@ export default function CommonFields({ system }: FieldsProps) {
             {/* Renderiza o grupo de atributos se existir */}
             {attributeField && (
                 <div>
-                    <h3 className="text-md font-medium mb-2">{attributeField.label}</h3>
+                    <h3 className="text-md font-medium mb-2">{resolveLabel(attributeField)}</h3>
                     <div className="grid grid-cols-3 gap-4">
                         {attributeField.attributes?.map((attributeConfig, index) => (
                             <FormField
@@ -66,7 +73,7 @@ export default function CommonFields({ system }: FieldsProps) {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>
-                                            {attributeConfig.label}
+                                            {resolveLabel(attributeConfig)}
                                         </FormLabel>
                                         <FormControl>
                                             <Input type="number" {...field} />

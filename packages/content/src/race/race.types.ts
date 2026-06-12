@@ -1,3 +1,4 @@
+import type { Locale } from "@rpv/domain";
 import type { Grant } from "../grant/grant.types";
 
 export type TraitCategory =
@@ -21,6 +22,8 @@ export interface CatalogTrait {
 export interface SubraceCatalogEntry {
     slug: string;
     raceSlug: string;
+    /** Language this entry's text is authored in. */
+    language: Locale;
     name: string;
     description: string;
     asiDesc: string;
@@ -29,6 +32,8 @@ export interface SubraceCatalogEntry {
 
 export interface RaceCatalogEntry {
     slug: string;
+    /** Language this entry's text is authored in. */
+    language: Locale;
     name: string;
     system: "dnd";
     sourceDocument: string;

@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useFormContext } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { SystemKey } from "@/presets";
 import { presets } from "@/presets";
 
@@ -18,9 +19,12 @@ interface FieldsProps {
 
 export default function PlayerFields({ system }: FieldsProps) {
     const { control } = useFormContext();
+    const t = useTranslations();
     const presetData = presets[system].presetData.characters;
 
     const playerFields = presetData.fields.player;
+    const resolveLabel = (item: { labelKey?: string; label?: string; name?: string }) =>
+        item.labelKey ? t(item.labelKey) : item.label ?? item.name ?? "";
 
     return (
         <div className="grid grid-cols-2 gap-4">
@@ -31,7 +35,7 @@ export default function PlayerFields({ system }: FieldsProps) {
                 name={playerFields[0].name}
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>{playerFields[0].label}</FormLabel>
+                        <FormLabel>{resolveLabel(playerFields[0])}</FormLabel>
                         <FormControl>
                             <Input 
                                 type={playerFields[0].type} 
@@ -49,7 +53,7 @@ export default function PlayerFields({ system }: FieldsProps) {
                 name={playerFields[1].name}
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>{playerFields[1].label}</FormLabel>
+                        <FormLabel>{resolveLabel(playerFields[1])}</FormLabel>
                         <FormControl>
                             <Input 
                                 type={playerFields[1].type} 

@@ -87,6 +87,7 @@ function mapSubrace(
     return {
         slug: api.slug,
         raceSlug,
+        language: "en",
         name: api.name,
         description: api.desc,
         asiDesc: api.asi_desc,
@@ -103,6 +104,7 @@ export function mapOpen5eRace(
 
     return {
         slug: api.slug,
+        language: "en",
         name: api.name,
         system: "dnd",
         sourceDocument: api.document__slug ?? "",

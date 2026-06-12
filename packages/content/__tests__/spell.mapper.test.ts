@@ -22,6 +22,7 @@ describe("mapOpen5eSpell", () => {
             requiresConcentration: false,
             canBeCastAsRitual: false,
             sourceDocument: "wotc-srd",
+            language: "en",
         });
     });
 });

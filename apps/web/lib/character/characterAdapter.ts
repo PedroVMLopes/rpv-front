@@ -2,8 +2,11 @@ import {
     Character as DomainCharacter,
     CharacterProps,
     CharacterType,
+    DEFAULT_LOCALE,
+    Locale,
     Modifier,
     Stats,
+    isLocale,
     resolveStats,
 } from "@rpv/domain";
 import { SystemKey } from "@/presets";
@@ -20,6 +23,10 @@ function coerceString(value: unknown, fallback: string): string {
         return value;
     }
     return fallback;
+}
+
+function coerceLocale(value: unknown, fallback: Locale = DEFAULT_LOCALE): Locale {
+    return isLocale(value) ? value : fallback;
 }
 
 export function formDataToStoredCharacter(
@@ -42,6 +49,7 @@ export function formDataToStoredCharacter(
         id,
         type,
         system,
+        language: coerceLocale(formData.language),
         name: coerceString(formData.name, "Unnamed"),
         baseStats: buildBaseStatsFromForm(processedForm, system),
         modifiers,
@@ -55,6 +63,7 @@ export function storedCharacterToProps(char: StoredCharacter): CharacterProps {
         id: char.id,
         type: char.type,
         name: char.name,
+        language: char.language,
         baseStats: char.baseStats,
         modifiers: char.modifiers,
     };
@@ -117,6 +126,7 @@ export function migrateLegacyToStored(legacy: Record<string, unknown>): StoredCh
     const formData: Record<string, unknown> = {
         ...formFields,
         name: legacy.name,
+        language: legacy.language,
         hp: legacy.hp,
         maxHp: legacy.maxHp,
         ac: legacy.ac,
@@ -145,6 +155,11 @@ export function normalizeStoredCharacter(char: unknown): StoredCharacter {
 
     if (!stored.resources || !stored.systemData) {
         return migrateLegacyToStored(stored as unknown as Record<string, unknown>);
+    }
+
+    // Backfill the language field for characters persisted before i18n support.
+    if (!isLocale(stored.language)) {
+        return { ...stored, language: DEFAULT_LOCALE };
     }
 
     return stored;

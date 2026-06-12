@@ -194,15 +194,18 @@ export function flattenStoredToForm(
 
 export type ResolvedAbilityDisplay = {
     name: string;
-    label: string;
-    shortLabel: string;
+    labelKey?: string;
+    shortLabelKey?: string;
+    label?: string;
+    shortLabel?: string;
     statKey: PresetStatConfig["abilities"][number]["statKey"];
     base: number;
     resolved: number;
 };
 
 export type ResolvedCombatStatDisplay = {
-    label: string;
+    labelKey?: string;
+    label?: string;
     statKey: PresetStatConfig["combatStats"][number]["statKey"];
     base: number;
     resolved: number;
@@ -222,6 +225,8 @@ export function getResolvedStatDisplay(
     return {
         abilities: config.abilities.map((ability) => ({
             name: ability.name,
+            labelKey: ability.labelKey,
+            shortLabelKey: ability.shortLabelKey ?? ability.labelKey,
             label: ability.label,
             shortLabel: ability.shortLabel ?? ability.label,
             statKey: ability.statKey,
@@ -229,6 +234,7 @@ export function getResolvedStatDisplay(
             resolved: resolved[ability.statKey],
         })),
         combat: config.combatStats.map((combat) => ({
+            labelKey: combat.labelKey,
             label: combat.label,
             statKey: combat.statKey,
             base: base[combat.statKey],

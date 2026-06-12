@@ -68,6 +68,45 @@ describe("characterAdapter system-agnostic mapping", () => {
         );
     });
 
+    it("defaults new characters to the English content language", () => {
+        const stored = formDataToStoredCharacter(
+            formData,
+            "char-1",
+            "player",
+            "dnd",
+            []
+        );
+
+        expect(stored.language).toBe("en");
+    });
+
+    it("honors an explicit content language from the form", () => {
+        const stored = formDataToStoredCharacter(
+            { ...formData, language: "pt-BR" },
+            "char-1",
+            "player",
+            "dnd",
+            []
+        );
+
+        expect(stored.language).toBe("pt-BR");
+    });
+
+    it("backfills language for stored characters persisted before i18n", () => {
+        const stored = normalizeStoredCharacter({
+            id: "no-lang",
+            type: "player",
+            system: "dnd",
+            name: "Pre-i18n Hero",
+            baseStats: {},
+            modifiers: [],
+            resources: { hp: 5 },
+            systemData: {},
+        });
+
+        expect(stored.language).toBe("en");
+    });
+
     it("migrates legacy localStorage character shape", () => {
         const legacy = {
             id: "legacy-1",
@@ -94,5 +133,6 @@ describe("characterAdapter system-agnostic mapping", () => {
         expect(stored.systemData.characterClass).toBe("Wizard");
         expect(stored.baseStats).toBeDefined();
         expect(stored.modifiers).toEqual([]);
+        expect(stored.language).toBe("en");
     });
 });

@@ -12,10 +12,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { UseFormReturn } from "react-hook-form";
 import { useEffect } from "react";
+import { useTranslations } from "next-intl";
 
 interface FieldConfig {
     name: string;
-    label: string;
+    label?: string;
+    /** Translation key for built-in systems; resolved against the active UI locale. */
+    labelKey?: string;
     type: string;
     required?: boolean;
     defaultValue?: any;
@@ -25,7 +28,8 @@ interface FieldConfig {
     inlineGroup?: string;
     attributes?: Array<{
         name: string;
-        label: string;
+        label?: string;
+        labelKey?: string;
     }>;
     [x: string]: any;
 }
@@ -37,6 +41,23 @@ interface DynamicFormProps {
 }
 
 export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
+    const t = useTranslations();
+
+    /**
+     * Built-in systems carry a `labelKey` resolved through the UI locale, while
+     * user-authored systems (future) will carry a literal `label` in their own
+     * language. Fall back to the raw field name so nothing renders blank.
+     */
+    const resolveLabel = (item: {
+        label?: string;
+        labelKey?: string;
+        name?: string;
+    }): string => {
+        if (item.labelKey) return t(item.labelKey);
+        if (item.label) return item.label;
+        return item.name ?? "";
+    };
+
     useEffect(() => {
         // Inicializa os atributos com valores padrão se não existirem
         const attributeGroupFields = fields.filter(field => field.type === "attributeGroup");
@@ -57,7 +78,7 @@ export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
     }, [fields, form, onSubmit]);
 
     if (!fields || fields.length === 0) {
-        return <div>No fields to render</div>;
+        return <div>{t("forms.noFields")}</div>;
     }
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -98,7 +119,7 @@ export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
             render={({ field }) => (
                 <FormItem>
                     <FormLabel>
-                        {fieldConfig.label}
+                        {resolveLabel(fieldConfig)}
                         {fieldConfig.required && <span className="text-red-500">*</span>}
                     </FormLabel>
                     <FormControl>
@@ -132,7 +153,11 @@ export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
                                             value={field.value ?? ""}
                                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         >
-                                            <option value="">Select {fieldConfig.label}</option>
+                                            <option value="">
+                                                {t("forms.selectPlaceholder", {
+                                                    label: resolveLabel(fieldConfig),
+                                                })}
+                                            </option>
                                             {fieldConfig.options?.map((opt: string) => (
                                                 <option key={opt} value={opt}>
                                                     {opt}
@@ -193,7 +218,7 @@ export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
                 {/* Renderiza grupos de atributos */}
                 {attributeGroupFields.map((attField) => (
                     <div key={attField.name} className="space-y-4">
-                        <h3 className="text-lg font-semibold">{attField.label}</h3>
+                        <h3 className="text-lg font-semibold">{resolveLabel(attField)}</h3>
                         <div className="grid grid-cols-3 gap-4">
                             {attField.attributes?.map((attribute, index) => (
                                 <div key={`${attribute.name}-${index}`} className="space-y-2">
@@ -216,7 +241,7 @@ export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
                                         name={`attributes.${index}.value`}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>{attribute.label}</FormLabel>
+                                                <FormLabel>{resolveLabel(attribute)}</FormLabel>
                                                 <FormControl>
                                                     <Input
                                                         type="number"
@@ -242,7 +267,7 @@ export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
                     type="submit" 
                     className="font-semibold"
                 >
-                    Save Character
+                    {t("forms.saveCharacter")}
                 </Button>
             </form>
         </Form>

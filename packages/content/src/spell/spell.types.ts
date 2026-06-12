@@ -1,5 +1,9 @@
+import type { Locale } from "@rpv/domain";
+
 export interface SpellCatalogEntry {
     slug: string;
+    /** Language this entry's text is authored in. */
+    language: Locale;
     name: string;
     levelInt: number;
     level: string;

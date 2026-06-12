@@ -4,6 +4,7 @@ import type { SpellCatalogEntry } from "./spell.types";
 export function mapOpen5eSpell(api: Open5eSpell): SpellCatalogEntry {
     return {
         slug: api.slug,
+        language: "en",
         name: api.name,
         levelInt: api.level_int,
         level: api.level,

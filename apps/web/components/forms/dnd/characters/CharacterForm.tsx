@@ -11,13 +11,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FormProvider, UseFormReturn } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import CommonFields from "./CommonFields";
 import { SystemKey } from "@/presets";
 import PlayerFields from "./PlayerFields";
 
 interface FieldConfig {
     name: string;
-    label: string;
+    label?: string;
+    labelKey?: string;
     type: string;
     required?: boolean;
     defaultValue?: any;
@@ -39,6 +41,7 @@ export default function CharacterForm({
     system,
     type,
 }: CharacterFormProps) {
+    const t = useTranslations();
     const handleSubmit = form.handleSubmit((data) => {
         if (onSubmit) {
             onSubmit(data);
@@ -54,7 +57,7 @@ export default function CharacterForm({
                 <CommonFields system={system} />
 
                 <Button type="submit" className="w-full">
-                    Save
+                    {t("common.save")}
                 </Button>
             </form>
         </FormProvider>
