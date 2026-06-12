@@ -1,0 +1,27 @@
+{
+    "slug": "mage-hand",
+    "name": "Mage Hand",
+    "desc": "A spectral, floating hand appears at a point you choose within range. You can use the hand to manipulate an object, open an unlocked door or container, stow or retrieve an item from an open container, or pour the contents out of a vial.",
+    "higher_level": "",
+    "range": "30 feet",
+    "components": "V, S",
+    "material": "",
+    "can_be_cast_as_ritual": false,
+    "ritual": "no",
+    "duration": "1 minute",
+    "concentration": "no",
+    "requires_concentration": false,
+    "casting_time": "1 action",
+    "level": "Cantrip",
+    "level_int": 0,
+    "school": "Conjuration",
+    "dnd_class": "Bard, Sorcerer, Warlock, Wizard",
+    "spell_lists": [
+        "bard",
+        "sorcerer",
+        "warlock",
+        "wizard"
+    ],
+    "document__slug": "wotc-srd",
+    "document__title": "5e Core Rules"
+}

@@ -1,102 +1,144 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { z } from "zod";
-import { characterSchemasByType } from "@/presets/dnd/characterSchema";
+import type { CharacterProps, CharacterType, Stats } from "@rpv/domain";
 import { SystemKey } from "@/presets";
+import {
+    flattenStoredToForm,
+    formDataToStoredCharacter,
+    getResolvedStatsForCharacter,
+    normalizeStoredCharacter,
+    storedCharacterToProps,
+} from "@/lib/character/characterAdapter";
+import { getDefaultModifiersForCreation } from "@/lib/character/presetModifiers";
+import { getResourceMax } from "@/lib/character/presetStats";
+import type { StoredCharacter } from "@/lib/character/storedCharacter";
 
-// Data flux
-// Form (zod) creates-> PlayerData without an ID
-// Generates an unique ID
-// Saves everything as a Character in the array characters: Character[]
+export type { CharacterType };
+export type { StoredCharacter };
 
-type PlayerData = z.infer<typeof characterSchemasByType.player>;
-type EnemyData = z.infer<typeof characterSchemasByType.enemy>;
-type NpcData = z.infer<typeof characterSchemasByType.npc>;
-export type CharacterType = "player" | "enemy" | "npc";
-
-interface CharacterBase {
-    id: string;
-    type: CharacterType;
-    system: SystemKey;
-}
-
-type PlayerCharacter = CharacterBase & PlayerData;
-type EnemyCharacter = CharacterBase & EnemyData;
-type NpcCharacter = CharacterBase & NpcData;
-
-export type Character = PlayerCharacter | EnemyCharacter | NpcCharacter;
+/** @deprecated Use StoredCharacter */
+export type Character = StoredCharacter;
 
 interface CharacterStore {
-    characters: Character[];
-    addCharacter: (data: PlayerData | EnemyData | NpcData, type: CharacterType, system: SystemKey) => void;
+    characters: StoredCharacter[];
+    addCharacter: (
+        formData: Record<string, unknown>,
+        type: CharacterType,
+        system: SystemKey
+    ) => void;
     removeCharacter: (id: string) => void;
     clearCharacters: () => void;
-    updateCharacter: (id: string, updatedData: Partial<PlayerData | EnemyData | NpcData>) => void;
-    updateHp: (id: string, amount: number) => void;
+    updateCharacter: (id: string, formData: Record<string, unknown>) => void;
+    updateResource: (id: string, resourceName: string, delta: number) => void;
+    getResolvedStats: (id: string) => Stats | undefined;
+    getCharacterProps: (id: string) => CharacterProps | undefined;
+    getFormDefaults: (id: string) => Record<string, unknown> | undefined;
 }
 
-const createCharacter = (
-    data: PlayerData | EnemyData | NpcData, 
-    type: CharacterType, 
+const createStoredCharacter = (
+    formData: Record<string, unknown>,
+    type: CharacterType,
     system: SystemKey
-): Character => {
-    const baseCharacter = {
-        id: crypto.randomUUID(),
+): StoredCharacter => {
+    const id = crypto.randomUUID();
+    return formDataToStoredCharacter(
+        formData,
+        id,
         type,
         system,
-    };
-
-    const processedData = {
-        ...data,
-        maxHp: (data as any).maxHp ?? (data as any).hp,
-    };
-
-    return {
-        ...baseCharacter,
-        ...processedData,
-    } as Character;
+        getDefaultModifiersForCreation(system)
+    );
 };
 
 export const useCharacterStore = create<CharacterStore>()(
     persist(
-        (set) => ({
+        (set, get) => ({
             characters: [],
-            
-            addCharacter: (data, type, system) =>
+
+            addCharacter: (formData, type, system) =>
                 set((state) => ({
-                  characters: [...state.characters, createCharacter(data, type, system)],
+                    characters: [
+                        ...state.characters,
+                        createStoredCharacter(formData, type, system),
+                    ],
                 })),
-              
+
             removeCharacter: (id) =>
                 set((state) => ({
-                  characters: state.characters.filter((c) => c.id !== id),
+                    characters: state.characters.filter((c) => c.id !== id),
                 })),
-              
+
             clearCharacters: () => set({ characters: [] }),
-            
-            updateCharacter: (id: string, updatedData: Partial<PlayerData | EnemyData | NpcData>) =>
+
+            updateCharacter: (id, formData) =>
                 set((state) => ({
-                  characters: state.characters.map((char) =>
-                    char.id === id 
-                      ? { ...char, ...updatedData } as Character
-                      : char
-                  ),
+                    characters: state.characters.map((char) => {
+                        if (char.id !== id) return char;
+
+                        return formDataToStoredCharacter(
+                            formData,
+                            char.id,
+                            char.type,
+                            char.system,
+                            char.modifiers
+                        );
+                    }),
                 })),
-                
-            updateHp: (id: string, amount: number) =>
+
+            updateResource: (id, resourceName, delta) =>
                 set((state) => ({
-                  characters: state.characters.map((char) =>
-                    char.id === id
-                      ? {
-                          ...char,
-                          hp: Math.max(0, Math.min((char.hp ?? 0) + amount, char.maxHp ?? 0)),
-                        } as Character
-                      : char
-                  ),
+                    characters: state.characters.map((char) => {
+                        if (char.id !== id) return char;
+
+                        const current = char.resources[resourceName] ?? 0;
+                        const max = getResourceMax(char, resourceName);
+                        const next = current + delta;
+                        const clamped =
+                            max !== undefined
+                                ? Math.max(0, Math.min(next, max))
+                                : Math.max(0, next);
+
+                        return {
+                            ...char,
+                            resources: {
+                                ...char.resources,
+                                [resourceName]: clamped,
+                            },
+                        };
+                    }),
                 })),
+
+            getResolvedStats: (id) => {
+                const char = get().characters.find((c) => c.id === id);
+                if (!char) return undefined;
+                return getResolvedStatsForCharacter(storedCharacterToProps(char));
+            },
+
+            getCharacterProps: (id) => {
+                const char = get().characters.find((c) => c.id === id);
+                if (!char) return undefined;
+                return storedCharacterToProps(char);
+            },
+
+            getFormDefaults: (id) => {
+                const char = get().characters.find((c) => c.id === id);
+                if (!char) return undefined;
+                return flattenStoredToForm(char, char.system);
+            },
         }),
         {
-            name: "character-storage", // localStorage key
+            name: "character-storage",
+            merge: (persisted, current) => {
+                const state = persisted as CharacterStore | undefined;
+                if (!state?.characters) return current;
+
+                return {
+                    ...current,
+                    characters: state.characters.map((char) =>
+                        normalizeStoredCharacter(char)
+                    ),
+                };
+            },
         }
     )
 );

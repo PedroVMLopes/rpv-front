@@ -1,0 +1,15 @@
+{
+  "races": {
+    "dwarf": {
+      "name": "Anão"
+    },
+    "elf": {
+      "name": "Elfo"
+    }
+  },
+  "spells": {
+    "acid-splash": {
+      "name": "Respingo Ácido"
+    }
+  }
+}

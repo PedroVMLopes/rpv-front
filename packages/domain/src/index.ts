@@ -1,4 +1,4 @@
 export * from "./stats/statKey";
-export * from "./modifiers/modifier.types";
-export * from "./modifiers/modifier.operation";
-export * from "./modifiers/modifier.resolver";
+export * from "./modifiers";
+export * from "./character";
+export * from "./i18n/locale";

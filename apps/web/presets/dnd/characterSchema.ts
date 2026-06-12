@@ -1,4 +1,8 @@
 import { z } from "zod";
+import {
+    dndAbilityAttributeNames,
+    dndDefaultAttributes,
+} from "./characterStats";
 
 export const dndCharacterSchema = {
   common: z.object({
@@ -13,25 +17,11 @@ export const dndCharacterSchema = {
     attributes: z
     .array(
       z.object({
-        name: z.enum([
-          "strength",
-          "dexterity",
-          "constitution",
-          "intelligence",
-          "wisdom",
-          "charisma",
-        ]),
+        name: z.enum(dndAbilityAttributeNames),
         value: z.number().min(0).max(20).default(10).optional(),
       })
     )
-    .default([
-      { name: "strength", value: 10 },
-      { name: "dexterity", value: 10 },
-      { name: "constitution", value: 10 },
-      { name: "intelligence", value: 10 },
-      { name: "wisdom", value: 10 },
-      { name: "charisma", value: 10 },
-    ]).optional(),
+    .default(dndDefaultAttributes).optional(),
   }),
   player: z.object({
     level: z.coerce.number().optional(),

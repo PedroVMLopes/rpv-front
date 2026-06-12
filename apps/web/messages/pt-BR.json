@@ -1,0 +1,73 @@
+{
+  "common": {
+    "appName": "RPV Tabletop",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "uiLanguage": "Idioma",
+    "contentLanguage": "Idioma do conteúdo"
+  },
+  "nav": {
+    "characters": "Personagens",
+    "allCharacters": "Todos os Personagens",
+    "players": "Jogadores",
+    "enemies": "Inimigos",
+    "npcs": "NPCs",
+    "encounters": "Encontros",
+    "community": "Comunidade"
+  },
+  "forms": {
+    "saveCharacter": "Salvar Personagem",
+    "noFields": "Nenhum campo para exibir",
+    "selectPlaceholder": "Selecione {label}"
+  },
+  "fields": {
+    "name": "Nome",
+    "age": "Idade Aparente",
+    "hp": "Pontos de Vida",
+    "maxHp": "Pontos de Vida Máximos",
+    "ac": "Classe de Armadura",
+    "attributes": "Atributos",
+    "goals": "Objetivos",
+    "characterClass": "Classe",
+    "subclass": "Subclasse",
+    "level": "Nível",
+    "gold": "Ouro",
+    "silver": "Prata",
+    "bronze": "Bronze",
+    "equippedItems": "Itens Equipados",
+    "inventory": "Inventário",
+    "race": "Raça",
+    "background": "Antecedente",
+    "creatureType": "Tipo de Criatura",
+    "cr": "Nível de Desafio",
+    "occupation": "Ocupação"
+  },
+  "abilities": {
+    "strength": "Força",
+    "dexterity": "Destreza",
+    "constitution": "Constituição",
+    "intelligence": "Inteligência",
+    "wisdom": "Sabedoria",
+    "charisma": "Carisma"
+  },
+  "abilitiesShort": {
+    "strength": "FOR",
+    "dexterity": "DES",
+    "constitution": "CON",
+    "intelligence": "INT",
+    "wisdom": "SAB",
+    "charisma": "CAR"
+  },
+  "combat": {
+    "maxHp": "PV Máx",
+    "ac": "CA",
+    "hp": "PV"
+  },
+  "character": {
+    "resolvedAbilities": "Atributos resolvidos",
+    "noneSelected": "Nenhum personagem selecionado. Crie um jogador para ver os atributos resolvidos.",
+    "base": "base",
+    "commonFields": "Campos Comuns",
+    "activeModifiers": "{count, plural, one {# modificador ativo} other {# modificadores ativos}}"
+  }
+}

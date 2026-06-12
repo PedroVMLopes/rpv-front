@@ -14,11 +14,15 @@ export default function EditPlayer() {
     const params = useParams<{ id: string}>();
     const id = params.id;
 
-    const characters = useCharacterStore((state) => state.characters);
     const updateCharacter = useCharacterStore((state) => state.updateCharacter);
+    const getFormDefaults = useCharacterStore((state) => state.getFormDefaults);
+    const characters = useCharacterStore((state) => state.characters);
 
     const character = characters.find((c) => c.id === id);
     if (!character) return <p>Character not found</p>;
+
+    const formDefaults = getFormDefaults(id);
+    if (!formDefaults) return <p>Character not found</p>;
 
     const characterSystem = character.system;
     const presetData = presets[characterSystem].presetData;
@@ -28,7 +32,7 @@ export default function EditPlayer() {
 
     const form = useForm({
         resolver: zodResolver(schema),
-        defaultValues: character as any,
+        defaultValues: formDefaults,
     });
 
     return (

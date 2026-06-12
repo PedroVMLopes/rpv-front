@@ -1,8 +1,10 @@
+import { dndAbilityFieldAttributes } from "./characterStats";
+
 export const dndCharacterFields = {
     common: [
         {
             name: "name",
-            label: "Name",
+            labelKey: "fields.name",
             type: "text",
             required: true,
             group: "general",
@@ -11,7 +13,7 @@ export const dndCharacterFields = {
         },
         {
             name: "age",
-            label: "Apparent Age",
+            labelKey: "fields.age",
             type: "select",
             options: ["Todler", "Child", "Teenager", "Young Adult", "Adult", "Old Adult", "Old"],
             group: "general",
@@ -20,7 +22,7 @@ export const dndCharacterFields = {
         },
         {
             name: "hp",
-            label: "Hit Points",
+            labelKey: "fields.hp",
             type: "number",
             group: "combat",
             order: 1,
@@ -28,7 +30,7 @@ export const dndCharacterFields = {
         },
         {
             name: "maxHp",
-            label: "Max Hit Points",
+            labelKey: "fields.maxHp",
             type: "number",
             group: "combat",
             order: 2,
@@ -36,7 +38,7 @@ export const dndCharacterFields = {
         },
         {
             name: "ac",
-            label: "Armor Class",
+            labelKey: "fields.ac",
             type: "number",
             group: "combat",
             order: 3,
@@ -44,31 +46,24 @@ export const dndCharacterFields = {
         },
         {
             name: "attributes",
-            label: "Attributes",
+            labelKey: "fields.attributes",
             type: "attributeGroup",
             group: "attributes",
             order: 1,
-            attributes: [
-              { name: "strength", label: "Strength" },
-              { name: "dexterity", label: "Dexterity" },
-              { name: "constitution", label: "Constitution" },
-              { name: "intelligence", label: "Intelligence" },
-              { name: "wisdom", label: "Wisdom" },
-              { name: "charisma", label: "Charisma" }
-            ]
+            attributes: dndAbilityFieldAttributes
         },
         {
             name: "goals",
-            label: "Goals",
+            labelKey: "fields.goals",
             type: "text",
             group: "general",
-            order: '2'
+            order: 2
         }
     ],
     player: [
         {
             name: "characterClass",
-            label: "Class",
+            labelKey: "fields.characterClass",
             type: "select",
             options: ["Fighter", "Wizard", "Rogue"],
             group: "general",
@@ -77,7 +72,7 @@ export const dndCharacterFields = {
         },
         {
             name: "subclass",
-            label: "Subclass",
+            labelKey: "fields.subclass",
             type: "text",
             group: "general",
             order: 3,
@@ -85,7 +80,7 @@ export const dndCharacterFields = {
         },
         {
             name: "level",
-            label: "Level",
+            labelKey: "fields.level",
             type: "number",
             defaultValue: 1,
             group: "general",
@@ -94,7 +89,7 @@ export const dndCharacterFields = {
         },
         {
             name: "gold",
-            label: "Gold",
+            labelKey: "fields.gold",
             type: "number",
             defaultValue: 0,
             group: "general",
@@ -103,7 +98,7 @@ export const dndCharacterFields = {
         },
         {
             name: "silver",
-            label: "Silver",
+            labelKey: "fields.silver",
             type: "number",
             defaultValue: 0,
             group: "general",
@@ -112,7 +107,7 @@ export const dndCharacterFields = {
         },
         {
             name: "bronze",
-            label: "Bronze",
+            labelKey: "fields.bronze",
             type: "number",
             defaultValue: 0,
             group: "general",
@@ -121,7 +116,7 @@ export const dndCharacterFields = {
         },
         {
             name: "equippedItems",
-            label: "Equipped Items",
+            labelKey: "fields.equippedItems",
             type: "text",
             group: "general",
             order: 3,
@@ -129,7 +124,7 @@ export const dndCharacterFields = {
         },
         {
             name: "inventory",
-            label: "Inventory",
+            labelKey: "fields.inventory",
             type: "number",
             defaultValue: 0,
             group: "general",
@@ -138,7 +133,7 @@ export const dndCharacterFields = {
         },
         {
             name: "race",
-            label: "Race",
+            labelKey: "fields.race",
             type: "select",
             options: ["Todler", "Child", "Teenager", "Young Adult", "Adult", "Old Adult", "Old"],
             group: "general",
@@ -147,7 +142,7 @@ export const dndCharacterFields = {
         },
         {
             name: "background",
-            label: "Background",
+            labelKey: "fields.background",
             type: "select",
             options: ["Todler", "Child", "Teenager", "Young Adult", "Adult", "Old Adult", "Old"],
             group: "general",
@@ -158,14 +153,14 @@ export const dndCharacterFields = {
     enemy: [
         {
             name: "creatureType",
-            label: "Creature Type",
+            labelKey: "fields.creatureType",
             type: "text",
             group: "enemy",
             order: 1
         },
         {
             name: "cr",
-            label: "Challenge Rating",
+            labelKey: "fields.cr",
             type: "number",
             group: "enemy",
             order: 2
@@ -174,7 +169,7 @@ export const dndCharacterFields = {
     npc: [
         {
             name: "occupation",
-            label: "Occupation",
+            labelKey: "fields.occupation",
             type: "text",
             group: "npc",
             order: 1

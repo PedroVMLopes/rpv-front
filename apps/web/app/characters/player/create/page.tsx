@@ -9,26 +9,37 @@ import { useForm } from "react-hook-form";
 import { DynamicForm } from "@/components/forms/DynamicForm";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { useState } from "react";
-import CharacterForm from "@/components/forms/dnd/characters/CharacterForm";
+import { useRouter } from "next/navigation";
+import { listRaceOptions } from "@/lib/catalog/raceCatalog";
 
 export default function CreatePlayer() {
     const addCharacter = useCharacterStore((state) => state.addCharacter);
-    
+    const router = useRouter();
+
     const [system, setSystem] = useState<SystemKey>("dnd");
     const type = "player";
-    
+
     const presetData = presets[system].presetData;
 
     const schema = createDynamicSchema(presetData.characters.schema, type);
-    const fields = [...presetData.characters.fields.common, ...(presetData.characters.fields[type] || [])];
+    const raceOptions = listRaceOptions();
+    const fields = [
+        ...presetData.characters.fields.common,
+        ...(presetData.characters.fields[type] || []),
+    ].map((field) =>
+        field.name === "race" && raceOptions.length > 0
+            ? { ...field, options: raceOptions }
+            : field
+    );
 
     const form = useForm({
         resolver: zodResolver(schema),
-        defaultValues: {}
+        defaultValues: {},
     });
 
-    function handleSave(data: any) {
+    function handleSave(data: Record<string, unknown>) {
         addCharacter(data, type, system);
+        router.push("/characters/player");
     }
 
     return (
@@ -37,8 +48,14 @@ export default function CreatePlayer() {
                 <Link href={"/characters/player"}>Cancel</Link>
             </Button>
             <div className="mt-4 w-full flex flex-col gap-4">
-                <h1 className="mb-2 text-lg font-bold bg-muted p-1 px-2 rounded">Create a New Player</h1>
-                <select className="bg-background font-semibold" value={system} onChange={(e) => setSystem(e.target.value as any)}>
+                <h1 className="mb-2 text-lg font-bold bg-muted p-1 px-2 rounded">
+                    Create a New Player
+                </h1>
+                <select
+                    className="bg-background font-semibold"
+                    value={system}
+                    onChange={(e) => setSystem(e.target.value as SystemKey)}
+                >
                     {Object.entries(presets).map(([key, preset]) => (
                         <option key={key} value={key}>
                             {preset.name}
@@ -46,8 +63,7 @@ export default function CreatePlayer() {
                     ))}
                 </select>
                 <DynamicForm form={form} fields={fields} onSubmit={handleSave} />
-                {/* <CharacterForm form={form} fields={fields} onSubmit={handleSave} system={system} type={type}/> */}
             </div>
         </div>
-    )
+    );
 }

@@ -413,235 +413,180 @@ __turbopack_context__.s({
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$characterCarousel$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/components/ui/characterCarousel.tsx [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/store/useCharacterStore.ts [app-client] (ecmascript)");
+;
+var _s = __turbopack_context__.k.signature();
+"use client";
 ;
 ;
-function CharacterCardInfoBlocks() {
+function ClassSubclassBlock(param) {
+    let { race, characterClass, subclass } = param;
+    const raceStr = race ? String(race).trim() : "";
+    const classStr = characterClass ? String(characterClass).trim() : "";
+    const subclassStr = subclass ? String(subclass).trim() : "";
+    const title = [
+        raceStr,
+        classStr
+    ].filter(Boolean).join(" ");
+    if (!title && !subclassStr) {
+        return null;
+    }
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        className: "flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground",
+        children: [
+            title ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                className: "font-bold",
+                children: title
+            }, void 0, false, {
+                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
+                lineNumber: 30,
+                columnNumber: 22
+            }, this) : null,
+            subclassStr ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                className: "text-sm",
+                children: subclassStr
+            }, void 0, false, {
+                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
+                lineNumber: 31,
+                columnNumber: 28
+            }, this) : null
+        ]
+    }, void 0, true, {
+        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
+        lineNumber: 29,
+        columnNumber: 9
+    }, this);
+}
+_c = ClassSubclassBlock;
+function BackgroundBlock(param) {
+    let { background } = param;
+    if (!background || String(background).trim() === "") {
+        return null;
+    }
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        className: "flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground",
+        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+            className: "font-bold",
+            children: String(background)
+        }, void 0, false, {
+            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
+            lineNumber: 43,
+            columnNumber: 13
+        }, this)
+    }, void 0, false, {
+        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
+        lineNumber: 42,
+        columnNumber: 9
+    }, this);
+}
+_c1 = BackgroundBlock;
+function CharacterCardInfoBlocks(param) {
+    let { characterId } = param;
+    _s();
+    const stored = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCharacterStore"])({
+        "CharacterCardInfoBlocks.useCharacterStore[stored]": (state)=>state.characters.find({
+                "CharacterCardInfoBlocks.useCharacterStore[stored]": (c)=>c.id === characterId
+            }["CharacterCardInfoBlocks.useCharacterStore[stored]"])
+    }["CharacterCardInfoBlocks.useCharacterStore[stored]"]);
+    if (!stored) {
+        return null;
+    }
+    const systemData = stored.systemData;
+    const classBlock = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ClassSubclassBlock, {
+        race: systemData.race,
+        characterClass: systemData.characterClass,
+        subclass: systemData.subclass
+    }, void 0, false, {
+        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
+        lineNumber: 61,
+        columnNumber: 9
+    }, this);
+    const backgroundBlock = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(BackgroundBlock, {
+        background: systemData.background
+    }, void 0, false, {
+        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
+        lineNumber: 67,
+        columnNumber: 29
+    }, this);
+    const goals = systemData.goals !== undefined && systemData.goals !== null && String(systemData.goals).trim() !== "" ? String(systemData.goals) : null;
+    const hasTopBlocks = classBlock !== null || backgroundBlock !== null;
+    if (!hasTopBlocks && !goals) {
+        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$characterCarousel$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CarouselItem"], {
+            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "text-muted-foreground text-sm p-2",
+                children: "No character details yet."
+            }, void 0, false, {
+                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
+                lineNumber: 80,
+                columnNumber: 17
+            }, this)
+        }, void 0, false, {
+            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
+            lineNumber: 79,
+            columnNumber: 13
+        }, this);
+    }
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$characterCarousel$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CarouselItem"], {
         children: [
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+            hasTopBlocks && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "grid grid-cols-1 sm:grid-cols-2 gap-2",
                 children: [
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground",
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                className: "font-bold",
-                                children: "Human Rogue"
-                            }, void 0, false, {
-                                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                                lineNumber: 10,
-                                columnNumber: 21
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                className: "text-sm",
-                                children: "Circle of the moon"
-                            }, void 0, false, {
-                                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                                lineNumber: 11,
-                                columnNumber: 21
-                            }, this)
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                        lineNumber: 9,
-                        columnNumber: 17
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground",
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                className: "font-bold",
-                                children: "Heremita"
-                            }, void 0, false, {
-                                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                                lineNumber: 15,
-                                columnNumber: 21
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                className: "text-sm",
-                                children: "Neutral Evil"
-                            }, void 0, false, {
-                                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                                lineNumber: 16,
-                                columnNumber: 21
-                            }, this)
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                        lineNumber: 14,
-                        columnNumber: 17
-                    }, this)
+                    classBlock,
+                    backgroundBlock
                 ]
             }, void 0, true, {
                 fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                lineNumber: 7,
-                columnNumber: 13
+                lineNumber: 90,
+                columnNumber: 17
             }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+            goals && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "flex flex-col gap-2",
-                children: [
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "flex flex-col border rounded-2xl mt-2 p-2 px-3 bg-popover text-popover-foreground",
-                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                            className: "italic",
-                            children: '"Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi, deserunt"'
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "flex flex-col border rounded-2xl mt-2 p-2 px-3 gap-1 bg-popover text-popover-foreground",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                            className: "text-sm opacity-60",
+                            children: "Objectives"
                         }, void 0, false, {
                             fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                            lineNumber: 25,
-                            columnNumber: 21
+                            lineNumber: 99,
+                            columnNumber: 25
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                            children: goals
+                        }, void 0, false, {
+                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
+                            lineNumber: 100,
+                            columnNumber: 25
                         }, this)
-                    }, void 0, false, {
-                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                        lineNumber: 24,
-                        columnNumber: 17
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "flex flex-col border rounded-2xl p-2 px-3 gap-1 bg-popover text-popover-foreground",
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                className: "text-sm opacity-60",
-                                children: "Proficiencies"
-                            }, void 0, false, {
-                                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                                lineNumber: 30,
-                                columnNumber: 21
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "grid grid-cols-2",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                        children: "• Lorem"
-                                    }, void 0, false, {
-                                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                                        lineNumber: 32,
-                                        columnNumber: 25
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                        children: "• Lorem"
-                                    }, void 0, false, {
-                                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                                        lineNumber: 33,
-                                        columnNumber: 25
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                        children: "• Lorem"
-                                    }, void 0, false, {
-                                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                                        lineNumber: 34,
-                                        columnNumber: 25
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                        children: "• Lorem"
-                                    }, void 0, false, {
-                                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                                        lineNumber: 35,
-                                        columnNumber: 25
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                        children: "• Lorem"
-                                    }, void 0, false, {
-                                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                                        lineNumber: 36,
-                                        columnNumber: 25
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                        children: "• Lorem"
-                                    }, void 0, false, {
-                                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                                        lineNumber: 37,
-                                        columnNumber: 25
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                                lineNumber: 31,
-                                columnNumber: 21
-                            }, this)
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                        lineNumber: 29,
-                        columnNumber: 17
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "flex flex-col border rounded-2xl p-2 px-3 gap-1 bg-popover text-popover-foreground",
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                className: "text-sm opacity-60",
-                                children: "Objectives"
-                            }, void 0, false, {
-                                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                                lineNumber: 43,
-                                columnNumber: 21
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                children: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi, deserunt?"
-                            }, void 0, false, {
-                                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                                lineNumber: 44,
-                                columnNumber: 21
-                            }, this)
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                        lineNumber: 42,
-                        columnNumber: 17
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "flex flex-col border rounded-2xl p-2 px-3 gap-1 bg-popover text-popover-foreground",
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                className: "text-sm opacity-60",
-                                children: "Development"
-                            }, void 0, false, {
-                                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                                lineNumber: 49,
-                                columnNumber: 21
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
-                                        children: "Pegou um colar de chave da princesa."
-                                    }, void 0, false, {
-                                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                                        lineNumber: 51,
-                                        columnNumber: 25
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
-                                        children: "Comeu um x-rato."
-                                    }, void 0, false, {
-                                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                                        lineNumber: 52,
-                                        columnNumber: 25
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                                lineNumber: 50,
-                                columnNumber: 21
-                            }, this)
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                        lineNumber: 48,
-                        columnNumber: 17
-                    }, this)
-                ]
-            }, void 0, true, {
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
+                    lineNumber: 98,
+                    columnNumber: 21
+                }, this)
+            }, void 0, false, {
                 fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-                lineNumber: 21,
-                columnNumber: 13
+                lineNumber: 97,
+                columnNumber: 17
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx",
-        lineNumber: 5,
+        lineNumber: 88,
         columnNumber: 9
     }, this);
 }
-_c = CharacterCardInfoBlocks;
-var _c;
-__turbopack_context__.k.register(_c, "CharacterCardInfoBlocks");
+_s(CharacterCardInfoBlocks, "6SrjXvT5Xk9+NZzcYBkgIKG/uPs=", false, function() {
+    return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCharacterStore"]
+    ];
+});
+_c2 = CharacterCardInfoBlocks;
+var _c, _c1, _c2;
+__turbopack_context__.k.register(_c, "ClassSubclassBlock");
+__turbopack_context__.k.register(_c1, "BackgroundBlock");
+__turbopack_context__.k.register(_c2, "CharacterCardInfoBlocks");
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(module, globalThis.$RefreshHelpers$);
 }
@@ -656,23 +601,182 @@ __turbopack_context__.s({
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$characterCarousel$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/components/ui/characterCarousel.tsx [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$presetStats$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/lib/character/presetStats.ts [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/store/useCharacterStore.ts [app-client] (ecmascript)");
+;
+var _s = __turbopack_context__.k.signature();
+"use client";
 ;
 ;
-function CharacterCardGameInfo() {
-    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$characterCarousel$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CarouselItem"], {
-        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-            className: "flex flex-col rounded-2xl p-2 px-3 border my-2"
+;
+function CharacterCardGameInfo(param) {
+    let { characterId } = param;
+    _s();
+    const getCharacterProps = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCharacterStore"])({
+        "CharacterCardGameInfo.useCharacterStore[getCharacterProps]": (state)=>state.getCharacterProps
+    }["CharacterCardGameInfo.useCharacterStore[getCharacterProps]"]);
+    const characters = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCharacterStore"])({
+        "CharacterCardGameInfo.useCharacterStore[characters]": (state)=>state.characters
+    }["CharacterCardGameInfo.useCharacterStore[characters]"]);
+    const props = characterId ? getCharacterProps(characterId) : undefined;
+    const stored = characterId ? characters.find((c)=>c.id === characterId) : undefined;
+    if (!props || !stored) {
+        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$characterCarousel$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CarouselItem"], {
+            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "flex flex-col rounded-2xl p-2 px-3 border my-2 text-muted-foreground text-sm",
+                children: "No character selected. Create a player to see resolved stats."
+            }, void 0, false, {
+                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                lineNumber: 20,
+                columnNumber: 17
+            }, this)
         }, void 0, false, {
             fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
-            lineNumber: 6,
+            lineNumber: 19,
+            columnNumber: 13
+        }, this);
+    }
+    const display = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$presetStats$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getResolvedStatDisplay"])(props, stored.system);
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$characterCarousel$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CarouselItem"], {
+        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+            className: "flex flex-col rounded-2xl p-2 px-3 border my-2 gap-3",
+            children: [
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                            className: "text-xs font-semibold uppercase text-muted-foreground mb-2",
+                            children: "Resolved abilities"
+                        }, void 0, false, {
+                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                            lineNumber: 33,
+                            columnNumber: 21
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "grid grid-cols-3 gap-2",
+                            children: display.abilities.map((ability)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "flex flex-col items-center border rounded-lg p-2 bg-popover",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "text-xs text-muted-foreground",
+                                            children: ability.shortLabel
+                                        }, void 0, false, {
+                                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                                            lineNumber: 42,
+                                            columnNumber: 33
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "font-bold text-lg",
+                                            children: ability.resolved
+                                        }, void 0, false, {
+                                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                                            lineNumber: 45,
+                                            columnNumber: 33
+                                        }, this),
+                                        ability.resolved !== ability.base && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "text-xs text-muted-foreground",
+                                            children: [
+                                                "base ",
+                                                ability.base
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                                            lineNumber: 47,
+                                            columnNumber: 37
+                                        }, this)
+                                    ]
+                                }, ability.name, true, {
+                                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                                    lineNumber: 38,
+                                    columnNumber: 29
+                                }, this))
+                        }, void 0, false, {
+                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                            lineNumber: 36,
+                            columnNumber: 21
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                    lineNumber: 32,
+                    columnNumber: 17
+                }, this),
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "grid grid-cols-2 gap-2 text-sm",
+                    children: display.combat.map((combat)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "border rounded-lg p-2 bg-popover",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "text-muted-foreground",
+                                    children: [
+                                        combat.label,
+                                        " "
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                                    lineNumber: 59,
+                                    columnNumber: 29
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "font-bold",
+                                    children: combat.resolved
+                                }, void 0, false, {
+                                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                                    lineNumber: 60,
+                                    columnNumber: 29
+                                }, this),
+                                combat.resolved !== combat.base && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "text-xs text-muted-foreground ml-1",
+                                    children: [
+                                        "(base ",
+                                        combat.base,
+                                        ")"
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                                    lineNumber: 62,
+                                    columnNumber: 33
+                                }, this)
+                            ]
+                        }, combat.statKey, true, {
+                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                            lineNumber: 58,
+                            columnNumber: 25
+                        }, this))
+                }, void 0, false, {
+                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                    lineNumber: 56,
+                    columnNumber: 17
+                }, this),
+                props.modifiers.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                    className: "text-xs text-muted-foreground",
+                    children: [
+                        props.modifiers.length,
+                        " active modifier",
+                        props.modifiers.length === 1 ? "" : "s"
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                    lineNumber: 71,
+                    columnNumber: 21
+                }, this)
+            ]
+        }, void 0, true, {
+            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+            lineNumber: 31,
             columnNumber: 13
         }, this)
     }, void 0, false, {
         fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
-        lineNumber: 5,
+        lineNumber: 30,
         columnNumber: 9
     }, this);
 }
+_s(CharacterCardGameInfo, "fio8Nc2v6TZXYwFVYuDL8oahTro=", false, function() {
+    return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCharacterStore"],
+        __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCharacterStore"]
+    ];
+});
 _c = CharacterCardGameInfo;
 var _c;
 __turbopack_context__.k.register(_c, "CharacterCardGameInfo");
@@ -1044,6 +1148,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f
 var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$characters$2f$CharacterCard$2f$CharacterCardAbilities$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/components/characters/CharacterCard/CharacterCardAbilities.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/components/ui/dialog.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$scroll$2d$area$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/components/ui/scroll-area.tsx [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/store/useCharacterStore.ts [app-client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 "use client";
@@ -1058,11 +1163,183 @@ var _s = __turbopack_context__.k.signature();
 ;
 ;
 ;
-function CharacterCard() {
+;
+const HP_RESOURCE = "hp";
+function getAvatarUrl(systemData) {
+    var _systemData_avatar;
+    const avatar = (_systemData_avatar = systemData.avatar) !== null && _systemData_avatar !== void 0 ? _systemData_avatar : systemData.image;
+    if (typeof avatar === "string" && avatar.trim()) {
+        return avatar;
+    }
+    return undefined;
+}
+function formatLevel(level) {
+    if (typeof level === "number" && !Number.isNaN(level)) {
+        return level;
+    }
+    if (typeof level === "string" && level !== "") {
+        const parsed = Number(level);
+        return Number.isNaN(parsed) ? undefined : parsed;
+    }
+    return undefined;
+}
+function CharacterTitle(param) {
+    let { name, level } = param;
+    const levelNum = formatLevel(level);
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
+        children: [
+            name,
+            levelNum !== undefined && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                className: "text-sm opacity-50 font-semibold",
+                children: [
+                    " lv ",
+                    levelNum
+                ]
+            }, void 0, true, {
+                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
+                lineNumber: 48,
+                columnNumber: 17
+            }, this)
+        ]
+    }, void 0, true);
+}
+_c = CharacterTitle;
+function HpAcOverlay(param) {
+    let { currentHp, maxHp, ac } = param;
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        className: "absolute bottom-1 left-1 flex flex-col gap-0.5",
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "flex flex-row items-center backdrop-blur bg-black/15 rounded-2xl p-0.5 px-1.5 font-bold",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$fa6$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FaHeart"], {
+                        className: "mr-1"
+                    }, void 0, false, {
+                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
+                        lineNumber: 66,
+                        columnNumber: 17
+                    }, this),
+                    " ",
+                    currentHp,
+                    " ",
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                        className: "opacity-60",
+                        children: [
+                            "/",
+                            maxHp
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
+                        lineNumber: 67,
+                        columnNumber: 17
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
+                lineNumber: 65,
+                columnNumber: 13
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "flex flex-row items-center backdrop-blur-2xl bg-black/15 rounded-2xl p-0.5 px-1.5 font-bold",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$fa6$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FaShield"], {
+                        className: "mr-1"
+                    }, void 0, false, {
+                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
+                        lineNumber: 70,
+                        columnNumber: 17
+                    }, this),
+                    " ",
+                    ac
+                ]
+            }, void 0, true, {
+                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
+                lineNumber: 69,
+                columnNumber: 13
+            }, this)
+        ]
+    }, void 0, true, {
+        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
+        lineNumber: 64,
+        columnNumber: 9
+    }, this);
+}
+_c1 = HpAcOverlay;
+function ClassSubclassBlock(param) {
+    let { race, characterClass, subclass } = param;
+    const raceStr = race ? String(race).trim() : "";
+    const classStr = characterClass ? String(characterClass).trim() : "";
+    const subclassStr = subclass ? String(subclass).trim() : "";
+    const title = [
+        raceStr,
+        classStr
+    ].filter(Boolean).join(" ");
+    if (!title && !subclassStr) {
+        return null;
+    }
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        className: "flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground",
+        children: [
+            title ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                className: "font-bold",
+                children: title
+            }, void 0, false, {
+                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
+                lineNumber: 96,
+                columnNumber: 22
+            }, this) : null,
+            subclassStr ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                className: "text-sm",
+                children: subclassStr
+            }, void 0, false, {
+                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
+                lineNumber: 97,
+                columnNumber: 28
+            }, this) : null
+        ]
+    }, void 0, true, {
+        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
+        lineNumber: 95,
+        columnNumber: 9
+    }, this);
+}
+_c2 = ClassSubclassBlock;
+function BackgroundBlock(param) {
+    let { background } = param;
+    if (!background || String(background).trim() === "") {
+        return null;
+    }
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        className: "flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground",
+        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+            className: "font-bold",
+            children: String(background)
+        }, void 0, false, {
+            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
+            lineNumber: 109,
+            columnNumber: 13
+        }, this)
+    }, void 0, false, {
+        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
+        lineNumber: 108,
+        columnNumber: 9
+    }, this);
+}
+_c3 = BackgroundBlock;
+function CharacterCard(param) {
+    let { characterId } = param;
     _s();
+    const stored = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCharacterStore"])({
+        "CharacterCard.useCharacterStore[stored]": (state)=>state.characters.find({
+                "CharacterCard.useCharacterStore[stored]": (c)=>c.id === characterId
+            }["CharacterCard.useCharacterStore[stored]"])
+    }["CharacterCard.useCharacterStore[stored]"]);
+    const getResolvedStats = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCharacterStore"])({
+        "CharacterCard.useCharacterStore[getResolvedStats]": (state)=>state.getResolvedStats
+    }["CharacterCard.useCharacterStore[getResolvedStats]"]);
+    const resolved = getResolvedStats(characterId);
     const [api, setApi] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"]();
     const [current, setCurrent] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"](0);
-    const [count, setCount] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"](0);
     const [pageName, setPageName] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"]("");
     __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"]({
         "CharacterCard.useEffect": ()=>{
@@ -1089,7 +1366,6 @@ function CharacterCard() {
             if (!api) {
                 return;
             }
-            setCount(api.scrollSnapList().length);
             setCurrent(api.selectedScrollSnap() + 1);
             api.on("select", {
                 "CharacterCard.useEffect": ()=>{
@@ -1100,6 +1376,76 @@ function CharacterCard() {
     }["CharacterCard.useEffect"], [
         api
     ]);
+    if (!stored) {
+        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
+            className: "p-3 sm:max-w-xs gap-3",
+            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
+                className: "p-4 text-muted-foreground text-sm",
+                children: "Character not found."
+            }, void 0, false, {
+                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
+                lineNumber: 157,
+                columnNumber: 17
+            }, this)
+        }, void 0, false, {
+            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
+            lineNumber: 156,
+            columnNumber: 13
+        }, this);
+    }
+    const systemData = stored.systemData;
+    const avatarUrl = getAvatarUrl(systemData);
+    var _stored_resources_HP_RESOURCE;
+    const currentHp = (_stored_resources_HP_RESOURCE = stored.resources[HP_RESOURCE]) !== null && _stored_resources_HP_RESOURCE !== void 0 ? _stored_resources_HP_RESOURCE : 0;
+    var _resolved_hitPoints;
+    const maxHp = (_resolved_hitPoints = resolved === null || resolved === void 0 ? void 0 : resolved.hitPoints) !== null && _resolved_hitPoints !== void 0 ? _resolved_hitPoints : 0;
+    var _resolved_armorClass;
+    const ac = (_resolved_armorClass = resolved === null || resolved === void 0 ? void 0 : resolved.armorClass) !== null && _resolved_armorClass !== void 0 ? _resolved_armorClass : 0;
+    const showHpFooter = stored.resources[HP_RESOURCE] !== undefined || currentHp > 0 || maxHp > 0;
+    const classBlock = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ClassSubclassBlock, {
+        race: systemData.race,
+        characterClass: systemData.characterClass,
+        subclass: systemData.subclass
+    }, void 0, false, {
+        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
+        lineNumber: 175,
+        columnNumber: 9
+    }, this);
+    const backgroundBlock = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(BackgroundBlock, {
+        background: systemData.background
+    }, void 0, false, {
+        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
+        lineNumber: 181,
+        columnNumber: 29
+    }, this);
+    const hasTopInfoBlocks = classBlock !== null || backgroundBlock !== null;
+    const imageSection = avatarUrl ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        className: "flex flex-col items-center overflow-hidden rounded-2xl min-w-full min-h-20 max-h-96 max-w-96 relative",
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
+                src: avatarUrl,
+                alt: stored.name,
+                className: "relative"
+            }, void 0, false, {
+                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
+                lineNumber: 186,
+                columnNumber: 13
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(HpAcOverlay, {
+                currentHp: currentHp,
+                maxHp: maxHp,
+                ac: ac
+            }, void 0, false, {
+                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
+                lineNumber: 187,
+                columnNumber: 13
+            }, this)
+        ]
+    }, void 0, true, {
+        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
+        lineNumber: 185,
+        columnNumber: 9
+    }, this) : null;
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
         className: "p-3 sm:max-w-xs gap-3",
         children: [
@@ -1108,20 +1454,17 @@ function CharacterCard() {
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardTitle"], {
                         className: "font-bold text-lg",
-                        children: [
-                            "Alma la Verne ",
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                className: "text-sm opacity-50 font-semibold",
-                                children: "lv 1"
-                            }, void 0, false, {
-                                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                lineNumber: 56,
-                                columnNumber: 72
-                            }, this)
-                        ]
-                    }, void 0, true, {
+                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(CharacterTitle, {
+                            name: stored.name,
+                            level: systemData.level
+                        }, void 0, false, {
+                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
+                            lineNumber: 195,
+                            columnNumber: 21
+                        }, this)
+                    }, void 0, false, {
                         fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                        lineNumber: 56,
+                        lineNumber: 194,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardAction"], {
@@ -1135,17 +1478,17 @@ function CharacterCard() {
                                         variant: "outline",
                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$fa6$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FaExpand"], {}, void 0, false, {
                                             fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                            lineNumber: 62,
-                                            columnNumber: 71
+                                            lineNumber: 201,
+                                            columnNumber: 33
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                        lineNumber: 62,
+                                        lineNumber: 200,
                                         columnNumber: 29
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                    lineNumber: 61,
+                                    lineNumber: 199,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogContent"], {
@@ -1154,95 +1497,25 @@ function CharacterCard() {
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogHeader"], {
                                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogTitle"], {
                                                 className: "font-bold text-lg",
-                                                children: [
-                                                    "Alma la Verne ",
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        className: "text-sm opacity-50 font-semibold",
-                                                        children: "lv 1"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                                        lineNumber: 67,
-                                                        columnNumber: 90
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(CharacterTitle, {
+                                                    name: stored.name,
+                                                    level: systemData.level
+                                                }, void 0, false, {
+                                                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
+                                                    lineNumber: 207,
+                                                    columnNumber: 37
+                                                }, this)
+                                            }, void 0, false, {
                                                 fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                                lineNumber: 67,
+                                                lineNumber: 206,
                                                 columnNumber: 33
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                            lineNumber: 66,
+                                            lineNumber: 205,
                                             columnNumber: 29
                                         }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "flex flex-col items-center justify-center overflow-hidden rounded-2xl min-w-full min-h-20 max-h-96 max-w-96 relative",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
-                                                    src: "https://i.imgur.com/8FXMtTG.png",
-                                                    className: "relative"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                                    lineNumber: 72,
-                                                    columnNumber: 33
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "absolute bottom-1 left-1 flex flex-col gap-0.5",
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "flex flex-row items-center backdrop-blur bg-black/15 rounded-2xl p-0.5 px-1.5 font-bold",
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$fa6$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FaHeart"], {
-                                                                    className: "mr-1"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                                                    lineNumber: 76,
-                                                                    columnNumber: 41
-                                                                }, this),
-                                                                " 5 ",
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                    className: "opacity-60",
-                                                                    children: "/10"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                                                    lineNumber: 76,
-                                                                    columnNumber: 72
-                                                                }, this)
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                                            lineNumber: 75,
-                                                            columnNumber: 37
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "flex flex-row items-center backdrop-blur-2xl bg-black/15 rounded-2xl p-0.5 px-1.5 font-bold",
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$fa6$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FaShield"], {
-                                                                    className: "mr-1"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                                                    lineNumber: 79,
-                                                                    columnNumber: 41
-                                                                }, this),
-                                                                " 10"
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                                            lineNumber: 78,
-                                                            columnNumber: 37
-                                                        }, this)
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                                    lineNumber: 74,
-                                                    columnNumber: 33
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                            lineNumber: 71,
-                                            columnNumber: 29
-                                        }, this),
+                                        imageSection,
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$characterCarousel$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Carousel"], {
                                             className: "w-full",
                                             setApi: setApi,
@@ -1252,12 +1525,12 @@ function CharacterCard() {
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$characterCarousel$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CarouselPrevious"], {}, void 0, false, {
                                                     fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                                    lineNumber: 86,
+                                                    lineNumber: 217,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$characterCarousel$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CarouselNext"], {}, void 0, false, {
                                                     fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                                    lineNumber: 87,
+                                                    lineNumber: 218,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1265,7 +1538,7 @@ function CharacterCard() {
                                                     children: pageName
                                                 }, void 0, false, {
                                                     fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                                    lineNumber: 88,
+                                                    lineNumber: 219,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$scroll$2d$area$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ScrollArea"], {
@@ -1273,215 +1546,89 @@ function CharacterCard() {
                                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$characterCarousel$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CarouselContent"], {
                                                         className: "",
                                                         children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$characters$2f$CharacterCard$2f$CharacterCardInfoBlocks$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$characters$2f$CharacterCard$2f$CharacterCardInfoBlocks$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
+                                                                characterId: characterId
+                                                            }, void 0, false, {
                                                                 fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                                                lineNumber: 95,
+                                                                lineNumber: 225,
                                                                 columnNumber: 41
                                                             }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$characters$2f$CharacterCard$2f$CharacterCardGameInfo$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$characters$2f$CharacterCard$2f$CharacterCardGameInfo$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
+                                                                characterId: characterId
+                                                            }, void 0, false, {
                                                                 fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                                                lineNumber: 97,
+                                                                lineNumber: 227,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$characters$2f$CharacterCard$2f$CharacterCardAbilities$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                                                                 fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                                                lineNumber: 99,
+                                                                lineNumber: 229,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$characters$2f$CharacterCard$2f$CharacterCardInventory$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                                                                 fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                                                lineNumber: 101,
+                                                                lineNumber: 231,
                                                                 columnNumber: 41
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                                        lineNumber: 93,
+                                                        lineNumber: 224,
                                                         columnNumber: 37
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                                    lineNumber: 92,
+                                                    lineNumber: 223,
                                                     columnNumber: 33
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                            lineNumber: 85,
+                                            lineNumber: 216,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                    lineNumber: 64,
+                                    lineNumber: 204,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                            lineNumber: 60,
+                            lineNumber: 198,
                             columnNumber: 21
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                        lineNumber: 57,
+                        lineNumber: 197,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                lineNumber: 55,
+                lineNumber: 193,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
                 className: "p-0 flex flex-col items-center",
                 children: [
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "flex flex-col items-center overflow-hidden rounded-2xl min-w-full min-h-20 max-h-96 max-w-96 relative",
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
-                                src: "https://i.imgur.com/8FXMtTG.png",
-                                className: "relative"
-                            }, void 0, false, {
-                                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                lineNumber: 122,
-                                columnNumber: 21
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "absolute bottom-1 left-1 flex flex-col gap-0.5",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "flex flex-row items-center backdrop-blur bg-black/15 rounded-2xl p-0.5 px-1.5 font-bold",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$fa6$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FaHeart"], {
-                                                className: "mr-1"
-                                            }, void 0, false, {
-                                                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                                lineNumber: 126,
-                                                columnNumber: 29
-                                            }, this),
-                                            " 5 ",
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                className: "opacity-60",
-                                                children: "/10"
-                                            }, void 0, false, {
-                                                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                                lineNumber: 126,
-                                                columnNumber: 60
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                        lineNumber: 125,
-                                        columnNumber: 25
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "flex flex-row items-center backdrop-blur-2xl bg-black/15 rounded-2xl p-0.5 px-1.5 font-bold",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$fa6$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FaShield"], {
-                                                className: "mr-1"
-                                            }, void 0, false, {
-                                                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                                lineNumber: 129,
-                                                columnNumber: 29
-                                            }, this),
-                                            " 10"
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                        lineNumber: 128,
-                                        columnNumber: 25
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                lineNumber: 124,
-                                columnNumber: 21
-                            }, this)
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                        lineNumber: 121,
-                        columnNumber: 17
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    imageSection,
+                    hasTopInfoBlocks && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "grid grid-cols-1 sm:grid-cols-2 gap-2 my-2 w-full",
                         children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                        className: "font-bold",
-                                        children: "Human Rogue"
-                                    }, void 0, false, {
-                                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                        lineNumber: 138,
-                                        columnNumber: 25
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                        className: "text-sm",
-                                        children: "Circle of the moon"
-                                    }, void 0, false, {
-                                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                        lineNumber: 139,
-                                        columnNumber: 25
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                lineNumber: 137,
-                                columnNumber: 21
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                        className: "font-bold",
-                                        children: "Heremita"
-                                    }, void 0, false, {
-                                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                        lineNumber: 143,
-                                        columnNumber: 25
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                        className: "text-sm",
-                                        children: "Neutral Evil"
-                                    }, void 0, false, {
-                                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                        lineNumber: 144,
-                                        columnNumber: 25
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                lineNumber: 142,
-                                columnNumber: 21
-                            }, this)
+                            classBlock,
+                            backgroundBlock
                         ]
                     }, void 0, true, {
                         fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                        lineNumber: 135,
-                        columnNumber: 17
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground w-full",
-                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                            className: "italic",
-                            children: '"Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi, deserunt"'
-                        }, void 0, false, {
-                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                            lineNumber: 150,
-                            columnNumber: 21
-                        }, this)
-                    }, void 0, false, {
-                        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                        lineNumber: 149,
-                        columnNumber: 17
+                        lineNumber: 244,
+                        columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                lineNumber: 120,
+                lineNumber: 240,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardFooter"], {
@@ -1489,21 +1636,21 @@ function CharacterCard() {
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "flex flex-row w-full justify-end gap-1",
                     children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
+                        showHpFooter && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
                             variant: "ghost",
                             className: "font-bold",
                             children: [
-                                "10",
+                                currentHp,
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$fa6$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FaHeart"], {}, void 0, false, {
                                     fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                    lineNumber: 157,
-                                    columnNumber: 71
+                                    lineNumber: 256,
+                                    columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                            lineNumber: 157,
-                            columnNumber: 21
+                            lineNumber: 254,
+                            columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
                             variant: "ghost",
@@ -1514,13 +1661,13 @@ function CharacterCard() {
                                     className: "text-chart-3"
                                 }, void 0, false, {
                                     fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                    lineNumber: 158,
-                                    columnNumber: 73
+                                    lineNumber: 261,
+                                    columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                            lineNumber: 158,
+                            lineNumber: 259,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1529,36 +1676,45 @@ function CharacterCard() {
                             className: "",
                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$fa6$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FaGear"], {}, void 0, false, {
                                 fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                                lineNumber: 160,
-                                columnNumber: 74
+                                lineNumber: 264,
+                                columnNumber: 25
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                            lineNumber: 160,
+                            lineNumber: 263,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                    lineNumber: 156,
+                    lineNumber: 252,
                     columnNumber: 17
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-                lineNumber: 155,
+                lineNumber: 251,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCard.tsx",
-        lineNumber: 54,
+        lineNumber: 192,
         columnNumber: 9
     }, this);
 }
-_s(CharacterCard, "BLu6bryXdl2IyWfonyFy/tFVLDE=");
-_c = CharacterCard;
-var _c;
-__turbopack_context__.k.register(_c, "CharacterCard");
+_s(CharacterCard, "6xjhB6b5p87S6kz9Ux6ViJ61thM=", false, function() {
+    return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCharacterStore"],
+        __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCharacterStore"]
+    ];
+});
+_c4 = CharacterCard;
+var _c, _c1, _c2, _c3, _c4;
+__turbopack_context__.k.register(_c, "CharacterTitle");
+__turbopack_context__.k.register(_c1, "HpAcOverlay");
+__turbopack_context__.k.register(_c2, "ClassSubclassBlock");
+__turbopack_context__.k.register(_c3, "BackgroundBlock");
+__turbopack_context__.k.register(_c4, "CharacterCard");
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(module, globalThis.$RefreshHelpers$);
 }
@@ -1600,7 +1756,7 @@ function Players() {
                         children: "Player Characters"
                     }, void 0, false, {
                         fileName: "[project]/apps/web/app/characters/player/page.tsx",
-                        lineNumber: 18,
+                        lineNumber: 15,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
@@ -1610,29 +1766,45 @@ function Players() {
                             children: " Create New Player "
                         }, void 0, false, {
                             fileName: "[project]/apps/web/app/characters/player/page.tsx",
-                            lineNumber: 20,
+                            lineNumber: 17,
                             columnNumber: 21
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/apps/web/app/characters/player/page.tsx",
-                        lineNumber: 19,
+                        lineNumber: 16,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/apps/web/app/characters/player/page.tsx",
-                lineNumber: 17,
+                lineNumber: 14,
                 columnNumber: 13
             }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$characters$2f$CharacterCard$2f$CharacterCard$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
+            players.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "text-muted-foreground italic px-2",
+                children: 'No players yet. Click "Create New Player" to add one.'
+            }, void 0, false, {
                 fileName: "[project]/apps/web/app/characters/player/page.tsx",
-                lineNumber: 30,
-                columnNumber: 13
+                lineNumber: 22,
+                columnNumber: 17
+            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4",
+                children: players.map((p)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$characters$2f$CharacterCard$2f$CharacterCard$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
+                        characterId: p.id
+                    }, p.id, false, {
+                        fileName: "[project]/apps/web/app/characters/player/page.tsx",
+                        lineNumber: 28,
+                        columnNumber: 25
+                    }, this))
+            }, void 0, false, {
+                fileName: "[project]/apps/web/app/characters/player/page.tsx",
+                lineNumber: 26,
+                columnNumber: 17
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/apps/web/app/characters/player/page.tsx",
-        lineNumber: 15,
+        lineNumber: 13,
         columnNumber: 9
     }, this);
 }

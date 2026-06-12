@@ -9,18 +9,26 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Character, useCharacterStore } from "@/store/useCharacterStore";
+import { StoredCharacter, useCharacterStore } from "@/store/useCharacterStore";
 import { useState } from "react";
 import Link from "next/link";
 import { HealthSlider } from "../ui/HealthSlider";
 
+const HP_RESOURCE = "hp";
+
 interface IniciativeCardProps {
-    character: Character;
+    character: StoredCharacter;
 }
 
 export default function IniciativeCard({ character }: IniciativeCardProps) {
     const [ amount, setAmount ] = useState<number | undefined>();
-    const updateHp = useCharacterStore((state) => state.updateHp);
+    const updateResource = useCharacterStore((state) => state.updateResource);
+    const getResolvedStats = useCharacterStore((state) => state.getResolvedStats);
+
+    const resolved = getResolvedStats(character.id);
+    const currentHp = character.resources[HP_RESOURCE] ?? 0;
+    const maxHp = resolved?.hitPoints ?? 0;
+    const ac = resolved?.armorClass ?? 0;
 
     let borderColor = ""
     let textColor = ""
@@ -29,14 +37,14 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
 
     function handleHeal() {
         if (amount && amount > 0) {
-            updateHp(character.id, amount);
+            updateResource(character.id, HP_RESOURCE, amount);
             setAmount(undefined);
         }
     }
 
     function handleDamage() {
         if (amount) {
-            updateHp(character.id, -amount);
+            updateResource(character.id, HP_RESOURCE, -amount);
             setAmount(undefined);
         }
     }
@@ -82,7 +90,7 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
                 <div className="flex flex-row gap-3">
                     <div className="flex flex-row items-center gap-2 ml-1 font-semibold">
                         <LucideShield className={`size-4 ${textColor}`}/>
-                        <p>{character.ac}</p>
+                        <p>{ac}</p>
                     </div>
                 </div>
 
@@ -90,7 +98,7 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
                 <div className="flex flex-row justify-between mt-1">
                     <div className="flex flex-row items-center gap-2 ml-1 font-semibold">
                         <LucideHeart className={`size-4 ${textColor}`}/>
-                        <p>{character.hp}<span className="opacity-50"> / {character.maxHp}</span></p>
+                        <p>{currentHp}<span className="opacity-50"> / {maxHp}</span></p>
                     </div>
 
                     <div className="flex flex-row gap-1 items-center">
@@ -133,19 +141,18 @@ export default function IniciativeCard({ character }: IniciativeCardProps) {
                 </div>
 
                 {/* Health Slider */}
-                {character.hp ? 
+                {currentHp > 0 || maxHp > 0 ? 
                     <HealthSlider 
                         className="mt-2 px-1"
-                        defaultValue={[character.hp || 0]}
-                        max={character.maxHp}
+                        defaultValue={[currentHp]}
+                        max={maxHp}
                         step={1}
-                        value={[character.hp]}
+                        value={[currentHp]}
                         onValueChange={(value) => {
-                            // Transforms the slider value into an increment(+) or decrement(-) to be handled by the updateHp()
                             const newValue = value[0];
-                            const diff = character.hp !== undefined ? newValue - character.hp : 0;
+                            const diff = newValue - currentHp;
                             if (diff !== 0) {
-                                updateHp(character.id, diff);
+                                updateResource(character.id, HP_RESOURCE, diff);
                             }
                         }}
                     />

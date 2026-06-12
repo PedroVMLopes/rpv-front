@@ -1,0 +1,27 @@
+{
+    "slug": "light",
+    "name": "Light",
+    "desc": "You touch one object that is no larger than 10 feet in any dimension. Until the spell ends, the object sheds bright light in a 20-foot radius and dim light for an additional 20 feet.",
+    "higher_level": "",
+    "range": "Touch",
+    "components": "V, M",
+    "material": "A firefly or phosphorescent moss.",
+    "can_be_cast_as_ritual": false,
+    "ritual": "no",
+    "duration": "1 hour",
+    "concentration": "no",
+    "requires_concentration": false,
+    "casting_time": "1 action",
+    "level": "Cantrip",
+    "level_int": 0,
+    "school": "Evocation",
+    "dnd_class": "Bard, Cleric, Sorcerer, Wizard",
+    "spell_lists": [
+        "cleric",
+        "bard",
+        "sorcerer",
+        "wizard"
+    ],
+    "document__slug": "wotc-srd",
+    "document__title": "5e Core Rules"
+}
