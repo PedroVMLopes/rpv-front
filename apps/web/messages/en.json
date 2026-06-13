@@ -37,6 +37,7 @@
     "equippedItems": "Equipped Items",
     "inventory": "Inventory",
     "race": "Race",
+    "subrace": "Subrace",
     "background": "Background",
     "creatureType": "Creature Type",
     "cr": "Challenge Rating",
@@ -68,6 +69,8 @@
     "noneSelected": "No character selected. Create a player to see resolved stats.",
     "base": "base",
     "commonFields": "Common Fields",
-    "activeModifiers": "{count, plural, one {# active modifier} other {# active modifiers}}"
+    "activeModifiers": "{count, plural, one {# active modifier} other {# active modifiers}}",
+    "traits": "Racial Traits",
+    "unresolvedChoices": "Choices to resolve"
   }
 }

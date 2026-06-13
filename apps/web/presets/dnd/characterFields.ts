@@ -135,7 +135,16 @@ export const dndCharacterFields = {
             name: "race",
             labelKey: "fields.race",
             type: "select",
-            options: ["Todler", "Child", "Teenager", "Young Adult", "Adult", "Old Adult", "Old"],
+            options: [],
+            group: "general",
+            order: 2,
+            inlineGroup: "line3"
+        },
+        {
+            name: "subrace",
+            labelKey: "fields.subrace",
+            type: "select",
+            options: [],
             group: "general",
             order: 2,
             inlineGroup: "line3"

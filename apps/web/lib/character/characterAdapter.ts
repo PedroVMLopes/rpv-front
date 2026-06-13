@@ -16,7 +16,7 @@ import {
     buildSystemDataFromForm,
     flattenStoredToForm,
 } from "./presetStats";
-import type { StoredCharacter } from "./storedCharacter";
+import type { StoredCharacter, CharacterSelections } from "./storedCharacter";
 
 function coerceString(value: unknown, fallback: string): string {
     if (typeof value === "string" && value.length > 0) {
@@ -25,8 +25,26 @@ function coerceString(value: unknown, fallback: string): string {
     return fallback;
 }
 
+function coerceOptionalString(value: unknown): string | undefined {
+    if (typeof value === "string" && value.trim().length > 0) {
+        return value;
+    }
+    return undefined;
+}
+
 function coerceLocale(value: unknown, fallback: Locale = DEFAULT_LOCALE): Locale {
     return isLocale(value) ? value : fallback;
+}
+
+export function buildSelectionsFromForm(
+    formData: Record<string, unknown>,
+    existing?: CharacterSelections
+): CharacterSelections {
+    return {
+        race: coerceOptionalString(formData.race),
+        subrace: coerceOptionalString(formData.subrace),
+        choices: existing?.choices ?? {},
+    };
 }
 
 export function formDataToStoredCharacter(
@@ -34,7 +52,8 @@ export function formDataToStoredCharacter(
     id: string,
     type: CharacterType,
     system: SystemKey,
-    modifiers: Modifier[] = []
+    modifiers: Modifier[] = [],
+    existingSelections?: CharacterSelections
 ): StoredCharacter {
     const processedForm = { ...formData };
 
@@ -53,6 +72,7 @@ export function formDataToStoredCharacter(
         name: coerceString(formData.name, "Unnamed"),
         baseStats: buildBaseStatsFromForm(processedForm, system),
         modifiers,
+        selections: buildSelectionsFromForm(processedForm, existingSelections),
         resources: buildResourcesFromForm(processedForm, system),
         systemData: buildSystemDataFromForm(processedForm, system),
     };
@@ -159,7 +179,18 @@ export function normalizeStoredCharacter(char: unknown): StoredCharacter {
 
     // Backfill the language field for characters persisted before i18n support.
     if (!isLocale(stored.language)) {
-        return { ...stored, language: DEFAULT_LOCALE };
+        return {
+            ...stored,
+            language: DEFAULT_LOCALE,
+            selections: stored.selections ?? { choices: {} },
+        };
+    }
+
+    if (!stored.selections) {
+        return {
+            ...stored,
+            selections: buildSelectionsFromForm(stored.systemData ?? {}),
+        };
     }
 
     return stored;

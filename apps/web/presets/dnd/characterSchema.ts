@@ -25,7 +25,9 @@ export const dndCharacterSchema = {
   }),
   player: z.object({
     level: z.coerce.number().optional(),
-    characterClass: z.string().optional()
+    characterClass: z.string().optional(),
+    race: z.string().optional(),
+    subrace: z.string().optional(),
   }),
   enemy: z.object({
     creatureType: z.string().optional(),

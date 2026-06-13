@@ -8,12 +8,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { DynamicForm } from "@/components/forms/DynamicForm";
 import { useCharacterStore } from "@/store/useCharacterStore";
-import { useState } from "react";
+import { useContentLocale } from "@/store/useContentLocale";
+import { buildPlayerRaceFields } from "@/lib/character/playerFormFields";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { listRaceOptions } from "@/lib/catalog/raceCatalog";
 
 export default function CreatePlayer() {
     const addCharacter = useCharacterStore((state) => state.addCharacter);
+    const contentLocale = useContentLocale((state) => state.contentLocale);
     const router = useRouter();
 
     const [system, setSystem] = useState<SystemKey>("dnd");
@@ -22,20 +24,37 @@ export default function CreatePlayer() {
     const presetData = presets[system].presetData;
 
     const schema = createDynamicSchema(presetData.characters.schema, type);
-    const raceOptions = listRaceOptions();
-    const fields = [
-        ...presetData.characters.fields.common,
-        ...(presetData.characters.fields[type] || []),
-    ].map((field) =>
-        field.name === "race" && raceOptions.length > 0
-            ? { ...field, options: raceOptions }
-            : field
+    const baseFields = useMemo(
+        () => [
+            ...presetData.characters.fields.common,
+            ...(presetData.characters.fields[type] || []),
+        ],
+        [presetData.characters.fields, type]
     );
 
     const form = useForm({
         resolver: zodResolver(schema),
         defaultValues: {},
     });
+
+    const raceSlug = form.watch("race");
+    const previousRaceRef = useRef<string | undefined>(undefined);
+
+    useEffect(() => {
+        if (
+            previousRaceRef.current !== undefined &&
+            previousRaceRef.current !== raceSlug
+        ) {
+            form.setValue("subrace", "");
+        }
+
+        previousRaceRef.current = raceSlug;
+    }, [form, raceSlug]);
+
+    const fields = useMemo(
+        () => buildPlayerRaceFields(baseFields, raceSlug, contentLocale),
+        [baseFields, raceSlug, contentLocale]
+    );
 
     function handleSave(data: Record<string, unknown>) {
         addCharacter(data, type, system);

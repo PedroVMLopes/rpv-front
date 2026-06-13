@@ -37,6 +37,7 @@
     "equippedItems": "Itens Equipados",
     "inventory": "Inventário",
     "race": "Raça",
+    "subrace": "Sub-raça",
     "background": "Antecedente",
     "creatureType": "Tipo de Criatura",
     "cr": "Nível de Desafio",
@@ -68,6 +69,8 @@
     "noneSelected": "Nenhum personagem selecionado. Crie um jogador para ver os atributos resolvidos.",
     "base": "base",
     "commonFields": "Campos Comuns",
-    "activeModifiers": "{count, plural, one {# modificador ativo} other {# modificadores ativos}}"
+    "activeModifiers": "{count, plural, one {# modificador ativo} other {# modificadores ativos}}",
+    "traits": "Traços Raciais",
+    "unresolvedChoices": "Escolhas pendentes"
   }
 }

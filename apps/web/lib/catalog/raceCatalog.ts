@@ -7,6 +7,11 @@ import {
 } from "@rpv/content";
 import type { Locale } from "@rpv/domain";
 
+export type CatalogSelectOption = {
+    value: string;
+    label: string;
+};
+
 /**
  * Catalog read seam for the web app.
  *
@@ -27,6 +32,28 @@ export function getSubrace(slug: string, locale?: Locale): SubraceCatalogEntry |
     return getCatalogSubrace(slug, locale);
 }
 
-export function listRaceOptions(locale?: Locale): string[] {
-    return listCatalogRaces(locale).map((race) => race.name);
+export function listRaceOptions(locale?: Locale): CatalogSelectOption[] {
+    return listCatalogRaces(locale).map((race) => ({
+        value: race.slug,
+        label: race.name,
+    }));
+}
+
+export function listSubraceOptions(
+    raceSlug: string | undefined,
+    locale?: Locale
+): CatalogSelectOption[] {
+    if (!raceSlug) {
+        return [];
+    }
+
+    const race = getCatalogRace(raceSlug, locale);
+    if (!race) {
+        return [];
+    }
+
+    return race.subraces.map((subrace) => ({
+        value: subrace.slug,
+        label: subrace.name,
+    }));
 }

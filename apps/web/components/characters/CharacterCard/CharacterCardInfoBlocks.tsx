@@ -2,35 +2,15 @@
 
 import { CarouselItem } from "@/components/ui/characterCarousel";
 import { useCharacterStore } from "@/store/useCharacterStore";
+import {
+    ClassSubclassBlock,
+    RaceTraitsBlock,
+} from "./CharacterCardRaceInfo";
+import { getRaceTraitDisplay } from "@/lib/character/raceDisplay";
+import { useContentLocale } from "@/store/useContentLocale";
 
 interface CharacterCardInfoBlocksProps {
     characterId: string;
-}
-
-function ClassSubclassBlock({
-    race,
-    characterClass,
-    subclass,
-}: {
-    race?: unknown;
-    characterClass?: unknown;
-    subclass?: unknown;
-}) {
-    const raceStr = race ? String(race).trim() : "";
-    const classStr = characterClass ? String(characterClass).trim() : "";
-    const subclassStr = subclass ? String(subclass).trim() : "";
-    const title = [raceStr, classStr].filter(Boolean).join(" ");
-
-    if (!title && !subclassStr) {
-        return null;
-    }
-
-    return (
-        <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground">
-            {title ? <p className="font-bold">{title}</p> : null}
-            {subclassStr ? <p className="text-sm">{subclassStr}</p> : null}
-        </div>
-    );
 }
 
 function BackgroundBlock({ background }: { background?: unknown }) {
@@ -51,15 +31,21 @@ export default function CharacterCardInfoBlocks({
     const stored = useCharacterStore((state) =>
         state.characters.find((c) => c.id === characterId)
     );
+    const contentLocale = useContentLocale((state) => state.contentLocale);
 
     if (!stored) {
         return null;
     }
 
     const systemData = stored.systemData;
+    const { traits, unresolvedChoices } = getRaceTraitDisplay(
+        stored.selections,
+        contentLocale
+    );
+    const hasTraits = traits.length > 0 || unresolvedChoices.length > 0;
     const classBlock = (
         <ClassSubclassBlock
-            race={systemData.race}
+            stored={stored}
             characterClass={systemData.characterClass}
             subclass={systemData.subclass}
         />
@@ -74,7 +60,7 @@ export default function CharacterCardInfoBlocks({
 
     const hasTopBlocks = classBlock !== null || backgroundBlock !== null;
 
-    if (!hasTopBlocks && !goals) {
+    if (!hasTopBlocks && !goals && !hasTraits) {
         return (
             <CarouselItem>
                 <div className="text-muted-foreground text-sm p-2">
@@ -92,6 +78,8 @@ export default function CharacterCardInfoBlocks({
                     {backgroundBlock}
                 </div>
             )}
+
+            {hasTraits && <RaceTraitsBlock stored={stored} />}
 
             {goals && (
                 <div className="flex flex-col gap-2">

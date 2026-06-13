@@ -8,8 +8,11 @@ import {
     getResolvedStatsForCharacter,
     normalizeStoredCharacter,
     storedCharacterToProps,
+    buildSelectionsFromForm,
 } from "@/lib/character/characterAdapter";
-import { getDefaultModifiersForCreation } from "@/lib/character/presetModifiers";
+import { deriveRaceModifiers } from "@/lib/character/raceModifiers";
+import { useContentLocale } from "@/store/useContentLocale";
+import { removeModifiersBySource } from "@rpv/domain";
 import { getResourceMax } from "@/lib/character/presetStats";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 
@@ -41,14 +44,41 @@ const createStoredCharacter = (
     system: SystemKey
 ): StoredCharacter => {
     const id = crypto.randomUUID();
+    const selections = buildSelectionsFromForm(formData);
+    const contentLocale = useContentLocale.getState().contentLocale;
+    const modifiers = deriveRaceModifiers(selections, contentLocale);
+
     return formDataToStoredCharacter(
         formData,
         id,
         type,
         system,
-        getDefaultModifiersForCreation(system)
+        modifiers,
+        selections
     );
 };
+
+function rebuildCharacterFromForm(
+    char: StoredCharacter,
+    formData: Record<string, unknown>
+): StoredCharacter {
+    const selections = buildSelectionsFromForm(formData, char.selections);
+    const contentLocale = useContentLocale.getState().contentLocale;
+    const raceModifiers = deriveRaceModifiers(selections, contentLocale);
+    const preservedModifiers = removeModifiersBySource(char.modifiers, {
+        type: "race",
+    });
+    const modifiers = [...preservedModifiers, ...raceModifiers];
+
+    return formDataToStoredCharacter(
+        formData,
+        char.id,
+        char.type,
+        char.system,
+        modifiers,
+        selections
+    );
+}
 
 export const useCharacterStore = create<CharacterStore>()(
     persist(
@@ -75,13 +105,7 @@ export const useCharacterStore = create<CharacterStore>()(
                     characters: state.characters.map((char) => {
                         if (char.id !== id) return char;
 
-                        return formDataToStoredCharacter(
-                            formData,
-                            char.id,
-                            char.type,
-                            char.system,
-                            char.modifiers
-                        );
+                        return rebuildCharacterFromForm(char, formData);
                     }),
                 })),
 

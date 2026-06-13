@@ -2,6 +2,7 @@ import {
     flattenStoredToForm,
     formDataToStoredCharacter,
     normalizeStoredCharacter,
+    buildSelectionsFromForm,
 } from "../lib/character/characterAdapter";
 
 describe("characterAdapter system-agnostic mapping", () => {
@@ -40,6 +41,11 @@ describe("characterAdapter system-agnostic mapping", () => {
         expect(stored.baseStats.strength).toBe(14);
         expect(stored.baseStats.hitPoints).toBe(10);
         expect(stored.baseStats.armorClass).toBe(12);
+        expect(stored.selections).toEqual({
+            race: undefined,
+            subrace: undefined,
+            choices: {},
+        });
         expect(stored).not.toHaveProperty("hp");
         expect(stored).not.toHaveProperty("characterClass");
     });
@@ -92,6 +98,37 @@ describe("characterAdapter system-agnostic mapping", () => {
         expect(stored.language).toBe("pt-BR");
     });
 
+    it("builds selections from race and subrace form fields", () => {
+        const stored = formDataToStoredCharacter(
+            { ...formData, race: "elf", subrace: "high-elf" },
+            "char-1",
+            "player",
+            "dnd",
+            []
+        );
+
+        expect(stored.selections).toEqual({
+            race: "elf",
+            subrace: "high-elf",
+            choices: {},
+        });
+        expect(stored.systemData.race).toBe("elf");
+        expect(stored.systemData.subrace).toBe("high-elf");
+    });
+
+    it("preserves existing choices when rebuilding selections", () => {
+        const selections = buildSelectionsFromForm(
+            { race: "dwarf", subrace: "hill-dwarf" },
+            { race: "elf", subrace: "high-elf", choices: { cantrip: "acid-splash" } }
+        );
+
+        expect(selections).toEqual({
+            race: "dwarf",
+            subrace: "hill-dwarf",
+            choices: { cantrip: "acid-splash" },
+        });
+    });
+
     it("backfills language for stored characters persisted before i18n", () => {
         const stored = normalizeStoredCharacter({
             id: "no-lang",
@@ -105,6 +142,27 @@ describe("characterAdapter system-agnostic mapping", () => {
         });
 
         expect(stored.language).toBe("en");
+        expect(stored.selections).toEqual({ choices: {} });
+    });
+
+    it("backfills selections from systemData when missing", () => {
+        const stored = normalizeStoredCharacter({
+            id: "with-race",
+            type: "player",
+            system: "dnd",
+            language: "en",
+            name: "Race Hero",
+            baseStats: {},
+            modifiers: [],
+            resources: { hp: 5 },
+            systemData: { race: "elf", subrace: "high-elf" },
+        });
+
+        expect(stored.selections).toEqual({
+            race: "elf",
+            subrace: "high-elf",
+            choices: {},
+        });
     });
 
     it("migrates legacy localStorage character shape", () => {

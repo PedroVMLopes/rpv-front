@@ -14,6 +14,8 @@ import { UseFormReturn } from "react-hook-form";
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 
+export type SelectOption = string | { value: string; label: string };
+
 interface FieldConfig {
     name: string;
     label?: string;
@@ -22,7 +24,7 @@ interface FieldConfig {
     type: string;
     required?: boolean;
     defaultValue?: any;
-    options?: string[];
+    options?: SelectOption[];
     order?: number;
     group?: string;
     inlineGroup?: string;
@@ -38,6 +40,14 @@ interface DynamicFormProps {
     form: UseFormReturn<any>;
     fields: FieldConfig[];
     onSubmit?: (data: any) => void;
+}
+
+function normalizeSelectOption(option: SelectOption): { value: string; label: string } {
+    if (typeof option === "string") {
+        return { value: option, label: option };
+    }
+
+    return option;
 }
 
 export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
@@ -158,11 +168,15 @@ export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
                                                     label: resolveLabel(fieldConfig),
                                                 })}
                                             </option>
-                                            {fieldConfig.options?.map((opt: string) => (
-                                                <option key={opt} value={opt}>
-                                                    {opt}
-                                                </option>
-                                            ))}
+                                            {fieldConfig.options?.map((opt: SelectOption) => {
+                                                const { value, label } =
+                                                    normalizeSelectOption(opt);
+                                                return (
+                                                    <option key={value} value={value}>
+                                                        {label}
+                                                    </option>
+                                                );
+                                            })}
                                         </select>
                                     );
                                 
