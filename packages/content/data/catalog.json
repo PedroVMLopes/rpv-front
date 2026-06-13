@@ -1,9 +1,11 @@
 {
-  "generatedAt": "2026-06-01T01:27:48.491Z",
+  "generatedAt": "2026-06-13T04:19:58.371Z",
   "source": "open5e",
+  "defaultLocale": "en",
   "races": [
     {
       "slug": "dwarf",
+      "language": "en",
       "name": "Dwarf",
       "system": "dnd",
       "sourceDocument": "wotc-srd",
@@ -33,7 +35,13 @@
           "name": "Dwarven Resilience",
           "description": "You have advantage on saving throws against poison, and you have resistance against poison damage.",
           "category": "resistance",
-          "grants": []
+          "grants": [
+            {
+              "grantType": "ability",
+              "choose": 0,
+              "description": "Dwarven Resilience"
+            }
+          ]
         },
         {
           "slug": "dwarven-combat-training",
@@ -103,6 +111,7 @@
         {
           "slug": "hill-dwarf",
           "raceSlug": "dwarf",
+          "language": "en",
           "name": "Hill Dwarf",
           "description": "As a hill dwarf, you have keen senses, deep intuition, and remarkable resilience.",
           "asiDesc": "**_Ability Score Increase._** Your Wisdom score increases by 1",
@@ -134,6 +143,7 @@
     },
     {
       "slug": "elf",
+      "language": "en",
       "name": "Elf",
       "system": "dnd",
       "sourceDocument": "wotc-srd",
@@ -181,7 +191,13 @@
           "name": "Fey Ancestry",
           "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep.",
           "category": "resistance",
-          "grants": []
+          "grants": [
+            {
+              "grantType": "ability",
+              "choose": 0,
+              "description": "Fey Ancestry"
+            }
+          ]
         },
         {
           "slug": "trance",
@@ -195,6 +211,7 @@
         {
           "slug": "high-elf",
           "raceSlug": "elf",
+          "language": "en",
           "name": "High Elf",
           "description": "As a high elf, you have a keen mind and a mastery of at least the basics of magic.",
           "asiDesc": "**_Ability Score Increase._** Your Intelligence score increases by 1.",
@@ -285,6 +302,7 @@
   "spells": [
     {
       "slug": "acid-splash",
+      "language": "en",
       "name": "Acid Splash",
       "levelInt": 0,
       "level": "Cantrip",
@@ -305,6 +323,7 @@
     },
     {
       "slug": "fire-bolt",
+      "language": "en",
       "name": "Fire Bolt",
       "levelInt": 0,
       "level": "Cantrip",
@@ -325,6 +344,7 @@
     },
     {
       "slug": "light",
+      "language": "en",
       "name": "Light",
       "levelInt": 0,
       "level": "Cantrip",
@@ -347,6 +367,7 @@
     },
     {
       "slug": "mage-hand",
+      "language": "en",
       "name": "Mage Hand",
       "levelInt": 0,
       "level": "Cantrip",

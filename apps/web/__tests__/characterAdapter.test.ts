@@ -119,13 +119,17 @@ describe("characterAdapter system-agnostic mapping", () => {
     it("preserves existing choices when rebuilding selections", () => {
         const selections = buildSelectionsFromForm(
             { race: "dwarf", subrace: "hill-dwarf" },
-            { race: "elf", subrace: "high-elf", choices: { cantrip: "acid-splash" } }
+            {
+                race: "elf",
+                subrace: "high-elf",
+                choices: { grantPicks: { cantrip: "acid-splash" } },
+            }
         );
 
         expect(selections).toEqual({
             race: "dwarf",
             subrace: "hill-dwarf",
-            choices: { cantrip: "acid-splash" },
+            choices: { grantPicks: { cantrip: "acid-splash" } },
         });
     });
 
@@ -191,6 +195,7 @@ describe("characterAdapter system-agnostic mapping", () => {
         expect(stored.systemData.characterClass).toBe("Wizard");
         expect(stored.baseStats).toBeDefined();
         expect(stored.modifiers).toEqual([]);
+        expect(stored.grants).toEqual([]);
         expect(stored.language).toBe("en");
     });
 });

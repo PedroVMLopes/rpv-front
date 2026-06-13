@@ -1,10 +1,14 @@
-import type { BaseStats, CharacterType, Locale, Modifier } from "@rpv/domain";
+import type { BaseStats, CharacterGrant, CharacterType, Locale, Modifier } from "@rpv/domain";
 import type { SystemKey } from "@/presets";
+
+export type CharacterChoices = {
+    grantPicks?: Record<string, string>;
+};
 
 export type CharacterSelections = {
     race?: string;
     subrace?: string;
-    choices: Record<string, unknown>;
+    choices: CharacterChoices;
 };
 
 export type StoredCharacter = {
@@ -16,6 +20,7 @@ export type StoredCharacter = {
     name: string;
     baseStats: BaseStats;
     modifiers: Modifier[];
+    grants: CharacterGrant[];
     selections: CharacterSelections;
     resources: Record<string, number>;
     systemData: Record<string, unknown>;

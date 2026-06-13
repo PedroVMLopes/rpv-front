@@ -55,7 +55,38 @@ describe("useCharacterStore race modifiers", () => {
         ).toBe(12);
     });
 
-    it("replaces race modifiers when race changes on update", () => {
+    it("derives racial language and ability grants on create", () => {
+        act(() => {
+            useCharacterStore
+                .getState()
+                .addCharacter(
+                    { ...baseFormData, race: "dwarf" },
+                    "player",
+                    "dnd"
+                );
+        });
+
+        const character = useCharacterStore.getState().characters[0];
+
+        expect(character.grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    kind: "language",
+                    ref: "common",
+                }),
+                expect.objectContaining({
+                    kind: "language",
+                    ref: "dwarvish",
+                }),
+                expect.objectContaining({
+                    kind: "ability",
+                    ref: "Dwarven Resilience",
+                }),
+            ])
+        );
+    });
+
+    it("replaces grants when race changes on update", () => {
         act(() => {
             useCharacterStore
                 .getState()
@@ -95,6 +126,15 @@ describe("useCharacterStore race modifiers", () => {
             ])
         );
         expect(updated.modifiers).toHaveLength(2);
+        expect(updated.grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    kind: "language",
+                    ref: "common",
+                    source: { type: "race", id: "dwarf" },
+                }),
+            ])
+        );
         expect(
             useCharacterStore.getState().getResolvedStats(updated.id)?.dexterity
         ).toBe(10);

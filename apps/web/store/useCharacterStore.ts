@@ -11,6 +11,10 @@ import {
     buildSelectionsFromForm,
 } from "@/lib/character/characterAdapter";
 import { deriveRaceModifiers } from "@/lib/character/raceModifiers";
+import {
+    deriveCharacterGrants,
+    grantContextFromForm,
+} from "@/lib/character/characterGrants";
 import { useContentLocale } from "@/store/useContentLocale";
 import { removeModifiersBySource } from "@rpv/domain";
 import { getResourceMax } from "@/lib/character/presetStats";
@@ -47,6 +51,11 @@ const createStoredCharacter = (
     const selections = buildSelectionsFromForm(formData);
     const contentLocale = useContentLocale.getState().contentLocale;
     const modifiers = deriveRaceModifiers(selections, contentLocale);
+    const grants = deriveCharacterGrants(
+        selections,
+        grantContextFromForm(formData),
+        contentLocale
+    );
 
     return formDataToStoredCharacter(
         formData,
@@ -54,7 +63,8 @@ const createStoredCharacter = (
         type,
         system,
         modifiers,
-        selections
+        selections,
+        grants
     );
 };
 
@@ -64,11 +74,13 @@ function rebuildCharacterFromForm(
 ): StoredCharacter {
     const selections = buildSelectionsFromForm(formData, char.selections);
     const contentLocale = useContentLocale.getState().contentLocale;
+    const context = grantContextFromForm(formData);
     const raceModifiers = deriveRaceModifiers(selections, contentLocale);
     const preservedModifiers = removeModifiersBySource(char.modifiers, {
         type: "race",
     });
     const modifiers = [...preservedModifiers, ...raceModifiers];
+    const grants = deriveCharacterGrants(selections, context, contentLocale);
 
     return formDataToStoredCharacter(
         formData,
@@ -76,7 +88,8 @@ function rebuildCharacterFromForm(
         char.type,
         char.system,
         modifiers,
-        selections
+        selections,
+        grants
     );
 }
 

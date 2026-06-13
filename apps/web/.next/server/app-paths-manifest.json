@@ -1,6 +1,4 @@
 {
   "/characters/player/create/page": "app/characters/player/create/page.js",
-  "/characters/player/edit/[id]/page": "app/characters/player/edit/[id]/page.js",
-  "/characters/player/page": "app/characters/player/page.js",
-  "/page": "app/page.js"
+  "/characters/player/page": "app/characters/player/page.js"
 }

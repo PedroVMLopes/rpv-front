@@ -7,11 +7,34 @@ export interface TraitOverride {
 }
 
 /**
+ * Fixed grants at the race level (Open5e stores languages outside trait blocks).
+ */
+export const dndRaceLevelGrants: Record<string, Grant[]> = {
+    elf: [
+        {
+            grantType: "language",
+            choose: 0,
+            options: [
+                { optionType: "language", ref: "common" },
+                { optionType: "language", ref: "elvish" },
+            ],
+        },
+    ],
+    dwarf: [
+        {
+            grantType: "language",
+            choose: 0,
+            options: [
+                { optionType: "language", ref: "common" },
+                { optionType: "language", ref: "dwarvish" },
+            ],
+        },
+    ],
+};
+
+/**
  * Hand-curated structured grants that Open5e's free-text traits cannot express.
  * Keyed by source slug (race or subrace) and then by parsed trait slug.
- *
- * Scope: the representative SRD set (elf/high-elf, dwarf/hill-dwarf). Adding a
- * race later means adding an entry here for any non-ASI mechanical trait.
  */
 export const dndRaceGrantOverrides: Record<
     string,
@@ -28,7 +51,16 @@ export const dndRaceGrantOverrides: Record<
                 },
             ],
         },
-        "fey-ancestry": { category: "resistance", grants: [] },
+        "fey-ancestry": {
+            category: "resistance",
+            grants: [
+                {
+                    grantType: "ability",
+                    choose: 0,
+                    description: "Fey Ancestry",
+                },
+            ],
+        },
     },
     "high-elf": {
         "elf-weapon-training": {
@@ -70,7 +102,16 @@ export const dndRaceGrantOverrides: Record<
         },
     },
     dwarf: {
-        "dwarven-resilience": { category: "resistance", grants: [] },
+        "dwarven-resilience": {
+            category: "resistance",
+            grants: [
+                {
+                    grantType: "ability",
+                    choose: 0,
+                    description: "Dwarven Resilience",
+                },
+            ],
+        },
         "dwarven-combat-training": {
             category: "proficiency",
             grants: [

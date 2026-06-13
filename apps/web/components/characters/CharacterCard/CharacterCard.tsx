@@ -201,7 +201,7 @@ export default function CharacterCard({ characterId }: CharacterCardProps) {
 
                                         <CharacterCardGameInfo characterId={characterId} />
 
-                                        <CharacterCardAbilities />
+                                        <CharacterCardAbilities characterId={characterId} />
 
                                         <CharacterCardInventory />
                                     </CarouselContent>

@@ -170,6 +170,9 @@ export function flattenStoredToForm(
     const form: Record<string, unknown> = {
         ...stored.systemData,
         name: stored.name,
+        race: stored.selections?.race ?? stored.systemData.race,
+        subrace: stored.selections?.subrace ?? stored.systemData.subrace,
+        choices: stored.selections?.choices ?? {},
         attributes: config.abilities.map((ability) => ({
             name: ability.name,
             value: stored.baseStats[ability.statKey],

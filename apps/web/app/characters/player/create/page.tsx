@@ -10,6 +10,7 @@ import { DynamicForm } from "@/components/forms/DynamicForm";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { useContentLocale } from "@/store/useContentLocale";
 import { buildPlayerRaceFields } from "@/lib/character/playerFormFields";
+import { CharacterGrantPickers } from "@/components/characters/CharacterGrantPickers";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -82,6 +83,7 @@ export default function CreatePlayer() {
                     ))}
                 </select>
                 <DynamicForm form={form} fields={fields} onSubmit={handleSave} />
+                <CharacterGrantPickers form={form} contentLocale={contentLocale} />
             </div>
         </div>
     );

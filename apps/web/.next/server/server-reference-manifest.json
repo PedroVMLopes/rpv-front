@@ -6,24 +6,14 @@
           "moduleId": "[project]/apps/web/.next-internal/server/app/characters/player/create/page/actions.js { ACTIONS_MODULE0 => \"[project]/apps/web/i18n/locale.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
         },
-        "app/characters/player/edit/[id]/page": {
-          "moduleId": "[project]/apps/web/.next-internal/server/app/characters/player/edit/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/apps/web/i18n/locale.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
-          "async": false
-        },
         "app/characters/player/page": {
           "moduleId": "[project]/apps/web/.next-internal/server/app/characters/player/page/actions.js { ACTIONS_MODULE0 => \"[project]/apps/web/i18n/locale.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
-          "async": false
-        },
-        "app/page": {
-          "moduleId": "[project]/apps/web/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/apps/web/i18n/locale.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
         }
       },
       "layer": {
         "app/characters/player/create/page": "rsc",
-        "app/characters/player/edit/[id]/page": "rsc",
-        "app/characters/player/page": "rsc",
-        "app/page": "rsc"
+        "app/characters/player/page": "rsc"
       }
     },
     "40e9edd2600933de82b009820a0da313d61ac41668": {
@@ -32,24 +22,14 @@
           "moduleId": "[project]/apps/web/.next-internal/server/app/characters/player/create/page/actions.js { ACTIONS_MODULE0 => \"[project]/apps/web/i18n/locale.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
         },
-        "app/characters/player/edit/[id]/page": {
-          "moduleId": "[project]/apps/web/.next-internal/server/app/characters/player/edit/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/apps/web/i18n/locale.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
-          "async": false
-        },
         "app/characters/player/page": {
           "moduleId": "[project]/apps/web/.next-internal/server/app/characters/player/page/actions.js { ACTIONS_MODULE0 => \"[project]/apps/web/i18n/locale.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
-          "async": false
-        },
-        "app/page": {
-          "moduleId": "[project]/apps/web/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/apps/web/i18n/locale.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
         }
       },
       "layer": {
         "app/characters/player/create/page": "action-browser",
-        "app/characters/player/edit/[id]/page": "action-browser",
-        "app/characters/player/page": "action-browser",
-        "app/page": "action-browser"
+        "app/characters/player/page": "action-browser"
       }
     }
   },

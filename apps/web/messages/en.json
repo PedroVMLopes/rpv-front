@@ -39,6 +39,7 @@
     "race": "Race",
     "subrace": "Subrace",
     "background": "Background",
+    "startingItem": "Starting Item",
     "creatureType": "Creature Type",
     "cr": "Challenge Rating",
     "occupation": "Occupation"
@@ -72,5 +73,23 @@
     "activeModifiers": "{count, plural, one {# active modifier} other {# active modifiers}}",
     "traits": "Racial Traits",
     "unresolvedChoices": "Choices to resolve"
+  },
+  "grants": {
+    "languagesTitle": "Languages",
+    "autoKnown": "automatic",
+    "languageBudget": "Choose {count, plural, one {# language} other {# languages}}",
+    "selectLanguage": "Select a language",
+    "selectOption": "Select an option",
+    "abilityChoicesTitle": "Ability Choices",
+    "grantedFeaturesTitle": "Granted Features",
+    "noneYet": "None yet",
+    "sourceRace": "From race: {id}",
+    "sourceClass": "From class: {id}",
+    "sourceBackground": "From background: {id}",
+    "sourceItem": "From item: {id}",
+    "sourceSpell": "From spell: {id}",
+    "sourceFeat": "From feat: {id}",
+    "sourceCondition": "From condition: {id}",
+    "sourceSystem": "From system: {id}"
   }
 }

@@ -1,5 +1,6 @@
 import { Modifier } from "../modifiers/modifier.types";
 import { Stats } from "../modifiers/modifier.resolver";
+import type { CharacterGrant } from "../grants/characterGrant.types";
 import type { Locale } from "../i18n/locale";
 
 export type CharacterId = string;
@@ -13,4 +14,5 @@ export interface CharacterProps {
     language?: Locale;
     baseStats: BaseStats;
     modifiers: Modifier[];
+    grants?: CharacterGrant[];
 }

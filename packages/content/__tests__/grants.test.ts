@@ -2,10 +2,14 @@ import { readFileSync, readdirSync } from "fs";
 import { join } from "path";
 import {
     abilityScoreGrantsToModifiers,
+    fixedGrantsToCharacterGrants,
+    countLanguageChoices,
+    resolveLanguagePool,
     resolveGrantPool,
     resolveSpellPool,
 } from "../src/grant/grants";
 import type { Grant } from "../src/grant/grant.types";
+import { dndLanguages } from "../src/catalog/languages.seed";
 import { mapOpen5eRace } from "../src/race/race.mapper";
 import { mapOpen5eSpell } from "../src/spell/spell.mapper";
 import type { Open5eRace, Open5eSpell } from "../src/open5e/open5e.types";
@@ -60,6 +64,107 @@ describe("abilityScoreGrantsToModifiers", () => {
         ];
 
         expect(abilityScoreGrantsToModifiers(grants, "elf")).toEqual([]);
+    });
+});
+
+describe("fixedGrantsToCharacterGrants", () => {
+    it("converts fixed language options into character grants", () => {
+        const grants: Grant[] = [
+            {
+                grantType: "language",
+                choose: 0,
+                options: [
+                    { optionType: "language", ref: "common" },
+                    { optionType: "language", ref: "elvish" },
+                ],
+            },
+        ];
+
+        const result = fixedGrantsToCharacterGrants(grants, {
+            type: "race",
+            id: "elf",
+        });
+
+        expect(result).toHaveLength(2);
+        expect(result[0]).toMatchObject({
+            kind: "language",
+            ref: "common",
+            source: { type: "race", id: "elf" },
+        });
+    });
+
+    it("converts fixed ability grants", () => {
+        const grants: Grant[] = [
+            {
+                grantType: "ability",
+                choose: 0,
+                description: "Fey Ancestry",
+            },
+        ];
+
+        const result = fixedGrantsToCharacterGrants(grants, {
+            type: "race",
+            id: "elf",
+        });
+
+        expect(result).toHaveLength(1);
+        expect(result[0]).toMatchObject({
+            kind: "ability",
+            ref: "Fey Ancestry",
+            name: "Fey Ancestry",
+        });
+    });
+
+    it("skips choice-based grants", () => {
+        const grants: Grant[] = [
+            {
+                grantType: "language",
+                choose: 1,
+                selectionFilter: { any: true },
+            },
+        ];
+
+        expect(
+            fixedGrantsToCharacterGrants(grants, { type: "race", id: "elf" })
+        ).toEqual([]);
+    });
+});
+
+describe("countLanguageChoices", () => {
+    it("sums choose counts for language grants", () => {
+        const grants: Grant[] = [
+            { grantType: "language", choose: 1, selectionFilter: { any: true } },
+            { grantType: "language", choose: 2, selectionFilter: { any: true } },
+            { grantType: "language", choose: 0, options: [{ optionType: "language", ref: "common" }] },
+        ];
+
+        expect(countLanguageChoices(grants)).toBe(3);
+    });
+});
+
+describe("resolveLanguagePool", () => {
+    it("returns all languages when filter is any", () => {
+        const grant: Grant = {
+            grantType: "language",
+            choose: 1,
+            selectionFilter: { any: true },
+        };
+
+        expect(resolveLanguagePool(grant, dndLanguages)).toHaveLength(
+            dndLanguages.length
+        );
+    });
+
+    it("returns enumerated language options", () => {
+        const grant: Grant = {
+            grantType: "language",
+            choose: 0,
+            options: [{ optionType: "language", ref: "common" }],
+        };
+
+        expect(resolveLanguagePool(grant, dndLanguages)).toEqual([
+            dndLanguages[0],
+        ]);
     });
 });
 

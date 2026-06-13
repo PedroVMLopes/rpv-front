@@ -1,5 +1,6 @@
 import {
     Character as DomainCharacter,
+    CharacterGrant,
     CharacterProps,
     CharacterType,
     DEFAULT_LOCALE,
@@ -16,7 +17,7 @@ import {
     buildSystemDataFromForm,
     flattenStoredToForm,
 } from "./presetStats";
-import type { StoredCharacter, CharacterSelections } from "./storedCharacter";
+import type { StoredCharacter, CharacterSelections, CharacterChoices } from "./storedCharacter";
 
 function coerceString(value: unknown, fallback: string): string {
     if (typeof value === "string" && value.length > 0) {
@@ -36,6 +37,22 @@ function coerceLocale(value: unknown, fallback: Locale = DEFAULT_LOCALE): Locale
     return isLocale(value) ? value : fallback;
 }
 
+function coerceChoices(value: unknown, existing?: CharacterChoices): CharacterChoices {
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+        const record = value as Record<string, unknown>;
+        const grantPicks =
+            record.grantPicks && typeof record.grantPicks === "object"
+                ? (record.grantPicks as Record<string, string>)
+                : existing?.grantPicks;
+
+        return {
+            grantPicks: grantPicks ?? existing?.grantPicks,
+        };
+    }
+
+    return existing ?? {};
+}
+
 export function buildSelectionsFromForm(
     formData: Record<string, unknown>,
     existing?: CharacterSelections
@@ -43,7 +60,7 @@ export function buildSelectionsFromForm(
     return {
         race: coerceOptionalString(formData.race),
         subrace: coerceOptionalString(formData.subrace),
-        choices: existing?.choices ?? {},
+        choices: coerceChoices(formData.choices, existing?.choices),
     };
 }
 
@@ -53,7 +70,8 @@ export function formDataToStoredCharacter(
     type: CharacterType,
     system: SystemKey,
     modifiers: Modifier[] = [],
-    existingSelections?: CharacterSelections
+    existingSelections?: CharacterSelections,
+    grants: CharacterGrant[] = []
 ): StoredCharacter {
     const processedForm = { ...formData };
 
@@ -72,6 +90,7 @@ export function formDataToStoredCharacter(
         name: coerceString(formData.name, "Unnamed"),
         baseStats: buildBaseStatsFromForm(processedForm, system),
         modifiers,
+        grants,
         selections: buildSelectionsFromForm(processedForm, existingSelections),
         resources: buildResourcesFromForm(processedForm, system),
         systemData: buildSystemDataFromForm(processedForm, system),
@@ -86,6 +105,7 @@ export function storedCharacterToProps(char: StoredCharacter): CharacterProps {
         language: char.language,
         baseStats: char.baseStats,
         modifiers: char.modifiers,
+        grants: char.grants ?? [],
     };
 }
 
@@ -159,6 +179,10 @@ export function migrateLegacyToStored(legacy: Record<string, unknown>): StoredCh
         stored.baseStats = { ...stored.baseStats, ...(baseStats as Stats) };
     }
 
+    if (!stored.grants) {
+        stored.grants = [];
+    }
+
     if (typeof legacy.hp === "number") {
         stored.resources.hp = legacy.hp;
     }
@@ -182,6 +206,7 @@ export function normalizeStoredCharacter(char: unknown): StoredCharacter {
         return {
             ...stored,
             language: DEFAULT_LOCALE,
+            grants: stored.grants ?? [],
             selections: stored.selections ?? { choices: {} },
         };
     }
@@ -189,7 +214,15 @@ export function normalizeStoredCharacter(char: unknown): StoredCharacter {
     if (!stored.selections) {
         return {
             ...stored,
+            grants: stored.grants ?? [],
             selections: buildSelectionsFromForm(stored.systemData ?? {}),
+        };
+    }
+
+    if (!stored.grants) {
+        return {
+            ...stored,
+            grants: [],
         };
     }
 

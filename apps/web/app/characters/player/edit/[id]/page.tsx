@@ -11,6 +11,7 @@ import { presets } from "@/presets";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { buildPlayerRaceFields } from "@/lib/character/playerFormFields";
+import { CharacterGrantPickers } from "@/components/characters/CharacterGrantPickers";
 import { useEffect, useMemo, useRef } from "react";
 
 export default function EditPlayer() {
@@ -96,6 +97,7 @@ export default function EditPlayer() {
                 fields={fields}
                 onSubmit={(data) => updateCharacter(id, data)}
             />
+            <CharacterGrantPickers form={form} contentLocale={contentLocale} />
         </div>
     );
 }
