@@ -966,7 +966,10 @@ function CreatePlayer() {
         contentLocale
     ]);
     function handleSave(data) {
-        addCharacter(data, type, system);
+        addCharacter({
+            ...data,
+            choices: form.getValues("choices")
+        }, type, system);
         router.push("/characters/player");
     }
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -980,12 +983,12 @@ function CreatePlayer() {
                     children: "Cancel"
                 }, void 0, false, {
                     fileName: "[project]/apps/web/app/characters/player/create/page.tsx",
-                    lineNumber: 68,
+                    lineNumber: 75,
                     columnNumber: 17
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/apps/web/app/characters/player/create/page.tsx",
-                lineNumber: 67,
+                lineNumber: 74,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -996,7 +999,7 @@ function CreatePlayer() {
                         children: "Create a New Player"
                     }, void 0, false, {
                         fileName: "[project]/apps/web/app/characters/player/create/page.tsx",
-                        lineNumber: 71,
+                        lineNumber: 78,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -1008,12 +1011,12 @@ function CreatePlayer() {
                                 children: preset.name
                             }, key, false, {
                                 fileName: "[project]/apps/web/app/characters/player/create/page.tsx",
-                                lineNumber: 80,
+                                lineNumber: 87,
                                 columnNumber: 25
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/apps/web/app/characters/player/create/page.tsx",
-                        lineNumber: 74,
+                        lineNumber: 81,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$forms$2f$DynamicForm$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DynamicForm"], {
@@ -1022,7 +1025,7 @@ function CreatePlayer() {
                         onSubmit: handleSave
                     }, void 0, false, {
                         fileName: "[project]/apps/web/app/characters/player/create/page.tsx",
-                        lineNumber: 85,
+                        lineNumber: 92,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$characters$2f$CharacterGrantPickers$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CharacterGrantPickers"], {
@@ -1030,19 +1033,19 @@ function CreatePlayer() {
                         contentLocale: contentLocale
                     }, void 0, false, {
                         fileName: "[project]/apps/web/app/characters/player/create/page.tsx",
-                        lineNumber: 86,
+                        lineNumber: 93,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/apps/web/app/characters/player/create/page.tsx",
-                lineNumber: 70,
+                lineNumber: 77,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/apps/web/app/characters/player/create/page.tsx",
-        lineNumber: 66,
+        lineNumber: 73,
         columnNumber: 9
     }, this);
 }
