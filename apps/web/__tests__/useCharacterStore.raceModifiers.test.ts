@@ -146,6 +146,74 @@ describe("useCharacterStore race modifiers", () => {
         ).toBe(11);
     });
 
+    it("derives choice grants from grantPicks on create", () => {
+        act(() => {
+            useCharacterStore.getState().addCharacter(
+                {
+                    ...baseFormData,
+                    race: "elf",
+                    subrace: "high-elf",
+                    choices: {
+                        grantPicks: {
+                            "race:high-elf:language:0:0": "draconic",
+                            "race:high-elf:spell:0:0": "fire-bolt",
+                        },
+                    },
+                },
+                "player",
+                "dnd"
+            );
+        });
+
+        const character = useCharacterStore.getState().characters[0];
+
+        expect(character.selections.choices.grantPicks).toEqual({
+            "race:high-elf:language:0:0": "draconic",
+            "race:high-elf:spell:0:0": "fire-bolt",
+        });
+        expect(character.grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    kind: "language",
+                    ref: "draconic",
+                }),
+                expect.objectContaining({
+                    kind: "spell",
+                    ref: "fire-bolt",
+                }),
+            ])
+        );
+    });
+
+    it("derives dwarf tool proficiency choice on create", () => {
+        act(() => {
+            useCharacterStore.getState().addCharacter(
+                {
+                    ...baseFormData,
+                    race: "dwarf",
+                    choices: {
+                        grantPicks: {
+                            "race:dwarf:tool_proficiency:0:0": "smiths-tools",
+                        },
+                    },
+                },
+                "player",
+                "dnd"
+            );
+        });
+
+        const character = useCharacterStore.getState().characters[0];
+
+        expect(character.grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    kind: "proficiency",
+                    ref: "smiths-tools",
+                }),
+            ])
+        );
+    });
+
     it("preserves non-race modifiers when race changes on update", () => {
         act(() => {
             useCharacterStore

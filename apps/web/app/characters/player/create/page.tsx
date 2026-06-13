@@ -58,7 +58,14 @@ export default function CreatePlayer() {
     );
 
     function handleSave(data: Record<string, unknown>) {
-        addCharacter(data, type, system);
+        addCharacter(
+            {
+                ...data,
+                choices: form.getValues("choices"),
+            },
+            type,
+            system
+        );
         router.push("/characters/player");
     }
 

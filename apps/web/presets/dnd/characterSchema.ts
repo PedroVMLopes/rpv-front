@@ -28,6 +28,13 @@ export const dndCharacterSchema = {
     characterClass: z.string().optional(),
     race: z.string().optional(),
     subrace: z.string().optional(),
+    background: z.string().optional(),
+    startingItem: z.string().optional(),
+    choices: z
+      .object({
+        grantPicks: z.record(z.string(), z.string()).optional(),
+      })
+      .optional(),
   }),
   enemy: z.object({
     creatureType: z.string().optional(),

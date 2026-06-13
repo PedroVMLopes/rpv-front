@@ -22,7 +22,7 @@ export function getPresetStatConfig(system: SystemKey): PresetStatConfig {
 
 export function getCoreFieldNames(system: SystemKey): Set<string> {
     const config = getPresetStatConfig(system);
-    const names = new Set<string>(["name", "attributes"]);
+    const names = new Set<string>(["name", "attributes", "choices"]);
 
     for (const combat of config.combatStats) {
         for (const field of combat.formFields) {

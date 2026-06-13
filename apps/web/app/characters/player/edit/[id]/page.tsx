@@ -95,7 +95,12 @@ export default function EditPlayer() {
             <DynamicForm
                 form={form}
                 fields={fields}
-                onSubmit={(data) => updateCharacter(id, data)}
+                onSubmit={(data) =>
+                    updateCharacter(id, {
+                        ...data,
+                        choices: form.getValues("choices"),
+                    })
+                }
             />
             <CharacterGrantPickers form={form} contentLocale={contentLocale} />
         </div>
