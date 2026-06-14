@@ -92,5 +92,24 @@
     "sourceCondition": "Da condição: {id}",
     "sourceSystem": "Do sistema: {id}",
     "choicesIncomplete": "Complete todas as escolhas obrigatórias antes de salvar."
+  },
+  "abilityScores": {
+    "title": "Atributos",
+    "methods": {
+      "manual": "Manual",
+      "standard-array": "Array Padrão",
+      "point-buy": "Compra de Pontos",
+      "roll": "Rolagem (4d6 descarta menor)"
+    },
+    "pointsRemaining": "Pontos restantes: {count}",
+    "points": "pts",
+    "roll": "Rolar atributos",
+    "assignScore": "Atribuir valor",
+    "preview": "{base} ({mod, plural, =0 {+0 raça} other {+# raça}}) = {total}",
+    "errors": {
+      "pointBuyInvalid": "Os atributos de compra de pontos devem respeitar o orçamento e a faixa permitida.",
+      "standardArrayInvalid": "Atribua cada valor do array padrão exatamente uma vez.",
+      "rollInvalid": "Atribua cada valor rolado exatamente uma vez."
+    }
   }
 }

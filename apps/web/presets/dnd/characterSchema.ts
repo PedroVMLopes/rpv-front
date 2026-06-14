@@ -35,6 +35,10 @@ export const dndCharacterSchema = {
         grantPicks: z.record(z.string(), z.string()).optional(),
       })
       .optional(),
+    abilityScoreMethod: z
+      .enum(["manual", "standard-array", "point-buy", "roll"])
+      .optional(),
+    abilityScoreRolls: z.array(z.coerce.number()).optional(),
   }),
   enemy: z.object({
     creatureType: z.string().optional(),

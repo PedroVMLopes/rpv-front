@@ -92,5 +92,24 @@
     "sourceCondition": "From condition: {id}",
     "sourceSystem": "From system: {id}",
     "choicesIncomplete": "Complete all required choices before saving."
+  },
+  "abilityScores": {
+    "title": "Ability Scores",
+    "methods": {
+      "manual": "Manual",
+      "standard-array": "Standard Array",
+      "point-buy": "Point Buy",
+      "roll": "Roll (4d6 drop lowest)"
+    },
+    "pointsRemaining": "Points remaining: {count}",
+    "points": "pts",
+    "roll": "Roll scores",
+    "assignScore": "Assign score",
+    "preview": "{base} ({mod, plural, =0 {+0 race} other {+# race}}) = {total}",
+    "errors": {
+      "pointBuyInvalid": "Point-buy scores must stay within budget and allowed range.",
+      "standardArrayInvalid": "Assign each standard array value exactly once.",
+      "rollInvalid": "Assign every rolled score exactly once."
+    }
   }
 }

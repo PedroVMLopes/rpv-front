@@ -8,6 +8,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { createDynamicSchema } from "@/lib/schema/zodDynamic";
 import { applyChoiceValidation } from "@/lib/character/choiceValidation";
+import { applyAbilityScoreValidation } from "@/lib/character/abilityScoreGeneration";
+import { AbilityScoresField } from "@/components/characters/AbilityScoresField";
 import { presets } from "@/presets";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -33,11 +35,19 @@ export default function EditPlayer() {
 
     const schema = useMemo(
         () =>
-            applyChoiceValidation(
-                createDynamicSchema(presetData.characters.schema, characterType),
-                contentLocale
+            applyAbilityScoreValidation(
+                applyChoiceValidation(
+                    createDynamicSchema(presetData.characters.schema, characterType),
+                    contentLocale
+                ),
+                presetData.statConfig
             ),
-        [presetData.characters.schema, characterType, contentLocale]
+        [
+            presetData.characters.schema,
+            presetData.statConfig,
+            characterType,
+            contentLocale,
+        ]
     );
 
     const baseFields = useMemo(
@@ -80,7 +90,10 @@ export default function EditPlayer() {
     }, [form, raceSlug]);
 
     const fields = useMemo(
-        () => buildPlayerRaceFields(baseFields, raceSlug, contentLocale),
+        () =>
+            buildPlayerRaceFields(baseFields, raceSlug, contentLocale).filter(
+                (field) => field.type !== "attributeGroup"
+            ),
         [baseFields, raceSlug, contentLocale]
     );
 
@@ -97,6 +110,12 @@ export default function EditPlayer() {
             >
                 <Link href={"/characters/player"}>Return</Link>
             </Button>
+            <AbilityScoresField
+                form={form}
+                abilities={presetData.statConfig.abilities}
+                statConfig={presetData.statConfig}
+                contentLocale={contentLocale}
+            />
             <DynamicForm
                 form={form}
                 fields={fields}

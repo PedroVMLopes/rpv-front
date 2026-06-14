@@ -5,6 +5,8 @@ import Link from "next/link";
 import { presets, SystemKey } from "@/presets";
 import { createDynamicSchema } from "@/lib/schema/zodDynamic";
 import { applyChoiceValidation } from "@/lib/character/choiceValidation";
+import { applyAbilityScoreValidation } from "@/lib/character/abilityScoreGeneration";
+import { AbilityScoresField } from "@/components/characters/AbilityScoresField";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { DynamicForm } from "@/components/forms/DynamicForm";
@@ -27,11 +29,14 @@ export default function CreatePlayer() {
 
     const schema = useMemo(
         () =>
-            applyChoiceValidation(
-                createDynamicSchema(presetData.characters.schema, type),
-                contentLocale
+            applyAbilityScoreValidation(
+                applyChoiceValidation(
+                    createDynamicSchema(presetData.characters.schema, type),
+                    contentLocale
+                ),
+                presetData.statConfig
             ),
-        [presetData.characters.schema, type, contentLocale]
+        [presetData.characters.schema, presetData.statConfig, type, contentLocale]
     );
     const baseFields = useMemo(
         () => [
@@ -61,7 +66,10 @@ export default function CreatePlayer() {
     }, [form, raceSlug]);
 
     const fields = useMemo(
-        () => buildPlayerRaceFields(baseFields, raceSlug, contentLocale),
+        () =>
+            buildPlayerRaceFields(baseFields, raceSlug, contentLocale).filter(
+                (field) => field.type !== "attributeGroup"
+            ),
         [baseFields, raceSlug, contentLocale]
     );
 
@@ -97,6 +105,12 @@ export default function CreatePlayer() {
                         </option>
                     ))}
                 </select>
+                <AbilityScoresField
+                    form={form}
+                    abilities={presetData.statConfig.abilities}
+                    statConfig={presetData.statConfig}
+                    contentLocale={contentLocale}
+                />
                 <DynamicForm form={form} fields={fields} onSubmit={handleSave} />
                 <CharacterGrantPickers form={form} contentLocale={contentLocale} />
             </div>

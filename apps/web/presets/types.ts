@@ -33,11 +33,35 @@ export type PresetResource = {
     defaultValue: number;
 };
 
+export type AbilityScoreMethod =
+    | "manual"
+    | "standard-array"
+    | "point-buy"
+    | "roll";
+
+export type AbilityGenerationConfig = {
+    methods: AbilityScoreMethod[];
+    standardArray: number[];
+    pointBuy: {
+        budget: number;
+        min: number;
+        max: number;
+        cost: Record<number, number>;
+    };
+    roll: {
+        dice: number;
+        sides: number;
+        drop: number;
+        count: number;
+    };
+};
+
 export type PresetStatConfig = {
     abilities: PresetAbilityAttribute[];
     combatStats: PresetCombatStat[];
     resources: PresetResource[];
     defaultAbilityValue: number;
+    abilityGeneration?: AbilityGenerationConfig;
 };
 
 export type PresetAttributeField = {
