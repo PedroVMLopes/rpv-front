@@ -65,7 +65,7 @@ export const dndCharacterFields = {
             name: "characterClass",
             labelKey: "fields.characterClass",
             type: "select",
-            options: ["Fighter", "Wizard", "Rogue"],
+            options: [],
             group: "general",
             order: 2,
             inlineGroup: "line2"

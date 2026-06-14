@@ -90,6 +90,7 @@
     "sourceSpell": "Da magia: {id}",
     "sourceFeat": "Do talento: {id}",
     "sourceCondition": "Da condição: {id}",
-    "sourceSystem": "Do sistema: {id}"
+    "sourceSystem": "Do sistema: {id}",
+    "choicesIncomplete": "Complete todas as escolhas obrigatórias antes de salvar."
   }
 }

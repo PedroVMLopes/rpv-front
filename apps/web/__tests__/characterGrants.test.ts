@@ -85,6 +85,60 @@ describe("deriveCharacterGrants", () => {
             ])
         );
     });
+
+    it("derives fixed class proficiencies from characterClass context", () => {
+        const grants = deriveCharacterGrants(
+            { race: "elf", choices: {} },
+            { characterClass: "fighter" },
+            "en"
+        );
+
+        expect(grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    kind: "proficiency",
+                    ref: "light-armor",
+                    source: { type: "class", id: "fighter" },
+                }),
+                expect.objectContaining({
+                    kind: "proficiency",
+                    ref: "martial-weapons",
+                    source: { type: "class", id: "fighter" },
+                }),
+            ])
+        );
+    });
+
+    it("resolves class skill choices from grantPicks", () => {
+        const grants = deriveCharacterGrants(
+            {
+                race: "elf",
+                choices: {
+                    grantPicks: {
+                        "class:fighter:skill_proficiency:2:0": "athletics",
+                        "class:fighter:skill_proficiency:2:1": "intimidation",
+                    },
+                },
+            },
+            { characterClass: "fighter" },
+            "en"
+        );
+
+        expect(grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    kind: "proficiency",
+                    ref: "athletics",
+                    source: { type: "class", id: "fighter" },
+                }),
+                expect.objectContaining({
+                    kind: "proficiency",
+                    ref: "intimidation",
+                    source: { type: "class", id: "fighter" },
+                }),
+            ])
+        );
+    });
 });
 
 describe("getLanguageBudget", () => {
@@ -123,6 +177,16 @@ describe("grantContextFromForm", () => {
         ).toEqual({
             background: "sage",
             startingItem: "scroll-of-fire-bolt",
+        });
+    });
+
+    it("extracts characterClass slug", () => {
+        expect(
+            grantContextFromForm({
+                characterClass: "fighter",
+            })
+        ).toEqual({
+            characterClass: "fighter",
         });
     });
 });

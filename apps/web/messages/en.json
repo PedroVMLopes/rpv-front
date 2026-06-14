@@ -90,6 +90,7 @@
     "sourceSpell": "From spell: {id}",
     "sourceFeat": "From feat: {id}",
     "sourceCondition": "From condition: {id}",
-    "sourceSystem": "From system: {id}"
+    "sourceSystem": "From system: {id}",
+    "choicesIncomplete": "Complete all required choices before saving."
   }
 }

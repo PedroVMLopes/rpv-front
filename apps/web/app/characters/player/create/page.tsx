@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { presets, SystemKey } from "@/presets";
 import { createDynamicSchema } from "@/lib/schema/zodDynamic";
+import { applyChoiceValidation } from "@/lib/character/choiceValidation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { DynamicForm } from "@/components/forms/DynamicForm";
@@ -24,7 +25,14 @@ export default function CreatePlayer() {
 
     const presetData = presets[system].presetData;
 
-    const schema = createDynamicSchema(presetData.characters.schema, type);
+    const schema = useMemo(
+        () =>
+            applyChoiceValidation(
+                createDynamicSchema(presetData.characters.schema, type),
+                contentLocale
+            ),
+        [presetData.characters.schema, type, contentLocale]
+    );
     const baseFields = useMemo(
         () => [
             ...presetData.characters.fields.common,

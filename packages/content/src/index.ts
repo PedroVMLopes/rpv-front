@@ -19,5 +19,6 @@ export * from "./catalog/languages.seed";
 export * from "./curation/raceGrants.dnd";
 export * from "./curation/backgroundGrants.dnd";
 export * from "./curation/itemGrants.dnd";
+export * from "./curation/classGrants.dnd";
 
 export { catalog, listRaces, getRace, getSubrace, getSpell, listLanguages, getLanguage } from "./catalog/bundled";

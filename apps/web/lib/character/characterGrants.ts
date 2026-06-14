@@ -5,6 +5,7 @@ import {
     fixedGrantsToCharacterGrants,
     getBackgroundGrants,
     getItemGrants,
+    getClassGrants,
     getLanguage,
     getSpell,
     dndRaceLevelGrants,
@@ -22,6 +23,7 @@ export type GrantSourceContext = {
     subrace?: string;
     background?: string;
     startingItem?: string;
+    characterClass?: string;
 };
 
 function collectGrantSources(
@@ -63,6 +65,13 @@ function collectGrantSources(
         sources.push({
             source: { type: "item", id: context.startingItem },
             grants: getItemGrants(context.startingItem),
+        });
+    }
+
+    if (context.characterClass) {
+        sources.push({
+            source: { type: "class", id: context.characterClass },
+            grants: getClassGrants(context.characterClass),
         });
     }
 
@@ -194,6 +203,11 @@ export function grantContextFromForm(
             typeof formData.startingItem === "string" &&
             formData.startingItem.trim()
                 ? formData.startingItem
+                : undefined,
+        characterClass:
+            typeof formData.characterClass === "string" &&
+            formData.characterClass.trim()
+                ? formData.characterClass
                 : undefined,
     };
 }

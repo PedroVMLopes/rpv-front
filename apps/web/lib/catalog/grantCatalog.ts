@@ -2,6 +2,7 @@ import { listLanguages as listCatalogLanguages, getLanguage as getCatalogLanguag
 import type { Language } from "@rpv/content";
 import { listBackgrounds } from "@rpv/content";
 import { listItems } from "@rpv/content";
+import { listClasses } from "@rpv/content";
 
 export type CatalogSelectOption = {
     value: string;
@@ -34,5 +35,12 @@ export function listStartingItemOptions(): CatalogSelectOption[] {
     return listItems().map((item) => ({
         value: item.slug,
         label: item.name,
+    }));
+}
+
+export function listClassOptions(): CatalogSelectOption[] {
+    return listClasses().map((characterClass) => ({
+        value: characterClass.slug,
+        label: characterClass.name,
     }));
 }

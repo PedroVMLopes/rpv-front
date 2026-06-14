@@ -7,6 +7,7 @@ import {
 import {
     listBackgroundOptions,
     listStartingItemOptions,
+    listClassOptions,
 } from "@/lib/catalog/grantCatalog";
 
 type FieldConfig = {
@@ -24,6 +25,7 @@ export function buildPlayerRaceFields(
     const subraceOptions = listSubraceOptions(raceSlug, contentLocale);
     const backgroundOptions = listBackgroundOptions();
     const startingItemOptions = listStartingItemOptions();
+    const classOptions = listClassOptions();
 
     return fields.map((field) => {
         if (field.name === "race" && raceOptions.length > 0) {
@@ -40,6 +42,10 @@ export function buildPlayerRaceFields(
 
         if (field.name === "startingItem" && startingItemOptions.length > 0) {
             return { ...field, options: startingItemOptions };
+        }
+
+        if (field.name === "characterClass" && classOptions.length > 0) {
+            return { ...field, options: classOptions };
         }
 
         return field;

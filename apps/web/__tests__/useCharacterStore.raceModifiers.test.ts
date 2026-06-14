@@ -214,6 +214,43 @@ describe("useCharacterStore race modifiers", () => {
         );
     });
 
+    it("derives class grants on create", () => {
+        act(() => {
+            useCharacterStore.getState().addCharacter(
+                {
+                    ...baseFormData,
+                    race: "elf",
+                    characterClass: "fighter",
+                    choices: {
+                        grantPicks: {
+                            "class:fighter:skill_proficiency:2:0": "athletics",
+                            "class:fighter:skill_proficiency:2:1": "intimidation",
+                        },
+                    },
+                },
+                "player",
+                "dnd"
+            );
+        });
+
+        const character = useCharacterStore.getState().characters[0];
+
+        expect(character.grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    kind: "proficiency",
+                    ref: "light-armor",
+                    source: { type: "class", id: "fighter" },
+                }),
+                expect.objectContaining({
+                    kind: "proficiency",
+                    ref: "athletics",
+                    source: { type: "class", id: "fighter" },
+                }),
+            ])
+        );
+    });
+
     it("preserves non-race modifiers when race changes on update", () => {
         act(() => {
             useCharacterStore

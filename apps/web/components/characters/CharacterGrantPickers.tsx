@@ -14,6 +14,7 @@ import {
     collectNonLanguageChoiceGrants,
 } from "@/lib/character/grantChoices";
 import { buildSelectionsFromForm } from "@/lib/character/characterAdapter";
+import { findMissingRequiredChoices } from "@/lib/character/choiceValidation";
 import { listLanguageOptions } from "@/lib/catalog/grantCatalog";
 import type { CharacterChoices } from "@/lib/character/storedCharacter";
 
@@ -42,7 +43,7 @@ function setGrantPick(
                 [key]: value,
             },
         },
-        { shouldDirty: true }
+        { shouldDirty: true, shouldValidate: true }
     );
 }
 
@@ -84,6 +85,15 @@ export function CharacterGrantPickers({
     );
 
     const grantPicks = readGrantPicks(form);
+    const choicesError = form.formState.errors.choices;
+    const missingChoices = useMemo(
+        () => findMissingRequiredChoices(formValues, contentLocale),
+        [formValues, contentLocale]
+    );
+    const missingChoiceKeys = useMemo(
+        () => new Set(missingChoices.map((choice) => choice.key)),
+        [missingChoices]
+    );
     const allLanguageOptions = listLanguageOptions();
     const lockedLanguageSlugs = new Set(fixedLanguages.map((grant) => grant.ref));
     const pickedLanguageSlugs = new Set(
@@ -108,6 +118,11 @@ export function CharacterGrantPickers({
 
     return (
         <div className="flex flex-col gap-4 border rounded-lg p-4 bg-muted/30">
+            {choicesError && (
+                <p className="text-sm font-medium text-destructive">
+                    {t("choicesIncomplete")}
+                </p>
+            )}
             {(fixedLanguages.length > 0 || languageChoices.length > 0) && (
                 <section className="flex flex-col gap-2">
                     <h2 className="text-sm font-bold">{t("languagesTitle")}</h2>
@@ -154,7 +169,11 @@ export function CharacterGrantPickers({
                             >
                                 <span className="font-medium">{choice.label}</span>
                                 <select
-                                    className="bg-background rounded border px-2 py-1"
+                                    className={`bg-background rounded border px-2 py-1${
+                                        missingChoiceKeys.has(choice.key)
+                                            ? " border-destructive"
+                                            : ""
+                                    }`}
                                     value={selected}
                                     onChange={(event) =>
                                         setGrantPick(
@@ -190,7 +209,11 @@ export function CharacterGrantPickers({
                         >
                             <span className="font-medium">{choice.label}</span>
                             <select
-                                className="bg-background rounded border px-2 py-1"
+                                className={`bg-background rounded border px-2 py-1${
+                                    missingChoiceKeys.has(choice.key)
+                                        ? " border-destructive"
+                                        : ""
+                                }`}
                                 value={grantPicks[choice.key] ?? ""}
                                 onChange={(event) =>
                                     setGrantPick(

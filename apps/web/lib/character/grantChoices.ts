@@ -9,6 +9,7 @@ import { getRace, getSubrace } from "@/lib/catalog/raceCatalog";
 import {
     getBackgroundGrants,
     getItemGrants,
+    getClassGrants,
     dndRaceLevelGrants,
 } from "@rpv/content";
 import type { CharacterSelections } from "./storedCharacter";
@@ -50,9 +51,15 @@ function expandChoiceGrant(
             label: spell.name,
         }));
     } else if (pool.options) {
+        const skillNames = new Map(
+            catalog.skills.map((skill) => [skill.slug, skill.name])
+        );
         options = pool.options.map((option) => ({
             value: option.ref,
-            label: option.ref,
+            label:
+                option.optionType === "skill"
+                    ? (skillNames.get(option.ref) ?? option.ref)
+                    : option.ref,
         }));
     }
 
@@ -175,6 +182,15 @@ export function collectPendingChoiceGrants(
             ...collectFromGrants(
                 getItemGrants(context.startingItem),
                 { type: "item", id: context.startingItem }
+            )
+        );
+    }
+
+    if (context.characterClass) {
+        pending.push(
+            ...collectFromGrants(
+                getClassGrants(context.characterClass),
+                { type: "class", id: context.characterClass }
             )
         );
     }
