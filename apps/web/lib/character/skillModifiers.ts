@@ -1,0 +1,85 @@
+import type { CharacterGrant, StatKey, Stats } from "@rpv/domain";
+import type { Skill } from "@rpv/content";
+
+export type SkillModifier = {
+    slug: string;
+    name: string;
+    ability: StatKey;
+    modifier: number;
+    proficient: boolean;
+};
+
+export function abilityModifier(score: number): number {
+    return Math.floor((score - 10) / 2);
+}
+
+export function proficiencyBonus(level: number): number {
+    const normalized =
+        !Number.isFinite(level) || level < 1 ? 1 : Math.floor(level);
+
+    return 2 + Math.floor((normalized - 1) / 4);
+}
+
+export function readCharacterLevel(systemData: Record<string, unknown>): number {
+    const level = systemData.level;
+
+    if (typeof level === "number" && !Number.isNaN(level) && level >= 1) {
+        return Math.floor(level);
+    }
+
+    if (typeof level === "string" && level.trim() !== "") {
+        const parsed = Number(level);
+        if (!Number.isNaN(parsed) && parsed >= 1) {
+            return Math.floor(parsed);
+        }
+    }
+
+    return 1;
+}
+
+export function getProficientSkillSlugs(
+    grants: CharacterGrant[],
+    skills: Skill[]
+): Set<string> {
+    const skillSlugs = new Set(skills.map((skill) => skill.slug));
+
+    return new Set(
+        grants
+            .filter(
+                (grant) =>
+                    grant.kind === "proficiency" && skillSlugs.has(grant.ref)
+            )
+            .map((grant) => grant.ref)
+    );
+}
+
+export function formatModifier(value: number): string {
+    if (value >= 0) {
+        return `+${value}`;
+    }
+
+    return String(value);
+}
+
+export function computeSkillModifiers(
+    stats: Stats,
+    grants: CharacterGrant[],
+    level: number,
+    skills: Skill[]
+): SkillModifier[] {
+    const proficientSlugs = getProficientSkillSlugs(grants, skills);
+    const bonus = proficiencyBonus(level);
+
+    return skills.map((skill) => {
+        const abilityMod = abilityModifier(stats[skill.ability] ?? 10);
+        const proficient = proficientSlugs.has(skill.slug);
+
+        return {
+            slug: skill.slug,
+            name: skill.name,
+            ability: skill.ability,
+            modifier: abilityMod + (proficient ? bonus : 0),
+            proficient,
+        };
+    });
+}

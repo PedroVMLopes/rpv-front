@@ -1373,10 +1373,12 @@ var { k: __turbopack_refresh__, m: module } = __turbopack_context__;
 {
 __turbopack_context__.s({
     "getLanguage": ()=>getLanguage,
+    "getSkill": ()=>getSkill,
     "listBackgroundOptions": ()=>listBackgroundOptions,
     "listClassOptions": ()=>listClassOptions,
     "listLanguageOptions": ()=>listLanguageOptions,
     "listLanguages": ()=>listLanguages,
+    "listSkills": ()=>listSkills,
     "listStartingItemOptions": ()=>listStartingItemOptions
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$index$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$module__evaluation$3e$__ = __turbopack_context__.i("[project]/packages/content/src/index.ts [app-client] (ecmascript) <module evaluation>");
@@ -1384,6 +1386,8 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2
 var __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$curation$2f$backgroundGrants$2e$dnd$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/packages/content/src/curation/backgroundGrants.dnd.ts [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$curation$2f$itemGrants$2e$dnd$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/packages/content/src/curation/itemGrants.dnd.ts [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$curation$2f$classGrants$2e$dnd$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/packages/content/src/curation/classGrants.dnd.ts [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$catalog$2f$skills$2e$seed$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/packages/content/src/catalog/skills.seed.ts [app-client] (ecmascript)");
+;
 ;
 ;
 ;
@@ -1417,6 +1421,12 @@ function listClassOptions() {
             value: characterClass.slug,
             label: characterClass.name
         }));
+}
+function listSkills() {
+    return __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$catalog$2f$skills$2e$seed$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["dndSkills"];
+}
+function getSkill(slug) {
+    return __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$catalog$2f$skills$2e$seed$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["dndSkills"].find((skill)=>skill.slug === slug);
 }
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(module, globalThis.$RefreshHelpers$);

@@ -1180,10 +1180,12 @@ function DynamicForm({ form, fields, onSubmit }) {
 
 __turbopack_context__.s({
     "getLanguage": ()=>getLanguage,
+    "getSkill": ()=>getSkill,
     "listBackgroundOptions": ()=>listBackgroundOptions,
     "listClassOptions": ()=>listClassOptions,
     "listLanguageOptions": ()=>listLanguageOptions,
     "listLanguages": ()=>listLanguages,
+    "listSkills": ()=>listSkills,
     "listStartingItemOptions": ()=>listStartingItemOptions
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$index$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$module__evaluation$3e$__ = __turbopack_context__.i("[project]/packages/content/src/index.ts [app-ssr] (ecmascript) <module evaluation>");
@@ -1191,6 +1193,8 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2
 var __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$curation$2f$backgroundGrants$2e$dnd$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/packages/content/src/curation/backgroundGrants.dnd.ts [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$curation$2f$itemGrants$2e$dnd$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/packages/content/src/curation/itemGrants.dnd.ts [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$curation$2f$classGrants$2e$dnd$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/packages/content/src/curation/classGrants.dnd.ts [app-ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$catalog$2f$skills$2e$seed$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/packages/content/src/catalog/skills.seed.ts [app-ssr] (ecmascript)");
+;
 ;
 ;
 ;
@@ -1224,6 +1228,12 @@ function listClassOptions() {
             value: characterClass.slug,
             label: characterClass.name
         }));
+}
+function listSkills() {
+    return __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$catalog$2f$skills$2e$seed$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["dndSkills"];
+}
+function getSkill(slug) {
+    return __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$catalog$2f$skills$2e$seed$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["dndSkills"].find((skill)=>skill.slug === slug);
 }
 }),
 "[project]/apps/web/lib/character/playerFormFields.ts [app-ssr] (ecmascript)": ((__turbopack_context__) => {

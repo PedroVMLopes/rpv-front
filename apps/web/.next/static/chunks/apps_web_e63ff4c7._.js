@@ -858,235 +858,65 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
     __turbopack_context__.k.registerExports(module, globalThis.$RefreshHelpers$);
 }
 }}),
-"[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx [app-client] (ecmascript)": ((__turbopack_context__) => {
+"[project]/apps/web/lib/character/skillModifiers.ts [app-client] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
 
 var { k: __turbopack_refresh__, m: module } = __turbopack_context__;
 {
 __turbopack_context__.s({
-    "default": ()=>CharacterCardGameInfo
+    "abilityModifier": ()=>abilityModifier,
+    "computeSkillModifiers": ()=>computeSkillModifiers,
+    "formatModifier": ()=>formatModifier,
+    "getProficientSkillSlugs": ()=>getProficientSkillSlugs,
+    "proficiencyBonus": ()=>proficiencyBonus,
+    "readCharacterLevel": ()=>readCharacterLevel
 });
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2d$intl$2f$dist$2f$esm$2f$development$2f$react$2d$client$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next-intl/dist/esm/development/react-client/index.js [app-client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$characterCarousel$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/components/ui/characterCarousel.tsx [app-client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$presetStats$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/lib/character/presetStats.ts [app-client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/store/useCharacterStore.ts [app-client] (ecmascript)");
-;
-var _s = __turbopack_context__.k.signature();
-"use client";
-;
-;
-;
-;
-function CharacterCardGameInfo(param) {
-    let { characterId } = param;
-    _s();
-    const t = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2d$intl$2f$dist$2f$esm$2f$development$2f$react$2d$client$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useTranslations"])();
-    const getCharacterProps = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCharacterStore"])({
-        "CharacterCardGameInfo.useCharacterStore[getCharacterProps]": (state)=>state.getCharacterProps
-    }["CharacterCardGameInfo.useCharacterStore[getCharacterProps]"]);
-    const characters = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCharacterStore"])({
-        "CharacterCardGameInfo.useCharacterStore[characters]": (state)=>state.characters
-    }["CharacterCardGameInfo.useCharacterStore[characters]"]);
-    const props = characterId ? getCharacterProps(characterId) : undefined;
-    const stored = characterId ? characters.find((c)=>c.id === characterId) : undefined;
-    if (!props || !stored) {
-        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$characterCarousel$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CarouselItem"], {
-            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "flex flex-col rounded-2xl p-2 px-3 border my-2 text-muted-foreground text-sm",
-                children: t("character.noneSelected")
-            }, void 0, false, {
-                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
-                lineNumber: 22,
-                columnNumber: 17
-            }, this)
-        }, void 0, false, {
-            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
-            lineNumber: 21,
-            columnNumber: 13
-        }, this);
+function abilityModifier(score) {
+    return Math.floor((score - 10) / 2);
+}
+function proficiencyBonus(level) {
+    const normalized = !Number.isFinite(level) || level < 1 ? 1 : Math.floor(level);
+    return 2 + Math.floor((normalized - 1) / 4);
+}
+function readCharacterLevel(systemData) {
+    const level = systemData.level;
+    if (typeof level === "number" && !Number.isNaN(level) && level >= 1) {
+        return Math.floor(level);
     }
-    const display = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$presetStats$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getResolvedStatDisplay"])(props, stored.system);
-    const labelOf = (item)=>{
-        var _item_label, _ref;
-        return item.labelKey ? t(item.labelKey) : (_ref = (_item_label = item.label) !== null && _item_label !== void 0 ? _item_label : item.name) !== null && _ref !== void 0 ? _ref : "";
-    };
-    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$characterCarousel$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CarouselItem"], {
-        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-            className: "flex flex-col rounded-2xl p-2 px-3 border my-2 gap-3",
-            children: [
-                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                            className: "text-xs font-semibold uppercase text-muted-foreground mb-2",
-                            children: t("character.resolvedAbilities")
-                        }, void 0, false, {
-                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
-                            lineNumber: 37,
-                            columnNumber: 21
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "grid grid-cols-3 gap-2",
-                            children: display.abilities.map((ability)=>{
-                                var _ability_shortLabel;
-                                return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "flex flex-col items-center border rounded-lg p-2 bg-popover",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                            className: "text-xs text-muted-foreground",
-                                            children: ability.shortLabelKey ? t(ability.shortLabelKey) : (_ability_shortLabel = ability.shortLabel) !== null && _ability_shortLabel !== void 0 ? _ability_shortLabel : ability.name
-                                        }, void 0, false, {
-                                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
-                                            lineNumber: 46,
-                                            columnNumber: 33
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                            className: "font-bold text-lg",
-                                            children: ability.resolved
-                                        }, void 0, false, {
-                                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
-                                            lineNumber: 51,
-                                            columnNumber: 33
-                                        }, this),
-                                        ability.resolved !== ability.base && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                            className: "text-xs text-muted-foreground",
-                                            children: [
-                                                t("character.base"),
-                                                " ",
-                                                ability.base
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
-                                            lineNumber: 53,
-                                            columnNumber: 37
-                                        }, this)
-                                    ]
-                                }, ability.name, true, {
-                                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
-                                    lineNumber: 42,
-                                    columnNumber: 29
-                                }, this);
-                            })
-                        }, void 0, false, {
-                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
-                            lineNumber: 40,
-                            columnNumber: 21
-                        }, this)
-                    ]
-                }, void 0, true, {
-                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
-                    lineNumber: 36,
-                    columnNumber: 17
-                }, this),
-                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "grid grid-cols-2 gap-2 text-sm",
-                    children: display.combat.map((combat)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "border rounded-lg p-2 bg-popover",
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                    className: "text-muted-foreground",
-                                    children: [
-                                        labelOf(combat),
-                                        " "
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
-                                    lineNumber: 65,
-                                    columnNumber: 29
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                    className: "font-bold",
-                                    children: combat.resolved
-                                }, void 0, false, {
-                                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
-                                    lineNumber: 66,
-                                    columnNumber: 29
-                                }, this),
-                                combat.resolved !== combat.base && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                    className: "text-xs text-muted-foreground ml-1",
-                                    children: [
-                                        "(",
-                                        t("character.base"),
-                                        " ",
-                                        combat.base,
-                                        ")"
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
-                                    lineNumber: 68,
-                                    columnNumber: 33
-                                }, this)
-                            ]
-                        }, combat.statKey, true, {
-                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
-                            lineNumber: 64,
-                            columnNumber: 25
-                        }, this))
-                }, void 0, false, {
-                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
-                    lineNumber: 62,
-                    columnNumber: 17
-                }, this),
-                props.modifiers.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                    className: "text-xs text-muted-foreground",
-                    children: t("character.activeModifiers", {
-                        count: props.modifiers.length
-                    })
-                }, void 0, false, {
-                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
-                    lineNumber: 77,
-                    columnNumber: 21
-                }, this)
-            ]
-        }, void 0, true, {
-            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
-            lineNumber: 35,
-            columnNumber: 13
-        }, this)
-    }, void 0, false, {
-        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
-        lineNumber: 34,
-        columnNumber: 9
-    }, this);
+    if (typeof level === "string" && level.trim() !== "") {
+        const parsed = Number(level);
+        if (!Number.isNaN(parsed) && parsed >= 1) {
+            return Math.floor(parsed);
+        }
+    }
+    return 1;
 }
-_s(CharacterCardGameInfo, "GAt3Ntqd9PyR1JfyvoW4eAChDRY=", false, function() {
-    return [
-        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2d$intl$2f$dist$2f$esm$2f$development$2f$react$2d$client$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useTranslations"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCharacterStore"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCharacterStore"]
-    ];
-});
-_c = CharacterCardGameInfo;
-var _c;
-__turbopack_context__.k.register(_c, "CharacterCardGameInfo");
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(module, globalThis.$RefreshHelpers$);
+function getProficientSkillSlugs(grants, skills) {
+    const skillSlugs = new Set(skills.map((skill)=>skill.slug));
+    return new Set(grants.filter((grant)=>grant.kind === "proficiency" && skillSlugs.has(grant.ref)).map((grant)=>grant.ref));
 }
-}}),
-"[project]/apps/web/components/characters/CharacterCard/CharacterCardInventory.tsx [app-client] (ecmascript)": ((__turbopack_context__) => {
-"use strict";
-
-var { k: __turbopack_refresh__, m: module } = __turbopack_context__;
-{
-__turbopack_context__.s({
-    "default": ()=>CharacterCardInventory
-});
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$characterCarousel$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/components/ui/characterCarousel.tsx [app-client] (ecmascript)");
-;
-;
-function CharacterCardInventory() {
-    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$characterCarousel$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CarouselItem"], {
-        children: "Inventory"
-    }, void 0, false, {
-        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInventory.tsx",
-        lineNumber: 5,
-        columnNumber: 9
-    }, this);
+function formatModifier(value) {
+    if (value >= 0) {
+        return "+".concat(value);
+    }
+    return String(value);
 }
-_c = CharacterCardInventory;
-var _c;
-__turbopack_context__.k.register(_c, "CharacterCardInventory");
+function computeSkillModifiers(stats, grants, level, skills) {
+    const proficientSlugs = getProficientSkillSlugs(grants, skills);
+    const bonus = proficiencyBonus(level);
+    return skills.map((skill)=>{
+        var _stats_skill_ability;
+        const abilityMod = abilityModifier((_stats_skill_ability = stats[skill.ability]) !== null && _stats_skill_ability !== void 0 ? _stats_skill_ability : 10);
+        const proficient = proficientSlugs.has(skill.slug);
+        return {
+            slug: skill.slug,
+            name: skill.name,
+            ability: skill.ability,
+            modifier: abilityMod + (proficient ? bonus : 0),
+            proficient
+        };
+    });
+}
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(module, globalThis.$RefreshHelpers$);
 }
@@ -1153,6 +983,329 @@ function listSkills() {
 function getSkill(slug) {
     return __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$catalog$2f$skills$2e$seed$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["dndSkills"].find((skill)=>skill.slug === slug);
 }
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(module, globalThis.$RefreshHelpers$);
+}
+}}),
+"[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx [app-client] (ecmascript)": ((__turbopack_context__) => {
+"use strict";
+
+var { k: __turbopack_refresh__, m: module } = __turbopack_context__;
+{
+__turbopack_context__.s({
+    "default": ()=>CharacterCardGameInfo
+});
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/index.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2d$intl$2f$dist$2f$esm$2f$development$2f$react$2d$client$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next-intl/dist/esm/development/react-client/index.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$characterCarousel$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/components/ui/characterCarousel.tsx [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$presetStats$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/lib/character/presetStats.ts [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$skillModifiers$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/lib/character/skillModifiers.ts [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$catalog$2f$grantCatalog$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/lib/catalog/grantCatalog.ts [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/store/useCharacterStore.ts [app-client] (ecmascript)");
+;
+var _s = __turbopack_context__.k.signature();
+"use client";
+;
+;
+;
+;
+;
+;
+;
+function CharacterCardGameInfo(param) {
+    let { characterId } = param;
+    _s();
+    const t = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2d$intl$2f$dist$2f$esm$2f$development$2f$react$2d$client$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useTranslations"])();
+    const tSkills = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2d$intl$2f$dist$2f$esm$2f$development$2f$react$2d$client$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useTranslations"])("skills");
+    const getCharacterProps = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCharacterStore"])({
+        "CharacterCardGameInfo.useCharacterStore[getCharacterProps]": (state)=>state.getCharacterProps
+    }["CharacterCardGameInfo.useCharacterStore[getCharacterProps]"]);
+    const getResolvedStats = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCharacterStore"])({
+        "CharacterCardGameInfo.useCharacterStore[getResolvedStats]": (state)=>state.getResolvedStats
+    }["CharacterCardGameInfo.useCharacterStore[getResolvedStats]"]);
+    const characters = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCharacterStore"])({
+        "CharacterCardGameInfo.useCharacterStore[characters]": (state)=>state.characters
+    }["CharacterCardGameInfo.useCharacterStore[characters]"]);
+    const props = characterId ? getCharacterProps(characterId) : undefined;
+    const stored = characterId ? characters.find((c)=>c.id === characterId) : undefined;
+    const resolved = characterId ? getResolvedStats(characterId) : undefined;
+    const skillModifiers = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useMemo"])({
+        "CharacterCardGameInfo.useMemo[skillModifiers]": ()=>{
+            if (!stored || !resolved) {
+                return [];
+            }
+            var _stored_grants;
+            return (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$skillModifiers$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["computeSkillModifiers"])(resolved, (_stored_grants = stored.grants) !== null && _stored_grants !== void 0 ? _stored_grants : [], (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$skillModifiers$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["readCharacterLevel"])(stored.systemData), (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$catalog$2f$grantCatalog$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["listSkills"])());
+        }
+    }["CharacterCardGameInfo.useMemo[skillModifiers]"], [
+        stored,
+        resolved
+    ]);
+    if (!props || !stored || !resolved) {
+        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$characterCarousel$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CarouselItem"], {
+            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "flex flex-col rounded-2xl p-2 px-3 border my-2 text-muted-foreground text-sm",
+                children: t("character.noneSelected")
+            }, void 0, false, {
+                fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                lineNumber: 45,
+                columnNumber: 17
+            }, this)
+        }, void 0, false, {
+            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+            lineNumber: 44,
+            columnNumber: 13
+        }, this);
+    }
+    const display = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$presetStats$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getResolvedStatDisplay"])(props, stored.system);
+    const labelOf = (item)=>{
+        var _item_label, _ref;
+        return item.labelKey ? t(item.labelKey) : (_ref = (_item_label = item.label) !== null && _item_label !== void 0 ? _item_label : item.name) !== null && _ref !== void 0 ? _ref : "";
+    };
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$characterCarousel$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CarouselItem"], {
+        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+            className: "flex flex-col rounded-2xl p-2 px-3 border my-2 gap-3",
+            children: [
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                            className: "text-xs font-semibold uppercase text-muted-foreground mb-2",
+                            children: t("character.resolvedAbilities")
+                        }, void 0, false, {
+                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                            lineNumber: 60,
+                            columnNumber: 21
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "grid grid-cols-3 gap-2",
+                            children: display.abilities.map((ability)=>{
+                                var _ability_shortLabel;
+                                return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "flex flex-col items-center border rounded-lg p-2 bg-popover",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "text-xs text-muted-foreground",
+                                            children: ability.shortLabelKey ? t(ability.shortLabelKey) : (_ability_shortLabel = ability.shortLabel) !== null && _ability_shortLabel !== void 0 ? _ability_shortLabel : ability.name
+                                        }, void 0, false, {
+                                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                                            lineNumber: 69,
+                                            columnNumber: 33
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "font-bold text-lg",
+                                            children: ability.resolved
+                                        }, void 0, false, {
+                                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                                            lineNumber: 74,
+                                            columnNumber: 33
+                                        }, this),
+                                        ability.resolved !== ability.base && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "text-xs text-muted-foreground",
+                                            children: [
+                                                t("character.base"),
+                                                " ",
+                                                ability.base
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                                            lineNumber: 76,
+                                            columnNumber: 37
+                                        }, this)
+                                    ]
+                                }, ability.name, true, {
+                                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                                    lineNumber: 65,
+                                    columnNumber: 29
+                                }, this);
+                            })
+                        }, void 0, false, {
+                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                            lineNumber: 63,
+                            columnNumber: 21
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                    lineNumber: 59,
+                    columnNumber: 17
+                }, this),
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "grid grid-cols-2 gap-2 text-sm",
+                    children: display.combat.map((combat)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "border rounded-lg p-2 bg-popover",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "text-muted-foreground",
+                                    children: [
+                                        labelOf(combat),
+                                        " "
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                                    lineNumber: 88,
+                                    columnNumber: 29
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "font-bold",
+                                    children: combat.resolved
+                                }, void 0, false, {
+                                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                                    lineNumber: 89,
+                                    columnNumber: 29
+                                }, this),
+                                combat.resolved !== combat.base && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "text-xs text-muted-foreground ml-1",
+                                    children: [
+                                        "(",
+                                        t("character.base"),
+                                        " ",
+                                        combat.base,
+                                        ")"
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                                    lineNumber: 91,
+                                    columnNumber: 33
+                                }, this)
+                            ]
+                        }, combat.statKey, true, {
+                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                            lineNumber: 87,
+                            columnNumber: 25
+                        }, this))
+                }, void 0, false, {
+                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                    lineNumber: 85,
+                    columnNumber: 17
+                }, this),
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                            className: "text-xs font-semibold uppercase text-muted-foreground mb-2",
+                            children: t("character.skills")
+                        }, void 0, false, {
+                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                            lineNumber: 100,
+                            columnNumber: 21
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
+                            className: "space-y-1 text-sm",
+                            children: skillModifiers.map((skill)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
+                                    className: "flex items-center justify-between rounded-lg border px-2 py-1 bg-popover".concat(skill.proficient ? " border-primary/40" : ""),
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "flex items-center gap-2",
+                                            children: [
+                                                skill.proficient && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: "size-1.5 rounded-full bg-primary shrink-0",
+                                                    title: t("character.proficient"),
+                                                    "aria-label": t("character.proficient")
+                                                }, void 0, false, {
+                                                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                                                    lineNumber: 113,
+                                                    columnNumber: 41
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    children: tSkills(skill.slug)
+                                                }, void 0, false, {
+                                                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                                                    lineNumber: 119,
+                                                    columnNumber: 37
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                                            lineNumber: 111,
+                                            columnNumber: 33
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "font-semibold tabular-nums",
+                                            children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$skillModifiers$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["formatModifier"])(skill.modifier)
+                                        }, void 0, false, {
+                                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                                            lineNumber: 121,
+                                            columnNumber: 33
+                                        }, this)
+                                    ]
+                                }, skill.slug, true, {
+                                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                                    lineNumber: 105,
+                                    columnNumber: 29
+                                }, this))
+                        }, void 0, false, {
+                            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                            lineNumber: 103,
+                            columnNumber: 21
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                    lineNumber: 99,
+                    columnNumber: 17
+                }, this),
+                props.modifiers.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                    className: "text-xs text-muted-foreground",
+                    children: t("character.activeModifiers", {
+                        count: props.modifiers.length
+                    })
+                }, void 0, false, {
+                    fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+                    lineNumber: 130,
+                    columnNumber: 21
+                }, this)
+            ]
+        }, void 0, true, {
+            fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+            lineNumber: 58,
+            columnNumber: 13
+        }, this)
+    }, void 0, false, {
+        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx",
+        lineNumber: 57,
+        columnNumber: 9
+    }, this);
+}
+_s(CharacterCardGameInfo, "h3NNTERxjkRUlh63IQ/sV5TCmjQ=", false, function() {
+    return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2d$intl$2f$dist$2f$esm$2f$development$2f$react$2d$client$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useTranslations"],
+        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2d$intl$2f$dist$2f$esm$2f$development$2f$react$2d$client$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useTranslations"],
+        __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCharacterStore"],
+        __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCharacterStore"],
+        __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useCharacterStore$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCharacterStore"]
+    ];
+});
+_c = CharacterCardGameInfo;
+var _c;
+__turbopack_context__.k.register(_c, "CharacterCardGameInfo");
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(module, globalThis.$RefreshHelpers$);
+}
+}}),
+"[project]/apps/web/components/characters/CharacterCard/CharacterCardInventory.tsx [app-client] (ecmascript)": ((__turbopack_context__) => {
+"use strict";
+
+var { k: __turbopack_refresh__, m: module } = __turbopack_context__;
+{
+__turbopack_context__.s({
+    "default": ()=>CharacterCardInventory
+});
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$characterCarousel$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/components/ui/characterCarousel.tsx [app-client] (ecmascript)");
+;
+;
+function CharacterCardInventory() {
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$characterCarousel$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CarouselItem"], {
+        children: "Inventory"
+    }, void 0, false, {
+        fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardInventory.tsx",
+        lineNumber: 5,
+        columnNumber: 9
+    }, this);
+}
+_c = CharacterCardInventory;
+var _c;
+__turbopack_context__.k.register(_c, "CharacterCardInventory");
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(module, globalThis.$RefreshHelpers$);
 }
@@ -2331,4 +2484,4 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
 }}),
 }]);
 
-//# sourceMappingURL=apps_web_f8dcf01b._.js.map
+//# sourceMappingURL=apps_web_e63ff4c7._.js.map

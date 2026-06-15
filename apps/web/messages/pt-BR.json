@@ -72,7 +72,29 @@
     "commonFields": "Campos Comuns",
     "activeModifiers": "{count, plural, one {# modificador ativo} other {# modificadores ativos}}",
     "traits": "Traços Raciais",
-    "unresolvedChoices": "Escolhas pendentes"
+    "unresolvedChoices": "Escolhas pendentes",
+    "skills": "Perícias",
+    "proficient": "Proficiente"
+  },
+  "skills": {
+    "acrobatics": "Acrobacia",
+    "animal-handling": "Adestrar Animais",
+    "arcana": "Arcanismo",
+    "athletics": "Atletismo",
+    "deception": "Enganação",
+    "history": "História",
+    "insight": "Intuição",
+    "intimidation": "Intimidação",
+    "investigation": "Investigação",
+    "medicine": "Medicina",
+    "nature": "Natureza",
+    "perception": "Percepção",
+    "performance": "Atuação",
+    "persuasion": "Persuasão",
+    "religion": "Religião",
+    "sleight-of-hand": "Prestidigitação",
+    "stealth": "Furtividade",
+    "survival": "Sobrevivência"
   },
   "grants": {
     "languagesTitle": "Idiomas",

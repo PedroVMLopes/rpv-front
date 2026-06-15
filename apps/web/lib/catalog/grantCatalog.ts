@@ -1,8 +1,9 @@
 import { listLanguages as listCatalogLanguages, getLanguage as getCatalogLanguage } from "@rpv/content";
-import type { Language } from "@rpv/content";
+import type { Language, Skill } from "@rpv/content";
 import { listBackgrounds } from "@rpv/content";
 import { listItems } from "@rpv/content";
 import { listClasses } from "@rpv/content";
+import { dndSkills } from "@rpv/content";
 
 export type CatalogSelectOption = {
     value: string;
@@ -43,4 +44,12 @@ export function listClassOptions(): CatalogSelectOption[] {
         value: characterClass.slug,
         label: characterClass.name,
     }));
+}
+
+export function listSkills(): Skill[] {
+    return dndSkills;
+}
+
+export function getSkill(slug: string): Skill | undefined {
+    return dndSkills.find((skill) => skill.slug === slug);
 }
