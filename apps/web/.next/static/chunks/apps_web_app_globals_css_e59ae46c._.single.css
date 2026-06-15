@@ -994,6 +994,10 @@
     min-width: calc(var(--spacing) * 0);
   }
 
+  .min-w-8 {
+    min-width: calc(var(--spacing) * 8);
+  }
+
   .min-w-\[8rem\] {
     min-width: 8rem;
   }
@@ -1339,6 +1343,10 @@
 
   .border-cyan-900 {
     border-color: var(--color-cyan-900);
+  }
+
+  .border-destructive {
+    border-color: var(--destructive);
   }
 
   .border-input {

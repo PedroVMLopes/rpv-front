@@ -520,6 +520,8 @@ __turbopack_context__.s({
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2d$intl$2f$dist$2f$esm$2f$development$2f$react$2d$client$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next-intl/dist/esm/development/react-client/index.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$index$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$module__evaluation$3e$__ = __turbopack_context__.i("[project]/packages/content/src/index.ts [app-client] (ecmascript) <module evaluation>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$curation$2f$classGrants$2e$dnd$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/packages/content/src/curation/classGrants.dnd.ts [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useContentLocale$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/store/useContentLocale.ts [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$raceDisplay$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/lib/character/raceDisplay.ts [app-client] (ecmascript)");
 ;
@@ -528,14 +530,18 @@ var _s = __turbopack_context__.k.signature(), _s1 = __turbopack_context__.k.sign
 ;
 ;
 ;
+;
 function ClassSubclassBlock(param) {
     let { stored, characterClass, subclass } = param;
+    var _getClass;
     _s();
     const contentLocale = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useContentLocale$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useContentLocale"])({
         "ClassSubclassBlock.useContentLocale[contentLocale]": (state)=>state.contentLocale
     }["ClassSubclassBlock.useContentLocale[contentLocale]"]);
     const raceLine = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$raceDisplay$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getRaceLineFromSelections"])(stored.selections, contentLocale);
-    const classStr = characterClass ? String(characterClass).trim() : "";
+    const classSlug = characterClass ? String(characterClass).trim() : "";
+    var _getClass_name;
+    const classStr = classSlug ? (_getClass_name = (_getClass = (0, __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$curation$2f$classGrants$2e$dnd$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getClass"])(classSlug)) === null || _getClass === void 0 ? void 0 : _getClass.name) !== null && _getClass_name !== void 0 ? _getClass_name : classSlug : "";
     const subclassStr = subclass ? String(subclass).trim() : "";
     const title = [
         raceLine,
@@ -552,7 +558,7 @@ function ClassSubclassBlock(param) {
                 children: title
             }, void 0, false, {
                 fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardRaceInfo.tsx",
-                lineNumber: 33,
+                lineNumber: 37,
                 columnNumber: 22
             }, this) : null,
             subclassStr ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -560,13 +566,13 @@ function ClassSubclassBlock(param) {
                 children: subclassStr
             }, void 0, false, {
                 fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardRaceInfo.tsx",
-                lineNumber: 34,
+                lineNumber: 38,
                 columnNumber: 28
             }, this) : null
         ]
     }, void 0, true, {
         fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardRaceInfo.tsx",
-        lineNumber: 32,
+        lineNumber: 36,
         columnNumber: 9
     }, this);
 }
@@ -597,7 +603,7 @@ function RaceTraitsBlock(param) {
                         children: t("traits")
                     }, void 0, false, {
                         fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardRaceInfo.tsx",
-                        lineNumber: 55,
+                        lineNumber: 59,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -609,7 +615,7 @@ function RaceTraitsBlock(param) {
                                         children: trait.name
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardRaceInfo.tsx",
-                                        lineNumber: 59,
+                                        lineNumber: 63,
                                         columnNumber: 33
                                     }, this),
                                     trait.description ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -617,18 +623,18 @@ function RaceTraitsBlock(param) {
                                         children: trait.description
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardRaceInfo.tsx",
-                                        lineNumber: 61,
+                                        lineNumber: 65,
                                         columnNumber: 37
                                     }, this) : null
                                 ]
                             }, trait.slug, true, {
                                 fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardRaceInfo.tsx",
-                                lineNumber: 58,
+                                lineNumber: 62,
                                 columnNumber: 29
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardRaceInfo.tsx",
-                        lineNumber: 56,
+                        lineNumber: 60,
                         columnNumber: 21
                     }, this)
                 ]
@@ -641,7 +647,7 @@ function RaceTraitsBlock(param) {
                         children: t("unresolvedChoices")
                     }, void 0, false, {
                         fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardRaceInfo.tsx",
-                        lineNumber: 73,
+                        lineNumber: 77,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -650,24 +656,24 @@ function RaceTraitsBlock(param) {
                                 children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$raceDisplay$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["formatUnresolvedChoice"])(choice)
                             }, "".concat(choice.traitName, "-").concat(index), false, {
                                 fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardRaceInfo.tsx",
-                                lineNumber: 76,
+                                lineNumber: 80,
                                 columnNumber: 29
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardRaceInfo.tsx",
-                        lineNumber: 74,
+                        lineNumber: 78,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardRaceInfo.tsx",
-                lineNumber: 72,
+                lineNumber: 76,
                 columnNumber: 17
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/apps/web/components/characters/CharacterCard/CharacterCardRaceInfo.tsx",
-        lineNumber: 52,
+        lineNumber: 56,
         columnNumber: 9
     }, this);
 }
@@ -1093,6 +1099,7 @@ var { k: __turbopack_refresh__, m: module } = __turbopack_context__;
 __turbopack_context__.s({
     "getLanguage": ()=>getLanguage,
     "listBackgroundOptions": ()=>listBackgroundOptions,
+    "listClassOptions": ()=>listClassOptions,
     "listLanguageOptions": ()=>listLanguageOptions,
     "listLanguages": ()=>listLanguages,
     "listStartingItemOptions": ()=>listStartingItemOptions
@@ -1101,6 +1108,8 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2
 var __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$catalog$2f$bundled$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/packages/content/src/catalog/bundled.ts [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$curation$2f$backgroundGrants$2e$dnd$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/packages/content/src/curation/backgroundGrants.dnd.ts [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$curation$2f$itemGrants$2e$dnd$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/packages/content/src/curation/itemGrants.dnd.ts [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$curation$2f$classGrants$2e$dnd$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/packages/content/src/curation/classGrants.dnd.ts [app-client] (ecmascript)");
+;
 ;
 ;
 ;
@@ -1126,6 +1135,12 @@ function listStartingItemOptions() {
     return (0, __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$curation$2f$itemGrants$2e$dnd$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["listItems"])().map((item)=>({
             value: item.slug,
             label: item.name
+        }));
+}
+function listClassOptions() {
+    return (0, __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$curation$2f$classGrants$2e$dnd$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["listClasses"])().map((characterClass)=>({
+            value: characterClass.slug,
+            label: characterClass.name
         }));
 }
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
