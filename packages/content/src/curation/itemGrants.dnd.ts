@@ -25,6 +25,33 @@ export const dndItems: ItemEntry[] = [
             },
         ],
     },
+    {
+        slug: "amulet-of-vitality",
+        name: "Amulet of Vitality",
+        description:
+            "A warm amulet that bolsters the wearer's constitution against harm.",
+        grants: [
+            {
+                grantType: "stat_modifier",
+                choose: 0,
+                targetStat: "hitPoints",
+                amount: 5,
+            },
+        ],
+    },
+    {
+        slug: "ring-of-hardiness",
+        name: "Ring of Hardiness",
+        description: "A sturdy ring that fortifies the wearer's life force.",
+        grants: [
+            {
+                grantType: "stat_modifier",
+                choose: 0,
+                targetStat: "hitPoints",
+                amount: 10,
+            },
+        ],
+    },
 ];
 
 export function getItem(slug: string): ItemEntry | undefined {

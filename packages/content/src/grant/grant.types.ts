@@ -2,6 +2,7 @@ import type { StatKey } from "@rpv/domain";
 
 export type GrantType =
     | "ability_score"
+    | "stat_modifier"
     | "ability"
     | "skill_proficiency"
     | "weapon_proficiency"

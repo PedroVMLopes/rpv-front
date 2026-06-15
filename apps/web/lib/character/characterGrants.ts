@@ -1,4 +1,4 @@
-import type { CharacterGrant, Locale, ModifierSource } from "@rpv/domain";
+import type { CharacterGrant, Locale, Modifier, ModifierSource, ModifierSourceType } from "@rpv/domain";
 import {
     choiceGrantToCharacterGrant,
     countLanguageChoices,
@@ -9,6 +9,7 @@ import {
     getLanguage,
     getSpell,
     dndRaceLevelGrants,
+    statModifierGrantsToModifiers,
     type Grant,
 } from "@rpv/content";
 import { getRace, getSubrace } from "@/lib/catalog/raceCatalog";
@@ -76,6 +77,22 @@ function collectGrantSources(
     }
 
     return sources;
+}
+
+export const STAT_MODIFIER_SOURCE_TYPES: ModifierSourceType[] = ["item", "feat"];
+
+export function deriveStatModifiers(
+    selections: CharacterSelections,
+    context: GrantSourceContext,
+    locale: Locale
+): Modifier[] {
+    return collectGrantSources(selections, context, locale)
+        .filter((entry) =>
+            STAT_MODIFIER_SOURCE_TYPES.includes(entry.source.type)
+        )
+        .flatMap((entry) =>
+            statModifierGrantsToModifiers(entry.grants, entry.source)
+        );
 }
 
 function resolveChoiceGrant(

@@ -8,6 +8,7 @@ import type { SystemKey } from "@/presets";
 import {
     buildHpDerivationContextFromForm,
     deriveMaxHpFromForm,
+    resolveMaxHpFromForm,
 } from "@/lib/character/hp";
 import { formatDndHpBreakdown } from "@/presets/dnd/hp";
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,7 @@ export function HitPointsField({
             attributes: watchedValues.attributes,
             race: watchedValues.race,
             subrace: watchedValues.subrace,
+            startingItem: watchedValues.startingItem,
             maxHp: watchedValues.maxHp,
             hp: watchedValues.hp,
         }),
@@ -58,6 +60,7 @@ export function HitPointsField({
             watchedValues.attributes,
             watchedValues.race,
             watchedValues.subrace,
+            watchedValues.startingItem,
             watchedValues.maxHp,
             watchedValues.hp,
         ]
@@ -72,6 +75,19 @@ export function HitPointsField({
         () => deriveMaxHpFromForm(watchedValues, system, contentLocale),
         [watchedValues, system, contentLocale]
     );
+
+    const resolvedMaxHp = useMemo(
+        () => resolveMaxHpFromForm(watchedValues, system, contentLocale),
+        [watchedValues, system, contentLocale]
+    );
+
+    const baseMaxHp = coerceNumber(watchedValues.maxHp) ?? computedMaxHp;
+    const hpBonusFromSources =
+        resolvedMaxHp !== undefined &&
+        baseMaxHp !== undefined &&
+        resolvedMaxHp > baseMaxHp
+            ? resolvedMaxHp - baseMaxHp
+            : undefined;
 
     const breakdown = useMemo(() => {
         if (!derivationContext || system !== "dnd") {
@@ -190,6 +206,16 @@ export function HitPointsField({
             ) : (
                 <p className="text-sm text-muted-foreground">{t("manualHint")}</p>
             )}
+
+            {hpBonusFromSources !== undefined && resolvedMaxHp !== undefined ? (
+                <p className="text-sm text-muted-foreground">
+                    {t("fromSources", {
+                        base: baseMaxHp,
+                        bonus: hpBonusFromSources,
+                        total: resolvedMaxHp,
+                    })}
+                </p>
+            ) : null}
 
             {manualOverride && computedMaxHp !== undefined ? (
                 <p className="text-xs text-muted-foreground">{t("overrideHint")}</p>

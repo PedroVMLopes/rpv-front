@@ -4,7 +4,7 @@ import type { SpellCatalogEntry } from "../spell/spell.types";
 import type { Grant, GrantOption, SelectionFilter } from "./grant.types";
 
 const GRANT_TYPE_TO_KIND: Record<
-    Exclude<Grant["grantType"], "ability_score">,
+    Exclude<Grant["grantType"], "ability_score" | "stat_modifier">,
     CharacterGrant["kind"]
 > = {
     ability: "ability",
@@ -18,7 +18,7 @@ const GRANT_TYPE_TO_KIND: Record<
 };
 
 function grantKindFromType(grantType: Grant["grantType"]): CharacterGrant["kind"] | null {
-    if (grantType === "ability_score") {
+    if (grantType === "ability_score" || grantType === "stat_modifier") {
         return null;
     }
     return GRANT_TYPE_TO_KIND[grantType];
@@ -46,6 +46,30 @@ export function abilityScoreGrantsToModifiers(
             operation: "add" as const,
             value: grant.amount!,
             source: { type: "race" as const, id: sourceId },
+            duration: { type: "permanent" as const },
+            stacking: "stack" as const,
+            priority: 0,
+        }));
+}
+
+export function statModifierGrantsToModifiers(
+    grants: Grant[],
+    source: ModifierSource
+): Modifier[] {
+    return grants
+        .filter(
+            (grant) =>
+                grant.grantType === "stat_modifier" &&
+                grant.choose === 0 &&
+                grant.targetStat !== undefined &&
+                grant.amount !== undefined
+        )
+        .map((grant) => ({
+            id: `${source.type}-${source.id}-stat-${grant.targetStat}`,
+            stat: grant.targetStat!,
+            operation: "add" as const,
+            value: grant.amount!,
+            source,
             duration: { type: "permanent" as const },
             stacking: "stack" as const,
             priority: 0,

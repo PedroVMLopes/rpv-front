@@ -757,6 +757,7 @@ function HitPointsField(param) {
                 attributes: watchedValues.attributes,
                 race: watchedValues.race,
                 subrace: watchedValues.subrace,
+                startingItem: watchedValues.startingItem,
                 maxHp: watchedValues.maxHp,
                 hp: watchedValues.hp
             })
@@ -766,6 +767,7 @@ function HitPointsField(param) {
         watchedValues.attributes,
         watchedValues.race,
         watchedValues.subrace,
+        watchedValues.startingItem,
         watchedValues.maxHp,
         watchedValues.hp
     ]);
@@ -783,6 +785,16 @@ function HitPointsField(param) {
         system,
         contentLocale
     ]);
+    const resolvedMaxHp = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useMemo"])({
+        "HitPointsField.useMemo[resolvedMaxHp]": ()=>(0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$hp$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["resolveMaxHpFromForm"])(watchedValues, system, contentLocale)
+    }["HitPointsField.useMemo[resolvedMaxHp]"], [
+        watchedValues,
+        system,
+        contentLocale
+    ]);
+    var _coerceNumber;
+    const baseMaxHp = (_coerceNumber = coerceNumber(watchedValues.maxHp)) !== null && _coerceNumber !== void 0 ? _coerceNumber : computedMaxHp;
+    const hpBonusFromSources = resolvedMaxHp !== undefined && baseMaxHp !== undefined && resolvedMaxHp > baseMaxHp ? resolvedMaxHp - baseMaxHp : undefined;
     const breakdown = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useMemo"])({
         "HitPointsField.useMemo[breakdown]": ()=>{
             if (!derivationContext || system !== "dnd") {
@@ -870,7 +882,7 @@ function HitPointsField(param) {
                         children: t("title")
                     }, void 0, false, {
                         fileName: "[project]/apps/web/components/characters/HitPointsField.tsx",
-                        lineNumber: 154,
+                        lineNumber: 170,
                         columnNumber: 17
                     }, this),
                     computedMaxHp !== undefined && manualOverride ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -881,13 +893,13 @@ function HitPointsField(param) {
                         children: t("resetToComputed")
                     }, void 0, false, {
                         fileName: "[project]/apps/web/components/characters/HitPointsField.tsx",
-                        lineNumber: 156,
+                        lineNumber: 172,
                         columnNumber: 21
                     }, this) : null
                 ]
             }, void 0, true, {
                 fileName: "[project]/apps/web/components/characters/HitPointsField.tsx",
-                lineNumber: 153,
+                lineNumber: 169,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -901,7 +913,7 @@ function HitPointsField(param) {
                                 children: tFields("maxHp")
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/components/characters/HitPointsField.tsx",
-                                lineNumber: 169,
+                                lineNumber: 185,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -911,13 +923,13 @@ function HitPointsField(param) {
                                 onChange: (event)=>handleMaxHpChange(event.target.value)
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/components/characters/HitPointsField.tsx",
-                                lineNumber: 170,
+                                lineNumber: 186,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/apps/web/components/characters/HitPointsField.tsx",
-                        lineNumber: 168,
+                        lineNumber: 184,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
@@ -928,7 +940,7 @@ function HitPointsField(param) {
                                 children: tFields("hp")
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/components/characters/HitPointsField.tsx",
-                                lineNumber: 178,
+                                lineNumber: 194,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -938,19 +950,19 @@ function HitPointsField(param) {
                                 onChange: (event)=>handleHpChange(event.target.value)
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/components/characters/HitPointsField.tsx",
-                                lineNumber: 179,
+                                lineNumber: 195,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/apps/web/components/characters/HitPointsField.tsx",
-                        lineNumber: 177,
+                        lineNumber: 193,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/apps/web/components/characters/HitPointsField.tsx",
-                lineNumber: 167,
+                lineNumber: 183,
                 columnNumber: 13
             }, this),
             breakdown ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -958,32 +970,44 @@ function HitPointsField(param) {
                 children: breakdown
             }, void 0, false, {
                 fileName: "[project]/apps/web/components/characters/HitPointsField.tsx",
-                lineNumber: 189,
+                lineNumber: 205,
                 columnNumber: 17
             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                 className: "text-sm text-muted-foreground",
                 children: t("manualHint")
             }, void 0, false, {
                 fileName: "[project]/apps/web/components/characters/HitPointsField.tsx",
-                lineNumber: 191,
+                lineNumber: 207,
                 columnNumber: 17
             }, this),
+            hpBonusFromSources !== undefined && resolvedMaxHp !== undefined ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                className: "text-sm text-muted-foreground",
+                children: t("fromSources", {
+                    base: baseMaxHp,
+                    bonus: hpBonusFromSources,
+                    total: resolvedMaxHp
+                })
+            }, void 0, false, {
+                fileName: "[project]/apps/web/components/characters/HitPointsField.tsx",
+                lineNumber: 211,
+                columnNumber: 17
+            }, this) : null,
             manualOverride && computedMaxHp !== undefined ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                 className: "text-xs text-muted-foreground",
                 children: t("overrideHint")
             }, void 0, false, {
                 fileName: "[project]/apps/web/components/characters/HitPointsField.tsx",
-                lineNumber: 195,
+                lineNumber: 221,
                 columnNumber: 17
             }, this) : null
         ]
     }, void 0, true, {
         fileName: "[project]/apps/web/components/characters/HitPointsField.tsx",
-        lineNumber: 152,
+        lineNumber: 168,
         columnNumber: 9
     }, this);
 }
-_s(HitPointsField, "ZjQ1jWkXhP1jka7ioK54+pUn3NM=", false, function() {
+_s(HitPointsField, "4NUZ5PjbarCNveivXJyJiVIIaiE=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2d$intl$2f$dist$2f$esm$2f$development$2f$react$2d$client$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useTranslations"],
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2d$intl$2f$dist$2f$esm$2f$development$2f$react$2d$client$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useTranslations"]

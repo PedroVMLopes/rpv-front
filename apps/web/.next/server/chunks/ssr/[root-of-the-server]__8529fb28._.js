@@ -1527,7 +1527,8 @@ __turbopack_context__.s({
     "fixedGrantsToCharacterGrants": ()=>fixedGrantsToCharacterGrants,
     "resolveGrantPool": ()=>resolveGrantPool,
     "resolveLanguagePool": ()=>resolveLanguagePool,
-    "resolveSpellPool": ()=>resolveSpellPool
+    "resolveSpellPool": ()=>resolveSpellPool,
+    "statModifierGrantsToModifiers": ()=>statModifierGrantsToModifiers
 });
 const GRANT_TYPE_TO_KIND = {
     ability: "ability",
@@ -1540,7 +1541,7 @@ const GRANT_TYPE_TO_KIND = {
     spell: "spell"
 };
 function grantKindFromType(grantType) {
-    if (grantType === "ability_score") {
+    if (grantType === "ability_score" || grantType === "stat_modifier") {
         return null;
     }
     return GRANT_TYPE_TO_KIND[grantType];
@@ -1555,6 +1556,20 @@ function abilityScoreGrantsToModifiers(grants, sourceId) {
                 type: "race",
                 id: sourceId
             },
+            duration: {
+                type: "permanent"
+            },
+            stacking: "stack",
+            priority: 0
+        }));
+}
+function statModifierGrantsToModifiers(grants, source) {
+    return grants.filter((grant)=>grant.grantType === "stat_modifier" && grant.choose === 0 && grant.targetStat !== undefined && grant.amount !== undefined).map((grant)=>({
+            id: `${source.type}-${source.id}-stat-${grant.targetStat}`,
+            stat: grant.targetStat,
+            operation: "add",
+            value: grant.amount,
+            source,
             duration: {
                 type: "permanent"
             },
@@ -2311,6 +2326,32 @@ const dndItems = [
                         ref: "fire-bolt"
                     }
                 ]
+            }
+        ]
+    },
+    {
+        slug: "amulet-of-vitality",
+        name: "Amulet of Vitality",
+        description: "A warm amulet that bolsters the wearer's constitution against harm.",
+        grants: [
+            {
+                grantType: "stat_modifier",
+                choose: 0,
+                targetStat: "hitPoints",
+                amount: 5
+            }
+        ]
+    },
+    {
+        slug: "ring-of-hardiness",
+        name: "Ring of Hardiness",
+        description: "A sturdy ring that fortifies the wearer's life force.",
+        grants: [
+            {
+                grantType: "stat_modifier",
+                choose: 0,
+                targetStat: "hitPoints",
+                amount: 10
             }
         ]
     }
@@ -3118,7 +3159,9 @@ function collectNonLanguageChoiceGrants(selections, context, locale) {
 "use strict";
 
 __turbopack_context__.s({
+    "STAT_MODIFIER_SOURCE_TYPES": ()=>STAT_MODIFIER_SOURCE_TYPES,
     "deriveCharacterGrants": ()=>deriveCharacterGrants,
+    "deriveStatModifiers": ()=>deriveStatModifiers,
     "getFixedLanguageGrants": ()=>getFixedLanguageGrants,
     "getLanguageBudget": ()=>getLanguageBudget,
     "grantContextFromForm": ()=>grantContextFromForm
@@ -3192,6 +3235,13 @@ function collectGrantSources(selections, context, locale) {
         });
     }
     return sources;
+}
+const STAT_MODIFIER_SOURCE_TYPES = [
+    "item",
+    "feat"
+];
+function deriveStatModifiers(selections, context, locale) {
+    return collectGrantSources(selections, context, locale).filter((entry)=>STAT_MODIFIER_SOURCE_TYPES.includes(entry.source.type)).flatMap((entry)=>(0, __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$grant$2f$grants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["statModifierGrantsToModifiers"])(entry.grants, entry.source));
 }
 function resolveChoiceGrant(pending, ref, locale) {
     const name = pending.grant.grantType === "language" ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$catalog$2f$bundled$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getLanguage"])(ref)?.name : pending.grant.grantType === "spell" ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$content$2f$src$2f$catalog$2f$bundled$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getSpell"])(ref, locale)?.name : ref;
@@ -3340,16 +3390,19 @@ __turbopack_context__.s({
     "deriveMaxHpFromForm": ()=>deriveMaxHpFromForm,
     "getHpRules": ()=>getHpRules,
     "isMaxHpEmpty": ()=>isMaxHpEmpty,
-    "resolveConstitutionFromForm": ()=>resolveConstitutionFromForm
+    "resolveConstitutionFromForm": ()=>resolveConstitutionFromForm,
+    "resolveMaxHpFromForm": ()=>resolveMaxHpFromForm
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$presets$2f$index$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/presets/index.ts [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$catalog$2f$grantCatalog$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/lib/catalog/grantCatalog.ts [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$characterAdapter$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$module__evaluation$3e$__ = __turbopack_context__.i("[project]/apps/web/lib/character/characterAdapter.ts [app-ssr] (ecmascript) <module evaluation>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$characterAdapter$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/apps/web/lib/character/characterAdapter.ts [app-ssr] (ecmascript) <locals>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$raceModifiers$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/lib/character/raceModifiers.ts [app-ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$characterGrants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/lib/character/characterGrants.ts [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$presetStats$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/lib/character/presetStats.ts [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$domain$2f$src$2f$index$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$module__evaluation$3e$__ = __turbopack_context__.i("[project]/packages/domain/src/index.ts [app-ssr] (ecmascript) <module evaluation>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$domain$2f$src$2f$modifiers$2f$modifier$2e$resolver$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/packages/domain/src/modifiers/modifier.resolver.ts [app-ssr] (ecmascript)");
+;
 ;
 ;
 ;
@@ -3418,6 +3471,16 @@ function deriveMaxHpFromForm(formData, system, locale) {
 function isMaxHpEmpty(value) {
     return value === undefined || value === null || value === "";
 }
+function resolveMaxHpFromForm(formData, system, locale) {
+    const selections = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$characterAdapter$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__["buildSelectionsFromForm"])(formData);
+    const context = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$characterGrants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["grantContextFromForm"])(formData);
+    const baseStats = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$presetStats$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["buildBaseStatsFromForm"])(formData, system);
+    const modifiers = [
+        ...(0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$raceModifiers$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["deriveRaceModifiers"])(selections, locale),
+        ...(0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$characterGrants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["deriveStatModifiers"])(selections, context, locale)
+    ];
+    return (0, __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$domain$2f$src$2f$modifiers$2f$modifier$2e$resolver$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["resolveStats"])(baseStats, modifiers).hitPoints;
+}
 }),
 "[project]/apps/web/store/useContentLocale.ts [app-ssr] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
@@ -3478,8 +3541,12 @@ const createStoredCharacter = (formData, type, system)=>{
     const id = crypto.randomUUID();
     const selections = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$characterAdapter$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__["buildSelectionsFromForm"])(formData);
     const contentLocale = __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useContentLocale$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useContentLocale"].getState().contentLocale;
-    const modifiers = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$raceModifiers$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["deriveRaceModifiers"])(selections, contentLocale);
-    const grants = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$characterGrants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["deriveCharacterGrants"])(selections, (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$characterGrants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["grantContextFromForm"])(formData), contentLocale);
+    const context = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$characterGrants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["grantContextFromForm"])(formData);
+    const modifiers = [
+        ...(0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$raceModifiers$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["deriveRaceModifiers"])(selections, contentLocale),
+        ...(0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$characterGrants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["deriveStatModifiers"])(selections, context, contentLocale)
+    ];
+    const grants = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$characterGrants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["deriveCharacterGrants"])(selections, context, contentLocale);
     const processedForm = applyDerivedMaxHp(formData, system, contentLocale);
     return (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$characterAdapter$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__["formDataToStoredCharacter"])(processedForm, id, type, system, modifiers, selections, grants);
 };
@@ -3505,12 +3572,18 @@ function rebuildCharacterFromForm(char, formData) {
     const contentLocale = __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$store$2f$useContentLocale$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useContentLocale"].getState().contentLocale;
     const context = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$characterGrants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["grantContextFromForm"])(formData);
     const raceModifiers = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$raceModifiers$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["deriveRaceModifiers"])(selections, contentLocale);
-    const preservedModifiers = (0, __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$domain$2f$src$2f$modifiers$2f$modifier$2e$utils$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["removeModifiersBySource"])(char.modifiers, {
+    let preservedModifiers = (0, __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$domain$2f$src$2f$modifiers$2f$modifier$2e$utils$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["removeModifiersBySource"])(char.modifiers, {
         type: "race"
     });
+    for (const sourceType of __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$characterGrants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["STAT_MODIFIER_SOURCE_TYPES"]){
+        preservedModifiers = (0, __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$domain$2f$src$2f$modifiers$2f$modifier$2e$utils$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["removeModifiersBySource"])(preservedModifiers, {
+            type: sourceType
+        });
+    }
     const modifiers = [
         ...preservedModifiers,
-        ...raceModifiers
+        ...raceModifiers,
+        ...(0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$characterGrants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["deriveStatModifiers"])(selections, context, contentLocale)
     ];
     const grants = (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$lib$2f$character$2f$characterGrants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["deriveCharacterGrants"])(selections, context, contentLocale);
     const processedForm = applyDerivedMaxHp(formData, char.system, contentLocale);

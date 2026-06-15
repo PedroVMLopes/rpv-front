@@ -13,7 +13,9 @@ import {
 import { deriveRaceModifiers } from "@/lib/character/raceModifiers";
 import {
     deriveCharacterGrants,
+    deriveStatModifiers,
     grantContextFromForm,
+    STAT_MODIFIER_SOURCE_TYPES,
 } from "@/lib/character/characterGrants";
 import {
     deriveMaxHpFromForm,
@@ -54,10 +56,14 @@ const createStoredCharacter = (
     const id = crypto.randomUUID();
     const selections = buildSelectionsFromForm(formData);
     const contentLocale = useContentLocale.getState().contentLocale;
-    const modifiers = deriveRaceModifiers(selections, contentLocale);
+    const context = grantContextFromForm(formData);
+    const modifiers = [
+        ...deriveRaceModifiers(selections, contentLocale),
+        ...deriveStatModifiers(selections, context, contentLocale),
+    ];
     const grants = deriveCharacterGrants(
         selections,
-        grantContextFromForm(formData),
+        context,
         contentLocale
     );
 
@@ -108,10 +114,19 @@ function rebuildCharacterFromForm(
     const contentLocale = useContentLocale.getState().contentLocale;
     const context = grantContextFromForm(formData);
     const raceModifiers = deriveRaceModifiers(selections, contentLocale);
-    const preservedModifiers = removeModifiersBySource(char.modifiers, {
+    let preservedModifiers = removeModifiersBySource(char.modifiers, {
         type: "race",
     });
-    const modifiers = [...preservedModifiers, ...raceModifiers];
+    for (const sourceType of STAT_MODIFIER_SOURCE_TYPES) {
+        preservedModifiers = removeModifiersBySource(preservedModifiers, {
+            type: sourceType,
+        });
+    }
+    const modifiers = [
+        ...preservedModifiers,
+        ...raceModifiers,
+        ...deriveStatModifiers(selections, context, contentLocale),
+    ];
     const grants = deriveCharacterGrants(selections, context, contentLocale);
     const processedForm = applyDerivedMaxHp(formData, char.system, contentLocale);
 

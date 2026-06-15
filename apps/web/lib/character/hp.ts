@@ -3,6 +3,10 @@ import type { HpDerivationContext, HpRules } from "@/presets/types";
 import { getClassHitDie } from "@/lib/catalog/grantCatalog";
 import { buildSelectionsFromForm } from "./characterAdapter";
 import { deriveRaceModifiers } from "./raceModifiers";
+import {
+    deriveStatModifiers,
+    grantContextFromForm,
+} from "./characterGrants";
 import { buildBaseStatsFromForm } from "./presetStats";
 import { resolveStats } from "@rpv/domain";
 import type { Locale } from "@rpv/domain";
@@ -96,4 +100,20 @@ export function deriveMaxHpFromForm(
 
 export function isMaxHpEmpty(value: unknown): boolean {
     return value === undefined || value === null || value === "";
+}
+
+export function resolveMaxHpFromForm(
+    formData: Record<string, unknown>,
+    system: SystemKey,
+    locale: Locale
+): number | undefined {
+    const selections = buildSelectionsFromForm(formData);
+    const context = grantContextFromForm(formData);
+    const baseStats = buildBaseStatsFromForm(formData, system);
+    const modifiers = [
+        ...deriveRaceModifiers(selections, locale),
+        ...deriveStatModifiers(selections, context, locale),
+    ];
+
+    return resolveStats(baseStats, modifiers).hitPoints;
 }

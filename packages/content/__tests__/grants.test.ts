@@ -7,6 +7,7 @@ import {
     resolveLanguagePool,
     resolveGrantPool,
     resolveSpellPool,
+    statModifierGrantsToModifiers,
 } from "../src/grant/grants";
 import type { Grant } from "../src/grant/grant.types";
 import { dndLanguages } from "../src/catalog/languages.seed";
@@ -67,6 +68,37 @@ describe("abilityScoreGrantsToModifiers", () => {
     });
 });
 
+describe("statModifierGrantsToModifiers", () => {
+    it("converts fixed stat_modifier grants into domain modifiers", () => {
+        const grants: Grant[] = [
+            {
+                grantType: "stat_modifier",
+                choose: 0,
+                targetStat: "hitPoints",
+                amount: 5,
+            },
+        ];
+
+        expect(
+            statModifierGrantsToModifiers(grants, {
+                type: "item",
+                id: "amulet-of-vitality",
+            })
+        ).toEqual([
+            {
+                id: "item-amulet-of-vitality-stat-hitPoints",
+                stat: "hitPoints",
+                operation: "add",
+                value: 5,
+                source: { type: "item", id: "amulet-of-vitality" },
+                duration: { type: "permanent" },
+                stacking: "stack",
+                priority: 0,
+            },
+        ]);
+    });
+});
+
 describe("fixedGrantsToCharacterGrants", () => {
     it("converts fixed language options into character grants", () => {
         const grants: Grant[] = [
@@ -115,20 +147,6 @@ describe("fixedGrantsToCharacterGrants", () => {
         });
     });
 
-    it("skips choice-based grants", () => {
-        const grants: Grant[] = [
-            {
-                grantType: "language",
-                choose: 1,
-                selectionFilter: { any: true },
-            },
-        ];
-
-        expect(
-            fixedGrantsToCharacterGrants(grants, { type: "race", id: "elf" })
-        ).toEqual([]);
-    });
-
     it("converts fixed saving throw proficiencies into saving_throw grants", () => {
         const grants: Grant[] = [
             {
@@ -158,6 +176,38 @@ describe("fixedGrantsToCharacterGrants", () => {
                 source: { type: "class", id: "fighter" },
             }),
         ]);
+    });
+
+    it("skips choice-based grants", () => {
+        const grants: Grant[] = [
+            {
+                grantType: "language",
+                choose: 1,
+                selectionFilter: { any: true },
+            },
+        ];
+
+        expect(
+            fixedGrantsToCharacterGrants(grants, { type: "race", id: "elf" })
+        ).toEqual([]);
+    });
+
+    it("skips stat_modifier grants", () => {
+        const grants: Grant[] = [
+            {
+                grantType: "stat_modifier",
+                choose: 0,
+                targetStat: "hitPoints",
+                amount: 5,
+            },
+        ];
+
+        expect(
+            fixedGrantsToCharacterGrants(grants, {
+                type: "item",
+                id: "amulet-of-vitality",
+            })
+        ).toEqual([]);
     });
 });
 
