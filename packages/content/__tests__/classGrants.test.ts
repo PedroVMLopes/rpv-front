@@ -1,6 +1,7 @@
 import {
     getClass,
     getClassGrants,
+    getClassHitDie,
     listClasses,
 } from "../src/curation/classGrants.dnd";
 
@@ -40,11 +41,20 @@ describe("classGrants.dnd", () => {
             expect.objectContaining({
                 slug: "wizard",
                 name: "Wizard",
+                hitDie: 6,
             })
         );
     });
 
     it("returns empty grants for unknown class", () => {
         expect(getClassGrants("unknown")).toEqual([]);
+    });
+
+    it("returns hit die by class slug", () => {
+        expect(getClassHitDie("fighter")).toBe(10);
+        expect(getClassHitDie("wizard")).toBe(6);
+        expect(getClassHitDie("rogue")).toBe(8);
+        expect(getClassHitDie("cleric")).toBe(8);
+        expect(getClassHitDie("unknown")).toBeUndefined();
     });
 });

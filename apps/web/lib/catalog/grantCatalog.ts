@@ -2,7 +2,7 @@ import { listLanguages as listCatalogLanguages, getLanguage as getCatalogLanguag
 import type { Language, Skill } from "@rpv/content";
 import { listBackgrounds } from "@rpv/content";
 import { listItems } from "@rpv/content";
-import { listClasses } from "@rpv/content";
+import { getClassHitDie as getContentClassHitDie, listClasses } from "@rpv/content";
 import { dndSkills } from "@rpv/content";
 
 export type CatalogSelectOption = {
@@ -44,6 +44,10 @@ export function listClassOptions(): CatalogSelectOption[] {
         value: characterClass.slug,
         label: characterClass.name,
     }));
+}
+
+export function getClassHitDie(slug: string): number | undefined {
+    return getContentClassHitDie(slug);
 }
 
 export function listSkills(): Skill[] {

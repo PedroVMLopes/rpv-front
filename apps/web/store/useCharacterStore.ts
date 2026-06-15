@@ -15,6 +15,10 @@ import {
     deriveCharacterGrants,
     grantContextFromForm,
 } from "@/lib/character/characterGrants";
+import {
+    deriveMaxHpFromForm,
+    isMaxHpEmpty,
+} from "@/lib/character/hp";
 import { useContentLocale } from "@/store/useContentLocale";
 import { removeModifiersBySource } from "@rpv/domain";
 import { getResourceMax } from "@/lib/character/presetStats";
@@ -57,8 +61,10 @@ const createStoredCharacter = (
         contentLocale
     );
 
+    const processedForm = applyDerivedMaxHp(formData, system, contentLocale);
+
     return formDataToStoredCharacter(
-        formData,
+        processedForm,
         id,
         type,
         system,
@@ -67,6 +73,32 @@ const createStoredCharacter = (
         grants
     );
 };
+
+function applyDerivedMaxHp(
+    formData: Record<string, unknown>,
+    system: SystemKey,
+    contentLocale: ReturnType<typeof useContentLocale.getState>["contentLocale"]
+): Record<string, unknown> {
+    if (!isMaxHpEmpty(formData.maxHp)) {
+        return formData;
+    }
+
+    const derivedMaxHp = deriveMaxHpFromForm(formData, system, contentLocale);
+    if (derivedMaxHp === undefined) {
+        return formData;
+    }
+
+    const processedForm: Record<string, unknown> = {
+        ...formData,
+        maxHp: derivedMaxHp,
+    };
+
+    if (isMaxHpEmpty(formData.hp)) {
+        processedForm.hp = derivedMaxHp;
+    }
+
+    return processedForm;
+}
 
 function rebuildCharacterFromForm(
     char: StoredCharacter,
@@ -81,9 +113,10 @@ function rebuildCharacterFromForm(
     });
     const modifiers = [...preservedModifiers, ...raceModifiers];
     const grants = deriveCharacterGrants(selections, context, contentLocale);
+    const processedForm = applyDerivedMaxHp(formData, char.system, contentLocale);
 
     return formDataToStoredCharacter(
-        formData,
+        processedForm,
         char.id,
         char.type,
         char.system,

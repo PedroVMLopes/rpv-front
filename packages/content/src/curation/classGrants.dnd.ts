@@ -4,6 +4,8 @@ export interface ClassEntry {
     slug: string;
     name: string;
     description: string;
+    /** Hit die sides (e.g. 6, 8, 10, 12). */
+    hitDie: number;
     grants: Grant[];
 }
 
@@ -17,6 +19,7 @@ export const dndClasses: ClassEntry[] = [
         name: "Fighter",
         description:
             "A master of martial combat, skilled with a variety of weapons and armor.",
+        hitDie: 10,
         grants: [
             {
                 grantType: "armor_proficiency",
@@ -58,6 +61,7 @@ export const dndClasses: ClassEntry[] = [
         name: "Wizard",
         description:
             "A scholarly magic-user capable of manipulating the structures of reality.",
+        hitDie: 6,
         grants: [
             {
                 grantType: "weapon_proficiency",
@@ -90,6 +94,7 @@ export const dndClasses: ClassEntry[] = [
         name: "Rogue",
         description:
             "A scoundrel who uses stealth and trickery to overcome obstacles and enemies.",
+        hitDie: 8,
         grants: [
             {
                 grantType: "armor_proficiency",
@@ -132,6 +137,7 @@ export const dndClasses: ClassEntry[] = [
         name: "Cleric",
         description:
             "A priestly champion who wields divine magic in service of a higher power.",
+        hitDie: 8,
         grants: [
             {
                 grantType: "armor_proficiency",
@@ -173,4 +179,8 @@ export function listClasses(): ClassEntry[] {
 
 export function getClassGrants(slug: string): Grant[] {
     return getClass(slug)?.grants ?? [];
+}
+
+export function getClassHitDie(slug: string): number | undefined {
+    return getClass(slug)?.hitDie;
 }

@@ -133,5 +133,11 @@
       "standardArrayInvalid": "Atribua cada valor do array padrão exatamente uma vez.",
       "rollInvalid": "Atribua cada valor rolado exatamente uma vez."
     }
+  },
+  "hitPoints": {
+    "title": "Pontos de Vida",
+    "resetToComputed": "Restaurar calculado",
+    "manualHint": "Selecione uma classe e um nível para calcular os PV máximos com dado de vida e Constituição.",
+    "overrideHint": "Os PV máximos foram alterados manualmente e não serão atualizados quando classe, nível ou Constituição mudarem."
   }
 }

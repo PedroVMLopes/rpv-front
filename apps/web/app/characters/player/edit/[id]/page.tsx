@@ -10,6 +10,7 @@ import { createDynamicSchema } from "@/lib/schema/zodDynamic";
 import { applyChoiceValidation } from "@/lib/character/choiceValidation";
 import { applyAbilityScoreValidation } from "@/lib/character/abilityScoreGeneration";
 import { AbilityScoresField } from "@/components/characters/AbilityScoresField";
+import { HitPointsField } from "@/components/characters/HitPointsField";
 import { presets } from "@/presets";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -92,7 +93,10 @@ export default function EditPlayer() {
     const fields = useMemo(
         () =>
             buildPlayerRaceFields(baseFields, raceSlug, contentLocale).filter(
-                (field) => field.type !== "attributeGroup"
+                (field) =>
+                    field.type !== "attributeGroup" &&
+                    field.name !== "hp" &&
+                    field.name !== "maxHp"
             ),
         [baseFields, raceSlug, contentLocale]
     );
@@ -114,6 +118,11 @@ export default function EditPlayer() {
                 form={form}
                 abilities={presetData.statConfig.abilities}
                 statConfig={presetData.statConfig}
+                contentLocale={contentLocale}
+            />
+            <HitPointsField
+                form={form}
+                system={characterSystem}
                 contentLocale={contentLocale}
             />
             <DynamicForm

@@ -133,5 +133,11 @@
       "standardArrayInvalid": "Assign each standard array value exactly once.",
       "rollInvalid": "Assign every rolled score exactly once."
     }
+  },
+  "hitPoints": {
+    "title": "Hit Points",
+    "resetToComputed": "Reset to computed",
+    "manualHint": "Select a class and level to compute max HP from hit die and Constitution.",
+    "overrideHint": "Max HP is manually overridden and will not update when class, level, or Constitution change."
   }
 }

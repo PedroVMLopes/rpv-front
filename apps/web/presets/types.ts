@@ -64,6 +64,19 @@ export type PresetStatConfig = {
     abilityGeneration?: AbilityGenerationConfig;
 };
 
+export type HpDerivationContext = {
+    level: number;
+    /** Resolved Constitution (base + race ASI). */
+    constitution: number;
+    classSlug?: string;
+    /** Hit die sides resolved from class data. */
+    hitDie?: number;
+};
+
+export type HpRules = {
+    deriveMaxHp: (ctx: HpDerivationContext) => number | undefined;
+};
+
 export type PresetAttributeField = {
     name: string;
     labelKey?: string;

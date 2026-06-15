@@ -24,7 +24,7 @@ export const dndCharacterSchema = {
     .default(dndDefaultAttributes).optional(),
   }),
   player: z.object({
-    level: z.coerce.number().optional(),
+    level: z.coerce.number().min(1).optional().default(1),
     characterClass: z.string().optional(),
     race: z.string().optional(),
     subrace: z.string().optional(),

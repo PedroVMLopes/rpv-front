@@ -7,6 +7,7 @@ import { createDynamicSchema } from "@/lib/schema/zodDynamic";
 import { applyChoiceValidation } from "@/lib/character/choiceValidation";
 import { applyAbilityScoreValidation } from "@/lib/character/abilityScoreGeneration";
 import { AbilityScoresField } from "@/components/characters/AbilityScoresField";
+import { HitPointsField } from "@/components/characters/HitPointsField";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { DynamicForm } from "@/components/forms/DynamicForm";
@@ -68,7 +69,10 @@ export default function CreatePlayer() {
     const fields = useMemo(
         () =>
             buildPlayerRaceFields(baseFields, raceSlug, contentLocale).filter(
-                (field) => field.type !== "attributeGroup"
+                (field) =>
+                    field.type !== "attributeGroup" &&
+                    field.name !== "hp" &&
+                    field.name !== "maxHp"
             ),
         [baseFields, raceSlug, contentLocale]
     );
@@ -109,6 +113,11 @@ export default function CreatePlayer() {
                     form={form}
                     abilities={presetData.statConfig.abilities}
                     statConfig={presetData.statConfig}
+                    contentLocale={contentLocale}
+                />
+                <HitPointsField
+                    form={form}
+                    system={system}
                     contentLocale={contentLocale}
                 />
                 <DynamicForm form={form} fields={fields} onSubmit={handleSave} />
