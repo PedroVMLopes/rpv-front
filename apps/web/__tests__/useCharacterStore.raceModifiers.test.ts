@@ -223,8 +223,8 @@ describe("useCharacterStore race modifiers", () => {
                     characterClass: "fighter",
                     choices: {
                         grantPicks: {
-                            "class:fighter:skill_proficiency:2:0": "athletics",
-                            "class:fighter:skill_proficiency:2:1": "intimidation",
+                            "class:fighter:skill_proficiency:3:0": "athletics",
+                            "class:fighter:skill_proficiency:3:1": "intimidation",
                         },
                     },
                 },

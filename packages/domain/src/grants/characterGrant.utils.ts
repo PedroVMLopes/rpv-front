@@ -33,3 +33,7 @@ export function getSpells(grants: CharacterGrant[]): CharacterGrant[] {
 export function getProficiencies(grants: CharacterGrant[]): CharacterGrant[] {
     return grants.filter((grant) => grant.kind === "proficiency");
 }
+
+export function getSavingThrows(grants: CharacterGrant[]): CharacterGrant[] {
+    return grants.filter((grant) => grant.kind === "saving_throw");
+}

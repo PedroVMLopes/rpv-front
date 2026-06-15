@@ -7,6 +7,7 @@ export type GrantType =
     | "weapon_proficiency"
     | "tool_proficiency"
     | "armor_proficiency"
+    | "saving_throw_proficiency"
     | "language"
     | "spell";
 

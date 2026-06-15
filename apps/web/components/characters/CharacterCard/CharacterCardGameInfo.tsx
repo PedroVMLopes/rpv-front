@@ -9,7 +9,8 @@ import {
     formatModifier,
     readCharacterLevel,
 } from "@/lib/character/skillModifiers";
-import { listSkills } from "@/lib/catalog/grantCatalog";
+import { computeSavingThrowModifiers } from "@/lib/character/savingThrowModifiers";
+import { listSavingThrows, listSkills } from "@/lib/catalog/grantCatalog";
 import { useCharacterStore } from "@/store/useCharacterStore";
 
 interface CharacterCardGameInfoProps {
@@ -19,6 +20,7 @@ interface CharacterCardGameInfoProps {
 export default function CharacterCardGameInfo({ characterId }: CharacterCardGameInfoProps) {
     const t = useTranslations();
     const tSkills = useTranslations("skills");
+    const tAbilities = useTranslations("abilities");
     const getCharacterProps = useCharacterStore((state) => state.getCharacterProps);
     const getResolvedStats = useCharacterStore((state) => state.getResolvedStats);
     const characters = useCharacterStore((state) => state.characters);
@@ -36,6 +38,19 @@ export default function CharacterCardGameInfo({ characterId }: CharacterCardGame
             stored.grants ?? [],
             readCharacterLevel(stored.systemData),
             listSkills()
+        );
+    }, [stored, resolved]);
+
+    const savingThrowModifiers = useMemo(() => {
+        if (!stored || !resolved) {
+            return [];
+        }
+
+        return computeSavingThrowModifiers(
+            resolved,
+            stored.grants ?? [],
+            readCharacterLevel(stored.systemData),
+            listSavingThrows()
         );
     }, [stored, resolved]);
 
@@ -94,6 +109,36 @@ export default function CharacterCardGameInfo({ characterId }: CharacterCardGame
                             )}
                         </div>
                     ))}
+                </div>
+
+                <div>
+                    <p className="text-xs font-semibold uppercase text-muted-foreground mb-2">
+                        {t("character.savingThrows")}
+                    </p>
+                    <ul className="space-y-1 text-sm">
+                        {savingThrowModifiers.map((save) => (
+                            <li
+                                key={save.stat}
+                                className={`flex items-center justify-between rounded-lg border px-2 py-1 bg-popover${
+                                    save.proficient ? " border-primary/40" : ""
+                                }`}
+                            >
+                                <span className="flex items-center gap-2">
+                                    {save.proficient && (
+                                        <span
+                                            className="size-1.5 rounded-full bg-primary shrink-0"
+                                            title={t("character.proficient")}
+                                            aria-label={t("character.proficient")}
+                                        />
+                                    )}
+                                    <span>{tAbilities(save.stat)}</span>
+                                </span>
+                                <span className="font-semibold tabular-nums">
+                                    {formatModifier(save.modifier)}
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
                 </div>
 
                 <div>

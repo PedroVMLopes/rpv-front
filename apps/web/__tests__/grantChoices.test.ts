@@ -14,8 +14,8 @@ describe("collectPendingChoiceGrants", () => {
 
         expect(skillChoices).toHaveLength(2);
         expect(skillChoices.map((choice) => choice.key)).toEqual([
-            "class:fighter:skill_proficiency:2:0",
-            "class:fighter:skill_proficiency:2:1",
+            "class:fighter:skill_proficiency:3:0",
+            "class:fighter:skill_proficiency:3:1",
         ]);
     });
 

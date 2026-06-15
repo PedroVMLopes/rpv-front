@@ -105,6 +105,16 @@ describe("deriveCharacterGrants", () => {
                     ref: "martial-weapons",
                     source: { type: "class", id: "fighter" },
                 }),
+                expect.objectContaining({
+                    kind: "saving_throw",
+                    ref: "strength",
+                    source: { type: "class", id: "fighter" },
+                }),
+                expect.objectContaining({
+                    kind: "saving_throw",
+                    ref: "constitution",
+                    source: { type: "class", id: "fighter" },
+                }),
             ])
         );
     });
@@ -115,8 +125,8 @@ describe("deriveCharacterGrants", () => {
                 race: "elf",
                 choices: {
                     grantPicks: {
-                        "class:fighter:skill_proficiency:2:0": "athletics",
-                        "class:fighter:skill_proficiency:2:1": "intimidation",
+                        "class:fighter:skill_proficiency:3:0": "athletics",
+                        "class:fighter:skill_proficiency:3:1": "intimidation",
                     },
                 },
             },

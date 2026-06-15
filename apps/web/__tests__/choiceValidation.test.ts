@@ -68,8 +68,8 @@ describe("findMissingRequiredChoices", () => {
 
         expect(missing.map((choice) => choice.key)).toEqual(
             expect.arrayContaining([
-                "class:fighter:skill_proficiency:2:0",
-                "class:fighter:skill_proficiency:2:1",
+                "class:fighter:skill_proficiency:3:0",
+                "class:fighter:skill_proficiency:3:1",
             ])
         );
     });
@@ -85,8 +85,8 @@ describe("findMissingRequiredChoices", () => {
                     grantPicks: {
                         "race:high-elf:language:0:0": "draconic",
                         "race:high-elf:spell:0:0": "fire-bolt",
-                        "class:fighter:skill_proficiency:2:0": "athletics",
-                        "class:fighter:skill_proficiency:2:1": "intimidation",
+                        "class:fighter:skill_proficiency:3:0": "athletics",
+                        "class:fighter:skill_proficiency:3:1": "intimidation",
                     },
                 },
             },

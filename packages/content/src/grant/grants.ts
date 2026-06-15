@@ -12,6 +12,7 @@ const GRANT_TYPE_TO_KIND: Record<
     weapon_proficiency: "proficiency",
     tool_proficiency: "proficiency",
     armor_proficiency: "proficiency",
+    saving_throw_proficiency: "saving_throw",
     language: "language",
     spell: "spell",
 };
@@ -57,12 +58,14 @@ function optionToGrant(
     source: ModifierSource,
     index: number
 ): CharacterGrant | null {
+    const kindFromGrantType = grantKindFromType(grant.grantType);
     const kind =
-        option.optionType === "spell"
+        kindFromGrantType ??
+        (option.optionType === "spell"
             ? "spell"
             : option.optionType === "language"
               ? "language"
-              : "proficiency";
+              : "proficiency");
 
     return {
         id: `${source.type}-${source.id}-${grant.grantType}-${option.ref}-${index}`,

@@ -128,6 +128,37 @@ describe("fixedGrantsToCharacterGrants", () => {
             fixedGrantsToCharacterGrants(grants, { type: "race", id: "elf" })
         ).toEqual([]);
     });
+
+    it("converts fixed saving throw proficiencies into saving_throw grants", () => {
+        const grants: Grant[] = [
+            {
+                grantType: "saving_throw_proficiency",
+                choose: 0,
+                options: [
+                    { optionType: "proficiency", ref: "strength" },
+                    { optionType: "proficiency", ref: "constitution" },
+                ],
+            },
+        ];
+
+        const result = fixedGrantsToCharacterGrants(grants, {
+            type: "class",
+            id: "fighter",
+        });
+
+        expect(result).toEqual([
+            expect.objectContaining({
+                kind: "saving_throw",
+                ref: "strength",
+                source: { type: "class", id: "fighter" },
+            }),
+            expect.objectContaining({
+                kind: "saving_throw",
+                ref: "constitution",
+                source: { type: "class", id: "fighter" },
+            }),
+        ]);
+    });
 });
 
 describe("countLanguageChoices", () => {

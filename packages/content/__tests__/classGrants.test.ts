@@ -21,6 +21,10 @@ describe("classGrants.dnd", () => {
         expect(grants).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
+                    grantType: "saving_throw_proficiency",
+                    choose: 0,
+                }),
+                expect.objectContaining({
                     grantType: "armor_proficiency",
                     choose: 0,
                 }),
@@ -56,5 +60,37 @@ describe("classGrants.dnd", () => {
         expect(getClassHitDie("rogue")).toBe(8);
         expect(getClassHitDie("cleric")).toBe(8);
         expect(getClassHitDie("unknown")).toBeUndefined();
+    });
+
+    it("returns class-specific saving throw proficiencies", () => {
+        const fighterSaveGrant = getClassGrants("fighter").find(
+            (grant) => grant.grantType === "saving_throw_proficiency"
+        );
+        const wizardSaveGrant = getClassGrants("wizard").find(
+            (grant) => grant.grantType === "saving_throw_proficiency"
+        );
+        const rogueSaveGrant = getClassGrants("rogue").find(
+            (grant) => grant.grantType === "saving_throw_proficiency"
+        );
+        const clericSaveGrant = getClassGrants("cleric").find(
+            (grant) => grant.grantType === "saving_throw_proficiency"
+        );
+
+        expect(fighterSaveGrant?.options?.map((option) => option.ref)).toEqual([
+            "strength",
+            "constitution",
+        ]);
+        expect(wizardSaveGrant?.options?.map((option) => option.ref)).toEqual([
+            "intelligence",
+            "wisdom",
+        ]);
+        expect(rogueSaveGrant?.options?.map((option) => option.ref)).toEqual([
+            "dexterity",
+            "intelligence",
+        ]);
+        expect(clericSaveGrant?.options?.map((option) => option.ref)).toEqual([
+            "wisdom",
+            "charisma",
+        ]);
     });
 });

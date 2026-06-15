@@ -4,6 +4,7 @@ export type CharacterGrantKind =
     | "language"
     | "ability"
     | "proficiency"
+    | "saving_throw"
     | "spell";
 
 export interface CharacterGrant {

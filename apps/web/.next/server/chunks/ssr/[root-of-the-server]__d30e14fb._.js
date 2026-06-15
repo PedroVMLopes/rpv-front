@@ -314,6 +314,7 @@ __turbopack_context__.s({
     "getAbilities": ()=>getAbilities,
     "getLanguages": ()=>getLanguages,
     "getProficiencies": ()=>getProficiencies,
+    "getSavingThrows": ()=>getSavingThrows,
     "getSpells": ()=>getSpells,
     "removeGrantsBySource": ()=>removeGrantsBySource
 });
@@ -339,6 +340,9 @@ function getSpells(grants) {
 }
 function getProficiencies(grants) {
     return grants.filter((grant)=>grant.kind === "proficiency");
+}
+function getSavingThrows(grants) {
+    return grants.filter((grant)=>grant.kind === "saving_throw");
 }
 }),
 "[project]/packages/domain/src/grants/index.ts [app-rsc] (ecmascript) <locals>": ((__turbopack_context__) => {

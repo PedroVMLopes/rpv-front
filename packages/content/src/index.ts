@@ -14,6 +14,7 @@ export * from "./race/race.mapper";
 
 export * from "./catalog/catalog.types";
 export * from "./catalog/skills.seed";
+export * from "./catalog/savingThrows.seed";
 export * from "./catalog/languages.seed";
 
 export * from "./curation/raceGrants.dnd";

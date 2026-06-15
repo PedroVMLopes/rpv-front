@@ -22,6 +22,14 @@ export const dndClasses: ClassEntry[] = [
         hitDie: 10,
         grants: [
             {
+                grantType: "saving_throw_proficiency",
+                choose: 0,
+                options: [
+                    { optionType: "proficiency", ref: "strength" },
+                    { optionType: "proficiency", ref: "constitution" },
+                ],
+            },
+            {
                 grantType: "armor_proficiency",
                 choose: 0,
                 options: [
@@ -64,6 +72,14 @@ export const dndClasses: ClassEntry[] = [
         hitDie: 6,
         grants: [
             {
+                grantType: "saving_throw_proficiency",
+                choose: 0,
+                options: [
+                    { optionType: "proficiency", ref: "intelligence" },
+                    { optionType: "proficiency", ref: "wisdom" },
+                ],
+            },
+            {
                 grantType: "weapon_proficiency",
                 choose: 0,
                 options: [
@@ -96,6 +112,14 @@ export const dndClasses: ClassEntry[] = [
             "A scoundrel who uses stealth and trickery to overcome obstacles and enemies.",
         hitDie: 8,
         grants: [
+            {
+                grantType: "saving_throw_proficiency",
+                choose: 0,
+                options: [
+                    { optionType: "proficiency", ref: "dexterity" },
+                    { optionType: "proficiency", ref: "intelligence" },
+                ],
+            },
             {
                 grantType: "armor_proficiency",
                 choose: 0,
@@ -139,6 +163,14 @@ export const dndClasses: ClassEntry[] = [
             "A priestly champion who wields divine magic in service of a higher power.",
         hitDie: 8,
         grants: [
+            {
+                grantType: "saving_throw_proficiency",
+                choose: 0,
+                options: [
+                    { optionType: "proficiency", ref: "wisdom" },
+                    { optionType: "proficiency", ref: "charisma" },
+                ],
+            },
             {
                 grantType: "armor_proficiency",
                 choose: 0,

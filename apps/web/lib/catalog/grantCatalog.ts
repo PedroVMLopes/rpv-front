@@ -3,7 +3,8 @@ import type { Language, Skill } from "@rpv/content";
 import { listBackgrounds } from "@rpv/content";
 import { listItems } from "@rpv/content";
 import { getClassHitDie as getContentClassHitDie, listClasses } from "@rpv/content";
-import { dndSkills } from "@rpv/content";
+import { dndSkills, dndSavingThrows } from "@rpv/content";
+import type { StatKey } from "@rpv/domain";
 
 export type CatalogSelectOption = {
     value: string;
@@ -56,4 +57,8 @@ export function listSkills(): Skill[] {
 
 export function getSkill(slug: string): Skill | undefined {
     return dndSkills.find((skill) => skill.slug === slug);
+}
+
+export function listSavingThrows(): StatKey[] {
+    return dndSavingThrows;
 }
