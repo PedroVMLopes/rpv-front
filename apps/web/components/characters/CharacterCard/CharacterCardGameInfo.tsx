@@ -10,6 +10,11 @@ import {
     readCharacterLevel,
 } from "@/lib/character/skillModifiers";
 import { computeSavingThrowModifiers } from "@/lib/character/savingThrowModifiers";
+import {
+    computeInitiative,
+    computePassivePerception,
+    getProficiencyBonus,
+} from "@/lib/character/derivedStats";
 import { listSavingThrows, listSkills } from "@/lib/catalog/grantCatalog";
 import { useCharacterStore } from "@/store/useCharacterStore";
 
@@ -67,6 +72,10 @@ export default function CharacterCardGameInfo({ characterId }: CharacterCardGame
     const display = getResolvedStatDisplay(props, stored.system);
     const labelOf = (item: { labelKey?: string; label?: string; name?: string }) =>
         item.labelKey ? t(item.labelKey) : item.label ?? item.name ?? "";
+    const level = readCharacterLevel(stored.systemData);
+    const profBonus = getProficiencyBonus(level);
+    const initiative = computeInitiative(resolved);
+    const passivePerception = computePassivePerception(skillModifiers);
 
     return (
         <CarouselItem>
@@ -109,6 +118,24 @@ export default function CharacterCardGameInfo({ characterId }: CharacterCardGame
                             )}
                         </div>
                     ))}
+                    <div className="border rounded-lg p-2 bg-popover">
+                        <span className="text-muted-foreground">
+                            {t("character.proficiencyBonus")}{" "}
+                        </span>
+                        <span className="font-bold">{formatModifier(profBonus)}</span>
+                    </div>
+                    <div className="border rounded-lg p-2 bg-popover">
+                        <span className="text-muted-foreground">
+                            {t("character.initiative")}{" "}
+                        </span>
+                        <span className="font-bold">{formatModifier(initiative)}</span>
+                    </div>
+                    <div className="border rounded-lg p-2 bg-popover">
+                        <span className="text-muted-foreground">
+                            {t("character.passivePerception")}{" "}
+                        </span>
+                        <span className="font-bold">{passivePerception}</span>
+                    </div>
                 </div>
 
                 <div>

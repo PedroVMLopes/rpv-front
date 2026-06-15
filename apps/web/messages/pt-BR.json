@@ -75,7 +75,10 @@
     "unresolvedChoices": "Escolhas pendentes",
     "skills": "Perícias",
     "savingThrows": "Testes de Resistência",
-    "proficient": "Proficiente"
+    "proficient": "Proficiente",
+    "proficiencyBonus": "Bônus de Proficiência",
+    "initiative": "Iniciativa",
+    "passivePerception": "Percepção Passiva"
   },
   "skills": {
     "acrobatics": "Acrobacia",

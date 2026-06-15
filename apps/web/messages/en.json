@@ -75,7 +75,10 @@
     "unresolvedChoices": "Choices to resolve",
     "skills": "Skills",
     "savingThrows": "Saving Throws",
-    "proficient": "Proficient"
+    "proficient": "Proficient",
+    "proficiencyBonus": "Proficiency Bonus",
+    "initiative": "Initiative",
+    "passivePerception": "Passive Perception"
   },
   "skills": {
     "acrobatics": "Acrobatics",
