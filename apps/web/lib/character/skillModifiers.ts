@@ -1,5 +1,7 @@
 import type { CharacterGrant, StatKey, Stats } from "@rpv/domain";
 import type { Skill } from "@rpv/content";
+import type { SystemKey } from "@/presets";
+import { getSystemRules } from "./systemRules";
 
 export type SkillModifier = {
     slug: string;
@@ -8,17 +10,6 @@ export type SkillModifier = {
     modifier: number;
     proficient: boolean;
 };
-
-export function abilityModifier(score: number): number {
-    return Math.floor((score - 10) / 2);
-}
-
-export function proficiencyBonus(level: number): number {
-    const normalized =
-        !Number.isFinite(level) || level < 1 ? 1 : Math.floor(level);
-
-    return 2 + Math.floor((normalized - 1) / 4);
-}
 
 export function readCharacterLevel(systemData: Record<string, unknown>): number {
     const level = systemData.level;
@@ -62,16 +53,17 @@ export function formatModifier(value: number): string {
 }
 
 export function computeSkillModifiers(
+    system: SystemKey,
     stats: Stats,
     grants: CharacterGrant[],
-    level: number,
-    skills: Skill[]
+    level: number
 ): SkillModifier[] {
-    const proficientSlugs = getProficientSkillSlugs(grants, skills);
-    const bonus = proficiencyBonus(level);
+    const rules = getSystemRules(system);
+    const proficientSlugs = getProficientSkillSlugs(grants, rules.skills);
+    const bonus = rules.proficiencyBonus(level);
 
-    return skills.map((skill) => {
-        const abilityMod = abilityModifier(stats[skill.ability] ?? 10);
+    return rules.skills.map((skill) => {
+        const abilityMod = rules.abilityModifier(stats[skill.ability] ?? 10);
         const proficient = proficientSlugs.has(skill.slug);
 
         return {

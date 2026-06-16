@@ -1,5 +1,5 @@
-import { abilityModifier } from "@/lib/character/skillModifiers";
 import type { HpDerivationContext } from "../types";
+import { dndAbilityModifier } from "./math";
 
 /** Average HP gained per level after level 1 (fixed/average method). */
 export function averageHitDieGain(hitDie: number): number {
@@ -25,7 +25,7 @@ export function deriveDndMaxHp(ctx: HpDerivationContext): number | undefined {
     }
 
     const level = Math.floor(ctx.level);
-    const conMod = abilityModifier(ctx.constitution);
+    const conMod = dndAbilityModifier(ctx.constitution);
     const firstLevel = levelHpContribution(ctx.hitDie, conMod);
     const laterLevels = levelHpContribution(
         averageHitDieGain(ctx.hitDie),
@@ -37,6 +37,7 @@ export function deriveDndMaxHp(ctx: HpDerivationContext): number | undefined {
 
 export const dndHpRules = {
     deriveMaxHp: deriveDndMaxHp,
+    formatBreakdown: formatDndHpBreakdown,
 };
 
 function formatSigned(value: number): string {
@@ -49,7 +50,7 @@ export function formatDndHpBreakdown(ctx: HpDerivationContext): string | undefin
         return undefined;
     }
 
-    const conMod = abilityModifier(ctx.constitution);
+    const conMod = dndAbilityModifier(ctx.constitution);
     const conModLabel = formatSigned(conMod);
     const level = Math.floor(ctx.level);
 

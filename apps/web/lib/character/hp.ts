@@ -1,4 +1,4 @@
-import { presets, SystemKey } from "@/presets";
+import type { SystemKey } from "@/presets";
 import type { HpDerivationContext, HpRules } from "@/presets/types";
 import { getClassHitDie } from "@/lib/catalog/grantCatalog";
 import { buildSelectionsFromForm } from "./characterAdapter";
@@ -8,23 +8,19 @@ import {
     grantContextFromForm,
 } from "./characterGrants";
 import { buildBaseStatsFromForm } from "./presetStats";
+import { getSystemRules } from "./systemRules";
 import { resolveStats } from "@rpv/domain";
 import type { Locale } from "@rpv/domain";
 
-export function getHpRules(system: SystemKey): HpRules | undefined {
-    return presets[system]?.presetData?.hpRules;
+export function getHpRules(system: SystemKey): HpRules {
+    return getSystemRules(system).hp;
 }
 
 export function deriveMaxHp(
     system: SystemKey,
     ctx: HpDerivationContext
 ): number | undefined {
-    const rules = getHpRules(system);
-    if (!rules) {
-        return undefined;
-    }
-
-    return rules.deriveMaxHp(ctx);
+    return getHpRules(system).deriveMaxHp(ctx);
 }
 
 function coerceLevel(value: unknown): number | undefined {
@@ -116,4 +112,17 @@ export function resolveMaxHpFromForm(
     ];
 
     return resolveStats(baseStats, modifiers).hitPoints;
+}
+
+export function formatMaxHpBreakdownFromForm(
+    formData: Record<string, unknown>,
+    system: SystemKey,
+    locale: Locale
+): string | undefined {
+    const ctx = buildHpDerivationContextFromForm(formData, system, locale);
+    if (!ctx) {
+        return undefined;
+    }
+
+    return getHpRules(system).formatBreakdown(ctx);
 }

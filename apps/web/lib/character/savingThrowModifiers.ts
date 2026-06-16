@@ -1,8 +1,6 @@
 import type { CharacterGrant, StatKey, Stats } from "@rpv/domain";
-import {
-    abilityModifier,
-    proficiencyBonus,
-} from "@/lib/character/skillModifiers";
+import type { SystemKey } from "@/presets";
+import { getSystemRules } from "./systemRules";
 
 export type SavingThrowModifier = {
     stat: StatKey;
@@ -21,17 +19,18 @@ export function getProficientSaveStats(
 }
 
 export function computeSavingThrowModifiers(
+    system: SystemKey,
     stats: Stats,
     grants: CharacterGrant[],
-    level: number,
-    saves: StatKey[]
+    level: number
 ): SavingThrowModifier[] {
+    const rules = getSystemRules(system);
     const proficientStats = getProficientSaveStats(grants);
-    const bonus = proficiencyBonus(level);
+    const bonus = rules.proficiencyBonus(level);
 
-    return saves.map((stat) => {
+    return rules.savingThrows.map((stat) => {
         const proficient = proficientStats.has(stat);
-        const abilityMod = abilityModifier(stats[stat] ?? 10);
+        const abilityMod = rules.abilityModifier(stats[stat] ?? 10);
 
         return {
             stat,

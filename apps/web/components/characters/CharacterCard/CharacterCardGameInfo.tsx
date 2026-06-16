@@ -15,7 +15,6 @@ import {
     computePassivePerception,
     getProficiencyBonus,
 } from "@/lib/character/derivedStats";
-import { listSavingThrows, listSkills } from "@/lib/catalog/grantCatalog";
 import { useCharacterStore } from "@/store/useCharacterStore";
 
 interface CharacterCardGameInfoProps {
@@ -39,10 +38,10 @@ export default function CharacterCardGameInfo({ characterId }: CharacterCardGame
         }
 
         return computeSkillModifiers(
+            stored.system,
             resolved,
             stored.grants ?? [],
-            readCharacterLevel(stored.systemData),
-            listSkills()
+            readCharacterLevel(stored.systemData)
         );
     }, [stored, resolved]);
 
@@ -52,10 +51,10 @@ export default function CharacterCardGameInfo({ characterId }: CharacterCardGame
         }
 
         return computeSavingThrowModifiers(
+            stored.system,
             resolved,
             stored.grants ?? [],
-            readCharacterLevel(stored.systemData),
-            listSavingThrows()
+            readCharacterLevel(stored.systemData)
         );
     }, [stored, resolved]);
 
@@ -73,9 +72,9 @@ export default function CharacterCardGameInfo({ characterId }: CharacterCardGame
     const labelOf = (item: { labelKey?: string; label?: string; name?: string }) =>
         item.labelKey ? t(item.labelKey) : item.label ?? item.name ?? "";
     const level = readCharacterLevel(stored.systemData);
-    const profBonus = getProficiencyBonus(level);
-    const initiative = computeInitiative(resolved);
-    const passivePerception = computePassivePerception(skillModifiers);
+    const profBonus = getProficiencyBonus(stored.system, level);
+    const initiative = computeInitiative(stored.system, resolved);
+    const passivePerception = computePassivePerception(stored.system, skillModifiers);
 
     return (
         <CarouselItem>

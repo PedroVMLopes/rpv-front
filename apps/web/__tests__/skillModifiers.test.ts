@@ -2,34 +2,36 @@ import { dndSkills } from "@rpv/content";
 import { createDefaultStats } from "@rpv/domain";
 import type { CharacterGrant } from "@rpv/domain";
 import {
-    abilityModifier,
+    dndAbilityModifier,
+    dndProficiencyBonus,
+} from "../presets/dnd/math";
+import {
     computeSkillModifiers,
     formatModifier,
     getProficientSkillSlugs,
-    proficiencyBonus,
     readCharacterLevel,
 } from "../lib/character/skillModifiers";
 
-describe("abilityModifier", () => {
+describe("dndAbilityModifier", () => {
     it("computes standard D&D ability modifiers", () => {
-        expect(abilityModifier(8)).toBe(-1);
-        expect(abilityModifier(10)).toBe(0);
-        expect(abilityModifier(14)).toBe(2);
-        expect(abilityModifier(20)).toBe(5);
+        expect(dndAbilityModifier(8)).toBe(-1);
+        expect(dndAbilityModifier(10)).toBe(0);
+        expect(dndAbilityModifier(14)).toBe(2);
+        expect(dndAbilityModifier(20)).toBe(5);
     });
 });
 
-describe("proficiencyBonus", () => {
+describe("dndProficiencyBonus", () => {
     it("follows the level-based progression", () => {
-        expect(proficiencyBonus(1)).toBe(2);
-        expect(proficiencyBonus(4)).toBe(2);
-        expect(proficiencyBonus(5)).toBe(3);
-        expect(proficiencyBonus(20)).toBe(6);
+        expect(dndProficiencyBonus(1)).toBe(2);
+        expect(dndProficiencyBonus(4)).toBe(2);
+        expect(dndProficiencyBonus(5)).toBe(3);
+        expect(dndProficiencyBonus(20)).toBe(6);
     });
 
     it("defaults invalid levels to level 1 bonus", () => {
-        expect(proficiencyBonus(0)).toBe(2);
-        expect(proficiencyBonus(Number.NaN)).toBe(2);
+        expect(dndProficiencyBonus(0)).toBe(2);
+        expect(dndProficiencyBonus(Number.NaN)).toBe(2);
     });
 });
 
@@ -88,6 +90,7 @@ describe("computeSkillModifiers", () => {
 
     it("adds proficiency bonus to proficient skills", () => {
         const modifiers = computeSkillModifiers(
+            "dnd",
             stats,
             [
                 {
@@ -97,8 +100,7 @@ describe("computeSkillModifiers", () => {
                     source: { type: "class", id: "rogue" },
                 },
             ],
-            1,
-            dndSkills
+            1
         );
 
         const stealth = modifiers.find((entry) => entry.slug === "stealth");
@@ -111,7 +113,7 @@ describe("computeSkillModifiers", () => {
     });
 
     it("uses ability modifier only for non-proficient skills", () => {
-        const modifiers = computeSkillModifiers(stats, [], 1, dndSkills);
+        const modifiers = computeSkillModifiers("dnd", stats, [], 1);
 
         const arcana = modifiers.find((entry) => entry.slug === "arcana");
         expect(arcana).toEqual(
@@ -124,6 +126,7 @@ describe("computeSkillModifiers", () => {
 
     it("uses the governing ability for each skill", () => {
         const modifiers = computeSkillModifiers(
+            "dnd",
             {
                 ...createDefaultStats(),
                 strength: 16,
@@ -136,8 +139,7 @@ describe("computeSkillModifiers", () => {
                     source: { type: "class", id: "fighter" },
                 },
             ],
-            1,
-            dndSkills
+            1
         );
 
         const athletics = modifiers.find((entry) => entry.slug === "athletics");

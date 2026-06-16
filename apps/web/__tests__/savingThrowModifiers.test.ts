@@ -1,5 +1,4 @@
 import type { Stats } from "@rpv/domain";
-import { dndSavingThrows } from "@rpv/content";
 import {
     computeSavingThrowModifiers,
     getProficientSaveStats,
@@ -40,6 +39,7 @@ describe("getProficientSaveStats", () => {
 describe("computeSavingThrowModifiers", () => {
     it("adds proficiency bonus to proficient saves", () => {
         const modifiers = computeSavingThrowModifiers(
+            "dnd",
             stats,
             [
                 {
@@ -55,8 +55,7 @@ describe("computeSavingThrowModifiers", () => {
                     source: { type: "class", id: "fighter" },
                 },
             ],
-            1,
-            dndSavingThrows
+            1
         );
 
         const strength = modifiers.find((entry) => entry.stat === "strength");
@@ -78,6 +77,7 @@ describe("computeSavingThrowModifiers", () => {
 
     it("uses higher proficiency bonus at higher level", () => {
         const modifiers = computeSavingThrowModifiers(
+            "dnd",
             stats,
             [
                 {
@@ -87,8 +87,7 @@ describe("computeSavingThrowModifiers", () => {
                     source: { type: "class", id: "fighter" },
                 },
             ],
-            5,
-            dndSavingThrows
+            5
         );
 
         expect(
@@ -98,6 +97,7 @@ describe("computeSavingThrowModifiers", () => {
 
     it("handles negative ability modifiers", () => {
         const modifiers = computeSavingThrowModifiers(
+            "dnd",
             stats,
             [
                 {
@@ -107,8 +107,7 @@ describe("computeSavingThrowModifiers", () => {
                     source: { type: "class", id: "cleric" },
                 },
             ],
-            1,
-            dndSavingThrows
+            1
         );
 
         expect(

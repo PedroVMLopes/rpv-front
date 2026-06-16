@@ -5,27 +5,29 @@ import {
     getProficiencyBonus,
 } from "../lib/character/derivedStats";
 
+const system = "dnd" as const;
+
 describe("getProficiencyBonus", () => {
     it("returns +2 at levels 1-4", () => {
-        expect(getProficiencyBonus(1)).toBe(2);
-        expect(getProficiencyBonus(4)).toBe(2);
+        expect(getProficiencyBonus(system, 1)).toBe(2);
+        expect(getProficiencyBonus(system, 4)).toBe(2);
     });
 
     it("returns +3 at levels 5-8", () => {
-        expect(getProficiencyBonus(5)).toBe(3);
-        expect(getProficiencyBonus(8)).toBe(3);
+        expect(getProficiencyBonus(system, 5)).toBe(3);
+        expect(getProficiencyBonus(system, 8)).toBe(3);
     });
 
     it("returns +4 at levels 9-12", () => {
-        expect(getProficiencyBonus(9)).toBe(4);
+        expect(getProficiencyBonus(system, 9)).toBe(4);
     });
 
     it("returns +5 at levels 13-16", () => {
-        expect(getProficiencyBonus(13)).toBe(5);
+        expect(getProficiencyBonus(system, 13)).toBe(5);
     });
 
     it("returns +6 at levels 17-20", () => {
-        expect(getProficiencyBonus(17)).toBe(6);
+        expect(getProficiencyBonus(system, 17)).toBe(6);
     });
 });
 
@@ -42,7 +44,7 @@ describe("computeInitiative", () => {
             hitPoints: 0,
         };
 
-        expect(computeInitiative(stats)).toBe(2);
+        expect(computeInitiative(system, stats)).toBe(2);
     });
 
     it("handles negative DEX modifiers", () => {
@@ -57,7 +59,7 @@ describe("computeInitiative", () => {
             hitPoints: 0,
         };
 
-        expect(computeInitiative(stats)).toBe(-1);
+        expect(computeInitiative(system, stats)).toBe(-1);
     });
 
     it("defaults missing dexterity to +0", () => {
@@ -71,24 +73,28 @@ describe("computeInitiative", () => {
             hitPoints: 0,
         } as Stats;
 
-        expect(computeInitiative(stats)).toBe(0);
+        expect(computeInitiative(system, stats)).toBe(0);
     });
 });
 
 describe("computePassivePerception", () => {
     it("adds 10 to the Perception skill modifier", () => {
         expect(
-            computePassivePerception([{ slug: "perception", modifier: 3 }])
+            computePassivePerception(system, [
+                { slug: "perception", modifier: 3 },
+            ])
         ).toBe(13);
     });
 
     it("returns 10 when Perception is not in the list", () => {
-        expect(computePassivePerception([])).toBe(10);
+        expect(computePassivePerception(system, [])).toBe(10);
     });
 
     it("returns 10 when Perception modifier is zero", () => {
         expect(
-            computePassivePerception([{ slug: "perception", modifier: 0 }])
+            computePassivePerception(system, [
+                { slug: "perception", modifier: 0 },
+            ])
         ).toBe(10);
     });
 });

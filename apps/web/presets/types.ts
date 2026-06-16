@@ -1,4 +1,5 @@
-import type { StatKey } from "@rpv/domain";
+import type { Skill } from "@rpv/content";
+import type { StatKey, Stats } from "@rpv/domain";
 
 /**
  * Built-in presets reference UI copy through translation keys (`*Key`) so the
@@ -75,6 +76,7 @@ export type HpDerivationContext = {
 
 export type HpRules = {
     deriveMaxHp: (ctx: HpDerivationContext) => number | undefined;
+    formatBreakdown: (ctx: HpDerivationContext) => string | undefined;
 };
 
 export type AcDerivationContext = {
@@ -84,7 +86,29 @@ export type AcDerivationContext = {
 
 export type AcRules = {
     deriveBaseAc: (ctx: AcDerivationContext) => number | undefined;
+    formatBreakdown: (ctx: AcDerivationContext) => string | undefined;
 };
+
+export interface SystemRules {
+    abilityModifier: (score: number) => number;
+    proficiencyBonus: (level: number) => number;
+    hp: HpRules;
+    ac: AcRules;
+    initiative: (stats: Stats) => number;
+    passivePerception: (
+        skillModifiers: { slug: string; modifier: number }[]
+    ) => number;
+    skills: Skill[];
+    savingThrows: StatKey[];
+}
+
+export interface SystemDefinition {
+    id: string;
+    name: string;
+    characters: { fields: unknown; schema: unknown };
+    statConfig: PresetStatConfig;
+    rules: SystemRules;
+}
 
 export type PresetAttributeField = {
     name: string;

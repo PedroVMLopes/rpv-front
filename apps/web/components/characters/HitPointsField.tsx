@@ -6,11 +6,10 @@ import { useTranslations } from "next-intl";
 import type { Locale } from "@rpv/domain";
 import type { SystemKey } from "@/presets";
 import {
-    buildHpDerivationContextFromForm,
     deriveMaxHpFromForm,
+    formatMaxHpBreakdownFromForm,
     resolveMaxHpFromForm,
 } from "@/lib/character/hp";
-import { formatDndHpBreakdown } from "@/presets/dnd/hp";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -66,11 +65,6 @@ export function HitPointsField({
         ]
     );
 
-    const derivationContext = useMemo(
-        () => buildHpDerivationContextFromForm(watchedValues, system, contentLocale),
-        [watchedValues, system, contentLocale]
-    );
-
     const computedMaxHp = useMemo(
         () => deriveMaxHpFromForm(watchedValues, system, contentLocale),
         [watchedValues, system, contentLocale]
@@ -89,12 +83,10 @@ export function HitPointsField({
             ? resolvedMaxHp - baseMaxHp
             : undefined;
 
-    const breakdown = useMemo(() => {
-        if (!derivationContext || system !== "dnd") {
-            return undefined;
-        }
-        return formatDndHpBreakdown(derivationContext);
-    }, [derivationContext, system]);
+    const breakdown = useMemo(
+        () => formatMaxHpBreakdownFromForm(watchedValues, system, contentLocale),
+        [watchedValues, system, contentLocale]
+    );
 
     useEffect(() => {
         if (initializedRef.current) {

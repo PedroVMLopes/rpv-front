@@ -1,17 +1,18 @@
 import type { Stats } from "@rpv/domain";
-import { abilityModifier, proficiencyBonus } from "@/lib/character/skillModifiers";
+import type { SystemKey } from "@/presets";
+import { getSystemRules } from "./systemRules";
 
-export function getProficiencyBonus(level: number): number {
-    return proficiencyBonus(level);
+export function getProficiencyBonus(system: SystemKey, level: number): number {
+    return getSystemRules(system).proficiencyBonus(level);
 }
 
-export function computeInitiative(stats: Stats): number {
-    return abilityModifier(stats.dexterity ?? 10);
+export function computeInitiative(system: SystemKey, stats: Stats): number {
+    return getSystemRules(system).initiative(stats);
 }
 
 export function computePassivePerception(
+    system: SystemKey,
     skillModifiers: { slug: string; modifier: number }[]
 ): number {
-    const perception = skillModifiers.find((s) => s.slug === "perception");
-    return 10 + (perception?.modifier ?? 0);
+    return getSystemRules(system).passivePerception(skillModifiers);
 }

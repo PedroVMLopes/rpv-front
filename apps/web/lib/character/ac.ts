@@ -1,4 +1,4 @@
-import { presets, SystemKey } from "@/presets";
+import type { SystemKey } from "@/presets";
 import type { AcDerivationContext, AcRules } from "@/presets/types";
 import { buildSelectionsFromForm } from "./characterAdapter";
 import { deriveRaceModifiers } from "./raceModifiers";
@@ -7,23 +7,19 @@ import {
     grantContextFromForm,
 } from "./characterGrants";
 import { buildBaseStatsFromForm } from "./presetStats";
+import { getSystemRules } from "./systemRules";
 import { resolveStats } from "@rpv/domain";
 import type { Locale } from "@rpv/domain";
 
-export function getAcRules(system: SystemKey): AcRules | undefined {
-    return presets[system]?.presetData?.acRules;
+export function getAcRules(system: SystemKey): AcRules {
+    return getSystemRules(system).ac;
 }
 
 export function deriveBaseAc(
     system: SystemKey,
     ctx: AcDerivationContext
 ): number | undefined {
-    const rules = getAcRules(system);
-    if (!rules) {
-        return undefined;
-    }
-
-    return rules.deriveBaseAc(ctx);
+    return getAcRules(system).deriveBaseAc(ctx);
 }
 
 export function resolveDexterityFromForm(
@@ -76,4 +72,13 @@ export function resolveAcFromForm(
     ];
 
     return resolveStats(baseStats, modifiers).armorClass;
+}
+
+export function formatBaseAcBreakdownFromForm(
+    formData: Record<string, unknown>,
+    system: SystemKey,
+    locale: Locale
+): string | undefined {
+    const ctx = buildAcDerivationContextFromForm(formData, system, locale);
+    return getAcRules(system).formatBreakdown(ctx);
 }

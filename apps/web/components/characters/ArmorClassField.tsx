@@ -6,11 +6,10 @@ import { useTranslations } from "next-intl";
 import type { Locale } from "@rpv/domain";
 import type { SystemKey } from "@/presets";
 import {
-    buildAcDerivationContextFromForm,
     deriveBaseAcFromForm,
+    formatBaseAcBreakdownFromForm,
     resolveAcFromForm,
 } from "@/lib/character/ac";
-import { formatDndAcBreakdown } from "@/presets/dnd/ac";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -60,11 +59,6 @@ export function ArmorClassField({
         ]
     );
 
-    const derivationContext = useMemo(
-        () => buildAcDerivationContextFromForm(watchedValues, system, contentLocale),
-        [watchedValues, system, contentLocale]
-    );
-
     const computedBaseAc = useMemo(
         () => deriveBaseAcFromForm(watchedValues, system, contentLocale),
         [watchedValues, system, contentLocale]
@@ -83,12 +77,10 @@ export function ArmorClassField({
             ? resolvedAc - baseAc
             : undefined;
 
-    const breakdown = useMemo(() => {
-        if (system !== "dnd") {
-            return undefined;
-        }
-        return formatDndAcBreakdown(derivationContext);
-    }, [derivationContext, system]);
+    const breakdown = useMemo(
+        () => formatBaseAcBreakdownFromForm(watchedValues, system, contentLocale),
+        [watchedValues, system, contentLocale]
+    );
 
     useEffect(() => {
         if (initializedRef.current) {
