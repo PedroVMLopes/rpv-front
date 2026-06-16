@@ -2,6 +2,7 @@ import { dndCharacterFields } from "./characterFields";
 import { dndCharacterSchema } from "./characterSchema";
 import { dndStatConfig } from "./characterStats";
 import { dndHpRules } from "./hp";
+import { dndAcRules } from "./ac";
 
 export const dndPreset = {
   id: "dnd",
@@ -12,4 +13,5 @@ export const dndPreset = {
   },
   statConfig: dndStatConfig,
   hpRules: dndHpRules,
+  acRules: dndAcRules,
 };

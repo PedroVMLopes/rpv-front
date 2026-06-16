@@ -8,6 +8,7 @@ import { applyChoiceValidation } from "@/lib/character/choiceValidation";
 import { applyAbilityScoreValidation } from "@/lib/character/abilityScoreGeneration";
 import { AbilityScoresField } from "@/components/characters/AbilityScoresField";
 import { HitPointsField } from "@/components/characters/HitPointsField";
+import { ArmorClassField } from "@/components/characters/ArmorClassField";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { DynamicForm } from "@/components/forms/DynamicForm";
@@ -72,7 +73,8 @@ export default function CreatePlayer() {
                 (field) =>
                     field.type !== "attributeGroup" &&
                     field.name !== "hp" &&
-                    field.name !== "maxHp"
+                    field.name !== "maxHp" &&
+                    field.name !== "ac"
             ),
         [baseFields, raceSlug, contentLocale]
     );
@@ -116,6 +118,11 @@ export default function CreatePlayer() {
                     contentLocale={contentLocale}
                 />
                 <HitPointsField
+                    form={form}
+                    system={system}
+                    contentLocale={contentLocale}
+                />
+                <ArmorClassField
                     form={form}
                     system={system}
                     contentLocale={contentLocale}

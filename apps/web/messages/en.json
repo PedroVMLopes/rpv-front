@@ -144,5 +144,12 @@
     "manualHint": "Select a class and level to compute max HP from hit die and Constitution.",
     "overrideHint": "Max HP is manually overridden and will not update when class, level, or Constitution change.",
     "fromSources": "Base {base} + {bonus} from items/feats = {total} max HP"
+  },
+  "armorClass": {
+    "title": "Armor Class",
+    "resetToComputed": "Reset to computed",
+    "manualHint": "Base AC is 10 + your Dexterity modifier.",
+    "overrideHint": "Armor Class is manually overridden and will not update when Dexterity changes.",
+    "fromSources": "Base {base} + {bonus} from items = {total} AC"
   }
 }

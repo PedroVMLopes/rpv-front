@@ -77,6 +77,15 @@ export type HpRules = {
     deriveMaxHp: (ctx: HpDerivationContext) => number | undefined;
 };
 
+export type AcDerivationContext = {
+    /** Resolved Dexterity (base + race ASI). */
+    dexterity: number;
+};
+
+export type AcRules = {
+    deriveBaseAc: (ctx: AcDerivationContext) => number | undefined;
+};
+
 export type PresetAttributeField = {
     name: string;
     labelKey?: string;

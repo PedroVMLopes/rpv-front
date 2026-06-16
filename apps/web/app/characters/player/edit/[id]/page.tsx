@@ -11,6 +11,7 @@ import { applyChoiceValidation } from "@/lib/character/choiceValidation";
 import { applyAbilityScoreValidation } from "@/lib/character/abilityScoreGeneration";
 import { AbilityScoresField } from "@/components/characters/AbilityScoresField";
 import { HitPointsField } from "@/components/characters/HitPointsField";
+import { ArmorClassField } from "@/components/characters/ArmorClassField";
 import { presets } from "@/presets";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -96,7 +97,8 @@ export default function EditPlayer() {
                 (field) =>
                     field.type !== "attributeGroup" &&
                     field.name !== "hp" &&
-                    field.name !== "maxHp"
+                    field.name !== "maxHp" &&
+                    field.name !== "ac"
             ),
         [baseFields, raceSlug, contentLocale]
     );
@@ -121,6 +123,11 @@ export default function EditPlayer() {
                 contentLocale={contentLocale}
             />
             <HitPointsField
+                form={form}
+                system={characterSystem}
+                contentLocale={contentLocale}
+            />
+            <ArmorClassField
                 form={form}
                 system={characterSystem}
                 contentLocale={contentLocale}

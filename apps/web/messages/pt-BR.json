@@ -144,5 +144,12 @@
     "manualHint": "Selecione uma classe e um nível para calcular os PV máximos com dado de vida e Constituição.",
     "overrideHint": "Os PV máximos foram alterados manualmente e não serão atualizados quando classe, nível ou Constituição mudarem.",
     "fromSources": "Base {base} + {bonus} de itens/talentos = {total} PV máx"
+  },
+  "armorClass": {
+    "title": "Classe de Armadura",
+    "resetToComputed": "Restaurar calculado",
+    "manualHint": "A CA base é 10 + seu modificador de Destreza.",
+    "overrideHint": "A Classe de Armadura foi alterada manualmente e não será atualizada quando Destreza mudar.",
+    "fromSources": "Base {base} + {bonus} de itens = {total} CA"
   }
 }
