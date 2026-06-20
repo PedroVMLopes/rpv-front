@@ -1,6 +1,7 @@
 import { createDynamicSchema } from "../lib/schema/zodDynamic";
 import {
     applyChoiceValidation,
+    findInvalidGrantPicks,
     findMissingRequiredChoices,
 } from "../lib/character/choiceValidation";
 import { dndCharacterSchema } from "../presets/dnd/characterSchema";
@@ -94,6 +95,45 @@ describe("findMissingRequiredChoices", () => {
         );
 
         expect(missing).toEqual([]);
+    });
+
+    it("flags duplicate skill picks in the same class pool", () => {
+        const invalid = findInvalidGrantPicks(
+            {
+                ...baseFormData,
+                race: "elf",
+                characterClass: "fighter",
+                choices: {
+                    grantPicks: {
+                        "class:fighter:skill_proficiency:3:0": "athletics",
+                        "class:fighter:skill_proficiency:3:1": "athletics",
+                    },
+                },
+            },
+            "en"
+        );
+
+        expect(invalid).toContain("duplicateGrantPick:athletics");
+    });
+
+    it("flags skill picks that repeat a fixed background proficiency", () => {
+        const invalid = findInvalidGrantPicks(
+            {
+                ...baseFormData,
+                race: "elf",
+                background: "sage",
+                characterClass: "fighter",
+                choices: {
+                    grantPicks: {
+                        "class:fighter:skill_proficiency:3:0": "history",
+                        "class:fighter:skill_proficiency:3:1": "athletics",
+                    },
+                },
+            },
+            "en"
+        );
+
+        expect(invalid).toContain("alreadyGranted:history");
     });
 });
 

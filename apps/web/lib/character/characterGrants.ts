@@ -79,6 +79,30 @@ function collectGrantSources(
     return sources;
 }
 
+export function getFixedRefsForGrantType(
+    selections: CharacterSelections,
+    context: GrantSourceContext,
+    locale: Locale,
+    grantType: Grant["grantType"]
+): Set<string> {
+    const refs = new Set<string>();
+    const sources = collectGrantSources(selections, context, locale);
+
+    for (const entry of sources) {
+        for (const grant of entry.grants) {
+            if (grant.choose !== 0 || grant.grantType !== grantType) {
+                continue;
+            }
+
+            for (const option of grant.options ?? []) {
+                refs.add(option.ref);
+            }
+        }
+    }
+
+    return refs;
+}
+
 export const STAT_MODIFIER_SOURCE_TYPES: ModifierSourceType[] = ["item", "feat"];
 
 export function deriveStatModifiers(

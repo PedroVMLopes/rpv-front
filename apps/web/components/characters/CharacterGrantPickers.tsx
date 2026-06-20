@@ -4,18 +4,27 @@ import { useMemo } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import type { Locale } from "@rpv/domain";
+import type { Grant } from "@rpv/content";
 import {
     getFixedLanguageGrants,
+    getFixedRefsForGrantType,
     getLanguageBudget,
     grantContextFromForm,
 } from "@/lib/character/characterGrants";
 import {
     collectLanguageChoiceGrants,
     collectNonLanguageChoiceGrants,
+    collectPendingChoiceGrants,
 } from "@/lib/character/grantChoices";
+import {
+    buildGrantChoiceSelectOptions,
+    getOtherPickedRefsForGrantType,
+} from "@/lib/character/grantChoiceOptions";
 import { buildSelectionsFromForm } from "@/lib/character/characterAdapter";
-import { findMissingRequiredChoices } from "@/lib/character/choiceValidation";
-import { listLanguageOptions } from "@/lib/catalog/grantCatalog";
+import {
+    findInvalidGrantPicks,
+    findMissingRequiredChoices,
+} from "@/lib/character/choiceValidation";
 import type { CharacterChoices } from "@/lib/character/storedCharacter";
 
 type CharacterGrantPickersProps = {
@@ -47,6 +56,25 @@ function setGrantPick(
     );
 }
 
+function buildOwnedRefsByGrantType(
+    selections: ReturnType<typeof buildSelectionsFromForm>,
+    context: ReturnType<typeof grantContextFromForm>,
+    contentLocale: Locale,
+    pending: ReturnType<typeof collectPendingChoiceGrants>
+): Map<Grant["grantType"], Set<string>> {
+    const grantTypes = new Set(pending.map((choice) => choice.grant.grantType));
+    const owned = new Map<Grant["grantType"], Set<string>>();
+
+    for (const grantType of grantTypes) {
+        owned.set(
+            grantType,
+            getFixedRefsForGrantType(selections, context, contentLocale, grantType)
+        );
+    }
+
+    return owned;
+}
+
 export function CharacterGrantPickers({
     form,
     contentLocale,
@@ -62,6 +90,22 @@ export function CharacterGrantPickers({
     const context = useMemo(
         () => grantContextFromForm(formValues),
         [formValues]
+    );
+
+    const pendingChoices = useMemo(
+        () => collectPendingChoiceGrants(selections, context, contentLocale),
+        [selections, context, contentLocale]
+    );
+
+    const ownedRefsByGrantType = useMemo(
+        () =>
+            buildOwnedRefsByGrantType(
+                selections,
+                context,
+                contentLocale,
+                pendingChoices
+            ),
+        [selections, context, contentLocale, pendingChoices]
     );
 
     const fixedLanguages = useMemo(
@@ -90,23 +134,19 @@ export function CharacterGrantPickers({
         () => findMissingRequiredChoices(formValues, contentLocale),
         [formValues, contentLocale]
     );
+    const invalidPicks = useMemo(
+        () => findInvalidGrantPicks(formValues, contentLocale),
+        [formValues, contentLocale]
+    );
     const missingChoiceKeys = useMemo(
         () => new Set(missingChoices.map((choice) => choice.key)),
         [missingChoices]
     );
-    const allLanguageOptions = listLanguageOptions();
-    const lockedLanguageSlugs = new Set(fixedLanguages.map((grant) => grant.ref));
-    const pickedLanguageSlugs = new Set(
-        languageChoices
-            .map((choice) => grantPicks[choice.key])
-            .filter(Boolean)
-    );
+    const hasChoiceIssues = missingChoices.length > 0 || invalidPicks.length > 0;
 
-    const selectableLanguageOptions = allLanguageOptions.filter(
-        (option) =>
-            !lockedLanguageSlugs.has(option.value) &&
-            !pickedLanguageSlugs.has(option.value)
-    );
+    const ownedLanguageRefs =
+        ownedRefsByGrantType.get("language") ??
+        new Set(fixedLanguages.map((grant) => grant.ref));
 
     if (
         fixedLanguages.length === 0 &&
@@ -118,11 +158,11 @@ export function CharacterGrantPickers({
 
     return (
         <div className="flex flex-col gap-4 border rounded-lg p-4 bg-muted/30">
-            {choicesError && (
+            {choicesError && hasChoiceIssues ? (
                 <p className="text-sm font-medium text-destructive">
                     {t("choicesIncomplete")}
                 </p>
-            )}
+            ) : null}
             {(fixedLanguages.length > 0 || languageChoices.length > 0) && (
                 <section className="flex flex-col gap-2">
                     <h2 className="text-sm font-bold">{t("languagesTitle")}</h2>
@@ -151,16 +191,18 @@ export function CharacterGrantPickers({
 
                     {languageChoices.map((choice) => {
                         const selected = grantPicks[choice.key] ?? "";
-                        const optionsForSlot = [
-                            ...(selected
-                                ? allLanguageOptions.filter(
-                                      (option) => option.value === selected
-                                  )
-                                : []),
-                            ...selectableLanguageOptions.filter(
-                                (option) => option.value !== selected
-                            ),
-                        ];
+                        const otherLanguagePicks = getOtherPickedRefsForGrantType(
+                            "language",
+                            languageChoices,
+                            grantPicks,
+                            choice.key
+                        );
+                        const options = buildGrantChoiceSelectOptions(
+                            choice,
+                            grantPicks,
+                            ownedLanguageRefs,
+                            otherLanguagePicks
+                        );
 
                         return (
                             <label
@@ -184,10 +226,11 @@ export function CharacterGrantPickers({
                                     }
                                 >
                                     <option value="">{t("selectLanguage")}</option>
-                                    {optionsForSlot.map((option) => (
+                                    {options.map((option) => (
                                         <option
                                             key={option.value}
                                             value={option.value}
+                                            disabled={option.disabled}
                                         >
                                             {option.label}
                                         </option>
@@ -202,36 +245,51 @@ export function CharacterGrantPickers({
             {otherChoices.length > 0 && (
                 <section className="flex flex-col gap-2">
                     <h2 className="text-sm font-bold">{t("abilityChoicesTitle")}</h2>
-                    {otherChoices.map((choice) => (
-                        <label
-                            key={choice.key}
-                            className="flex flex-col gap-1 text-sm"
-                        >
-                            <span className="font-medium">{choice.label}</span>
-                            <select
-                                className={`bg-background rounded border px-2 py-1${
-                                    missingChoiceKeys.has(choice.key)
-                                        ? " border-destructive"
-                                        : ""
-                                }`}
-                                value={grantPicks[choice.key] ?? ""}
-                                onChange={(event) =>
-                                    setGrantPick(
-                                        form,
-                                        choice.key,
-                                        event.target.value
-                                    )
-                                }
+                    {otherChoices.map((choice) => {
+                        const ownedRefs =
+                            ownedRefsByGrantType.get(choice.grant.grantType) ??
+                            new Set<string>();
+                        const options = buildGrantChoiceSelectOptions(
+                            choice,
+                            grantPicks,
+                            ownedRefs
+                        );
+
+                        return (
+                            <label
+                                key={choice.key}
+                                className="flex flex-col gap-1 text-sm"
                             >
-                                <option value="">{t("selectOption")}</option>
-                                {choice.options.map((option) => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </label>
-                    ))}
+                                <span className="font-medium">{choice.label}</span>
+                                <select
+                                    className={`bg-background rounded border px-2 py-1${
+                                        missingChoiceKeys.has(choice.key)
+                                            ? " border-destructive"
+                                            : ""
+                                    }`}
+                                    value={grantPicks[choice.key] ?? ""}
+                                    onChange={(event) =>
+                                        setGrantPick(
+                                            form,
+                                            choice.key,
+                                            event.target.value
+                                        )
+                                    }
+                                >
+                                    <option value="">{t("selectOption")}</option>
+                                    {options.map((option) => (
+                                        <option
+                                            key={option.value}
+                                            value={option.value}
+                                            disabled={option.disabled}
+                                        >
+                                            {option.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </label>
+                        );
+                    })}
                 </section>
             )}
         </div>

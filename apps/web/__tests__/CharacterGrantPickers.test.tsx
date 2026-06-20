@@ -55,8 +55,8 @@ describe("CharacterGrantPickers", () => {
         );
 
         expect(screen.getByText("Languages")).toBeInTheDocument();
-        expect(screen.getByText(/Common/)).toBeInTheDocument();
-        expect(screen.getByText(/Elvish/)).toBeInTheDocument();
+        expect(screen.getAllByText(/Common/).length).toBeGreaterThan(0);
+        expect(screen.getAllByText(/Elvish/).length).toBeGreaterThan(0);
         expect(screen.getByText(/Choose 1 language/)).toBeInTheDocument();
     });
 
@@ -79,6 +79,94 @@ describe("CharacterGrantPickers", () => {
         expect(screen.getByTestId("choices-output")).toHaveTextContent(
             "draconic"
         );
+    });
+
+    it("shows owned background skills with a checkmark and disables them", () => {
+        render(
+            <GrantPickerHarness
+                defaultValues={{
+                    name: "Test Hero",
+                    race: "elf",
+                    background: "sage",
+                    characterClass: "fighter",
+                    choices: {},
+                }}
+            />
+        );
+
+        const skillSelects = screen.getAllByRole("combobox");
+        const firstSkillSelect = skillSelects.find((select) =>
+            Array.from(select.options).some((option) =>
+                option.textContent?.includes("History")
+            )
+        );
+
+        expect(firstSkillSelect).toBeDefined();
+        const historyOption = Array.from(firstSkillSelect!.options).find(
+            (option) => option.value === "history"
+        );
+        expect(historyOption?.textContent).toBe("✓ History");
+        expect(historyOption).toBeDisabled();
+    });
+
+    it("shows sibling skill picks as disabled with a checkmark", () => {
+        render(
+            <GrantPickerHarness
+                defaultValues={{
+                    name: "Test Hero",
+                    race: "elf",
+                    characterClass: "fighter",
+                    choices: {
+                        grantPicks: {
+                            "class:fighter:skill_proficiency:3:0": "athletics",
+                        },
+                    },
+                }}
+            />
+        );
+
+        const athleticsOptions = screen
+            .getAllByRole("combobox")
+            .flatMap((select) => Array.from(select.options))
+            .filter((option) => option.value === "athletics");
+
+        expect(athleticsOptions.length).toBeGreaterThan(1);
+        expect(
+            athleticsOptions.some(
+                (option) =>
+                    option.textContent === "✓ Athletics" && option.disabled
+            )
+        ).toBe(true);
+    });
+
+    it("shows languages picked in other slots as disabled with a checkmark", () => {
+        render(
+            <GrantPickerHarness
+                defaultValues={{
+                    name: "Test Hero",
+                    race: "elf",
+                    subrace: "high-elf",
+                    background: "sage",
+                    choices: {
+                        grantPicks: {
+                            "race:high-elf:language:0:0": "draconic",
+                        },
+                    },
+                }}
+            />
+        );
+
+        const draconicOptions = screen
+            .getAllByRole("combobox")
+            .flatMap((select) => Array.from(select.options))
+            .filter((option) => option.value === "draconic");
+
+        expect(
+            draconicOptions.some(
+                (option) =>
+                    option.textContent === "✓ Draconic" && option.disabled
+            )
+        ).toBe(true);
     });
 
     it("shows incomplete choices error after validation", async () => {
