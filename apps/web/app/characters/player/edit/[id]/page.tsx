@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { buildPlayerRaceFields } from "@/lib/character/playerFormFields";
 import { CharacterGrantPickers } from "@/components/characters/CharacterGrantPickers";
+import { useGrantPickSanitizer } from "@/lib/character/useGrantPickSanitizer";
 import { useEffect, useMemo, useRef } from "react";
 
 export default function EditPlayer() {
@@ -69,6 +70,8 @@ export default function EditPlayer() {
     const previousRaceRef = useRef<string | undefined>(
         typeof formDefaults?.race === "string" ? formDefaults.race : undefined
     );
+
+    useGrantPickSanitizer(form, contentLocale);
 
     useEffect(() => {
         if (formDefaults) {

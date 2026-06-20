@@ -42,6 +42,7 @@ describe("useCharacterStore stat modifiers", () => {
         const character = useCharacterStore.getState().characters[0];
 
         expect(character.baseStats.hitPoints).toBe(12);
+        expect(character.resources.hp).toBe(17);
         expect(
             useCharacterStore.getState().getResolvedStats(character.id)?.hitPoints
         ).toBe(17);

@@ -146,6 +146,55 @@ describe("useCharacterStore race modifiers", () => {
         ).toBe(11);
     });
 
+    it("sanitizes stale grantPicks when race changes on update", () => {
+        act(() => {
+            useCharacterStore.getState().addCharacter(
+                {
+                    ...baseFormData,
+                    race: "elf",
+                    subrace: "high-elf",
+                    choices: {
+                        grantPicks: {
+                            "race:high-elf:language:0:0": "draconic",
+                            "race:high-elf:spell:0:0": "fire-bolt",
+                        },
+                    },
+                },
+                "player",
+                "dnd"
+            );
+        });
+
+        const character = useCharacterStore.getState().characters[0];
+
+        act(() => {
+            useCharacterStore.getState().updateCharacter(character.id, {
+                ...baseFormData,
+                race: "dwarf",
+                choices: {
+                    grantPicks: {
+                        "race:high-elf:language:0:0": "draconic",
+                        "race:high-elf:spell:0:0": "fire-bolt",
+                        "race:dwarf:tool_proficiency:0:0": "smiths-tools",
+                    },
+                },
+            });
+        });
+
+        const updated = useCharacterStore
+            .getState()
+            .characters.find((c) => c.id === character.id)!;
+
+        expect(updated.selections.choices.grantPicks).toEqual({
+            "race:dwarf:tool_proficiency:0:0": "smiths-tools",
+        });
+        expect(updated.grants).not.toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ ref: "draconic" }),
+            ])
+        );
+    });
+
     it("derives choice grants from grantPicks on create", () => {
         act(() => {
             useCharacterStore.getState().addCharacter(

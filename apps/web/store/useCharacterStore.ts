@@ -1,6 +1,11 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { CharacterProps, CharacterType, Stats } from "@rpv/domain";
+import type {
+    CharacterProps,
+    CharacterType,
+    Modifier,
+    Stats,
+} from "@rpv/domain";
 import { SystemKey } from "@/presets";
 import {
     flattenStoredToForm,
@@ -21,14 +26,19 @@ import {
     deriveMaxHpFromForm,
     isMaxHpEmpty,
 } from "@/lib/character/hp";
+import { syncResourceHpToResolvedMax } from "@/lib/character/hpSync";
 import {
     deriveBaseAcFromForm,
     isAcEmpty,
 } from "@/lib/character/ac";
+import { sanitizeGrantPicks } from "@/lib/character/grantPickSanitize";
 import { useContentLocale } from "@/store/useContentLocale";
 import { removeModifiersBySource } from "@rpv/domain";
 import { getResourceMax } from "@/lib/character/presetStats";
-import type { StoredCharacter } from "@/lib/character/storedCharacter";
+import type {
+    CharacterSelections,
+    StoredCharacter,
+} from "@/lib/character/storedCharacter";
 
 export type { CharacterType };
 export type { StoredCharacter };
@@ -52,29 +62,46 @@ interface CharacterStore {
     getFormDefaults: (id: string) => Record<string, unknown> | undefined;
 }
 
-const createStoredCharacter = (
+function assembleStoredCharacter(
     formData: Record<string, unknown>,
+    id: string,
     type: CharacterType,
-    system: SystemKey
-): StoredCharacter => {
-    const id = crypto.randomUUID();
-    const selections = buildSelectionsFromForm(formData);
+    system: SystemKey,
+    modifiers: Modifier[],
+    existingSelections?: CharacterSelections
+): StoredCharacter {
     const contentLocale = useContentLocale.getState().contentLocale;
     const context = grantContextFromForm(formData);
-    const modifiers = [
-        ...deriveRaceModifiers(selections, contentLocale),
-        ...deriveStatModifiers(selections, context, contentLocale),
-    ];
-    const grants = deriveCharacterGrants(
-        selections,
+    const selections = sanitizeGrantPicks(
+        buildSelectionsFromForm(formData, existingSelections),
         context,
         contentLocale
     );
+    const grants = deriveCharacterGrants(selections, context, contentLocale);
 
-    const processedForm = applyDerivedAc(
+    let processedForm = applyDerivedAc(
         applyDerivedMaxHp(formData, system, contentLocale),
         system,
         contentLocale
+    );
+    processedForm = {
+        ...processedForm,
+        choices: selections.choices,
+    };
+
+    const interim = formDataToStoredCharacter(
+        processedForm,
+        id,
+        type,
+        system,
+        modifiers,
+        selections,
+        grants
+    );
+    processedForm = syncResourceHpToResolvedMax(
+        processedForm,
+        interim.baseStats,
+        modifiers
     );
 
     return formDataToStoredCharacter(
@@ -86,6 +113,23 @@ const createStoredCharacter = (
         selections,
         grants
     );
+}
+
+const createStoredCharacter = (
+    formData: Record<string, unknown>,
+    type: CharacterType,
+    system: SystemKey
+): StoredCharacter => {
+    const id = crypto.randomUUID();
+    const contentLocale = useContentLocale.getState().contentLocale;
+    const context = grantContextFromForm(formData);
+    const selections = buildSelectionsFromForm(formData);
+    const modifiers = [
+        ...deriveRaceModifiers(selections, contentLocale),
+        ...deriveStatModifiers(selections, context, contentLocale),
+    ];
+
+    return assembleStoredCharacter(formData, id, type, system, modifiers);
 };
 
 function applyDerivedMaxHp(
@@ -155,21 +199,13 @@ function rebuildCharacterFromForm(
         ...raceModifiers,
         ...deriveStatModifiers(selections, context, contentLocale),
     ];
-    const grants = deriveCharacterGrants(selections, context, contentLocale);
-    const processedForm = applyDerivedAc(
-        applyDerivedMaxHp(formData, char.system, contentLocale),
-        char.system,
-        contentLocale
-    );
-
-    return formDataToStoredCharacter(
-        processedForm,
+    return assembleStoredCharacter(
+        formData,
         char.id,
         char.type,
         char.system,
         modifiers,
-        selections,
-        grants
+        selections
     );
 }
 
