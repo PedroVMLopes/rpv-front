@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import type { Locale } from "@rpv/domain";
 import { buildSelectionsFromForm } from "./characterAdapter";
-import { grantContextFromForm } from "./characterGrants";
 import { sanitizeGrantPicks } from "./grantPickSanitize";
 import type { CharacterChoices } from "./storedCharacter";
 
@@ -25,8 +24,7 @@ export function useGrantPickSanitizer(
     useEffect(() => {
         const formValues = form.getValues();
         const selections = buildSelectionsFromForm(formValues);
-        const context = grantContextFromForm(formValues);
-        const sanitized = sanitizeGrantPicks(selections, context, contentLocale);
+        const sanitized = sanitizeGrantPicks(selections, contentLocale);
         const current =
             (form.getValues("choices") as CharacterChoices | undefined) ?? {};
         const currentPicks = current.grantPicks ?? {};

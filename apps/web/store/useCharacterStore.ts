@@ -3,42 +3,22 @@ import { persist } from "zustand/middleware";
 import type {
     CharacterProps,
     CharacterType,
-    Modifier,
     Stats,
 } from "@rpv/domain";
 import { SystemKey } from "@/presets";
 import {
     flattenStoredToForm,
-    formDataToStoredCharacter,
     getResolvedStatsForCharacter,
     normalizeStoredCharacter,
     storedCharacterToProps,
-    buildSelectionsFromForm,
 } from "@/lib/character/characterAdapter";
-import { deriveRaceModifiers } from "@/lib/character/raceModifiers";
 import {
-    deriveCharacterGrants,
-    deriveStatModifiers,
-    grantContextFromForm,
-    STAT_MODIFIER_SOURCE_TYPES,
-} from "@/lib/character/characterGrants";
-import {
-    deriveMaxHpFromForm,
-    isMaxHpEmpty,
-} from "@/lib/character/hp";
-import { syncResourceHpToResolvedMax } from "@/lib/character/hpSync";
-import {
-    deriveBaseAcFromForm,
-    isAcEmpty,
-} from "@/lib/character/ac";
-import { sanitizeGrantPicks } from "@/lib/character/grantPickSanitize";
-import { useContentLocale } from "@/store/useContentLocale";
-import { removeModifiersBySource } from "@rpv/domain";
+    buildNewStoredCharacter,
+    rebuildStoredCharacter,
+} from "@/lib/character/buildCharacter";
 import { getResourceMax } from "@/lib/character/presetStats";
-import type {
-    CharacterSelections,
-    StoredCharacter,
-} from "@/lib/character/storedCharacter";
+import type { StoredCharacter } from "@/lib/character/storedCharacter";
+import { useContentLocale } from "@/store/useContentLocale";
 
 export type { CharacterType };
 export type { StoredCharacter };
@@ -62,153 +42,6 @@ interface CharacterStore {
     getFormDefaults: (id: string) => Record<string, unknown> | undefined;
 }
 
-function assembleStoredCharacter(
-    formData: Record<string, unknown>,
-    id: string,
-    type: CharacterType,
-    system: SystemKey,
-    modifiers: Modifier[],
-    existingSelections?: CharacterSelections
-): StoredCharacter {
-    const contentLocale = useContentLocale.getState().contentLocale;
-    const context = grantContextFromForm(formData);
-    const selections = sanitizeGrantPicks(
-        buildSelectionsFromForm(formData, existingSelections),
-        context,
-        contentLocale
-    );
-    const grants = deriveCharacterGrants(selections, context, contentLocale);
-
-    let processedForm = applyDerivedAc(
-        applyDerivedMaxHp(formData, system, contentLocale),
-        system,
-        contentLocale
-    );
-    processedForm = {
-        ...processedForm,
-        choices: selections.choices,
-    };
-
-    const interim = formDataToStoredCharacter(
-        processedForm,
-        id,
-        type,
-        system,
-        modifiers,
-        selections,
-        grants
-    );
-    processedForm = syncResourceHpToResolvedMax(
-        processedForm,
-        interim.baseStats,
-        modifiers
-    );
-
-    return formDataToStoredCharacter(
-        processedForm,
-        id,
-        type,
-        system,
-        modifiers,
-        selections,
-        grants
-    );
-}
-
-const createStoredCharacter = (
-    formData: Record<string, unknown>,
-    type: CharacterType,
-    system: SystemKey
-): StoredCharacter => {
-    const id = crypto.randomUUID();
-    const contentLocale = useContentLocale.getState().contentLocale;
-    const context = grantContextFromForm(formData);
-    const selections = buildSelectionsFromForm(formData);
-    const modifiers = [
-        ...deriveRaceModifiers(selections, contentLocale),
-        ...deriveStatModifiers(selections, context, contentLocale),
-    ];
-
-    return assembleStoredCharacter(formData, id, type, system, modifiers);
-};
-
-function applyDerivedMaxHp(
-    formData: Record<string, unknown>,
-    system: SystemKey,
-    contentLocale: ReturnType<typeof useContentLocale.getState>["contentLocale"]
-): Record<string, unknown> {
-    if (!isMaxHpEmpty(formData.maxHp)) {
-        return formData;
-    }
-
-    const derivedMaxHp = deriveMaxHpFromForm(formData, system, contentLocale);
-    if (derivedMaxHp === undefined) {
-        return formData;
-    }
-
-    const processedForm: Record<string, unknown> = {
-        ...formData,
-        maxHp: derivedMaxHp,
-    };
-
-    if (isMaxHpEmpty(formData.hp)) {
-        processedForm.hp = derivedMaxHp;
-    }
-
-    return processedForm;
-}
-
-function applyDerivedAc(
-    formData: Record<string, unknown>,
-    system: SystemKey,
-    contentLocale: ReturnType<typeof useContentLocale.getState>["contentLocale"]
-): Record<string, unknown> {
-    if (!isAcEmpty(formData.ac)) {
-        return formData;
-    }
-
-    const derivedAc = deriveBaseAcFromForm(formData, system, contentLocale);
-    if (derivedAc === undefined) {
-        return formData;
-    }
-
-    return {
-        ...formData,
-        ac: derivedAc,
-    };
-}
-
-function rebuildCharacterFromForm(
-    char: StoredCharacter,
-    formData: Record<string, unknown>
-): StoredCharacter {
-    const selections = buildSelectionsFromForm(formData, char.selections);
-    const contentLocale = useContentLocale.getState().contentLocale;
-    const context = grantContextFromForm(formData);
-    const raceModifiers = deriveRaceModifiers(selections, contentLocale);
-    let preservedModifiers = removeModifiersBySource(char.modifiers, {
-        type: "race",
-    });
-    for (const sourceType of STAT_MODIFIER_SOURCE_TYPES) {
-        preservedModifiers = removeModifiersBySource(preservedModifiers, {
-            type: sourceType,
-        });
-    }
-    const modifiers = [
-        ...preservedModifiers,
-        ...raceModifiers,
-        ...deriveStatModifiers(selections, context, contentLocale),
-    ];
-    return assembleStoredCharacter(
-        formData,
-        char.id,
-        char.type,
-        char.system,
-        modifiers,
-        selections
-    );
-}
-
 export const useCharacterStore = create<CharacterStore>()(
     persist(
         (set, get) => ({
@@ -218,7 +51,12 @@ export const useCharacterStore = create<CharacterStore>()(
                 set((state) => ({
                     characters: [
                         ...state.characters,
-                        createStoredCharacter(formData, type, system),
+                        buildNewStoredCharacter(
+                            formData,
+                            type,
+                            system,
+                            useContentLocale.getState().contentLocale
+                        ),
                     ],
                 })),
 
@@ -234,7 +72,11 @@ export const useCharacterStore = create<CharacterStore>()(
                     characters: state.characters.map((char) => {
                         if (char.id !== id) return char;
 
-                        return rebuildCharacterFromForm(char, formData);
+                        return rebuildStoredCharacter(
+                            char,
+                            formData,
+                            useContentLocale.getState().contentLocale
+                        );
                     }),
                 })),
 

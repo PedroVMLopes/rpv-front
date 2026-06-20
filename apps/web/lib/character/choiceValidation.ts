@@ -2,10 +2,7 @@ import type { Locale } from "@rpv/domain";
 import type { Grant } from "@rpv/content";
 import type { ZodObject, ZodRawShape } from "zod";
 import { buildSelectionsFromForm } from "./characterAdapter";
-import {
-    getFixedRefsForGrantType,
-    grantContextFromForm,
-} from "./characterGrants";
+import { getFixedRefsForGrantType } from "./characterGrants";
 import {
     collectPendingChoiceGrants,
     type PendingChoiceGrant,
@@ -26,15 +23,14 @@ function buildOwnedRefsByGrantType(
     locale: Locale
 ): Map<Grant["grantType"], Set<string>> {
     const selections = buildSelectionsFromForm(formData);
-    const context = grantContextFromForm(formData);
-    const pending = collectPendingChoiceGrants(selections, context, locale);
+    const pending = collectPendingChoiceGrants(selections, locale);
     const grantTypes = new Set(pending.map((choice) => choice.grant.grantType));
     const owned = new Map<Grant["grantType"], Set<string>>();
 
     for (const grantType of grantTypes) {
         owned.set(
             grantType,
-            getFixedRefsForGrantType(selections, context, locale, grantType)
+            getFixedRefsForGrantType(selections, locale, grantType)
         );
     }
 
@@ -46,8 +42,7 @@ export function findMissingRequiredChoices(
     locale: Locale
 ): PendingChoiceGrant[] {
     const selections = buildSelectionsFromForm(formData);
-    const context = grantContextFromForm(formData);
-    const pending = collectPendingChoiceGrants(selections, context, locale);
+    const pending = collectPendingChoiceGrants(selections, locale);
     const grantPicks = readGrantPicks(formData);
 
     return pending.filter((choice) => {
@@ -61,8 +56,7 @@ export function findInvalidGrantPicks(
     locale: Locale
 ): string[] {
     const selections = buildSelectionsFromForm(formData);
-    const context = grantContextFromForm(formData);
-    const pending = collectPendingChoiceGrants(selections, context, locale);
+    const pending = collectPendingChoiceGrants(selections, locale);
     const grantPicks = readGrantPicks(formData);
     const ownedRefsByGrantType = buildOwnedRefsByGrantType(formData, locale);
     const errors: string[] = [];

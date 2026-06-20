@@ -45,12 +45,64 @@ function coerceChoices(value: unknown, existing?: CharacterChoices): CharacterCh
                 ? (record.grantPicks as Record<string, string>)
                 : existing?.grantPicks;
 
-        return {
-            grantPicks: grantPicks ?? existing?.grantPicks,
-        };
+        if (grantPicks !== undefined) {
+            return { grantPicks };
+        }
+
+        return {};
     }
 
-    return existing ?? {};
+    if (existing?.grantPicks !== undefined) {
+        return { grantPicks: existing.grantPicks };
+    }
+
+    return {};
+}
+
+function buildItemsFromForm(
+    formData: Record<string, unknown>,
+    existing?: CharacterSelections
+): string[] {
+    if ("startingItem" in formData) {
+        const slug = coerceOptionalString(formData.startingItem);
+        return slug ? [slug] : [];
+    }
+
+    if (Array.isArray(formData.items)) {
+        return formData.items.filter(
+            (entry): entry is string =>
+                typeof entry === "string" && entry.trim().length > 0
+        );
+    }
+
+    return existing?.items ?? [];
+}
+
+export function normalizeCharacterSelections(
+    selections: CharacterSelections | undefined,
+    systemData: Record<string, unknown>
+): CharacterSelections {
+    const startingItem = coerceOptionalString(systemData.startingItem);
+    const items =
+        selections?.items && selections.items.length > 0
+            ? selections.items
+            : startingItem
+              ? [startingItem]
+              : [];
+
+    return {
+        race: selections?.race ?? coerceOptionalString(systemData.race),
+        subrace: selections?.subrace ?? coerceOptionalString(systemData.subrace),
+        characterClass:
+            selections?.characterClass ??
+            coerceOptionalString(systemData.characterClass),
+        subclass:
+            selections?.subclass ?? coerceOptionalString(systemData.subclass),
+        background:
+            selections?.background ?? coerceOptionalString(systemData.background),
+        items,
+        choices: selections?.choices ?? {},
+    };
 }
 
 export function buildSelectionsFromForm(
@@ -60,6 +112,10 @@ export function buildSelectionsFromForm(
     return {
         race: coerceOptionalString(formData.race),
         subrace: coerceOptionalString(formData.subrace),
+        characterClass: coerceOptionalString(formData.characterClass),
+        subclass: coerceOptionalString(formData.subclass),
+        background: coerceOptionalString(formData.background),
+        items: buildItemsFromForm(formData, existing),
         choices: coerceChoices(formData.choices, existing?.choices),
     };
 }
@@ -207,7 +263,10 @@ export function normalizeStoredCharacter(char: unknown): StoredCharacter {
             ...stored,
             language: DEFAULT_LOCALE,
             grants: stored.grants ?? [],
-            selections: stored.selections ?? { choices: {} },
+            selections: normalizeCharacterSelections(
+                stored.selections,
+                stored.systemData ?? {}
+            ),
         };
     }
 
@@ -215,14 +274,32 @@ export function normalizeStoredCharacter(char: unknown): StoredCharacter {
         return {
             ...stored,
             grants: stored.grants ?? [],
-            selections: buildSelectionsFromForm(stored.systemData ?? {}),
+            selections: normalizeCharacterSelections(
+                buildSelectionsFromForm(stored.systemData ?? {}),
+                stored.systemData ?? {}
+            ),
         };
     }
+
+    const normalizedSelections = normalizeCharacterSelections(
+        stored.selections,
+        stored.systemData ?? {}
+    );
+    const needsSelectionMigration =
+        JSON.stringify(stored.selections) !== JSON.stringify(normalizedSelections);
 
     if (!stored.grants) {
         return {
             ...stored,
             grants: [],
+            selections: normalizedSelections,
+        };
+    }
+
+    if (needsSelectionMigration) {
+        return {
+            ...stored,
+            selections: normalizedSelections,
         };
     }
 

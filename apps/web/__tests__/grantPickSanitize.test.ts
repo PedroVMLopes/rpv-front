@@ -1,9 +1,13 @@
 import { sanitizeGrantPicks } from "../lib/character/grantPickSanitize";
+import { emptyCharacterSelections } from "../lib/character/storedCharacter";
+
+const baseSelections = { ...emptyCharacterSelections() };
 
 describe("sanitizeGrantPicks", () => {
     it("keeps picks that match pending choices for the current selection", () => {
         const selections = sanitizeGrantPicks(
             {
+                ...baseSelections,
                 race: "elf",
                 subrace: "high-elf",
                 choices: {
@@ -13,7 +17,6 @@ describe("sanitizeGrantPicks", () => {
                     },
                 },
             },
-            {},
             "en"
         );
 
@@ -26,6 +29,7 @@ describe("sanitizeGrantPicks", () => {
     it("drops picks from a previous race when race changes", () => {
         const selections = sanitizeGrantPicks(
             {
+                ...baseSelections,
                 race: "dwarf",
                 subrace: undefined,
                 choices: {
@@ -36,7 +40,6 @@ describe("sanitizeGrantPicks", () => {
                     },
                 },
             },
-            {},
             "en"
         );
 
@@ -48,14 +51,15 @@ describe("sanitizeGrantPicks", () => {
     it("drops class picks when class changes", () => {
         const selections = sanitizeGrantPicks(
             {
+                ...baseSelections,
                 race: "elf",
+                characterClass: "wizard",
                 choices: {
                     grantPicks: {
                         "class:fighter:skill_proficiency:3:0": "athletics",
                     },
                 },
             },
-            { characterClass: "wizard" },
             "en"
         );
 
@@ -65,14 +69,15 @@ describe("sanitizeGrantPicks", () => {
     it("keeps class picks for the active class", () => {
         const selections = sanitizeGrantPicks(
             {
+                ...baseSelections,
                 race: "elf",
+                characterClass: "fighter",
                 choices: {
                     grantPicks: {
                         "class:fighter:skill_proficiency:3:0": "athletics",
                     },
                 },
             },
-            { characterClass: "fighter" },
             "en"
         );
 

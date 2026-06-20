@@ -1,18 +1,16 @@
 import type { Locale } from "@rpv/domain";
 import { collectPendingChoiceGrants } from "./grantChoices";
-import type { GrantSourceContext } from "./characterGrants";
 import type { CharacterSelections } from "./storedCharacter";
 
 /**
  * Drops grant pick entries whose keys no longer match pending choices for the
- * current race, subrace, class, background, or starting item.
+ * current race, subrace, class, background, or items.
  */
 export function sanitizeGrantPicks(
     selections: CharacterSelections,
-    context: GrantSourceContext,
     locale: Locale
 ): CharacterSelections {
-    const pending = collectPendingChoiceGrants(selections, context, locale);
+    const pending = collectPendingChoiceGrants(selections, locale);
     const validKeys = new Set(pending.map((choice) => choice.key));
     const grantPicks = selections.choices.grantPicks ?? {};
 

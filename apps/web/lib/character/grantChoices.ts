@@ -1,19 +1,14 @@
 import {
     listLanguages,
     resolveGrantPool,
+    dndRaceLevelGrants,
     type Grant,
 } from "@rpv/content";
 import type { Locale, ModifierSource } from "@rpv/domain";
 import { catalog } from "@rpv/content";
 import { getRace, getSubrace } from "@/lib/catalog/raceCatalog";
-import {
-    getBackgroundGrants,
-    getItemGrants,
-    getClassGrants,
-    dndRaceLevelGrants,
-} from "@rpv/content";
+import { collectGrantSources } from "./characterGrants";
 import type { CharacterSelections } from "./storedCharacter";
-import type { GrantSourceContext } from "./characterGrants";
 
 export type PendingChoiceGrant = {
     key: string;
@@ -130,69 +125,39 @@ function collectFromGrants(
 
 export function collectPendingChoiceGrants(
     selections: CharacterSelections,
-    context: GrantSourceContext,
     locale: Locale
 ): PendingChoiceGrant[] {
     const pending: PendingChoiceGrant[] = [];
 
-    if (selections.race) {
-        const race = getRace(selections.race, locale);
-        const raceLevelGrants = dndRaceLevelGrants[selections.race] ?? [];
-
-        pending.push(
-            ...collectFromGrants(raceLevelGrants, {
-                type: "race",
-                id: selections.race,
-            })
-        );
-
-        if (race) {
-            pending.push(
-                ...collectFromTraits(race.traits, {
-                    type: "race",
-                    id: selections.race,
-                })
-            );
+    for (const entry of collectGrantSources(selections, locale)) {
+        if (
+            entry.source.type === "race" &&
+            selections.subrace &&
+            entry.source.id === selections.subrace
+        ) {
+            const subrace = getSubrace(selections.subrace, locale);
+            if (subrace) {
+                pending.push(...collectFromTraits(subrace.traits, entry.source));
+            }
+            continue;
         }
-    }
 
-    if (selections.subrace) {
-        const subrace = getSubrace(selections.subrace, locale);
-        if (subrace) {
-            pending.push(
-                ...collectFromTraits(subrace.traits, {
-                    type: "race",
-                    id: selections.subrace,
-                })
-            );
+        if (
+            entry.source.type === "race" &&
+            selections.race &&
+            entry.source.id === selections.race
+        ) {
+            const raceLevelGrants = dndRaceLevelGrants[selections.race] ?? [];
+            pending.push(...collectFromGrants(raceLevelGrants, entry.source));
+
+            const race = getRace(selections.race, locale);
+            if (race) {
+                pending.push(...collectFromTraits(race.traits, entry.source));
+            }
+            continue;
         }
-    }
 
-    if (context.background) {
-        pending.push(
-            ...collectFromGrants(
-                getBackgroundGrants(context.background),
-                { type: "background", id: context.background }
-            )
-        );
-    }
-
-    if (context.startingItem) {
-        pending.push(
-            ...collectFromGrants(
-                getItemGrants(context.startingItem),
-                { type: "item", id: context.startingItem }
-            )
-        );
-    }
-
-    if (context.characterClass) {
-        pending.push(
-            ...collectFromGrants(
-                getClassGrants(context.characterClass),
-                { type: "class", id: context.characterClass }
-            )
-        );
+        pending.push(...collectFromGrants(entry.grants, entry.source));
     }
 
     return pending;
@@ -200,20 +165,18 @@ export function collectPendingChoiceGrants(
 
 export function collectLanguageChoiceGrants(
     selections: CharacterSelections,
-    context: GrantSourceContext,
     locale: Locale
 ): PendingChoiceGrant[] {
-    return collectPendingChoiceGrants(selections, context, locale).filter(
+    return collectPendingChoiceGrants(selections, locale).filter(
         (choice) => choice.grant.grantType === "language"
     );
 }
 
 export function collectNonLanguageChoiceGrants(
     selections: CharacterSelections,
-    context: GrantSourceContext,
     locale: Locale
 ): PendingChoiceGrant[] {
-    return collectPendingChoiceGrants(selections, context, locale).filter(
+    return collectPendingChoiceGrants(selections, locale).filter(
         (choice) => choice.grant.grantType !== "language"
     );
 }

@@ -1,10 +1,16 @@
 import { collectPendingChoiceGrants } from "../lib/character/grantChoices";
+import { emptyCharacterSelections } from "../lib/character/storedCharacter";
+
+const baseSelections = { ...emptyCharacterSelections() };
 
 describe("collectPendingChoiceGrants", () => {
     it("includes class skill choice slots with stable keys", () => {
         const pending = collectPendingChoiceGrants(
-            { race: "elf", choices: {} },
-            { characterClass: "fighter" },
+            {
+                ...baseSelections,
+                race: "elf",
+                characterClass: "fighter",
+            },
             "en"
         );
 
@@ -21,8 +27,11 @@ describe("collectPendingChoiceGrants", () => {
 
     it("resolves skill option labels from catalog", () => {
         const pending = collectPendingChoiceGrants(
-            { race: "elf", choices: {} },
-            { characterClass: "rogue" },
+            {
+                ...baseSelections,
+                race: "elf",
+                characterClass: "rogue",
+            },
             "en"
         );
 

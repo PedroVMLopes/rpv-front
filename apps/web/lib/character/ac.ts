@@ -2,10 +2,7 @@ import type { SystemKey } from "@/presets";
 import type { AcDerivationContext, AcRules } from "@/presets/types";
 import { buildSelectionsFromForm } from "./characterAdapter";
 import { deriveRaceModifiers } from "./raceModifiers";
-import {
-    deriveStatModifiers,
-    grantContextFromForm,
-} from "./characterGrants";
+import { deriveStatModifiers } from "./characterGrants";
 import { buildBaseStatsFromForm } from "./presetStats";
 import { getSystemRules } from "./systemRules";
 import { resolveStats } from "@rpv/domain";
@@ -64,11 +61,10 @@ export function resolveAcFromForm(
     locale: Locale
 ): number | undefined {
     const selections = buildSelectionsFromForm(formData);
-    const context = grantContextFromForm(formData);
     const baseStats = buildBaseStatsFromForm(formData, system);
     const modifiers = [
         ...deriveRaceModifiers(selections, locale),
-        ...deriveStatModifiers(selections, context, locale),
+        ...deriveStatModifiers(selections, locale),
     ];
 
     return resolveStats(baseStats, modifiers).armorClass;

@@ -38,9 +38,10 @@ describe("useCharacterStore race modifiers", () => {
 
         const character = useCharacterStore.getState().characters[0];
 
-        expect(character.selections).toEqual({
+        expect(character.selections).toMatchObject({
             race: "elf",
             subrace: undefined,
+            items: [],
             choices: {},
         });
         expect(character.modifiers).toEqual([

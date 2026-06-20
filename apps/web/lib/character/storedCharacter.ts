@@ -8,8 +8,17 @@ export type CharacterChoices = {
 export type CharacterSelections = {
     race?: string;
     subrace?: string;
+    characterClass?: string;
+    subclass?: string;
+    background?: string;
+    /** Item slugs that contribute grants. Phase 1: single starting item maps here. */
+    items: string[];
     choices: CharacterChoices;
 };
+
+export function emptyCharacterSelections(): CharacterSelections {
+    return { items: [], choices: {} };
+}
 
 export type StoredCharacter = {
     id: string;

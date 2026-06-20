@@ -20,9 +20,23 @@ export function getPresetStatConfig(system: SystemKey): PresetStatConfig {
     return config;
 }
 
+const GRANT_SOURCE_FIELD_NAMES = [
+    "race",
+    "subrace",
+    "characterClass",
+    "subclass",
+    "background",
+    "startingItem",
+] as const;
+
 export function getCoreFieldNames(system: SystemKey): Set<string> {
     const config = getPresetStatConfig(system);
-    const names = new Set<string>(["name", "attributes", "choices"]);
+    const names = new Set<string>([
+        "name",
+        "attributes",
+        "choices",
+        ...GRANT_SOURCE_FIELD_NAMES,
+    ]);
 
     for (const combat of config.combatStats) {
         for (const field of combat.formFields) {
@@ -167,12 +181,22 @@ export function flattenStoredToForm(
     system: SystemKey
 ): Record<string, unknown> {
     const config = getPresetStatConfig(system);
+    const selections = stored.selections;
     const form: Record<string, unknown> = {
         ...stored.systemData,
         name: stored.name,
-        race: stored.selections?.race ?? stored.systemData.race,
-        subrace: stored.selections?.subrace ?? stored.systemData.subrace,
-        choices: stored.selections?.choices ?? {},
+        race: selections?.race ?? stored.systemData.race,
+        subrace: selections?.subrace ?? stored.systemData.subrace,
+        characterClass:
+            selections?.characterClass ?? stored.systemData.characterClass,
+        subclass: selections?.subclass ?? stored.systemData.subclass,
+        background: selections?.background ?? stored.systemData.background,
+        startingItem:
+            selections?.items?.[0] ??
+            (typeof stored.systemData.startingItem === "string"
+                ? stored.systemData.startingItem
+                : ""),
+        choices: selections?.choices ?? {},
         attributes: config.abilities.map((ability) => ({
             name: ability.name,
             value: stored.baseStats[ability.statKey],

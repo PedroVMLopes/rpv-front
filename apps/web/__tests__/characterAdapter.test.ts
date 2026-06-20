@@ -35,15 +35,19 @@ describe("characterAdapter system-agnostic mapping", () => {
 
         expect(stored.name).toBe("Test Hero");
         expect(stored.resources.hp).toBe(8);
-        expect(stored.systemData.characterClass).toBe("Fighter");
         expect(stored.systemData.level).toBe(3);
         expect(stored.systemData.goals).toBe("Find the dragon");
+        expect(stored.systemData).not.toHaveProperty("characterClass");
         expect(stored.baseStats.strength).toBe(14);
         expect(stored.baseStats.hitPoints).toBe(10);
         expect(stored.baseStats.armorClass).toBe(12);
         expect(stored.selections).toEqual({
             race: undefined,
             subrace: undefined,
+            characterClass: "Fighter",
+            subclass: undefined,
+            background: undefined,
+            items: [],
             choices: {},
         });
         expect(stored).not.toHaveProperty("hp");
@@ -110,10 +114,14 @@ describe("characterAdapter system-agnostic mapping", () => {
         expect(stored.selections).toEqual({
             race: "elf",
             subrace: "high-elf",
+            characterClass: "Fighter",
+            subclass: undefined,
+            background: undefined,
+            items: [],
             choices: {},
         });
-        expect(stored.systemData.race).toBe("elf");
-        expect(stored.systemData.subrace).toBe("high-elf");
+        expect(stored.systemData).not.toHaveProperty("race");
+        expect(stored.systemData).not.toHaveProperty("subrace");
     });
 
     it("preserves existing choices when rebuilding selections", () => {
@@ -122,6 +130,7 @@ describe("characterAdapter system-agnostic mapping", () => {
             {
                 race: "elf",
                 subrace: "high-elf",
+                items: [],
                 choices: { grantPicks: { cantrip: "acid-splash" } },
             }
         );
@@ -129,6 +138,10 @@ describe("characterAdapter system-agnostic mapping", () => {
         expect(selections).toEqual({
             race: "dwarf",
             subrace: "hill-dwarf",
+            characterClass: undefined,
+            subclass: undefined,
+            background: undefined,
+            items: [],
             choices: { grantPicks: { cantrip: "acid-splash" } },
         });
     });
@@ -146,7 +159,15 @@ describe("characterAdapter system-agnostic mapping", () => {
         });
 
         expect(stored.language).toBe("en");
-        expect(stored.selections).toEqual({ choices: {} });
+        expect(stored.selections).toEqual({
+            race: undefined,
+            subrace: undefined,
+            characterClass: undefined,
+            subclass: undefined,
+            background: undefined,
+            items: [],
+            choices: {},
+        });
     });
 
     it("backfills selections from systemData when missing", () => {
@@ -165,6 +186,10 @@ describe("characterAdapter system-agnostic mapping", () => {
         expect(stored.selections).toEqual({
             race: "elf",
             subrace: "high-elf",
+            characterClass: undefined,
+            subclass: undefined,
+            background: undefined,
+            items: [],
             choices: {},
         });
     });
@@ -192,7 +217,7 @@ describe("characterAdapter system-agnostic mapping", () => {
         const stored = normalizeStoredCharacter(legacy);
 
         expect(stored.resources.hp).toBe(5);
-        expect(stored.systemData.characterClass).toBe("Wizard");
+        expect(stored.selections.characterClass).toBe("Wizard");
         expect(stored.baseStats).toBeDefined();
         expect(stored.modifiers).toEqual([]);
         expect(stored.grants).toEqual([]);

@@ -2,14 +2,16 @@ import {
     deriveCharacterGrants,
     getLanguageBudget,
     getFixedLanguageGrants,
-    grantContextFromForm,
 } from "../lib/character/characterGrants";
+import { buildSelectionsFromForm } from "../lib/character/characterAdapter";
+import { emptyCharacterSelections } from "../lib/character/storedCharacter";
+
+const baseSelections = { ...emptyCharacterSelections() };
 
 describe("deriveCharacterGrants", () => {
     it("derives fixed racial languages for dwarf", () => {
         const grants = deriveCharacterGrants(
-            { race: "dwarf", choices: {} },
-            {},
+            { ...baseSelections, race: "dwarf" },
             "en"
         );
 
@@ -36,6 +38,7 @@ describe("deriveCharacterGrants", () => {
     it("resolves language and spell choices from grantPicks", () => {
         const grants = deriveCharacterGrants(
             {
+                ...baseSelections,
                 race: "elf",
                 subrace: "high-elf",
                 choices: {
@@ -45,7 +48,6 @@ describe("deriveCharacterGrants", () => {
                     },
                 },
             },
-            {},
             "en"
         );
 
@@ -65,8 +67,12 @@ describe("deriveCharacterGrants", () => {
 
     it("includes background and item grants", () => {
         const grants = deriveCharacterGrants(
-            { race: "elf", choices: {} },
-            { background: "sage", startingItem: "scroll-of-fire-bolt" },
+            {
+                ...baseSelections,
+                race: "elf",
+                background: "sage",
+                items: ["scroll-of-fire-bolt"],
+            },
             "en"
         );
 
@@ -86,10 +92,13 @@ describe("deriveCharacterGrants", () => {
         );
     });
 
-    it("derives fixed class proficiencies from characterClass context", () => {
+    it("derives fixed class proficiencies from characterClass selection", () => {
         const grants = deriveCharacterGrants(
-            { race: "elf", choices: {} },
-            { characterClass: "fighter" },
+            {
+                ...baseSelections,
+                race: "elf",
+                characterClass: "fighter",
+            },
             "en"
         );
 
@@ -122,7 +131,9 @@ describe("deriveCharacterGrants", () => {
     it("resolves class skill choices from grantPicks", () => {
         const grants = deriveCharacterGrants(
             {
+                ...baseSelections,
                 race: "elf",
+                characterClass: "fighter",
                 choices: {
                     grantPicks: {
                         "class:fighter:skill_proficiency:3:0": "athletics",
@@ -130,7 +141,6 @@ describe("deriveCharacterGrants", () => {
                     },
                 },
             },
-            { characterClass: "fighter" },
             "en"
         );
 
@@ -154,8 +164,12 @@ describe("deriveCharacterGrants", () => {
 describe("getLanguageBudget", () => {
     it("sums language choice slots from race and background", () => {
         const budget = getLanguageBudget(
-            { race: "elf", subrace: "high-elf", choices: {} },
-            { background: "sage" },
+            {
+                ...baseSelections,
+                race: "elf",
+                subrace: "high-elf",
+                background: "sage",
+            },
             "en"
         );
 
@@ -166,8 +180,7 @@ describe("getLanguageBudget", () => {
 describe("getFixedLanguageGrants", () => {
     it("returns auto-known languages without choice slots", () => {
         const fixed = getFixedLanguageGrants(
-            { race: "elf", choices: {} },
-            {},
+            { ...baseSelections, race: "elf" },
             "en"
         );
 
@@ -177,26 +190,23 @@ describe("getFixedLanguageGrants", () => {
     });
 });
 
-describe("grantContextFromForm", () => {
-    it("extracts background and starting item slugs", () => {
+describe("buildSelectionsFromForm", () => {
+    it("maps grant source fields and starting item into selections", () => {
         expect(
-            grantContextFromForm({
+            buildSelectionsFromForm({
+                race: "elf",
+                characterClass: "fighter",
                 background: "sage",
                 startingItem: "scroll-of-fire-bolt",
             })
         ).toEqual({
-            background: "sage",
-            startingItem: "scroll-of-fire-bolt",
-        });
-    });
-
-    it("extracts characterClass slug", () => {
-        expect(
-            grantContextFromForm({
-                characterClass: "fighter",
-            })
-        ).toEqual({
+            race: "elf",
+            subrace: undefined,
             characterClass: "fighter",
+            subclass: undefined,
+            background: "sage",
+            items: ["scroll-of-fire-bolt"],
+            choices: {},
         });
     });
 });

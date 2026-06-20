@@ -1,10 +1,16 @@
 import { deriveStatModifiers } from "../lib/character/characterGrants";
+import { emptyCharacterSelections } from "../lib/character/storedCharacter";
+
+const baseSelections = { ...emptyCharacterSelections() };
 
 describe("deriveStatModifiers", () => {
     it("derives hitPoints modifier from starting item", () => {
         const modifiers = deriveStatModifiers(
-            { race: "human", choices: {} },
-            { startingItem: "amulet-of-vitality" },
+            {
+                ...baseSelections,
+                race: "human",
+                items: ["amulet-of-vitality"],
+            },
             "en"
         );
 
@@ -20,8 +26,12 @@ describe("deriveStatModifiers", () => {
 
     it("ignores class and background stat sources", () => {
         const modifiers = deriveStatModifiers(
-            { race: "elf", choices: {} },
-            { characterClass: "fighter", background: "sage" },
+            {
+                ...baseSelections,
+                race: "elf",
+                characterClass: "fighter",
+                background: "sage",
+            },
             "en"
         );
 
@@ -30,7 +40,7 @@ describe("deriveStatModifiers", () => {
 
     it("returns empty when no item is selected", () => {
         expect(
-            deriveStatModifiers({ race: "human", choices: {} }, {}, "en")
+            deriveStatModifiers({ ...baseSelections, race: "human" }, "en")
         ).toEqual([]);
     });
 });
