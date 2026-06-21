@@ -159,6 +159,40 @@ describe("deriveCharacterGrants", () => {
             ])
         );
     });
+
+    it("includes Action Surge for fighter at level 2", () => {
+        const level1 = deriveCharacterGrants(
+            {
+                ...baseSelections,
+                characterClass: "fighter",
+            },
+            "en",
+            1
+        );
+        const level2 = deriveCharacterGrants(
+            {
+                ...baseSelections,
+                characterClass: "fighter",
+            },
+            "en",
+            2
+        );
+
+        expect(level1).not.toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ ref: "Action Surge" }),
+            ])
+        );
+        expect(level2).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    kind: "ability",
+                    ref: "Action Surge",
+                    source: { type: "class", id: "fighter" },
+                }),
+            ])
+        );
+    });
 });
 
 describe("getLanguageBudget", () => {

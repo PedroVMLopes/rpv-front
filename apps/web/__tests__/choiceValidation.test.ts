@@ -75,6 +75,27 @@ describe("findMissingRequiredChoices", () => {
         );
     });
 
+    it("requires level 3 fighter skill pick when character level is 3", () => {
+        const missing = findMissingRequiredChoices(
+            {
+                ...baseFormData,
+                level: 3,
+                characterClass: "fighter",
+                choices: {
+                    grantPicks: {
+                        "class:fighter:skill_proficiency:3:0": "athletics",
+                        "class:fighter:skill_proficiency:3:1": "intimidation",
+                    },
+                },
+            },
+            "en"
+        );
+
+        expect(missing.map((choice) => choice.key)).toEqual([
+            "class:fighter:skill_proficiency:0:0",
+        ]);
+    });
+
     it("returns empty when all required picks are filled", () => {
         const missing = findMissingRequiredChoices(
             {

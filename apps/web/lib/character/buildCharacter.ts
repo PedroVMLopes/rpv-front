@@ -9,6 +9,7 @@ import { deriveModifiersForCharacter } from "./deriveModifiers";
 import { applyDerivedCombatStats } from "./applyDerivedCombatStats";
 import { sanitizeGrantPicks } from "./grantPickSanitize";
 import { syncResourceHpToResolvedMax } from "./hpSync";
+import { readLevelFromForm } from "./level";
 import type { StoredCharacter } from "./storedCharacter";
 
 export type BuildCharacterInput = {
@@ -23,15 +24,17 @@ export type BuildCharacterInput = {
 
 export function buildStoredCharacter(input: BuildCharacterInput): StoredCharacter {
     const { id, type, system, locale, formData, existing } = input;
+    const characterLevel = readLevelFromForm(formData);
 
     let selections = sanitizeGrantPicks(
         buildSelectionsFromForm(formData, existing?.selections),
-        locale
+        locale,
+        characterLevel
     );
     const modifiers = deriveModifiersForCharacter(selections, locale, {
         preserve: existing?.modifiers,
     });
-    const grants = deriveCharacterGrants(selections, locale);
+    const grants = deriveCharacterGrants(selections, locale, characterLevel);
 
     let processedForm = applyDerivedCombatStats(
         { ...formData, choices: selections.choices },

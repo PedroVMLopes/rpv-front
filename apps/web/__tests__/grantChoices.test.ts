@@ -48,4 +48,33 @@ describe("collectPendingChoiceGrants", () => {
             ])
         );
     });
+
+    it("adds level 3 skill choice when character level is 3", () => {
+        const level2 = collectPendingChoiceGrants(
+            {
+                ...baseSelections,
+                characterClass: "fighter",
+            },
+            "en",
+            2
+        );
+        const level3 = collectPendingChoiceGrants(
+            {
+                ...baseSelections,
+                characterClass: "fighter",
+            },
+            "en",
+            3
+        );
+
+        expect(level3.length).toBeGreaterThan(level2.length);
+        expect(level3).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    key: "class:fighter:skill_proficiency:0:0",
+                    label: expect.stringContaining("(Level 3)"),
+                }),
+            ])
+        );
+    });
 });

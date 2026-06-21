@@ -25,6 +25,7 @@ import {
     findMissingRequiredChoices,
 } from "@/lib/character/choiceValidation";
 import type { CharacterChoices, CharacterSelections } from "@/lib/character/storedCharacter";
+import { readLevelFromForm } from "@/lib/character/level";
 
 type CharacterGrantPickersProps = {
     form: UseFormReturn<Record<string, unknown>>;
@@ -58,6 +59,7 @@ function setGrantPick(
 function buildOwnedRefsByGrantType(
     selections: CharacterSelections,
     contentLocale: Locale,
+    characterLevel: number,
     pending: ReturnType<typeof collectPendingChoiceGrants>
 ): Map<Grant["grantType"], Set<string>> {
     const grantTypes = new Set(pending.map((choice) => choice.grant.grantType));
@@ -66,7 +68,12 @@ function buildOwnedRefsByGrantType(
     for (const grantType of grantTypes) {
         owned.set(
             grantType,
-            getFixedRefsForGrantType(selections, contentLocale, grantType)
+            getFixedRefsForGrantType(
+                selections,
+                contentLocale,
+                grantType,
+                characterLevel
+            )
         );
     }
 
@@ -80,14 +87,24 @@ export function CharacterGrantPickers({
     const t = useTranslations("grants");
     const formValues = form.watch();
 
+    const characterLevel = useMemo(
+        () => readLevelFromForm(formValues),
+        [formValues]
+    );
+
     const selections = useMemo(
         () => buildSelectionsFromForm(formValues),
         [formValues]
     );
 
     const pendingChoices = useMemo(
-        () => collectPendingChoiceGrants(selections, contentLocale),
-        [selections, contentLocale]
+        () =>
+            collectPendingChoiceGrants(
+                selections,
+                contentLocale,
+                characterLevel
+            ),
+        [selections, contentLocale, characterLevel]
     );
 
     const ownedRefsByGrantType = useMemo(
@@ -95,29 +112,41 @@ export function CharacterGrantPickers({
             buildOwnedRefsByGrantType(
                 selections,
                 contentLocale,
+                characterLevel,
                 pendingChoices
             ),
-        [selections, contentLocale, pendingChoices]
+        [selections, contentLocale, characterLevel, pendingChoices]
     );
 
     const fixedLanguages = useMemo(
-        () => getFixedLanguageGrants(selections, contentLocale),
-        [selections, contentLocale]
+        () =>
+            getFixedLanguageGrants(selections, contentLocale, characterLevel),
+        [selections, contentLocale, characterLevel]
     );
 
     const languageChoices = useMemo(
-        () => collectLanguageChoiceGrants(selections, contentLocale),
-        [selections, contentLocale]
+        () =>
+            collectLanguageChoiceGrants(
+                selections,
+                contentLocale,
+                characterLevel
+            ),
+        [selections, contentLocale, characterLevel]
     );
 
     const otherChoices = useMemo(
-        () => collectNonLanguageChoiceGrants(selections, contentLocale),
-        [selections, contentLocale]
+        () =>
+            collectNonLanguageChoiceGrants(
+                selections,
+                contentLocale,
+                characterLevel
+            ),
+        [selections, contentLocale, characterLevel]
     );
 
     const languageBudget = useMemo(
-        () => getLanguageBudget(selections, contentLocale),
-        [selections, contentLocale]
+        () => getLanguageBudget(selections, contentLocale, characterLevel),
+        [selections, contentLocale, characterLevel]
     );
 
     const grantPicks = readGrantPicks(form);

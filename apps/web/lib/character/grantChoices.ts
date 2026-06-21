@@ -18,11 +18,28 @@ export type PendingChoiceGrant = {
     options: Array<{ value: string; label: string }>;
 };
 
+function formatChoiceLabel(
+    baseLabel: string,
+    grant: Grant,
+    slot: number,
+    featureLevel?: number
+): string {
+    let label =
+        grant.choose > 1 ? `${baseLabel} (${slot + 1}/${grant.choose})` : baseLabel;
+
+    if (featureLevel !== undefined) {
+        label = `${label} (Level ${featureLevel})`;
+    }
+
+    return label;
+}
+
 function expandChoiceGrant(
     grant: Grant,
     source: ModifierSource,
     grantIndex: number,
-    traitName: string
+    traitName: string,
+    featureLevel?: number
 ): PendingChoiceGrant[] {
     if (grant.choose <= 0) {
         return [];
@@ -58,7 +75,7 @@ function expandChoiceGrant(
         }));
     }
 
-    const label =
+    const baseLabel =
         grant.description?.trim() ||
         traitName ||
         `${grant.grantType} choice`;
@@ -75,10 +92,7 @@ function expandChoiceGrant(
             key,
             grant,
             source,
-            label:
-                grant.choose > 1
-                    ? `${label} (${slot + 1}/${grant.choose})`
-                    : label,
+            label: formatChoiceLabel(baseLabel, grant, slot, featureLevel),
             options,
         });
     }
@@ -110,13 +124,20 @@ function collectFromTraits(
 
 function collectFromGrants(
     grants: Grant[],
-    source: ModifierSource
+    source: ModifierSource,
+    featureLevel?: number
 ): PendingChoiceGrant[] {
     const pending: PendingChoiceGrant[] = [];
 
     grants.forEach((grant, grantIndex) => {
         pending.push(
-            ...expandChoiceGrant(grant, source, grantIndex, "")
+            ...expandChoiceGrant(
+                grant,
+                source,
+                grantIndex,
+                "",
+                featureLevel
+            )
         );
     });
 
@@ -125,11 +146,16 @@ function collectFromGrants(
 
 export function collectPendingChoiceGrants(
     selections: CharacterSelections,
-    locale: Locale
+    locale: Locale,
+    characterLevel = 1
 ): PendingChoiceGrant[] {
     const pending: PendingChoiceGrant[] = [];
 
-    for (const entry of collectGrantSources(selections, locale)) {
+    for (const entry of collectGrantSources(
+        selections,
+        locale,
+        characterLevel
+    )) {
         if (
             entry.source.type === "race" &&
             selections.subrace &&
@@ -157,7 +183,13 @@ export function collectPendingChoiceGrants(
             continue;
         }
 
-        pending.push(...collectFromGrants(entry.grants, entry.source));
+        pending.push(
+            ...collectFromGrants(
+                entry.grants,
+                entry.source,
+                entry.featureLevel
+            )
+        );
     }
 
     return pending;
@@ -165,18 +197,24 @@ export function collectPendingChoiceGrants(
 
 export function collectLanguageChoiceGrants(
     selections: CharacterSelections,
-    locale: Locale
+    locale: Locale,
+    characterLevel = 1
 ): PendingChoiceGrant[] {
-    return collectPendingChoiceGrants(selections, locale).filter(
-        (choice) => choice.grant.grantType === "language"
-    );
+    return collectPendingChoiceGrants(
+        selections,
+        locale,
+        characterLevel
+    ).filter((choice) => choice.grant.grantType === "language");
 }
 
 export function collectNonLanguageChoiceGrants(
     selections: CharacterSelections,
-    locale: Locale
+    locale: Locale,
+    characterLevel = 1
 ): PendingChoiceGrant[] {
-    return collectPendingChoiceGrants(selections, locale).filter(
-        (choice) => choice.grant.grantType !== "language"
-    );
+    return collectPendingChoiceGrants(
+        selections,
+        locale,
+        characterLevel
+    ).filter((choice) => choice.grant.grantType !== "language");
 }

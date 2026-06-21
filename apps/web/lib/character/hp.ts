@@ -9,6 +9,8 @@ import { getSystemRules } from "./systemRules";
 import { resolveStats } from "@rpv/domain";
 import type { Locale } from "@rpv/domain";
 
+import { readLevelFromForm } from "./level";
+
 export function getHpRules(system: SystemKey): HpRules {
     return getSystemRules(system).hp;
 }
@@ -18,19 +20,6 @@ export function deriveMaxHp(
     ctx: HpDerivationContext
 ): number | undefined {
     return getHpRules(system).deriveMaxHp(ctx);
-}
-
-function coerceLevel(value: unknown): number | undefined {
-    if (typeof value === "number" && Number.isFinite(value) && value >= 1) {
-        return Math.floor(value);
-    }
-    if (typeof value === "string" && value !== "") {
-        const parsed = Number(value);
-        if (Number.isFinite(parsed) && parsed >= 1) {
-            return Math.floor(parsed);
-        }
-    }
-    return undefined;
 }
 
 function coerceClassSlug(value: unknown): string | undefined {
@@ -58,10 +47,10 @@ export function buildHpDerivationContextFromForm(
     system: SystemKey,
     locale: Locale
 ): HpDerivationContext | undefined {
-    const level = coerceLevel(formData.level);
+    const level = readLevelFromForm(formData);
     const classSlug = coerceClassSlug(formData.characterClass);
 
-    if (level === undefined || !classSlug) {
+    if (!classSlug) {
         return undefined;
     }
 

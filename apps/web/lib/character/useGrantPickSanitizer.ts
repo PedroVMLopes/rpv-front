@@ -5,6 +5,7 @@ import type { UseFormReturn } from "react-hook-form";
 import type { Locale } from "@rpv/domain";
 import { buildSelectionsFromForm } from "./characterAdapter";
 import { sanitizeGrantPicks } from "./grantPickSanitize";
+import { readLevelFromForm } from "./level";
 import type { CharacterChoices } from "./storedCharacter";
 
 /**
@@ -20,11 +21,17 @@ export function useGrantPickSanitizer(
     const characterClass = form.watch("characterClass");
     const background = form.watch("background");
     const startingItem = form.watch("startingItem");
+    const level = form.watch("level");
 
     useEffect(() => {
         const formValues = form.getValues();
         const selections = buildSelectionsFromForm(formValues);
-        const sanitized = sanitizeGrantPicks(selections, contentLocale);
+        const characterLevel = readLevelFromForm(formValues);
+        const sanitized = sanitizeGrantPicks(
+            selections,
+            contentLocale,
+            characterLevel
+        );
         const current =
             (form.getValues("choices") as CharacterChoices | undefined) ?? {};
         const currentPicks = current.grantPicks ?? {};
@@ -49,5 +56,6 @@ export function useGrantPickSanitizer(
         characterClass,
         background,
         startingItem,
+        level,
     ]);
 }

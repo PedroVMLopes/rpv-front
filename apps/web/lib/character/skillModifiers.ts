@@ -2,6 +2,7 @@ import type { CharacterGrant, StatKey, Stats } from "@rpv/domain";
 import type { Skill } from "@rpv/content";
 import type { SystemKey } from "@/presets";
 import { getSystemRules } from "./systemRules";
+import { readLevelFromForm } from "./level";
 
 export type SkillModifier = {
     slug: string;
@@ -12,20 +13,7 @@ export type SkillModifier = {
 };
 
 export function readCharacterLevel(systemData: Record<string, unknown>): number {
-    const level = systemData.level;
-
-    if (typeof level === "number" && !Number.isNaN(level) && level >= 1) {
-        return Math.floor(level);
-    }
-
-    if (typeof level === "string" && level.trim() !== "") {
-        const parsed = Number(level);
-        if (!Number.isNaN(parsed) && parsed >= 1) {
-            return Math.floor(parsed);
-        }
-    }
-
-    return 1;
+    return readLevelFromForm(systemData);
 }
 
 export function getProficientSkillSlugs(

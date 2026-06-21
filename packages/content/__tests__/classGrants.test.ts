@@ -1,6 +1,7 @@
 import {
     getClass,
     getClassGrants,
+    getClassGrantSourcesForLevel,
     getClassHitDie,
     listClasses,
 } from "../src/curation/classGrants.dnd";
@@ -92,5 +93,51 @@ describe("classGrants.dnd", () => {
             "wisdom",
             "charisma",
         ]);
+    });
+
+    it("returns only base grants at level 1", () => {
+        const level1 = getClassGrants("fighter", 1);
+        const level2 = getClassGrants("fighter", 2);
+
+        expect(level1).not.toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ description: "Action Surge" }),
+            ])
+        );
+        expect(level2.length).toBeGreaterThan(level1.length);
+    });
+
+    it("includes Action Surge at level 2 and above", () => {
+        expect(getClassGrants("fighter", 2)).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    grantType: "ability",
+                    description: "Action Surge",
+                }),
+            ])
+        );
+    });
+
+    it("includes level 3 skill choice at level 3", () => {
+        const grants = getClassGrants("fighter", 3);
+
+        expect(grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    grantType: "skill_proficiency",
+                    choose: 1,
+                    description: "Additional skill (Level 3)",
+                }),
+            ])
+        );
+    });
+
+    it("getClassGrantSourcesForLevel separates base and level blocks", () => {
+        const blocks = getClassGrantSourcesForLevel("fighter", 3);
+
+        expect(blocks).toHaveLength(3);
+        expect(blocks[0].featureLevel).toBeUndefined();
+        expect(blocks[1].featureLevel).toBe(2);
+        expect(blocks[2].featureLevel).toBe(3);
     });
 });

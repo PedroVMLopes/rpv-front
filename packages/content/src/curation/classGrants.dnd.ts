@@ -1,4 +1,6 @@
 import type { Grant } from "../grant/grant.types";
+import type { LevelFeature } from "../grant/levelFeature.types";
+import { resolveLevelFeatures } from "../grant/levelFeatures";
 
 export interface ClassEntry {
     slug: string;
@@ -7,6 +9,12 @@ export interface ClassEntry {
     /** Hit die sides (e.g. 6, 8, 10, 12). */
     hitDie: number;
     grants: Grant[];
+    featuresByLevel?: LevelFeature[];
+}
+
+export interface ClassGrantSourceBlock {
+    grants: Grant[];
+    featureLevel?: number;
 }
 
 /**
@@ -60,6 +68,38 @@ export const dndClasses: ClassEntry[] = [
                     { optionType: "skill", ref: "intimidation" },
                     { optionType: "skill", ref: "perception" },
                     { optionType: "skill", ref: "survival" },
+                ],
+            },
+        ],
+        featuresByLevel: [
+            {
+                level: 2,
+                grants: [
+                    {
+                        grantType: "ability",
+                        choose: 0,
+                        description: "Action Surge",
+                    },
+                ],
+            },
+            {
+                level: 3,
+                grants: [
+                    {
+                        grantType: "skill_proficiency",
+                        choose: 1,
+                        description: "Additional skill (Level 3)",
+                        options: [
+                            { optionType: "skill", ref: "acrobatics" },
+                            { optionType: "skill", ref: "animal-handling" },
+                            { optionType: "skill", ref: "athletics" },
+                            { optionType: "skill", ref: "history" },
+                            { optionType: "skill", ref: "insight" },
+                            { optionType: "skill", ref: "intimidation" },
+                            { optionType: "skill", ref: "perception" },
+                            { optionType: "skill", ref: "survival" },
+                        ],
+                    },
                 ],
             },
         ],
@@ -209,8 +249,34 @@ export function listClasses(): ClassEntry[] {
     return dndClasses;
 }
 
-export function getClassGrants(slug: string): Grant[] {
-    return getClass(slug)?.grants ?? [];
+export function getClassGrantSourcesForLevel(
+    slug: string,
+    characterLevel: number
+): ClassGrantSourceBlock[] {
+    const entry = getClass(slug);
+    if (!entry) {
+        return [];
+    }
+
+    const blocks: ClassGrantSourceBlock[] = [{ grants: entry.grants }];
+
+    for (const feature of resolveLevelFeatures(
+        entry.featuresByLevel ?? [],
+        characterLevel
+    )) {
+        blocks.push({
+            grants: feature.grants,
+            featureLevel: feature.level,
+        });
+    }
+
+    return blocks;
+}
+
+export function getClassGrants(slug: string, characterLevel = 1): Grant[] {
+    return getClassGrantSourcesForLevel(slug, characterLevel).flatMap(
+        (block) => block.grants
+    );
 }
 
 export function getClassHitDie(slug: string): number | undefined {

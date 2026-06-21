@@ -63,6 +63,28 @@ describe("buildStoredCharacter", () => {
         ).toBe(false);
     });
 
+    it("includes Action Surge when fighter is built at level 2", () => {
+        const character = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                level: 2,
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        expect(character.grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    kind: "ability",
+                    ref: "Action Surge",
+                    source: { type: "class", id: "fighter" },
+                }),
+            ])
+        );
+    });
+
     it("derives item HP bonus and syncs current HP on create", () => {
         const character = buildNewStoredCharacter(
             {

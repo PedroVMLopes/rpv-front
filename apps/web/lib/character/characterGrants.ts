@@ -5,7 +5,7 @@ import {
     fixedGrantsToCharacterGrants,
     getBackgroundGrants,
     getItemGrants,
-    getClassGrants,
+    getClassGrantSourcesForLevel,
     getLanguage,
     getSpell,
     dndRaceLevelGrants,
@@ -19,11 +19,18 @@ import {
     type PendingChoiceGrant,
 } from "./grantChoices";
 
+export type GrantSourceEntry = {
+    source: ModifierSource;
+    grants: Grant[];
+    featureLevel?: number;
+};
+
 export function collectGrantSources(
     selections: CharacterSelections,
-    locale: Locale
-): Array<{ source: ModifierSource; grants: Grant[] }> {
-    const sources: Array<{ source: ModifierSource; grants: Grant[] }> = [];
+    locale: Locale,
+    characterLevel = 1
+): GrantSourceEntry[] {
+    const sources: GrantSourceEntry[] = [];
 
     if (selections.race) {
         const race = getRace(selections.race, locale);
@@ -61,10 +68,16 @@ export function collectGrantSources(
     }
 
     if (selections.characterClass) {
-        sources.push({
-            source: { type: "class", id: selections.characterClass },
-            grants: getClassGrants(selections.characterClass),
-        });
+        for (const block of getClassGrantSourcesForLevel(
+            selections.characterClass,
+            characterLevel
+        )) {
+            sources.push({
+                source: { type: "class", id: selections.characterClass },
+                grants: block.grants,
+                featureLevel: block.featureLevel,
+            });
+        }
     }
 
     return sources;
@@ -73,10 +86,11 @@ export function collectGrantSources(
 export function getFixedRefsForGrantType(
     selections: CharacterSelections,
     locale: Locale,
-    grantType: Grant["grantType"]
+    grantType: Grant["grantType"],
+    characterLevel = 1
 ): Set<string> {
     const refs = new Set<string>();
-    const sources = collectGrantSources(selections, locale);
+    const sources = collectGrantSources(selections, locale, characterLevel);
 
     for (const entry of sources) {
         for (const grant of entry.grants) {
@@ -97,9 +111,10 @@ export const STAT_MODIFIER_SOURCE_TYPES: ModifierSourceType[] = ["item", "feat"]
 
 export function deriveStatModifiers(
     selections: CharacterSelections,
-    locale: Locale
+    locale: Locale,
+    characterLevel = 1
 ): Modifier[] {
-    return collectGrantSources(selections, locale)
+    return collectGrantSources(selections, locale, characterLevel)
         .filter((entry) =>
             STAT_MODIFIER_SOURCE_TYPES.includes(entry.source.type)
         )
@@ -131,12 +146,17 @@ function resolveChoiceGrant(
 
 function resolveChoiceGrants(
     selections: CharacterSelections,
-    locale: Locale
+    locale: Locale,
+    characterLevel: number
 ): CharacterGrant[] {
     const grantPicks =
         (selections.choices.grantPicks as Record<string, string> | undefined) ??
         {};
-    const pending = collectPendingChoiceGrants(selections, locale);
+    const pending = collectPendingChoiceGrants(
+        selections,
+        locale,
+        characterLevel
+    );
     const resolved: CharacterGrant[] = [];
 
     for (const choice of pending) {
@@ -156,18 +176,20 @@ function resolveChoiceGrants(
 
 export function getLanguageBudget(
     selections: CharacterSelections,
-    locale: Locale
+    locale: Locale,
+    characterLevel = 1
 ): number {
-    const sources = collectGrantSources(selections, locale);
+    const sources = collectGrantSources(selections, locale, characterLevel);
     const allGrants = sources.flatMap((entry) => entry.grants);
     return countLanguageChoices(allGrants);
 }
 
 export function getFixedLanguageGrants(
     selections: CharacterSelections,
-    locale: Locale
+    locale: Locale,
+    characterLevel = 1
 ): CharacterGrant[] {
-    const sources = collectGrantSources(selections, locale);
+    const sources = collectGrantSources(selections, locale, characterLevel);
     const grants: CharacterGrant[] = [];
 
     for (const entry of sources) {
@@ -189,9 +211,10 @@ export function getFixedLanguageGrants(
 
 export function deriveCharacterGrants(
     selections: CharacterSelections,
-    locale: Locale
+    locale: Locale,
+    characterLevel = 1
 ): CharacterGrant[] {
-    const sources = collectGrantSources(selections, locale);
+    const sources = collectGrantSources(selections, locale, characterLevel);
     const fixedGrants = sources.flatMap((entry) =>
         fixedGrantsToCharacterGrants(entry.grants, entry.source).map((grant) => {
             if (grant.kind === "language") {
@@ -212,7 +235,11 @@ export function deriveCharacterGrants(
         })
     );
 
-    const choiceGrants = resolveChoiceGrants(selections, locale);
+    const choiceGrants = resolveChoiceGrants(
+        selections,
+        locale,
+        characterLevel
+    );
 
     return [...fixedGrants, ...choiceGrants];
 }

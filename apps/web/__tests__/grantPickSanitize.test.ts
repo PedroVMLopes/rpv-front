@@ -85,4 +85,27 @@ describe("sanitizeGrantPicks", () => {
             "class:fighter:skill_proficiency:3:0": "athletics",
         });
     });
+
+    it("drops level 3 class picks when character level falls below 3", () => {
+        const selections = sanitizeGrantPicks(
+            {
+                ...baseSelections,
+                characterClass: "fighter",
+                choices: {
+                    grantPicks: {
+                        "class:fighter:skill_proficiency:3:0": "athletics",
+                        "class:fighter:skill_proficiency:3:1": "intimidation",
+                        "class:fighter:skill_proficiency:0:0": "history",
+                    },
+                },
+            },
+            "en",
+            2
+        );
+
+        expect(selections.choices.grantPicks).toEqual({
+            "class:fighter:skill_proficiency:3:0": "athletics",
+            "class:fighter:skill_proficiency:3:1": "intimidation",
+        });
+    });
 });

@@ -5,6 +5,8 @@ export * from "./spell/spell.types";
 export * from "./spell/spell.mapper";
 
 export * from "./grant/grant.types";
+export * from "./grant/levelFeature.types";
+export * from "./grant/levelFeatures";
 export * from "./grant/grants";
 
 export * from "./race/race.types";
