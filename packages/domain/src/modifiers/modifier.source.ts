@@ -1,6 +1,7 @@
 export type ModifierSourceType =
     | "race"
     | "class"
+    | "subclass"
     | "item"
     | "background"
     | "spell"

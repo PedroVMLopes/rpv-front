@@ -153,6 +153,63 @@ describe("buildGrantChoiceSelectOptions", () => {
         );
     });
 
+    it("shows picks from other skill_proficiency slots as disabled with a checkmark", () => {
+        const level3SkillChoice: PendingChoiceGrant = {
+            key: "class:fighter:skill_proficiency:0:0",
+            grant: {
+                grantType: "skill_proficiency",
+                choose: 1,
+                description: "Additional skill",
+                options: [
+                    { optionType: "skill", ref: "athletics" },
+                    { optionType: "skill", ref: "perception" },
+                ],
+            },
+            source: { type: "class", id: "fighter" },
+            label: "Additional skill (Level 3)",
+            options: [
+                { value: "athletics", label: "Athletics" },
+                { value: "perception", label: "Perception" },
+            ],
+        };
+
+        const fighterSkillChoice2: PendingChoiceGrant = {
+            ...fighterSkillChoice,
+            key: "class:fighter:skill_proficiency:3:1",
+            label: "Choose two skills. (2/2)",
+        };
+
+        const otherPicks = getOtherPickedRefsForGrantType(
+            "skill_proficiency",
+            [fighterSkillChoice, fighterSkillChoice2, level3SkillChoice],
+            {
+                "class:fighter:skill_proficiency:3:0": "athletics",
+                "class:fighter:skill_proficiency:3:1": "perception",
+            },
+            level3SkillChoice.key
+        );
+
+        const options = buildGrantChoiceSelectOptions(
+            level3SkillChoice,
+            {},
+            new Set(),
+            otherPicks
+        );
+
+        expect(options.find((option) => option.value === "athletics")).toEqual(
+            expect.objectContaining({
+                label: "✓ Athletics",
+                disabled: true,
+            })
+        );
+        expect(options.find((option) => option.value === "perception")).toEqual(
+            expect.objectContaining({
+                label: "✓ Perception",
+                disabled: true,
+            })
+        );
+    });
+
     it("keeps a selected ref visible even when it is missing from choice.options", () => {
         const options = buildGrantChoiceSelectOptions(
             fighterSkillChoice,

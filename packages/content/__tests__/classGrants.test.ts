@@ -126,7 +126,7 @@ describe("classGrants.dnd", () => {
                 expect.objectContaining({
                     grantType: "skill_proficiency",
                     choose: 1,
-                    description: "Additional skill (Level 3)",
+                    description: "Additional skill",
                 }),
             ])
         );

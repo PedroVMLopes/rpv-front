@@ -1,4 +1,4 @@
-import { sanitizeGrantPicks } from "../lib/character/grantPickSanitize";
+import { sanitizeGrantPicks, sanitizeSelections } from "../lib/character/grantPickSanitize";
 import { emptyCharacterSelections } from "../lib/character/storedCharacter";
 
 const baseSelections = { ...emptyCharacterSelections() };
@@ -107,5 +107,40 @@ describe("sanitizeGrantPicks", () => {
             "class:fighter:skill_proficiency:3:0": "athletics",
             "class:fighter:skill_proficiency:3:1": "intimidation",
         });
+    });
+});
+
+describe("sanitizeSelections", () => {
+    it("clears subclass when it does not belong to the selected class", () => {
+        const selections = sanitizeSelections(
+            {
+                ...baseSelections,
+                characterClass: "wizard",
+                subclass: "fighter-champion",
+                choices: {
+                    grantPicks: {
+                        "subclass:fighter-champion:ability:0:0": "unused",
+                    },
+                },
+            },
+            "en",
+            3
+        );
+
+        expect(selections.subclass).toBeUndefined();
+        expect(selections.choices.grantPicks).toEqual({});
+    });
+
+    it("keeps subclass and picks when class and slug match", () => {
+        const selections = sanitizeSelections(
+            {
+                ...baseSelections,
+                characterClass: "wizard",
+                subclass: "wizard-evocation",
+            },
+            "en"
+        );
+
+        expect(selections.subclass).toBe("wizard-evocation");
     });
 });

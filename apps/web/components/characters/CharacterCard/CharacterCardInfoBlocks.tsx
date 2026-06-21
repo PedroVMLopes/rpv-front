@@ -43,13 +43,7 @@ export default function CharacterCardInfoBlocks({
         contentLocale
     );
     const hasTraits = traits.length > 0 || unresolvedChoices.length > 0;
-    const classBlock = (
-        <ClassSubclassBlock
-            stored={stored}
-            characterClass={systemData.characterClass}
-            subclass={systemData.subclass}
-        />
-    );
+    const classBlock = <ClassSubclassBlock stored={stored} />;
     const backgroundBlock = <BackgroundBlock background={systemData.background} />;
     const goals =
         systemData.goals !== undefined &&

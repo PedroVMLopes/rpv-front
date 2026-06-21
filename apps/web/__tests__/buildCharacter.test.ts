@@ -241,10 +241,56 @@ describe("buildStoredCharacter", () => {
         );
 
         expect(stored.selections).toMatchObject({
-            characterClass: "Wizard",
+            characterClass: "wizard",
             background: "sage",
             items: ["scroll-of-fire-bolt"],
         });
         expect(stored.systemData).not.toHaveProperty("characterClass");
+    });
+
+    it("derives subclass grants through the build pipeline", () => {
+        const character = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                characterClass: "wizard",
+                subclass: "wizard-evocation",
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        expect(character.selections.subclass).toBe("wizard-evocation");
+        expect(character.grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    kind: "ability",
+                    ref: "Sculpt Spells",
+                    source: { type: "subclass", id: "wizard-evocation" },
+                }),
+            ])
+        );
+    });
+
+    it("clears invalid subclass during build when class does not match", () => {
+        const character = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                characterClass: "wizard",
+                subclass: "fighter-champion",
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        expect(character.selections.subclass).toBeUndefined();
+        expect(character.grants).not.toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    source: { type: "subclass", id: "fighter-champion" },
+                }),
+            ])
+        );
     });
 });

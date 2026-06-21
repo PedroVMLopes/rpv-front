@@ -7,10 +7,11 @@ import {
 import { deriveCharacterGrants } from "./characterGrants";
 import { deriveModifiersForCharacter } from "./deriveModifiers";
 import { applyDerivedCombatStats } from "./applyDerivedCombatStats";
-import { sanitizeGrantPicks } from "./grantPickSanitize";
+import { sanitizeSelections } from "./grantPickSanitize";
 import { syncResourceHpToResolvedMax } from "./hpSync";
 import { readLevelFromForm } from "./level";
 import type { StoredCharacter } from "./storedCharacter";
+import type { CharacterSelections } from "./storedCharacter";
 
 export type BuildCharacterInput = {
     id: string;
@@ -22,11 +23,26 @@ export type BuildCharacterInput = {
     existing?: StoredCharacter;
 };
 
+function withSanitizedSelectionFields(
+    formData: Record<string, unknown>,
+    selections: CharacterSelections
+): Record<string, unknown> {
+    return {
+        ...formData,
+        race: selections.race ?? "",
+        subrace: selections.subrace ?? "",
+        characterClass: selections.characterClass ?? "",
+        subclass: selections.subclass ?? "",
+        background: selections.background ?? "",
+        choices: selections.choices,
+    };
+}
+
 export function buildStoredCharacter(input: BuildCharacterInput): StoredCharacter {
     const { id, type, system, locale, formData, existing } = input;
     const characterLevel = readLevelFromForm(formData);
 
-    let selections = sanitizeGrantPicks(
+    let selections = sanitizeSelections(
         buildSelectionsFromForm(formData, existing?.selections),
         locale,
         characterLevel
@@ -37,7 +53,7 @@ export function buildStoredCharacter(input: BuildCharacterInput): StoredCharacte
     const grants = deriveCharacterGrants(selections, locale, characterLevel);
 
     let processedForm = applyDerivedCombatStats(
-        { ...formData, choices: selections.choices },
+        withSanitizedSelectionFields(formData, selections),
         system,
         locale
     );
@@ -48,8 +64,9 @@ export function buildStoredCharacter(input: BuildCharacterInput): StoredCharacte
         type,
         system,
         modifiers,
-        selections,
-        grants
+        existing?.selections,
+        grants,
+        selections
     );
 
     processedForm = syncResourceHpToResolvedMax(
@@ -64,8 +81,9 @@ export function buildStoredCharacter(input: BuildCharacterInput): StoredCharacte
         type,
         system,
         modifiers,
-        selections,
-        grants
+        existing?.selections,
+        grants,
+        selections
     );
 }
 

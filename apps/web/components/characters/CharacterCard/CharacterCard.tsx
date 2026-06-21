@@ -147,13 +147,7 @@ export default function CharacterCard({ characterId }: CharacterCardProps) {
         currentHp > 0 ||
         maxHp > 0;
 
-    const classBlock = (
-        <ClassSubclassBlock
-            stored={stored}
-            characterClass={systemData.characterClass}
-            subclass={systemData.subclass}
-        />
-    );
+    const classBlock = <ClassSubclassBlock stored={stored} />;
     const backgroundBlock = <BackgroundBlock background={systemData.background} />;
     const hasTopInfoBlocks = classBlock !== null || backgroundBlock !== null;
 

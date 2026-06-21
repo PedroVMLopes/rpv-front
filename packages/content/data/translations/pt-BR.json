@@ -11,5 +11,13 @@
     "acid-splash": {
       "name": "Respingo Ácido"
     }
+  },
+  "subclasses": {
+    "fighter-champion": {
+      "name": "Campeão"
+    },
+    "wizard-evocation": {
+      "name": "Evocação"
+    }
   }
 }

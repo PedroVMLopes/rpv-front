@@ -1,3 +1,5 @@
+import type { Locale } from "@rpv/domain";
+import { listSubclassesForClass } from "@rpv/content";
 import { listLanguages as listCatalogLanguages, getLanguage as getCatalogLanguage } from "@rpv/content";
 import type { Language } from "@rpv/content";
 import { listBackgrounds } from "@rpv/content";
@@ -38,10 +40,24 @@ export function listStartingItemOptions(): CatalogSelectOption[] {
     }));
 }
 
-export function listClassOptions(): CatalogSelectOption[] {
+export function listClassOptions(locale?: Locale): CatalogSelectOption[] {
     return listClasses().map((characterClass) => ({
         value: characterClass.slug,
         label: characterClass.name,
+    }));
+}
+
+export function listSubclassOptions(
+    classSlug: string | undefined,
+    locale?: Locale
+): CatalogSelectOption[] {
+    if (!classSlug) {
+        return [];
+    }
+
+    return listSubclassesForClass(classSlug, locale).map((subclass) => ({
+        value: subclass.slug,
+        label: subclass.name,
     }));
 }
 

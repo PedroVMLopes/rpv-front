@@ -26,17 +26,17 @@ const storedCharacter: StoredCharacter = {
         hitPoints: 10,
     },
     modifiers: [],
+    grants: [],
     selections: {
         race: "elf",
         subrace: "high-elf",
+        characterClass: "wizard",
+        subclass: "wizard-evocation",
+        items: [],
         choices: {},
     },
     resources: { hp: 8 },
-    systemData: {
-        race: "elf",
-        subrace: "high-elf",
-        characterClass: "Wizard",
-    },
+    systemData: {},
 };
 
 function renderWithProviders(ui: ReactElement) {
@@ -50,15 +50,23 @@ function renderWithProviders(ui: ReactElement) {
 }
 
 describe("CharacterCard race info", () => {
-    it("shows localized race and subrace names from slugs", () => {
-        renderWithProviders(
-            <ClassSubclassBlock
-                stored={storedCharacter}
-                characterClass="Wizard"
-            />
-        );
+    it("shows localized race, class, and subclass names from selections", () => {
+        renderWithProviders(<ClassSubclassBlock stored={storedCharacter} />);
 
         expect(screen.getByText("Elf · High Elf Wizard")).toBeInTheDocument();
+        expect(screen.getByText("Evocation")).toBeInTheDocument();
+    });
+
+    it("shows localized subclass name for pt-BR content locale", () => {
+        useContentLocale.setState({ contentLocale: "pt-BR" });
+
+        render(
+            <NextIntlClientProvider locale="en" messages={enMessages}>
+                <ClassSubclassBlock stored={storedCharacter} />
+            </NextIntlClientProvider>
+        );
+
+        expect(screen.getByText("Evocação")).toBeInTheDocument();
     });
 
     it("lists racial traits and unresolved choices", () => {

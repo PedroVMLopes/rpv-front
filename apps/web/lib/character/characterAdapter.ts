@@ -33,6 +33,14 @@ function coerceOptionalString(value: unknown): string | undefined {
     return undefined;
 }
 
+export function coerceCatalogSlug(value: unknown): string | undefined {
+    const raw = coerceOptionalString(value);
+    if (!raw) {
+        return undefined;
+    }
+    return raw.trim().toLowerCase();
+}
+
 function coerceLocale(value: unknown, fallback: Locale = DEFAULT_LOCALE): Locale {
     return isLocale(value) ? value : fallback;
 }
@@ -64,15 +72,14 @@ function buildItemsFromForm(
     existing?: CharacterSelections
 ): string[] {
     if ("startingItem" in formData) {
-        const slug = coerceOptionalString(formData.startingItem);
+        const slug = coerceCatalogSlug(formData.startingItem);
         return slug ? [slug] : [];
     }
 
     if (Array.isArray(formData.items)) {
-        return formData.items.filter(
-            (entry): entry is string =>
-                typeof entry === "string" && entry.trim().length > 0
-        );
+        return formData.items
+            .map((entry) => coerceCatalogSlug(entry))
+            .filter((entry): entry is string => entry !== undefined);
     }
 
     return existing?.items ?? [];
@@ -91,15 +98,14 @@ export function normalizeCharacterSelections(
               : [];
 
     return {
-        race: selections?.race ?? coerceOptionalString(systemData.race),
-        subrace: selections?.subrace ?? coerceOptionalString(systemData.subrace),
+        race: selections?.race ?? coerceCatalogSlug(systemData.race),
+        subrace: selections?.subrace ?? coerceCatalogSlug(systemData.subrace),
         characterClass:
             selections?.characterClass ??
-            coerceOptionalString(systemData.characterClass),
-        subclass:
-            selections?.subclass ?? coerceOptionalString(systemData.subclass),
+            coerceCatalogSlug(systemData.characterClass),
+        subclass: selections?.subclass ?? coerceCatalogSlug(systemData.subclass),
         background:
-            selections?.background ?? coerceOptionalString(systemData.background),
+            selections?.background ?? coerceCatalogSlug(systemData.background),
         items,
         choices: selections?.choices ?? {},
     };
@@ -110,11 +116,11 @@ export function buildSelectionsFromForm(
     existing?: CharacterSelections
 ): CharacterSelections {
     return {
-        race: coerceOptionalString(formData.race),
-        subrace: coerceOptionalString(formData.subrace),
-        characterClass: coerceOptionalString(formData.characterClass),
-        subclass: coerceOptionalString(formData.subclass),
-        background: coerceOptionalString(formData.background),
+        race: coerceCatalogSlug(formData.race),
+        subrace: coerceCatalogSlug(formData.subrace),
+        characterClass: coerceCatalogSlug(formData.characterClass),
+        subclass: coerceCatalogSlug(formData.subclass),
+        background: coerceCatalogSlug(formData.background),
         items: buildItemsFromForm(formData, existing),
         choices: coerceChoices(formData.choices, existing?.choices),
     };
@@ -127,7 +133,8 @@ export function formDataToStoredCharacter(
     system: SystemKey,
     modifiers: Modifier[] = [],
     existingSelections?: CharacterSelections,
-    grants: CharacterGrant[] = []
+    grants: CharacterGrant[] = [],
+    resolvedSelections?: CharacterSelections
 ): StoredCharacter {
     const processedForm = { ...formData };
 
@@ -138,6 +145,10 @@ export function formDataToStoredCharacter(
         processedForm.maxHp = processedForm.hp;
     }
 
+    const selections =
+        resolvedSelections ??
+        buildSelectionsFromForm(processedForm, existingSelections);
+
     return {
         id,
         type,
@@ -147,7 +158,7 @@ export function formDataToStoredCharacter(
         baseStats: buildBaseStatsFromForm(processedForm, system),
         modifiers,
         grants,
-        selections: buildSelectionsFromForm(processedForm, existingSelections),
+        selections,
         resources: buildResourcesFromForm(processedForm, system),
         systemData: buildSystemDataFromForm(processedForm, system),
     };

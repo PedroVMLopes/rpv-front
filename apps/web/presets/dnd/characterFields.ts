@@ -73,7 +73,8 @@ export const dndCharacterFields = {
         {
             name: "subclass",
             labelKey: "fields.subclass",
-            type: "text",
+            type: "select",
+            options: [],
             group: "general",
             order: 3,
             inlineGroup: "line2"

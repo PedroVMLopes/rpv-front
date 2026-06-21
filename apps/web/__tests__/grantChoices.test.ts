@@ -68,13 +68,9 @@ describe("collectPendingChoiceGrants", () => {
         );
 
         expect(level3.length).toBeGreaterThan(level2.length);
-        expect(level3).toEqual(
-            expect.arrayContaining([
-                expect.objectContaining({
-                    key: "class:fighter:skill_proficiency:0:0",
-                    label: expect.stringContaining("(Level 3)"),
-                }),
-            ])
+        const level3Skill = level3.find(
+            (choice) => choice.key === "class:fighter:skill_proficiency:0:0"
         );
+        expect(level3Skill?.label).toBe("Additional skill (Level 3)");
     });
 });

@@ -193,6 +193,100 @@ describe("deriveCharacterGrants", () => {
             ])
         );
     });
+
+    it("derives subclass grants with namespaced slug source", () => {
+        const grants = deriveCharacterGrants(
+            {
+                ...baseSelections,
+                characterClass: "wizard",
+                subclass: "wizard-evocation",
+            },
+            "en"
+        );
+
+        expect(grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    kind: "ability",
+                    ref: "Sculpt Spells",
+                    source: { type: "subclass", id: "wizard-evocation" },
+                }),
+            ])
+        );
+    });
+
+    it("includes level-gated subclass features", () => {
+        const level2 = deriveCharacterGrants(
+            {
+                ...baseSelections,
+                characterClass: "fighter",
+                subclass: "fighter-champion",
+            },
+            "en",
+            2
+        );
+        const level3 = deriveCharacterGrants(
+            {
+                ...baseSelections,
+                characterClass: "fighter",
+                subclass: "fighter-champion",
+            },
+            "en",
+            3
+        );
+
+        expect(level2).not.toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ ref: "Improved Critical" }),
+            ])
+        );
+        expect(level3).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    kind: "ability",
+                    ref: "Improved Critical",
+                    source: { type: "subclass", id: "fighter-champion" },
+                }),
+            ])
+        );
+    });
+
+    it("ignores subclass when classSlug does not match characterClass", () => {
+        const grants = deriveCharacterGrants(
+            {
+                ...baseSelections,
+                characterClass: "wizard",
+                subclass: "fighter-champion",
+            },
+            "en",
+            3
+        );
+
+        expect(grants).not.toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    source: { type: "subclass", id: "fighter-champion" },
+                }),
+            ])
+        );
+    });
+
+    it("ignores unknown subclass slugs", () => {
+        const grants = deriveCharacterGrants(
+            {
+                ...baseSelections,
+                characterClass: "fighter",
+                subclass: "unknown-subclass",
+            },
+            "en"
+        );
+
+        expect(grants).not.toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ source: { type: "subclass" } }),
+            ])
+        );
+    });
 });
 
 describe("getLanguageBudget", () => {
@@ -230,6 +324,7 @@ describe("buildSelectionsFromForm", () => {
             buildSelectionsFromForm({
                 race: "elf",
                 characterClass: "fighter",
+                subclass: "fighter-champion",
                 background: "sage",
                 startingItem: "scroll-of-fire-bolt",
             })
@@ -237,9 +332,28 @@ describe("buildSelectionsFromForm", () => {
             race: "elf",
             subrace: undefined,
             characterClass: "fighter",
-            subclass: undefined,
+            subclass: "fighter-champion",
             background: "sage",
             items: ["scroll-of-fire-bolt"],
+            choices: {},
+        });
+    });
+
+    it("normalizes catalog slug fields to lowercase", () => {
+        expect(
+            buildSelectionsFromForm({
+                race: "Elf",
+                characterClass: "Fighter",
+                subclass: "Fighter-Champion",
+                background: "Sage",
+            })
+        ).toEqual({
+            race: "elf",
+            subrace: undefined,
+            characterClass: "fighter",
+            subclass: "fighter-champion",
+            background: "sage",
+            items: [],
             choices: {},
         });
     });

@@ -8,6 +8,7 @@ import {
     listBackgroundOptions,
     listStartingItemOptions,
     listClassOptions,
+    listSubclassOptions,
 } from "@/lib/catalog/grantCatalog";
 
 type FieldConfig = {
@@ -16,16 +17,22 @@ type FieldConfig = {
     [key: string]: unknown;
 };
 
-export function buildPlayerRaceFields(
+type PlayerGrantSourceFieldOptions = {
+    raceSlug?: string;
+    classSlug?: string;
+    contentLocale: Locale;
+};
+
+export function buildPlayerGrantSourceFields(
     fields: FieldConfig[],
-    raceSlug: string | undefined,
-    contentLocale: Locale
+    { raceSlug, classSlug, contentLocale }: PlayerGrantSourceFieldOptions
 ): FieldConfig[] {
     const raceOptions = listRaceOptions(contentLocale);
     const subraceOptions = listSubraceOptions(raceSlug, contentLocale);
     const backgroundOptions = listBackgroundOptions();
     const startingItemOptions = listStartingItemOptions();
-    const classOptions = listClassOptions();
+    const classOptions = listClassOptions(contentLocale);
+    const subclassOptions = listSubclassOptions(classSlug, contentLocale);
 
     return fields.map((field) => {
         if (field.name === "race" && raceOptions.length > 0) {
@@ -48,6 +55,22 @@ export function buildPlayerRaceFields(
             return { ...field, options: classOptions };
         }
 
+        if (field.name === "subclass") {
+            return { ...field, options: subclassOptions };
+        }
+
         return field;
+    });
+}
+
+/** @deprecated Use buildPlayerGrantSourceFields */
+export function buildPlayerRaceFields(
+    fields: FieldConfig[],
+    raceSlug: string | undefined,
+    contentLocale: Locale
+): FieldConfig[] {
+    return buildPlayerGrantSourceFields(fields, {
+        raceSlug,
+        contentLocale,
     });
 }

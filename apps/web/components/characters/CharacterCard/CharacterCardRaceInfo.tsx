@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { getClass } from "@rpv/content";
+import { getClass, getSubclass } from "@rpv/content";
 import { useContentLocale } from "@/store/useContentLocale";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import {
@@ -10,22 +10,17 @@ import {
     getRaceTraitDisplay,
 } from "@/lib/character/raceDisplay";
 
-export function ClassSubclassBlock({
-    stored,
-    characterClass,
-    subclass,
-}: {
-    stored: StoredCharacter;
-    characterClass?: unknown;
-    subclass?: unknown;
-}) {
+export function ClassSubclassBlock({ stored }: { stored: StoredCharacter }) {
     const contentLocale = useContentLocale((state) => state.contentLocale);
     const raceLine = getRaceLineFromSelections(stored.selections, contentLocale);
-    const classSlug = characterClass ? String(characterClass).trim() : "";
+    const classSlug = stored.selections.characterClass;
     const classStr = classSlug
         ? (getClass(classSlug)?.name ?? classSlug)
         : "";
-    const subclassStr = subclass ? String(subclass).trim() : "";
+    const subclassSlug = stored.selections.subclass;
+    const subclassStr = subclassSlug
+        ? (getSubclass(subclassSlug, contentLocale)?.name ?? subclassSlug)
+        : "";
     const title = [raceLine, classStr].filter(Boolean).join(" ");
 
     if (!title && !subclassStr) {

@@ -139,6 +139,49 @@ describe("CharacterGrantPickers", () => {
         ).toBe(true);
     });
 
+    it("shows earlier fighter skill picks with checkmark in level 3 slot", () => {
+        render(
+            <GrantPickerHarness
+                defaultValues={{
+                    name: "Test Hero",
+                    race: "elf",
+                    characterClass: "fighter",
+                    level: 3,
+                    choices: {
+                        grantPicks: {
+                            "class:fighter:skill_proficiency:3:0": "athletics",
+                            "class:fighter:skill_proficiency:3:1": "perception",
+                        },
+                    },
+                }}
+            />
+        );
+
+        expect(
+            screen.getByText("Additional skill (Level 3)")
+        ).toBeInTheDocument();
+        expect(
+            screen.queryByText("Additional skill (Level 3) (Level 3)")
+        ).not.toBeInTheDocument();
+
+        const level3Select = screen
+            .getByText("Additional skill (Level 3)")
+            .closest("label")
+            ?.querySelector("select");
+
+        expect(level3Select).toBeDefined();
+        const athleticsOption = Array.from(level3Select!.options).find(
+            (option) => option.value === "athletics"
+        );
+        const perceptionOption = Array.from(level3Select!.options).find(
+            (option) => option.value === "perception"
+        );
+        expect(athleticsOption?.textContent).toBe("✓ Athletics");
+        expect(athleticsOption).toBeDisabled();
+        expect(perceptionOption?.textContent).toBe("✓ Perception");
+        expect(perceptionOption).toBeDisabled();
+    });
+
     it("shows languages picked in other slots as disabled with a checkmark", () => {
         render(
             <GrantPickerHarness

@@ -14,7 +14,7 @@ import { useForm } from "react-hook-form";
 import { DynamicForm } from "@/components/forms/DynamicForm";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { useContentLocale } from "@/store/useContentLocale";
-import { buildPlayerRaceFields } from "@/lib/character/playerFormFields";
+import { buildPlayerGrantSourceFields } from "@/lib/character/playerFormFields";
 import { CharacterGrantPickers } from "@/components/characters/CharacterGrantPickers";
 import { useGrantPickSanitizer } from "@/lib/character/useGrantPickSanitizer";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -55,7 +55,9 @@ export default function CreatePlayer() {
     });
 
     const raceSlug = form.watch("race");
+    const classSlug = form.watch("characterClass");
     const previousRaceRef = useRef<string | undefined>(undefined);
+    const previousClassRef = useRef<string | undefined>(undefined);
 
     useGrantPickSanitizer(form, contentLocale);
 
@@ -70,16 +72,31 @@ export default function CreatePlayer() {
         previousRaceRef.current = raceSlug;
     }, [form, raceSlug]);
 
+    useEffect(() => {
+        if (
+            previousClassRef.current !== undefined &&
+            previousClassRef.current !== classSlug
+        ) {
+            form.setValue("subclass", "");
+        }
+
+        previousClassRef.current = classSlug;
+    }, [form, classSlug]);
+
     const fields = useMemo(
         () =>
-            buildPlayerRaceFields(baseFields, raceSlug, contentLocale).filter(
+            buildPlayerGrantSourceFields(baseFields, {
+                raceSlug,
+                classSlug,
+                contentLocale,
+            }).filter(
                 (field) =>
                     field.type !== "attributeGroup" &&
                     field.name !== "hp" &&
                     field.name !== "maxHp" &&
                     field.name !== "ac"
             ),
-        [baseFields, raceSlug, contentLocale]
+        [baseFields, raceSlug, classSlug, contentLocale]
     );
 
     function handleSave(data: Record<string, unknown>) {

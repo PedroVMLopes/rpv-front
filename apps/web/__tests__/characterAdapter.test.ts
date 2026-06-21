@@ -44,7 +44,7 @@ describe("characterAdapter system-agnostic mapping", () => {
         expect(stored.selections).toEqual({
             race: undefined,
             subrace: undefined,
-            characterClass: "Fighter",
+            characterClass: "fighter",
             subclass: undefined,
             background: undefined,
             items: [],
@@ -69,7 +69,7 @@ describe("characterAdapter system-agnostic mapping", () => {
         expect(flattened.hp).toBe(8);
         expect(flattened.maxHp).toBe(10);
         expect(flattened.ac).toBe(12);
-        expect(flattened.characterClass).toBe("Fighter");
+        expect(flattened.characterClass).toBe("fighter");
         expect(flattened.level).toBe(3);
         expect(flattened.attributes).toEqual(
             expect.arrayContaining([
@@ -114,7 +114,7 @@ describe("characterAdapter system-agnostic mapping", () => {
         expect(stored.selections).toEqual({
             race: "elf",
             subrace: "high-elf",
-            characterClass: "Fighter",
+            characterClass: "fighter",
             subclass: undefined,
             background: undefined,
             items: [],
@@ -217,7 +217,7 @@ describe("characterAdapter system-agnostic mapping", () => {
         const stored = normalizeStoredCharacter(legacy);
 
         expect(stored.resources.hp).toBe(5);
-        expect(stored.selections.characterClass).toBe("Wizard");
+        expect(stored.selections.characterClass).toBe("wizard");
         expect(stored.baseStats).toBeDefined();
         expect(stored.modifiers).toEqual([]);
         expect(stored.grants).toEqual([]);

@@ -15,7 +15,7 @@ import { ArmorClassField } from "@/components/characters/ArmorClassField";
 import { presets } from "@/presets";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { buildPlayerRaceFields } from "@/lib/character/playerFormFields";
+import { buildPlayerGrantSourceFields } from "@/lib/character/playerFormFields";
 import { CharacterGrantPickers } from "@/components/characters/CharacterGrantPickers";
 import { useGrantPickSanitizer } from "@/lib/character/useGrantPickSanitizer";
 import { useEffect, useMemo, useRef } from "react";
@@ -72,8 +72,14 @@ export default function EditPlayer() {
     });
 
     const raceSlug = form.watch("race");
+    const classSlug = form.watch("characterClass");
     const previousRaceRef = useRef<string | undefined>(
         typeof formDefaults?.race === "string" ? formDefaults.race : undefined
+    );
+    const previousClassRef = useRef<string | undefined>(
+        typeof formDefaults?.characterClass === "string"
+            ? formDefaults.characterClass
+            : undefined
     );
 
     useGrantPickSanitizer(form, contentLocale);
@@ -86,6 +92,10 @@ export default function EditPlayer() {
         form.reset(formDefaults);
         previousRaceRef.current =
             typeof formDefaults.race === "string" ? formDefaults.race : undefined;
+        previousClassRef.current =
+            typeof formDefaults.characterClass === "string"
+                ? formDefaults.characterClass
+                : undefined;
     }, [form, formDefaults]);
 
     useEffect(() => {
@@ -99,16 +109,31 @@ export default function EditPlayer() {
         previousRaceRef.current = raceSlug;
     }, [form, raceSlug]);
 
+    useEffect(() => {
+        if (
+            previousClassRef.current !== undefined &&
+            previousClassRef.current !== classSlug
+        ) {
+            form.setValue("subclass", "");
+        }
+
+        previousClassRef.current = classSlug;
+    }, [form, classSlug]);
+
     const fields = useMemo(
         () =>
-            buildPlayerRaceFields(baseFields, raceSlug, contentLocale).filter(
+            buildPlayerGrantSourceFields(baseFields, {
+                raceSlug,
+                classSlug,
+                contentLocale,
+            }).filter(
                 (field) =>
                     field.type !== "attributeGroup" &&
                     field.name !== "hp" &&
                     field.name !== "maxHp" &&
                     field.name !== "ac"
             ),
-        [baseFields, raceSlug, contentLocale]
+        [baseFields, raceSlug, classSlug, contentLocale]
     );
 
     function handleSave(data: Record<string, unknown>) {

@@ -270,10 +270,17 @@ export function CharacterGrantPickers({
                         const ownedRefs =
                             ownedRefsByGrantType.get(choice.grant.grantType) ??
                             new Set<string>();
+                        const otherPickedRefs = getOtherPickedRefsForGrantType(
+                            choice.grant.grantType,
+                            pendingChoices,
+                            grantPicks,
+                            choice.key
+                        );
                         const options = buildGrantChoiceSelectOptions(
                             choice,
                             grantPicks,
-                            ownedRefs
+                            ownedRefs,
+                            otherPickedRefs
                         );
 
                         return (

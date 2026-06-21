@@ -4,13 +4,13 @@ import { useEffect } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import type { Locale } from "@rpv/domain";
 import { buildSelectionsFromForm } from "./characterAdapter";
-import { sanitizeGrantPicks } from "./grantPickSanitize";
+import { sanitizeSelections } from "./grantPickSanitize";
 import { readLevelFromForm } from "./level";
 import type { CharacterChoices } from "./storedCharacter";
 
 /**
- * Prunes stale grantPicks in the form when race, subrace, class, or background
- * changes so the UI does not show picks from a previous selection.
+ * Prunes stale grantPicks and invalid subclass selections when race, subrace,
+ * class, subclass, or background changes.
  */
 export function useGrantPickSanitizer(
     form: UseFormReturn<Record<string, unknown>>,
@@ -19,6 +19,7 @@ export function useGrantPickSanitizer(
     const race = form.watch("race");
     const subrace = form.watch("subrace");
     const characterClass = form.watch("characterClass");
+    const subclass = form.watch("subclass");
     const background = form.watch("background");
     const startingItem = form.watch("startingItem");
     const level = form.watch("level");
@@ -27,7 +28,7 @@ export function useGrantPickSanitizer(
         const formValues = form.getValues();
         const selections = buildSelectionsFromForm(formValues);
         const characterLevel = readLevelFromForm(formValues);
-        const sanitized = sanitizeGrantPicks(
+        const sanitized = sanitizeSelections(
             selections,
             contentLocale,
             characterLevel
@@ -36,6 +37,13 @@ export function useGrantPickSanitizer(
             (form.getValues("choices") as CharacterChoices | undefined) ?? {};
         const currentPicks = current.grantPicks ?? {};
         const sanitizedPicks = sanitized.choices.grantPicks ?? {};
+
+        if (sanitized.subclass !== selections.subclass) {
+            form.setValue("subclass", sanitized.subclass ?? "", {
+                shouldDirty: true,
+                shouldValidate: true,
+            });
+        }
 
         if (
             JSON.stringify(currentPicks) === JSON.stringify(sanitizedPicks)
@@ -54,6 +62,7 @@ export function useGrantPickSanitizer(
         race,
         subrace,
         characterClass,
+        subclass,
         background,
         startingItem,
         level,
