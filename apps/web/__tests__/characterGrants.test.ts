@@ -226,14 +226,57 @@ describe("deriveCharacterGrants", () => {
         );
     });
 
-    it("derives subclass grants with namespaced slug source", () => {
+    it("derives subclass grants with namespaced slug source at level 3", () => {
         const grants = deriveCharacterGrants(
             {
                 ...baseSelections,
                 characterClass: "wizard",
                 subclass: "wizard-evocation",
             },
-            "en"
+            "en",
+            3
+        );
+
+        expect(grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    kind: "ability",
+                    ref: "Sculpt Spells",
+                    source: { type: "subclass", id: "wizard-evocation" },
+                }),
+            ])
+        );
+    });
+
+    it("ignores subclass grants below subclass unlock level", () => {
+        const grants = deriveCharacterGrants(
+            {
+                ...baseSelections,
+                characterClass: "wizard",
+                subclass: "wizard-evocation",
+            },
+            "en",
+            2
+        );
+
+        expect(grants).not.toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    source: { type: "subclass", id: "wizard-evocation" },
+                }),
+            ])
+        );
+    });
+
+    it("applies subclass grants at subclass unlock level", () => {
+        const grants = deriveCharacterGrants(
+            {
+                ...baseSelections,
+                characterClass: "wizard",
+                subclass: "wizard-evocation",
+            },
+            "en",
+            3
         );
 
         expect(grants).toEqual(

@@ -53,6 +53,46 @@ export const dndSubclasses: SubclassEntry[] = [
             },
         ],
     },
+    {
+        slug: "barbarian-berserker",
+        name: "Berserker",
+        classSlug: "barbarian",
+        description:
+            "A barbarian who channels rage into violent fury.",
+        grants: [],
+        featuresByLevel: [
+            {
+                level: 3,
+                grants: [
+                    {
+                        grantType: "ability",
+                        choose: 0,
+                        description: "Frenzy",
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        slug: "monk-open-hand",
+        name: "Open Hand",
+        classSlug: "monk",
+        description:
+            "A monk who masters unarmed combat and manipulates ki to hinder foes.",
+        grants: [],
+        featuresByLevel: [
+            {
+                level: 3,
+                grants: [
+                    {
+                        grantType: "ability",
+                        choose: 0,
+                        description: "Open Hand Technique",
+                    },
+                ],
+            },
+        ],
+    },
 ];
 
 function localizeSubclass(entry: SubclassEntry, locale?: Locale): SubclassEntry {

@@ -3,6 +3,7 @@ import {
     applyChoiceValidation,
     findInvalidGrantPicks,
     findMissingRequiredChoices,
+    findMissingSubclass,
 } from "../lib/character/choiceValidation";
 import { dndCharacterSchema } from "../presets/dnd/characterSchema";
 
@@ -158,6 +159,48 @@ describe("findMissingRequiredChoices", () => {
     });
 });
 
+describe("findMissingSubclass", () => {
+    it("requires subclass for fighter at level 3", () => {
+        expect(
+            findMissingSubclass(
+                {
+                    ...baseFormData,
+                    level: 3,
+                    characterClass: "fighter",
+                },
+                "en"
+            )
+        ).toBe(true);
+    });
+
+    it("allows missing subclass for fighter at level 2", () => {
+        expect(
+            findMissingSubclass(
+                {
+                    ...baseFormData,
+                    level: 2,
+                    characterClass: "fighter",
+                },
+                "en"
+            )
+        ).toBe(false);
+    });
+
+    it("passes when subclass matches class at unlock level", () => {
+        expect(
+            findMissingSubclass(
+                {
+                    ...baseFormData,
+                    level: 3,
+                    characterClass: "fighter",
+                    subclass: "fighter-champion",
+                },
+                "en"
+            )
+        ).toBe(false);
+    });
+});
+
 describe("applyChoiceValidation", () => {
     const schema = applyChoiceValidation(
         createDynamicSchema(dndCharacterSchema, "player"),
@@ -191,5 +234,29 @@ describe("applyChoiceValidation", () => {
         });
 
         expect(result.success).toBe(true);
+    });
+
+    it("fails validation when subclass is required but missing", () => {
+        const result = schema.safeParse({
+            ...baseFormData,
+            level: 3,
+            characterClass: "fighter",
+            race: "elf",
+            choices: {
+                grantPicks: {
+                    "class:fighter:skill_proficiency:0:0": "athletics",
+                    "class:fighter:skill_proficiency:0:1": "intimidation",
+                    "class:fighter:skill_proficiency:3:0": "history",
+                    "class:fighter:skill_proficiency:3:1": "insight",
+                },
+            },
+        });
+
+        expect(result.success).toBe(false);
+        if (!result.success) {
+            expect(
+                result.error.issues.some((issue) => issue.path[0] === "subclass")
+            ).toBe(true);
+        }
     });
 });

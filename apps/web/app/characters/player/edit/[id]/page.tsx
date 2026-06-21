@@ -18,6 +18,8 @@ import Link from "next/link";
 import { buildPlayerGrantSourceFields } from "@/lib/character/playerFormFields";
 import { CharacterGrantPickers } from "@/components/characters/CharacterGrantPickers";
 import { useGrantPickSanitizer } from "@/lib/character/useGrantPickSanitizer";
+import { getClassSubclassLevel } from "@rpv/content";
+import { readLevelFromForm } from "@/lib/character/level";
 import { useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 
@@ -73,6 +75,7 @@ export default function EditPlayer() {
 
     const raceSlug = form.watch("race");
     const classSlug = form.watch("characterClass");
+    const level = form.watch("level");
     const previousRaceRef = useRef<string | undefined>(
         typeof formDefaults?.race === "string" ? formDefaults.race : undefined
     );
@@ -80,6 +83,9 @@ export default function EditPlayer() {
         typeof formDefaults?.characterClass === "string"
             ? formDefaults.characterClass
             : undefined
+    );
+    const previousLevelRef = useRef<number | undefined>(
+        formDefaults ? readLevelFromForm(formDefaults) : undefined
     );
 
     useGrantPickSanitizer(form, contentLocale);
@@ -120,11 +126,29 @@ export default function EditPlayer() {
         previousClassRef.current = classSlug;
     }, [form, classSlug]);
 
+    useEffect(() => {
+        const characterLevel = readLevelFromForm(form.getValues());
+        const subclassLevel = classSlug
+            ? getClassSubclassLevel(classSlug)
+            : undefined;
+
+        if (
+            previousLevelRef.current !== undefined &&
+            subclassLevel !== undefined &&
+            characterLevel < subclassLevel
+        ) {
+            form.setValue("subclass", "");
+        }
+
+        previousLevelRef.current = characterLevel;
+    }, [form, classSlug, level]);
+
     const fields = useMemo(
         () =>
             buildPlayerGrantSourceFields(baseFields, {
                 raceSlug,
                 classSlug,
+                level: readLevelFromForm({ level }),
                 contentLocale,
             }).filter(
                 (field) =>
@@ -133,7 +157,7 @@ export default function EditPlayer() {
                     field.name !== "maxHp" &&
                     field.name !== "ac"
             ),
-        [baseFields, raceSlug, classSlug, contentLocale]
+        [baseFields, raceSlug, classSlug, level, contentLocale]
     );
 
     function handleSave(data: Record<string, unknown>) {

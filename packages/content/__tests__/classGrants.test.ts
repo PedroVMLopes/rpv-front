@@ -3,6 +3,7 @@ import {
     getClassGrants,
     getClassGrantSourcesForLevel,
     getClassHitDie,
+    getClassSubclassLevel,
     listClasses,
 } from "../src/curation/classGrants.dnd";
 
@@ -12,7 +13,14 @@ describe("classGrants.dnd", () => {
 
         expect(classes.length).toBeGreaterThan(0);
         expect(classes.map((entry) => entry.slug)).toEqual(
-            expect.arrayContaining(["fighter", "wizard", "rogue", "cleric"])
+            expect.arrayContaining([
+                "fighter",
+                "wizard",
+                "barbarian",
+                "monk",
+                "rogue",
+                "cleric",
+            ])
         );
     });
 
@@ -164,5 +172,93 @@ describe("wizard spell slot resources", () => {
         );
 
         expect(resourceGrants).toHaveLength(6);
+    });
+
+    it("returns subclass unlock level for pilot classes", () => {
+        expect(getClassSubclassLevel("wizard")).toBe(3);
+        expect(getClassSubclassLevel("fighter")).toBe(3);
+        expect(getClassSubclassLevel("barbarian")).toBe(3);
+        expect(getClassSubclassLevel("monk")).toBe(3);
+    });
+});
+
+describe("barbarian progression", () => {
+    it("grants rage uses at level 1", () => {
+        const grants = getClassGrants("barbarian", 1);
+
+        expect(grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    grantType: "resource",
+                    ref: "rage-uses",
+                    amount: 2,
+                }),
+            ])
+        );
+    });
+
+    it("adds a rage use at level 3", () => {
+        const grants = getClassGrants("barbarian", 3);
+        const rageGrants = grants.filter(
+            (grant) =>
+                grant.grantType === "resource" && grant.ref === "rage-uses"
+        );
+
+        expect(rageGrants).toEqual([
+            expect.objectContaining({ amount: 2 }),
+            expect.objectContaining({ amount: 1 }),
+        ]);
+    });
+});
+
+describe("monk progression", () => {
+    it("accumulates five ki point deltas by level 5", () => {
+        const grants = getClassGrants("monk", 5);
+        const kiGrants = grants.filter(
+            (grant) => grant.grantType === "resource" && grant.ref === "ki-points"
+        );
+
+        expect(kiGrants).toEqual([
+            expect.objectContaining({ amount: 2 }),
+            expect.objectContaining({ amount: 1 }),
+            expect.objectContaining({ amount: 1 }),
+            expect.objectContaining({ amount: 1 }),
+        ]);
+        expect(kiGrants.reduce((sum, grant) => sum + (grant.amount ?? 0), 0)).toBe(
+            5
+        );
+    });
+});
+
+describe("wizard L5 progression", () => {
+    it("includes spell slot deltas through level 5", () => {
+        const grants = getClassGrants("wizard", 5);
+        const slotTotals = grants
+            .filter((grant) => grant.grantType === "resource")
+            .reduce<Record<string, number>>((totals, grant) => {
+                if (grant.ref) {
+                    totals[grant.ref] = (totals[grant.ref] ?? 0) + (grant.amount ?? 0);
+                }
+                return totals;
+            }, {});
+
+        expect(slotTotals).toEqual({
+            "spell-slots-1": 4,
+            "spell-slots-2": 3,
+            "spell-slots-3": 2,
+            "spell-slots-4": 1,
+        });
+    });
+
+    it("accumulates six spell choice blocks by level 5", () => {
+        const grants = getClassGrants("wizard", 5);
+        const spellChoices = grants.filter(
+            (grant) => grant.grantType === "spell" && grant.choose > 0
+        );
+
+        expect(spellChoices).toHaveLength(6);
+        expect(
+            spellChoices.reduce((sum, grant) => sum + grant.choose, 0)
+        ).toBe(9);
     });
 });

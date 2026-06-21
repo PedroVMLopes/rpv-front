@@ -42,7 +42,11 @@
     "startingItem": "Starting Item",
     "creatureType": "Creature Type",
     "cr": "Challenge Rating",
-    "occupation": "Occupation"
+    "occupation": "Occupation",
+    "subclassLocked": "Available at level {level}"
+  },
+  "validation": {
+    "subclassRequired": "Subclass is required at this level."
   },
   "abilities": {
     "strength": "Strength",

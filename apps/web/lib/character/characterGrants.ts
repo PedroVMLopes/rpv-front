@@ -6,6 +6,7 @@ import {
     getBackgroundGrants,
     getItemGrants,
     getClassGrantSourcesForLevel,
+    getClassSubclassLevel,
     getSubclass,
     getSubclassGrantSourcesForLevel,
     getLanguage,
@@ -83,24 +84,32 @@ export function collectGrantSources(
     }
 
     if (selections.subclass) {
-        const subclass = getSubclass(selections.subclass, locale);
-        if (
-            subclass &&
-            subclass.classSlug === selections.characterClass
-        ) {
-            const source = {
-                type: "subclass" as const,
-                id: selections.subclass,
-            };
-            for (const block of getSubclassGrantSourcesForLevel(
-                selections.subclass,
-                characterLevel
-            )) {
-                sources.push({
-                    source,
-                    grants: block.grants,
-                    featureLevel: block.featureLevel,
-                });
+        const subclassLevel = selections.characterClass
+            ? getClassSubclassLevel(selections.characterClass)
+            : undefined;
+        const subclassUnlocked =
+            subclassLevel === undefined || characterLevel >= subclassLevel;
+
+        if (subclassUnlocked) {
+            const subclass = getSubclass(selections.subclass, locale);
+            if (
+                subclass &&
+                subclass.classSlug === selections.characterClass
+            ) {
+                const source = {
+                    type: "subclass" as const,
+                    id: selections.subclass,
+                };
+                for (const block of getSubclassGrantSourcesForLevel(
+                    selections.subclass,
+                    characterLevel
+                )) {
+                    sources.push({
+                        source,
+                        grants: block.grants,
+                        featureLevel: block.featureLevel,
+                    });
+                }
             }
         }
     }

@@ -1,5 +1,6 @@
 import type { Locale } from "@rpv/domain";
 import type { Grant } from "@rpv/content";
+import { getClassSubclassLevel, getSubclass } from "@rpv/content";
 import type { ZodObject, ZodRawShape } from "zod";
 import { buildSelectionsFromForm } from "./characterAdapter";
 import { getFixedRefsForGrantType } from "./characterGrants";
@@ -13,6 +14,52 @@ import {
 } from "./grantChoiceOptions";
 import type { CharacterChoices } from "./storedCharacter";
 import { readLevelFromForm } from "./level";
+import enMessages from "@/messages/en.json";
+import ptBRMessages from "@/messages/pt-BR.json";
+
+const validationMessages: Record<
+    Locale,
+    { subclassRequired: string }
+> = {
+    en: enMessages.validation,
+    "pt-BR": ptBRMessages.validation,
+};
+
+function readSubclass(formData: Record<string, unknown>): string {
+    const subclass = formData.subclass;
+    return typeof subclass === "string" ? subclass.trim() : "";
+}
+
+export function findMissingSubclass(
+    formData: Record<string, unknown>,
+    locale: Locale
+): boolean {
+    const characterClass =
+        typeof formData.characterClass === "string"
+            ? formData.characterClass.trim()
+            : "";
+    if (!characterClass) {
+        return false;
+    }
+
+    const subclassLevel = getClassSubclassLevel(characterClass);
+    if (subclassLevel === undefined) {
+        return false;
+    }
+
+    const characterLevel = readLevelFromForm(formData);
+    if (characterLevel < subclassLevel) {
+        return false;
+    }
+
+    const subclass = readSubclass(formData);
+    if (!subclass) {
+        return true;
+    }
+
+    const entry = getSubclass(subclass, locale);
+    return !entry || entry.classSlug !== characterClass;
+}
 
 function readGrantPicks(formData: Record<string, unknown>): Record<string, string> {
     const choices = formData.choices as CharacterChoices | undefined;
@@ -118,6 +165,14 @@ export function applyChoiceValidation<T extends ZodRawShape>(
                 code: "custom",
                 path: ["choices"],
                 message: errorKey,
+            });
+        }
+
+        if (findMissingSubclass(formData, locale)) {
+            ctx.addIssue({
+                code: "custom",
+                path: ["subclass"],
+                message: validationMessages[locale].subclassRequired,
             });
         }
     });

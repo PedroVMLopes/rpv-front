@@ -1,5 +1,5 @@
 import type { Locale } from "@rpv/domain";
-import { getSubclass } from "@rpv/content";
+import { getClassSubclassLevel, getSubclass } from "@rpv/content";
 import { collectPendingChoiceGrants } from "./grantChoices";
 import type { CharacterSelections } from "./storedCharacter";
 
@@ -20,6 +20,22 @@ function isSubclassValidForClass(
     return entry.classSlug === characterClass;
 }
 
+function isSubclassUnlockedForLevel(
+    characterClass: string | undefined,
+    characterLevel: number
+): boolean {
+    if (!characterClass) {
+        return true;
+    }
+
+    const subclassLevel = getClassSubclassLevel(characterClass);
+    if (subclassLevel === undefined) {
+        return true;
+    }
+
+    return characterLevel >= subclassLevel;
+}
+
 /**
  * Clears an invalid subclass selection and prunes stale grant picks.
  */
@@ -37,6 +53,16 @@ export function sanitizeSelections(
             next.characterClass,
             locale
         )
+    ) {
+        next = {
+            ...next,
+            subclass: undefined,
+        };
+    }
+
+    if (
+        next.subclass &&
+        !isSubclassUnlockedForLevel(next.characterClass, characterLevel)
     ) {
         next = {
             ...next,

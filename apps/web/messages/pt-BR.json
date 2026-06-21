@@ -42,7 +42,11 @@
     "startingItem": "Item Inicial",
     "creatureType": "Tipo de Criatura",
     "cr": "Nível de Desafio",
-    "occupation": "Ocupação"
+    "occupation": "Ocupação",
+    "subclassLocked": "Disponível no nível {level}"
+  },
+  "validation": {
+    "subclassRequired": "Subclasse é obrigatória neste nível."
   },
   "abilities": {
     "strength": "Força",

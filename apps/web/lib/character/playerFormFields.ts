@@ -1,4 +1,5 @@
 import type { Locale } from "@rpv/domain";
+import { getClassSubclassLevel } from "@rpv/content";
 import {
     listRaceOptions,
     listSubraceOptions,
@@ -20,12 +21,13 @@ type FieldConfig = {
 type PlayerGrantSourceFieldOptions = {
     raceSlug?: string;
     classSlug?: string;
+    level?: number;
     contentLocale: Locale;
 };
 
 export function buildPlayerGrantSourceFields(
     fields: FieldConfig[],
-    { raceSlug, classSlug, contentLocale }: PlayerGrantSourceFieldOptions
+    { raceSlug, classSlug, level, contentLocale }: PlayerGrantSourceFieldOptions
 ): FieldConfig[] {
     const raceOptions = listRaceOptions(contentLocale);
     const subraceOptions = listSubraceOptions(raceSlug, contentLocale);
@@ -33,6 +35,11 @@ export function buildPlayerGrantSourceFields(
     const startingItemOptions = listStartingItemOptions();
     const classOptions = listClassOptions(contentLocale);
     const subclassOptions = listSubclassOptions(classSlug, contentLocale);
+    const subclassLevel = classSlug ? getClassSubclassLevel(classSlug) : undefined;
+    const resolvedLevel =
+        typeof level === "number" && !Number.isNaN(level) ? level : 1;
+    const subclassLocked =
+        subclassLevel !== undefined && resolvedLevel < subclassLevel;
 
     return fields.map((field) => {
         if (field.name === "race" && raceOptions.length > 0) {
@@ -56,7 +63,15 @@ export function buildPlayerGrantSourceFields(
         }
 
         if (field.name === "subclass") {
-            return { ...field, options: subclassOptions };
+            return {
+                ...field,
+                options: subclassOptions,
+                disabled: subclassLocked,
+                helperKey: subclassLocked ? "fields.subclassLocked" : undefined,
+                helperValues: subclassLocked
+                    ? { level: subclassLevel ?? 3 }
+                    : undefined,
+            };
         }
 
         return field;

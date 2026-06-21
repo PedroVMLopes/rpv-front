@@ -131,14 +131,43 @@ describe("sanitizeSelections", () => {
         expect(selections.choices.grantPicks).toEqual({});
     });
 
-    it("keeps subclass and picks when class and slug match", () => {
+    it("keeps subclass and picks when class and slug match at unlock level", () => {
         const selections = sanitizeSelections(
             {
                 ...baseSelections,
                 characterClass: "wizard",
                 subclass: "wizard-evocation",
             },
-            "en"
+            "en",
+            3
+        );
+
+        expect(selections.subclass).toBe("wizard-evocation");
+    });
+
+    it("clears subclass when character level is below subclass unlock", () => {
+        const selections = sanitizeSelections(
+            {
+                ...baseSelections,
+                characterClass: "wizard",
+                subclass: "wizard-evocation",
+            },
+            "en",
+            2
+        );
+
+        expect(selections.subclass).toBeUndefined();
+    });
+
+    it("preserves subclass at level 5 when unlocked", () => {
+        const selections = sanitizeSelections(
+            {
+                ...baseSelections,
+                characterClass: "wizard",
+                subclass: "wizard-evocation",
+            },
+            "en",
+            5
         );
 
         expect(selections.subclass).toBe("wizard-evocation");

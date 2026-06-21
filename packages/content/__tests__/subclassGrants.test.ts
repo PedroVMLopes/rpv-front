@@ -15,6 +15,15 @@ describe("subclassGrants.dnd", () => {
         expect(listSubclassesForClass("unknown")).toEqual([]);
     });
 
+    it("lists barbarian and monk pilot subclasses", () => {
+        expect(listSubclassesForClass("barbarian").map((entry) => entry.slug)).toEqual([
+            "barbarian-berserker",
+        ]);
+        expect(listSubclassesForClass("monk").map((entry) => entry.slug)).toEqual([
+            "monk-open-hand",
+        ]);
+    });
+
     it("returns subclass metadata by namespaced slug", () => {
         expect(getSubclass("fighter-champion")).toEqual(
             expect.objectContaining({
@@ -78,6 +87,19 @@ describe("subclassGrants.dnd", () => {
                 expect.objectContaining({
                     grantType: "ability",
                     description: "Improved Critical",
+                }),
+            ])
+        );
+    });
+
+    it("includes level 3 feature for monk open hand", () => {
+        const grants = getSubclassGrants("monk-open-hand", 3);
+
+        expect(grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    grantType: "ability",
+                    description: "Open Hand Technique",
                 }),
             ])
         );

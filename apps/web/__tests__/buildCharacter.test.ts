@@ -4,6 +4,7 @@ import {
     rebuildStoredCharacter,
 } from "../lib/character/buildCharacter";
 import { formDataToStoredCharacter } from "../lib/character/characterAdapter";
+import { collectPendingChoiceGrants } from "../lib/character/grantChoices";
 import { emptyCharacterSelections } from "../lib/character/storedCharacter";
 import type { StoredCharacter } from "../lib/character/storedCharacter";
 
@@ -248,12 +249,13 @@ describe("buildStoredCharacter", () => {
         expect(stored.systemData).not.toHaveProperty("characterClass");
     });
 
-    it("derives subclass grants through the build pipeline", () => {
+    it("derives subclass grants through the build pipeline at level 3", () => {
         const character = buildNewStoredCharacter(
             {
                 ...baseFormData,
                 characterClass: "wizard",
                 subclass: "wizard-evocation",
+                level: 3,
             },
             "player",
             "dnd",
@@ -354,5 +356,138 @@ describe("buildStoredCharacter", () => {
 
         expect(character.resources.hp).toBe(8);
         expect(character.resources["spell-slots-1"]).toBe(2);
+    });
+
+    it("derives barbarian resources and abilities at level 5", () => {
+        const character = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                characterClass: "barbarian",
+                subclass: "barbarian-berserker",
+                level: 5,
+                choices: {
+                    grantPicks: {
+                        "class:barbarian:skill_proficiency:0:0": "athletics",
+                        "class:barbarian:skill_proficiency:0:1": "intimidation",
+                    },
+                },
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        expect(character.resources["rage-uses"]).toBe(3);
+        expect(character.grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    kind: "ability",
+                    ref: "Extra Attack",
+                    source: { type: "class", id: "barbarian" },
+                }),
+                expect.objectContaining({
+                    kind: "ability",
+                    ref: "Frenzy",
+                    source: { type: "subclass", id: "barbarian-berserker" },
+                }),
+            ])
+        );
+    });
+
+    it("derives monk ki and abilities at level 5", () => {
+        const character = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                characterClass: "monk",
+                subclass: "monk-open-hand",
+                level: 5,
+                choices: {
+                    grantPicks: {
+                        "class:monk:tool_proficiency:0:0": "lute",
+                        "class:monk:skill_proficiency:0:0": "acrobatics",
+                        "class:monk:skill_proficiency:0:1": "stealth",
+                    },
+                },
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        expect(character.resources["ki-points"]).toBe(5);
+        expect(character.grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    kind: "ability",
+                    ref: "Stunning Strike",
+                    source: { type: "class", id: "monk" },
+                }),
+                expect.objectContaining({
+                    kind: "ability",
+                    ref: "Open Hand Technique",
+                    source: { type: "subclass", id: "monk-open-hand" },
+                }),
+            ])
+        );
+    });
+
+    it("builds wizard level 5 with evocation and cantrip picks", () => {
+        const pending = collectPendingChoiceGrants(
+            {
+                ...emptyCharacterSelections(),
+                characterClass: "wizard",
+                subclass: "wizard-evocation",
+            },
+            "en",
+            5
+        );
+        const cantripKeys = pending
+            .filter((choice) => choice.label.includes("cantrip"))
+            .map((choice) => choice.key);
+
+        expect(cantripKeys).toHaveLength(3);
+
+        const character = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                characterClass: "wizard",
+                subclass: "wizard-evocation",
+                level: 5,
+                choices: {
+                    grantPicks: {
+                        "class:wizard:skill_proficiency:2:0": "arcana",
+                        "class:wizard:skill_proficiency:2:1": "history",
+                        [cantripKeys[0]]: "fire-bolt",
+                        [cantripKeys[1]]: "mage-hand",
+                        [cantripKeys[2]]: "light",
+                    },
+                },
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        expect(character.resources).toMatchObject({
+            "spell-slots-1": 4,
+            "spell-slots-2": 3,
+            "spell-slots-3": 2,
+            "spell-slots-4": 1,
+        });
+        expect(character.selections.subclass).toBe("wizard-evocation");
+        expect(character.grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    kind: "spell",
+                    ref: "fire-bolt",
+                    source: { type: "class", id: "wizard" },
+                }),
+                expect.objectContaining({
+                    kind: "ability",
+                    ref: "Sculpt Spells",
+                    source: { type: "subclass", id: "wizard-evocation" },
+                }),
+            ])
+        );
     });
 });

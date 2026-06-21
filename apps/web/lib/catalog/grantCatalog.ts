@@ -41,7 +41,7 @@ export function listStartingItemOptions(): CatalogSelectOption[] {
 }
 
 export function listClassOptions(locale?: Locale): CatalogSelectOption[] {
-    return listClasses().map((characterClass) => ({
+    return listClasses(locale).map((characterClass) => ({
         value: characterClass.slug,
         label: characterClass.name,
     }));

@@ -12,12 +12,32 @@
       "name": "Respingo Ácido"
     }
   },
+  "classes": {
+    "fighter": {
+      "name": "Guerreiro"
+    },
+    "wizard": {
+      "name": "Mago"
+    },
+    "barbarian": {
+      "name": "Bárbaro"
+    },
+    "monk": {
+      "name": "Monge"
+    }
+  },
   "subclasses": {
     "fighter-champion": {
       "name": "Campeão"
     },
     "wizard-evocation": {
       "name": "Evocação"
+    },
+    "barbarian-berserker": {
+      "name": "Berserker"
+    },
+    "monk-open-hand": {
+      "name": "Mão Aberta"
     }
   }
 }

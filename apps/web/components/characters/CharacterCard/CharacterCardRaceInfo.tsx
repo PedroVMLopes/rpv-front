@@ -15,7 +15,7 @@ export function ClassSubclassBlock({ stored }: { stored: StoredCharacter }) {
     const raceLine = getRaceLineFromSelections(stored.selections, contentLocale);
     const classSlug = stored.selections.characterClass;
     const classStr = classSlug
-        ? (getClass(classSlug)?.name ?? classSlug)
+        ? (getClass(classSlug, contentLocale)?.name ?? classSlug)
         : "";
     const subclassSlug = stored.selections.subclass;
     const subclassStr = subclassSlug
