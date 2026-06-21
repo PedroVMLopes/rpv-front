@@ -141,3 +141,28 @@ describe("classGrants.dnd", () => {
         expect(blocks[2].featureLevel).toBe(3);
     });
 });
+
+describe("wizard spell slot resources", () => {
+    it("includes level 1 spell slot grant at level 1", () => {
+        const grants = getClassGrants("wizard", 1);
+
+        expect(grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    grantType: "resource",
+                    ref: "spell-slots-1",
+                    amount: 2,
+                }),
+            ])
+        );
+    });
+
+    it("accumulates six resource grants at level 3", () => {
+        const grants = getClassGrants("wizard", 3);
+        const resourceGrants = grants.filter(
+            (grant) => grant.grantType === "resource"
+        );
+
+        expect(resourceGrants).toHaveLength(6);
+    });
+});

@@ -144,6 +144,60 @@ export const dndClasses: ClassEntry[] = [
                 ],
             },
         ],
+        // Spell slot deltas per level (summed by ref at resolution time).
+        featuresByLevel: [
+            {
+                level: 1,
+                grants: [
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "spell-slots-1",
+                        amount: 2,
+                    },
+                ],
+            },
+            {
+                level: 2,
+                grants: [
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "spell-slots-1",
+                        amount: 1,
+                    },
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "spell-slots-2",
+                        amount: 1,
+                    },
+                ],
+            },
+            {
+                level: 3,
+                grants: [
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "spell-slots-1",
+                        amount: 1,
+                    },
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "spell-slots-2",
+                        amount: 1,
+                    },
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "spell-slots-3",
+                        amount: 1,
+                    },
+                ],
+            },
+        ],
     },
     {
         slug: "rogue",

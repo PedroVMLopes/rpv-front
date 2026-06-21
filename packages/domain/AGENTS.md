@@ -30,7 +30,7 @@ design smell — generalize the primitive or move the specifics into content.
     duration filtering → stacking resolution → operations in order
     `set → multiply → add → sub`, priority-sorted (ascending) within a group.
 - `grants/` — `CharacterGrant`: the resolved things a character has (kinds:
-  `language | ability | proficiency | saving_throw | spell`), each carrying its
+  `language | ability | proficiency | saving_throw | spell | resource`), each carrying its
   `source`.
 - `character/` — the `Character` aggregate and its types.
 - `i18n/locale.ts` — locale primitives.

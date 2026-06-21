@@ -194,6 +194,38 @@ describe("deriveCharacterGrants", () => {
         );
     });
 
+    it("includes spell slot resource grants for wizard at level 2", () => {
+        const grants = deriveCharacterGrants(
+            {
+                ...baseSelections,
+                characterClass: "wizard",
+            },
+            "en",
+            2
+        );
+
+        expect(grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    kind: "resource",
+                    ref: "spell-slots-1",
+                    amount: 2,
+                    source: { type: "class", id: "wizard" },
+                }),
+                expect.objectContaining({
+                    kind: "resource",
+                    ref: "spell-slots-1",
+                    amount: 1,
+                }),
+                expect.objectContaining({
+                    kind: "resource",
+                    ref: "spell-slots-2",
+                    amount: 1,
+                }),
+            ])
+        );
+    });
+
     it("derives subclass grants with namespaced slug source", () => {
         const grants = deriveCharacterGrants(
             {

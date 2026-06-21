@@ -5,7 +5,8 @@ export type CharacterGrantKind =
     | "ability"
     | "proficiency"
     | "saving_throw"
-    | "spell";
+    | "spell"
+    | "resource";
 
 export interface CharacterGrant {
     id: string;
@@ -15,4 +16,6 @@ export interface CharacterGrant {
     source: ModifierSource;
     /** Optional display name when resolved from catalog. */
     name?: string;
+    /** Quantity for resource grants (e.g. spell slot count). */
+    amount?: number;
 }

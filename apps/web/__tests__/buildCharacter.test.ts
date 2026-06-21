@@ -293,4 +293,66 @@ describe("buildStoredCharacter", () => {
             ])
         );
     });
+
+    it("derives wizard spell slot resources at level 1", () => {
+        const character = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                characterClass: "wizard",
+                level: 1,
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        expect(character.resources["spell-slots-1"]).toBe(2);
+        expect(character.resources["spell-slots-2"]).toBeUndefined();
+        expect(character.grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    kind: "resource",
+                    ref: "spell-slots-1",
+                    amount: 2,
+                    source: { type: "class", id: "wizard" },
+                }),
+            ])
+        );
+    });
+
+    it("derives wizard spell slot totals at level 3", () => {
+        const character = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                characterClass: "wizard",
+                level: 3,
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        expect(character.resources).toMatchObject({
+            "spell-slots-1": 4,
+            "spell-slots-2": 2,
+            "spell-slots-3": 1,
+        });
+    });
+
+    it("preserves form-driven hp when merging derived resources", () => {
+        const character = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                characterClass: "wizard",
+                level: 1,
+                hp: 8,
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        expect(character.resources.hp).toBe(8);
+        expect(character.resources["spell-slots-1"]).toBe(2);
+    });
 });

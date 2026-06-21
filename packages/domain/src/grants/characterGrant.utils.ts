@@ -37,3 +37,23 @@ export function getProficiencies(grants: CharacterGrant[]): CharacterGrant[] {
 export function getSavingThrows(grants: CharacterGrant[]): CharacterGrant[] {
     return grants.filter((grant) => grant.kind === "saving_throw");
 }
+
+export function getResources(grants: CharacterGrant[]): CharacterGrant[] {
+    return grants.filter((grant) => grant.kind === "resource");
+}
+
+export function aggregateResourceGrants(
+    grants: CharacterGrant[]
+): Record<string, number> {
+    const totals: Record<string, number> = {};
+
+    for (const grant of grants) {
+        if (grant.kind !== "resource" || grant.amount === undefined) {
+            continue;
+        }
+
+        totals[grant.ref] = (totals[grant.ref] ?? 0) + grant.amount;
+    }
+
+    return totals;
+}

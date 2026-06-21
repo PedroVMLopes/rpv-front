@@ -222,7 +222,9 @@ export function getFixedLanguageGrants(
             (grant) => grant.grantType === "language" && grant.choose === 0
         );
         grants.push(
-            ...fixedGrantsToCharacterGrants(languageGrants, entry.source).map(
+            ...fixedGrantsToCharacterGrants(languageGrants, entry.source, {
+                featureLevel: entry.featureLevel,
+            }).map(
                 (grant) => ({
                     ...grant,
                     name: getLanguage(grant.ref)?.name ?? grant.name,
@@ -241,7 +243,9 @@ export function deriveCharacterGrants(
 ): CharacterGrant[] {
     const sources = collectGrantSources(selections, locale, characterLevel);
     const fixedGrants = sources.flatMap((entry) =>
-        fixedGrantsToCharacterGrants(entry.grants, entry.source).map((grant) => {
+        fixedGrantsToCharacterGrants(entry.grants, entry.source, {
+            featureLevel: entry.featureLevel,
+        }).map((grant) => {
             if (grant.kind === "language") {
                 return {
                     ...grant,

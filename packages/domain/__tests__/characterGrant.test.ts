@@ -4,6 +4,8 @@ import {
     removeGrantsBySource,
     getLanguages,
     getAbilities,
+    getResources,
+    aggregateResourceGrants,
 } from "../src";
 
 const baseStats = {
@@ -67,6 +69,42 @@ describe("grant selectors", () => {
     it("getAbilities returns only ability grants", () => {
         expect(getAbilities(grants)).toHaveLength(1);
         expect(getAbilities(grants)[0].ref).toBe("fey-ancestry");
+    });
+});
+
+describe("resource grants", () => {
+    it("getResources returns only resource grants", () => {
+        const grants: CharacterGrant[] = [
+            createGrant({ id: "slot-1", kind: "resource", ref: "spell-slots-1", amount: 2 }),
+            createGrant({ id: "lang-1", kind: "language", ref: "common" }),
+        ];
+
+        expect(getResources(grants)).toHaveLength(1);
+        expect(getResources(grants)[0].ref).toBe("spell-slots-1");
+    });
+
+    it("aggregateResourceGrants sums amounts by ref", () => {
+        const grants: CharacterGrant[] = [
+            createGrant({ id: "slot-1a", kind: "resource", ref: "spell-slots-1", amount: 2 }),
+            createGrant({ id: "slot-1b", kind: "resource", ref: "spell-slots-1", amount: 1 }),
+            createGrant({ id: "slot-2", kind: "resource", ref: "spell-slots-2", amount: 1 }),
+        ];
+
+        expect(aggregateResourceGrants(grants)).toEqual({
+            "spell-slots-1": 3,
+            "spell-slots-2": 1,
+        });
+    });
+
+    it("aggregateResourceGrants ignores resource grants without amount", () => {
+        const grants: CharacterGrant[] = [
+            createGrant({ id: "slot-1", kind: "resource", ref: "spell-slots-1", amount: 2 }),
+            createGrant({ id: "slot-2", kind: "resource", ref: "spell-slots-2" }),
+        ];
+
+        expect(aggregateResourceGrants(grants)).toEqual({
+            "spell-slots-1": 2,
+        });
     });
 });
 

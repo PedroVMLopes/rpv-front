@@ -3,6 +3,7 @@ import {
     getAbilities,
     getLanguages,
     getProficiencies,
+    getResources,
     getSpells,
 } from "../grants/characterGrant.utils";
 import { Modifier } from "../modifiers/modifier.types";
@@ -58,6 +59,10 @@ export class Character {
 
     getProficiencies(): CharacterGrant[] {
         return getProficiencies(this.props.grants ?? []);
+    }
+
+    getResources(): CharacterGrant[] {
+        return getResources(this.props.grants ?? []);
     }
 
     toProps(): CharacterProps {

@@ -10,7 +10,8 @@ export type GrantType =
     | "armor_proficiency"
     | "saving_throw_proficiency"
     | "language"
-    | "spell";
+    | "spell"
+    | "resource";
 
 /**
  * Describes a pool to choose from when a grant is not fixed. Either a spell
@@ -39,6 +40,8 @@ export interface Grant {
     description?: string;
     targetStat?: StatKey;
     amount?: number;
+    /** Resource identifier when grantType is "resource" (e.g. "spell-slots-1"). */
+    ref?: string;
     options?: GrantOption[];
     selectionFilter?: SelectionFilter;
 }

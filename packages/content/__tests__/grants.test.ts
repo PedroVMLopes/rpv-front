@@ -209,6 +209,66 @@ describe("fixedGrantsToCharacterGrants", () => {
             })
         ).toEqual([]);
     });
+
+    it("converts fixed resource grants", () => {
+        const grants: Grant[] = [
+            {
+                grantType: "resource",
+                choose: 0,
+                ref: "spell-slots-1",
+                amount: 2,
+            },
+        ];
+
+        const result = fixedGrantsToCharacterGrants(
+            grants,
+            { type: "class", id: "wizard" },
+            { featureLevel: 1 }
+        );
+
+        expect(result).toEqual([
+            {
+                id: "class-wizard-1-resource-spell-slots-1",
+                kind: "resource",
+                ref: "spell-slots-1",
+                amount: 2,
+                source: { type: "class", id: "wizard" },
+                name: undefined,
+            },
+        ]);
+    });
+
+    it("uses distinct ids for resource grants at different feature levels", () => {
+        const grant: Grant = {
+            grantType: "resource",
+            choose: 0,
+            ref: "spell-slots-1",
+            amount: 1,
+        };
+        const source = { type: "class" as const, id: "wizard" };
+
+        const level1 = fixedGrantsToCharacterGrants([grant], source, {
+            featureLevel: 1,
+        });
+        const level2 = fixedGrantsToCharacterGrants([grant], source, {
+            featureLevel: 2,
+        });
+
+        expect(level1[0].id).toBe("class-wizard-1-resource-spell-slots-1");
+        expect(level2[0].id).toBe("class-wizard-2-resource-spell-slots-1");
+        expect(level1[0].id).not.toBe(level2[0].id);
+    });
+
+    it("skips incomplete resource grants", () => {
+        const grants: Grant[] = [
+            { grantType: "resource", choose: 0, ref: "spell-slots-1" },
+            { grantType: "resource", choose: 0, amount: 2 },
+        ];
+
+        expect(
+            fixedGrantsToCharacterGrants(grants, { type: "class", id: "wizard" })
+        ).toEqual([]);
+    });
 });
 
 describe("countLanguageChoices", () => {

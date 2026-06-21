@@ -15,6 +15,7 @@ const GRANT_TYPE_TO_KIND: Record<
     saving_throw_proficiency: "saving_throw",
     language: "language",
     spell: "spell",
+    resource: "resource",
 };
 
 function grantKindFromType(grantType: Grant["grantType"]): CharacterGrant["kind"] | null {
@@ -105,12 +106,28 @@ function optionToGrant(
  */
 export function fixedGrantsToCharacterGrants(
     grants: Grant[],
-    source: ModifierSource
+    source: ModifierSource,
+    context?: { featureLevel?: number }
 ): CharacterGrant[] {
     const result: CharacterGrant[] = [];
+    const levelKey = context?.featureLevel ?? "base";
 
     for (const grant of grants) {
         if (grant.choose !== 0) {
+            continue;
+        }
+
+        if (grant.grantType === "resource") {
+            if (grant.ref !== undefined && grant.amount !== undefined) {
+                result.push({
+                    id: `${source.type}-${source.id}-${levelKey}-resource-${grant.ref}`,
+                    kind: "resource",
+                    ref: grant.ref,
+                    amount: grant.amount,
+                    source,
+                    name: grant.description,
+                });
+            }
             continue;
         }
 

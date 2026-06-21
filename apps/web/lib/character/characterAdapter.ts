@@ -17,6 +17,7 @@ import {
     buildSystemDataFromForm,
     flattenStoredToForm,
 } from "./presetStats";
+import { deriveResourceTotals } from "./deriveResourceTotals";
 import type { StoredCharacter, CharacterSelections, CharacterChoices } from "./storedCharacter";
 
 function coerceString(value: unknown, fallback: string): string {
@@ -159,7 +160,10 @@ export function formDataToStoredCharacter(
         modifiers,
         grants,
         selections,
-        resources: buildResourcesFromForm(processedForm, system),
+        resources: {
+            ...buildResourcesFromForm(processedForm, system),
+            ...deriveResourceTotals(grants),
+        },
         systemData: buildSystemDataFromForm(processedForm, system),
     };
 }
