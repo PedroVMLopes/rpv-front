@@ -8,6 +8,7 @@ import { useCharacterStore } from "@/store/useCharacterStore";
 import { useContentLocale } from "@/store/useContentLocale";
 import { getLanguage } from "@/lib/catalog/grantCatalog";
 import { getSpell } from "@rpv/content";
+import { listSpellSlotResources } from "@/lib/character/spellSlotResources";
 
 const SOURCE_LABEL_KEYS: Record<CharacterGrant["source"]["type"], string> = {
     race: "sourceRace",
@@ -37,6 +38,10 @@ function displayName(
     }
 
     return grant.ref;
+}
+
+function isDisplayableFeatureGrant(grant: CharacterGrant): boolean {
+    return grant.kind !== "language" && grant.kind !== "resource";
 }
 
 interface CharacterCardAbilitiesProps {
@@ -73,16 +78,32 @@ export default function CharacterCardAbilities({
     const languages = (stored.grants ?? []).filter(
         (grant) => grant.kind === "language"
     );
-    const features = (stored.grants ?? []).filter(
-        (grant) =>
-            grant.kind === "ability" ||
-            grant.kind === "spell" ||
-            grant.kind === "proficiency"
-    );
+    const features = (stored.grants ?? []).filter(isDisplayableFeatureGrant);
+    const spellSlots = listSpellSlotResources(stored.resources);
 
     return (
         <CarouselItem>
             <div className="flex flex-col gap-3 p-2">
+                <section>
+                    <h3 className="text-sm font-bold mb-2">{t("spellSlotsTitle")}</h3>
+                    {spellSlots.length === 0 ? (
+                        <p className="text-xs text-muted-foreground">
+                            {t("noneYet")}
+                        </p>
+                    ) : (
+                        <ul className="text-sm space-y-1">
+                            {spellSlots.map((slot) => (
+                                <li key={slot.ref}>
+                                    {t("spellSlotEntry", {
+                                        level: slot.level,
+                                        count: slot.count,
+                                    })}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </section>
+
                 <section>
                     <h3 className="text-sm font-bold mb-2">{t("languagesTitle")}</h3>
                     {languages.length === 0 ? (
@@ -112,7 +133,7 @@ export default function CharacterCardAbilities({
                         <div className="space-y-3">
                             {grouped.map(([sourceKey, grants]) => {
                                 const featureGrants = grants.filter(
-                                    (grant) => grant.kind !== "language"
+                                    isDisplayableFeatureGrant
                                 );
                                 if (featureGrants.length === 0) {
                                     return null;

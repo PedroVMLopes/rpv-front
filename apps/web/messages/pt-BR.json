@@ -108,6 +108,8 @@
     "selectOption": "Selecione uma opção",
     "abilityChoicesTitle": "Escolhas de Habilidades",
     "grantedFeaturesTitle": "Recursos Concedidos",
+    "spellSlotsTitle": "Espaços de Magia",
+    "spellSlotEntry": "Nível {level}: {count}",
     "noneYet": "Nenhum ainda",
     "sourceRace": "Da raça: {id}",
     "sourceClass": "Da classe: {id}",

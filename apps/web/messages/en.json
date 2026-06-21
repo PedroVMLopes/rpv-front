@@ -108,6 +108,8 @@
     "selectOption": "Select an option",
     "abilityChoicesTitle": "Ability Choices",
     "grantedFeaturesTitle": "Granted Features",
+    "spellSlotsTitle": "Spell Slots",
+    "spellSlotEntry": "Level {level}: {count}",
     "noneYet": "None yet",
     "sourceRace": "From race: {id}",
     "sourceClass": "From class: {id}",
