@@ -14,6 +14,7 @@ import { ClassSubclassBlock } from "./CharacterCardRaceInfo";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCharacterStore } from "@/store/useCharacterStore";
+import Link from "next/link";
 
 const HP_RESOURCE = "hp";
 
@@ -235,8 +236,15 @@ export default function CharacterCard({ characterId }: CharacterCardProps) {
                         Save
                         <FaBookmark className="text-chart-3" />
                     </Button>
-                    <Button size={"icon"} variant={"ghost"} className="">
-                        <FaGear />
+                    <Button
+                        asChild
+                        size="icon"
+                        variant="ghost"
+                        aria-label="Edit character"
+                    >
+                        <Link href={`/characters/${stored.type}/edit/${stored.id}`}>
+                            <FaGear />
+                        </Link>
                     </Button>
                 </div>
             </CardFooter>

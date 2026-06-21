@@ -19,6 +19,7 @@ import { buildPlayerRaceFields } from "@/lib/character/playerFormFields";
 import { CharacterGrantPickers } from "@/components/characters/CharacterGrantPickers";
 import { useGrantPickSanitizer } from "@/lib/character/useGrantPickSanitizer";
 import { useEffect, useMemo, useRef } from "react";
+import { useRouter } from "next/navigation";
 
 export default function EditPlayer() {
     const params = useParams<{ id: string }>();
@@ -28,9 +29,13 @@ export default function EditPlayer() {
     const getFormDefaults = useCharacterStore((state) => state.getFormDefaults);
     const characters = useCharacterStore((state) => state.characters);
     const contentLocale = useContentLocale((state) => state.contentLocale);
+    const router = useRouter();
 
     const character = characters.find((c) => c.id === id);
-    const formDefaults = character ? getFormDefaults(id) : undefined;
+    const formDefaults = useMemo(
+        () => (character ? getFormDefaults(id) : undefined),
+        [character, getFormDefaults, id]
+    );
 
     const characterSystem = character?.system ?? "dnd";
     const characterType = character?.type ?? "player";
@@ -74,13 +79,13 @@ export default function EditPlayer() {
     useGrantPickSanitizer(form, contentLocale);
 
     useEffect(() => {
-        if (formDefaults) {
-            form.reset(formDefaults);
-            previousRaceRef.current =
-                typeof formDefaults.race === "string"
-                    ? formDefaults.race
-                    : undefined;
+        if (!formDefaults) {
+            return;
         }
+
+        form.reset(formDefaults);
+        previousRaceRef.current =
+            typeof formDefaults.race === "string" ? formDefaults.race : undefined;
     }, [form, formDefaults]);
 
     useEffect(() => {
@@ -106,6 +111,14 @@ export default function EditPlayer() {
         [baseFields, raceSlug, contentLocale]
     );
 
+    function handleSave(data: Record<string, unknown>) {
+        updateCharacter(id, {
+            ...data,
+            choices: form.getValues("choices"),
+        });
+        router.push("/characters/player");
+    }
+
     if (!character || !formDefaults) {
         return <p>Character not found</p>;
     }
@@ -117,8 +130,11 @@ export default function EditPlayer() {
                 variant={"destructive"}
                 className="font-semibold mt-2 mb-4"
             >
-                <Link href={"/characters/player"}>Return</Link>
+                <Link href={"/characters/player"}>Cancel</Link>
             </Button>
+            <h1 className="mb-2 text-lg font-bold bg-muted p-1 px-2 rounded">
+                Edit {character.name}
+            </h1>
             <AbilityScoresField
                 form={form}
                 abilities={presetData.statConfig.abilities}
@@ -135,16 +151,7 @@ export default function EditPlayer() {
                 system={characterSystem}
                 contentLocale={contentLocale}
             />
-            <DynamicForm
-                form={form}
-                fields={fields}
-                onSubmit={(data) =>
-                    updateCharacter(id, {
-                        ...data,
-                        choices: form.getValues("choices"),
-                    })
-                }
-            />
+            <DynamicForm form={form} fields={fields} onSubmit={handleSave} />
             <CharacterGrantPickers form={form} contentLocale={contentLocale} />
         </div>
     );
