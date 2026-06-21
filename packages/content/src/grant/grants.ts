@@ -148,7 +148,7 @@ export function fixedGrantsToCharacterGrants(
 
         if (grant.grantType === "ability" && grant.description) {
             result.push({
-                id: `${source.type}-${source.id}-ability-${result.length}`,
+                id: `${source.type}-${source.id}-${levelKey}-ability-${grant.description}`,
                 kind: "ability",
                 ref: grant.description,
                 source,

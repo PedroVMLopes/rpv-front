@@ -259,6 +259,54 @@ describe("fixedGrantsToCharacterGrants", () => {
         expect(level1[0].id).not.toBe(level2[0].id);
     });
 
+    it("uses distinct ids for ability grants at different feature levels", () => {
+        const source = { type: "class" as const, id: "monk" };
+        const level1 = fixedGrantsToCharacterGrants(
+            [
+                {
+                    grantType: "ability",
+                    choose: 0,
+                    description: "Unarmored Defense",
+                },
+                {
+                    grantType: "ability",
+                    choose: 0,
+                    description: "Martial Arts",
+                },
+            ],
+            source,
+            { featureLevel: 1 }
+        );
+        const level2 = fixedGrantsToCharacterGrants(
+            [
+                {
+                    grantType: "resource",
+                    choose: 0,
+                    ref: "ki-points",
+                    amount: 2,
+                },
+                {
+                    grantType: "ability",
+                    choose: 0,
+                    description: "Ki",
+                },
+                {
+                    grantType: "ability",
+                    choose: 0,
+                    description: "Unarmored Movement",
+                },
+            ],
+            source,
+            { featureLevel: 2 }
+        );
+
+        const ids = [...level1, ...level2].map((grant) => grant.id);
+        expect(new Set(ids).size).toBe(ids.length);
+        expect(level2.find((grant) => grant.ref === "Ki")?.id).toBe(
+            "class-monk-2-ability-Ki"
+        );
+    });
+
     it("skips incomplete resource grants", () => {
         const grants: Grant[] = [
             { grantType: "resource", choose: 0, ref: "spell-slots-1" },
