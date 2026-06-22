@@ -163,5 +163,14 @@
     "manualHint": "A CA base é 10 + seu modificador de Destreza.",
     "overrideHint": "A Classe de Armadura foi alterada manualmente e não será atualizada quando Destreza mudar.",
     "fromSources": "Base {base} + {bonus} de itens = {total} CA"
+  },
+  "classResources": {
+    "title": "Recursos de Classe",
+    "emptyHint": "Selecione classe e nível para ver recursos derivados.",
+    "noneYet": "Nenhum neste nível",
+    "refs": {
+      "rage-uses": "Usos de Fúria",
+      "ki-points": "Pontos de Ki"
+    }
   }
 }

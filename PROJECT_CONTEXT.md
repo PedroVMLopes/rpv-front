@@ -79,7 +79,16 @@ Resources (spell slots, rage uses, ki points) are **declarative deltas** per lev
 
 Multiple grants with the same `ref` are **summed** at build time. Convention: kebab-case refs (`spell-slots-1`, `rage-uses`, `ki-points`).
 
-**Passo 4 (pending):** read-only UI to display `stored.resources` on the character sheet.
+### UI (Passo 4)
+
+Read-only preview and sheet display share the same pipeline slice:
+
+- **`deriveResourcesFromForm`** — `sanitizeSelections → deriveCharacterGrants → deriveResourceTotals` from live form data (no persist).
+- **`ClassResourcesField`** — form create/edit preview; updates when class, level, or choices change.
+- **`DerivedResourcesDisplay`** — spell slots + class resources with i18n labels; used on the form and in `CharacterCardAbilities`.
+- **Labels** — `classResources.refs.{ref}` in [`apps/web/messages/*.json`](apps/web/messages/en.json); unknown refs fall back to a humanized slug.
+
+HP remains form-driven via `HitPointsField`. Combat tracking of rage/ki uses in initiative is **not** implemented yet.
 
 ---
 
@@ -90,7 +99,8 @@ Multiple grants with the same `ref` are **summed** at build time. Convention: ke
 3. Define `grants` (base proficiencies, fixed abilities) and `featuresByLevel` (level-gated features, resources, spell picks).
 4. Use `choose > 0` + `options` or `selectionFilter` for player choices.
 5. Add pt-BR overlay in [`packages/content/data/translations/pt-BR.json`](packages/content/data/translations/pt-BR.json) under `classes` / `subclasses`.
-6. Run `npm test` (packages) and `npm test -w rpv-front` (web pipeline).
+6. For new resource refs, add `classResources.refs.{ref}` in [`apps/web/messages/en.json`](apps/web/messages/en.json) and [`pt-BR.json`](apps/web/messages/pt-BR.json).
+7. Run `npm test` (packages) and `npm test -w rpv-front` (web pipeline).
 
 No engine or UI code changes required if existing grant types suffice.
 
@@ -131,6 +141,6 @@ Web tests are the primary integration coverage for the character pipeline.
 
 ## Next steps
 
-- **Passo 4:** `ClassResourcesField` — read-only display of `stored.resources`.
 - Expand spell catalog for wizard leveled spell picks.
 - Extend class progression beyond L5 toward L20.
+- Initiative tracker: editable current uses for derived resources (rage, ki).

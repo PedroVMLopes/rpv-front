@@ -12,6 +12,7 @@ import { applyAbilityScoreValidation } from "@/lib/character/abilityScoreGenerat
 import { AbilityScoresField } from "@/components/characters/AbilityScoresField";
 import { HitPointsField } from "@/components/characters/HitPointsField";
 import { ArmorClassField } from "@/components/characters/ArmorClassField";
+import { ClassResourcesField } from "@/components/characters/ClassResourcesField";
 import { presets } from "@/presets";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -198,6 +199,10 @@ export default function EditPlayer() {
             <ArmorClassField
                 form={form}
                 system={characterSystem}
+                contentLocale={contentLocale}
+            />
+            <ClassResourcesField
+                form={form}
                 contentLocale={contentLocale}
             />
             <DynamicForm form={form} fields={fields} onSubmit={handleSave} />

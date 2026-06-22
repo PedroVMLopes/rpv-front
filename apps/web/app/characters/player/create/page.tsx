@@ -9,6 +9,7 @@ import { applyAbilityScoreValidation } from "@/lib/character/abilityScoreGenerat
 import { AbilityScoresField } from "@/components/characters/AbilityScoresField";
 import { HitPointsField } from "@/components/characters/HitPointsField";
 import { ArmorClassField } from "@/components/characters/ArmorClassField";
+import { ClassResourcesField } from "@/components/characters/ClassResourcesField";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { DynamicForm } from "@/components/forms/DynamicForm";
@@ -167,6 +168,10 @@ export default function CreatePlayer() {
                 <ArmorClassField
                     form={form}
                     system={system}
+                    contentLocale={contentLocale}
+                />
+                <ClassResourcesField
+                    form={form}
                     contentLocale={contentLocale}
                 />
                 <DynamicForm form={form} fields={fields} onSubmit={handleSave} />

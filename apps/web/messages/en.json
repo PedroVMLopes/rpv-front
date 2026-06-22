@@ -163,5 +163,14 @@
     "manualHint": "Base AC is 10 + your Dexterity modifier.",
     "overrideHint": "Armor Class is manually overridden and will not update when Dexterity changes.",
     "fromSources": "Base {base} + {bonus} from items = {total} AC"
+  },
+  "classResources": {
+    "title": "Class Resources",
+    "emptyHint": "Select a class and level to see derived resources.",
+    "noneYet": "None at this level",
+    "refs": {
+      "rage-uses": "Rage Uses",
+      "ki-points": "Ki Points"
+    }
   }
 }

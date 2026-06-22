@@ -11,9 +11,8 @@ import { getClass, getSpell, getSubclass } from "@rpv/content";
 import {
     isGrantedFeaturesEntry,
     listGrantsBySource,
-    listOtherDerivedResources,
 } from "@/lib/character/grantDisplay";
-import { listSpellSlotResources } from "@/lib/character/spellSlotResources";
+import { DerivedResourcesDisplay } from "@/components/characters/DerivedResourcesDisplay";
 
 const SOURCE_LABEL_KEYS: Record<CharacterGrant["source"]["type"], string> = {
     race: "sourceRace",
@@ -118,8 +117,6 @@ export default function CharacterCardAbilities({
 
     const languages = grants.filter((grant) => grant.kind === "language");
     const features = grants.filter(isGrantedFeaturesEntry);
-    const spellSlots = listSpellSlotResources(stored.resources);
-    const classResources = listOtherDerivedResources(stored.resources);
     const classFeatures = listGrantsBySource(grants, "class", ["ability"]);
     const subclassFeatures = listGrantsBySource(grants, "subclass", ["ability"]);
     const classSpells = listGrantsBySource(grants, "class", ["spell"]);
@@ -128,33 +125,10 @@ export default function CharacterCardAbilities({
     return (
         <CarouselItem>
             <div className="flex flex-col gap-3 p-2">
-                <GrantSection
-                    title={t("spellSlotsTitle")}
-                    emptyLabel={t("noneYet")}
-                >
-                    {spellSlots.map((slot) => (
-                        <li key={slot.ref}>
-                            {t("spellSlotEntry", {
-                                level: slot.level,
-                                count: slot.count,
-                            })}
-                        </li>
-                    ))}
-                </GrantSection>
-
-                <GrantSection
-                    title={t("classResourcesTitle")}
-                    emptyLabel={t("noneYet")}
-                >
-                    {classResources.map((resource) => (
-                        <li key={resource.ref}>
-                            {t("classResourceEntry", {
-                                ref: resource.ref,
-                                count: resource.count,
-                            })}
-                        </li>
-                    ))}
-                </GrantSection>
+                <DerivedResourcesDisplay
+                    resources={stored.resources}
+                    compact
+                />
 
                 {classSlug ? (
                     <GrantSection
