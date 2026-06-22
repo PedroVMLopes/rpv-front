@@ -1,6 +1,7 @@
 import {
     flattenStoredToForm,
     formDataToStoredCharacter,
+    normalizeCharacterSelections,
     normalizeStoredCharacter,
     buildSelectionsFromForm,
 } from "../lib/character/characterAdapter";
@@ -222,5 +223,63 @@ describe("characterAdapter system-agnostic mapping", () => {
         expect(stored.modifiers).toEqual([]);
         expect(stored.grants).toEqual([]);
         expect(stored.language).toBe("en");
+    });
+
+    it("normalizes legacy subclass text into a catalog slug", () => {
+        const stored = normalizeStoredCharacter({
+            id: "legacy-subclass",
+            type: "player",
+            system: "dnd",
+            name: "Subclass Hero",
+            baseStats: {},
+            modifiers: [],
+            resources: { hp: 8 },
+            systemData: {
+                characterClass: "wizard",
+                subclass: "Wizard-Evocation",
+                level: 3,
+            },
+        });
+
+        expect(stored.selections.characterClass).toBe("wizard");
+        expect(stored.selections.subclass).toBe("wizard-evocation");
+    });
+
+    it("clears legacy subclass slugs that do not match the selected class", () => {
+        const stored = normalizeStoredCharacter({
+            id: "legacy-mismatch",
+            type: "player",
+            system: "dnd",
+            name: "Mismatch Hero",
+            baseStats: {},
+            modifiers: [],
+            resources: { hp: 8 },
+            systemData: {
+                characterClass: "wizard",
+                subclass: "Fighter-Champion",
+                level: 3,
+            },
+        });
+
+        expect(stored.selections.characterClass).toBe("wizard");
+        expect(stored.selections.subclass).toBeUndefined();
+    });
+
+    it("clears subclass when no parent class is selected", () => {
+        const normalized = normalizeCharacterSelections(
+            {
+                race: undefined,
+                subrace: undefined,
+                characterClass: undefined,
+                subclass: "wizard-evocation",
+                background: undefined,
+                items: [],
+                choices: {},
+            },
+            {}
+        );
+
+        expect(normalized.characterClass).toBeUndefined();
+        expect(normalized.subclass).toBeUndefined();
     });
 });

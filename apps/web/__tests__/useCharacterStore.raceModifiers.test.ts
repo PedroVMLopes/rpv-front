@@ -156,8 +156,8 @@ describe("useCharacterStore race modifiers", () => {
                     subrace: "high-elf",
                     choices: {
                         grantPicks: {
-                            "race:high-elf:language:0:0": "draconic",
-                            "race:high-elf:spell:0:0": "fire-bolt",
+                            "race:high-elf:base:language:0:0": "draconic",
+                            "race:high-elf:base:spell:0:0": "fire-bolt",
                         },
                     },
                 },
@@ -174,9 +174,9 @@ describe("useCharacterStore race modifiers", () => {
                 race: "dwarf",
                 choices: {
                     grantPicks: {
-                        "race:high-elf:language:0:0": "draconic",
-                        "race:high-elf:spell:0:0": "fire-bolt",
-                        "race:dwarf:tool_proficiency:0:0": "smiths-tools",
+                        "race:high-elf:base:language:0:0": "draconic",
+                        "race:high-elf:base:spell:0:0": "fire-bolt",
+                        "race:dwarf:base:tool_proficiency:0:0": "smiths-tools",
                     },
                 },
             });
@@ -187,7 +187,7 @@ describe("useCharacterStore race modifiers", () => {
             .characters.find((c) => c.id === character.id)!;
 
         expect(updated.selections.choices.grantPicks).toEqual({
-            "race:dwarf:tool_proficiency:0:0": "smiths-tools",
+            "race:dwarf:base:tool_proficiency:0:0": "smiths-tools",
         });
         expect(updated.grants).not.toEqual(
             expect.arrayContaining([
@@ -205,8 +205,8 @@ describe("useCharacterStore race modifiers", () => {
                     subrace: "high-elf",
                     choices: {
                         grantPicks: {
-                            "race:high-elf:language:0:0": "draconic",
-                            "race:high-elf:spell:0:0": "fire-bolt",
+                            "race:high-elf:base:language:0:0": "draconic",
+                            "race:high-elf:base:spell:0:0": "fire-bolt",
                         },
                     },
                 },
@@ -218,8 +218,8 @@ describe("useCharacterStore race modifiers", () => {
         const character = useCharacterStore.getState().characters[0];
 
         expect(character.selections.choices.grantPicks).toEqual({
-            "race:high-elf:language:0:0": "draconic",
-            "race:high-elf:spell:0:0": "fire-bolt",
+            "race:high-elf:base:language:0:0": "draconic",
+            "race:high-elf:base:spell:0:0": "fire-bolt",
         });
         expect(character.grants).toEqual(
             expect.arrayContaining([
@@ -243,7 +243,7 @@ describe("useCharacterStore race modifiers", () => {
                     race: "dwarf",
                     choices: {
                         grantPicks: {
-                            "race:dwarf:tool_proficiency:0:0": "smiths-tools",
+                            "race:dwarf:base:tool_proficiency:0:0": "smiths-tools",
                         },
                     },
                 },
@@ -273,8 +273,8 @@ describe("useCharacterStore race modifiers", () => {
                     characterClass: "fighter",
                     choices: {
                         grantPicks: {
-                            "class:fighter:skill_proficiency:3:0": "athletics",
-                            "class:fighter:skill_proficiency:3:1": "intimidation",
+                            "class:fighter:base:skill_proficiency:3:0": "athletics",
+                            "class:fighter:base:skill_proficiency:3:1": "intimidation",
                         },
                     },
                 },

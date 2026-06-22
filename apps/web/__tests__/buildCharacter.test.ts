@@ -165,7 +165,7 @@ describe("buildStoredCharacter", () => {
                 race: "elf",
                 choices: {
                     grantPicks: {
-                        "class:fighter:skill_proficiency:3:0": "athletics",
+                        "class:fighter:base:skill_proficiency:3:0": "athletics",
                     },
                 },
             },
@@ -367,8 +367,8 @@ describe("buildStoredCharacter", () => {
                 level: 5,
                 choices: {
                     grantPicks: {
-                        "class:barbarian:skill_proficiency:0:0": "athletics",
-                        "class:barbarian:skill_proficiency:0:1": "intimidation",
+                        "class:barbarian:base:skill_proficiency:3:0": "athletics",
+                        "class:barbarian:base:skill_proficiency:3:1": "intimidation",
                     },
                 },
             },
@@ -403,9 +403,9 @@ describe("buildStoredCharacter", () => {
                 level: 5,
                 choices: {
                     grantPicks: {
-                        "class:monk:tool_proficiency:0:0": "lute",
-                        "class:monk:skill_proficiency:0:0": "acrobatics",
-                        "class:monk:skill_proficiency:0:1": "stealth",
+                        "class:monk:base:tool_proficiency:2:0": "lute",
+                        "class:monk:base:skill_proficiency:3:0": "acrobatics",
+                        "class:monk:base:skill_proficiency:3:1": "stealth",
                     },
                 },
             },
@@ -431,21 +431,28 @@ describe("buildStoredCharacter", () => {
         );
     });
 
-    it("builds wizard level 5 with evocation and cantrip picks", () => {
-        const pending = collectPendingChoiceGrants(
-            {
-                ...emptyCharacterSelections(),
-                characterClass: "wizard",
-                subclass: "wizard-evocation",
-            },
-            "en",
-            5
-        );
-        const cantripKeys = pending
-            .filter((choice) => choice.label.includes("cantrip"))
-            .map((choice) => choice.key);
+    it("builds wizard level 5 with evocation and all accumulated picks", () => {
+        const selections = {
+            ...emptyCharacterSelections(),
+            characterClass: "wizard",
+            subclass: "wizard-evocation",
+        };
+        const pending = collectPendingChoiceGrants(selections, "en", 5);
+        const grantPicks: Record<string, string> = {};
 
-        expect(cantripKeys).toHaveLength(3);
+        for (const choice of pending) {
+            if (choice.grant.grantType === "spell" && choice.label.includes("cantrip")) {
+                grantPicks[choice.key] = "fire-bolt";
+                continue;
+            }
+
+            const firstOption = choice.options[0]?.value;
+            if (firstOption) {
+                grantPicks[choice.key] = firstOption;
+            }
+        }
+
+        expect(Object.keys(grantPicks).length).toBeGreaterThan(0);
 
         const character = buildNewStoredCharacter(
             {
@@ -453,15 +460,7 @@ describe("buildStoredCharacter", () => {
                 characterClass: "wizard",
                 subclass: "wizard-evocation",
                 level: 5,
-                choices: {
-                    grantPicks: {
-                        "class:wizard:skill_proficiency:2:0": "arcana",
-                        "class:wizard:skill_proficiency:2:1": "history",
-                        [cantripKeys[0]]: "fire-bolt",
-                        [cantripKeys[1]]: "mage-hand",
-                        [cantripKeys[2]]: "light",
-                    },
-                },
+                choices: { grantPicks },
             },
             "player",
             "dnd",

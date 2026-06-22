@@ -19,4 +19,9 @@ describe("readLevelFromForm", () => {
         expect(readLevelFromForm({ level: "" })).toBe(1);
         expect(readLevelFromForm({ level: "abc" })).toBe(1);
     });
+
+    it("clamps levels above 20", () => {
+        expect(readLevelFromForm({ level: 25 })).toBe(20);
+        expect(readLevelFromForm({ level: "21" })).toBe(20);
+    });
 });

@@ -57,13 +57,13 @@ The generic core. **No D&D specifics may live here.** Key pieces:
   `Modifier { stat, operation, value, source, duration, stacking, priority }`.
   - `operation`: `add | multiply | set | sub`
   - `stacking`: `stack | replace | ignore-if-duplicate | ignore-if-higher`
-  - `source`: typed origin (`race | class | item | background | spell |
+  - `source`: typed origin (`race | class | subclass | item | background | spell |
     condition | feat | system`)
   - `duration`: permanent / temporary / condition-bound
   - `resolveStats(...)` applies them in a deterministic order
     (duration filter → stacking → `set → multiply → add → sub`, priority-sorted).
 - `grants/` — `CharacterGrant`: what a character actually ends up with
-  (languages, proficiencies, abilities, spells), each tied back to a `source`.
+  (languages, proficiencies, abilities, spells, **resources**), each tied back to a `source`.
 - `character/` — the `Character` aggregate.
 
 ### `packages/content` — `@rpv/content` (content sources + system curation)
@@ -85,6 +85,10 @@ Where content lives and where system-specific curation is allowed.
 Renders catalogs, character builders, and content. Consumes `@rpv/domain` and
 `@rpv/content`; it should rely on engine resolution rather than re-implementing
 rules. UI must stay system-agnostic and data-driven for the same reasons.
+
+For the end-to-end character build pipeline (level, subclass gating, grant picks,
+resources), see [`PROJECT_CONTEXT.md`](PROJECT_CONTEXT.md). Web tests (`npm test -w rpv-front`)
+are the primary integration coverage; package tests run via root `npm run test:packages`.
 
 ## Adding a new system (the litmus test)
 

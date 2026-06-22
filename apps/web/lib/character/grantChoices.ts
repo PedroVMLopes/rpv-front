@@ -80,13 +80,15 @@ function expandChoiceGrant(
         traitName ||
         `${grant.grantType} choice`;
 
+    const levelSegment =
+        featureLevel !== undefined ? String(featureLevel) : "base";
     const results: PendingChoiceGrant[] = [];
 
     for (let slot = 0; slot < grant.choose; slot++) {
         const key =
             grant.grantType === "language"
-                ? `${source.type}:${source.id}:language:${grantIndex}:${slot}`
-                : `${source.type}:${source.id}:${grant.grantType}:${grantIndex}:${slot}`;
+                ? `${source.type}:${source.id}:${levelSegment}:language:${grantIndex}:${slot}`
+                : `${source.type}:${source.id}:${levelSegment}:${grant.grantType}:${grantIndex}:${slot}`;
 
         results.push({
             key,

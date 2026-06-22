@@ -20,8 +20,8 @@ describe("collectPendingChoiceGrants", () => {
 
         expect(skillChoices).toHaveLength(2);
         expect(skillChoices.map((choice) => choice.key)).toEqual([
-            "class:fighter:skill_proficiency:3:0",
-            "class:fighter:skill_proficiency:3:1",
+            "class:fighter:base:skill_proficiency:3:0",
+            "class:fighter:base:skill_proficiency:3:1",
         ]);
     });
 
@@ -69,8 +69,30 @@ describe("collectPendingChoiceGrants", () => {
 
         expect(level3.length).toBeGreaterThan(level2.length);
         const level3Skill = level3.find(
-            (choice) => choice.key === "class:fighter:skill_proficiency:0:0"
+            (choice) => choice.key === "class:fighter:3:skill_proficiency:0:0"
         );
         expect(level3Skill?.label).toBe("Additional skill (Level 3)");
+    });
+
+    it("uses distinct keys for base and level-gated class choices", () => {
+        const pending = collectPendingChoiceGrants(
+            {
+                ...baseSelections,
+                characterClass: "wizard",
+            },
+            "en",
+            5
+        );
+        const spellKeys = pending
+            .filter((choice) => choice.grant.grantType === "spell")
+            .map((choice) => choice.key);
+
+        expect(new Set(spellKeys).size).toBe(spellKeys.length);
+        expect(spellKeys).toEqual(
+            expect.arrayContaining([
+                "class:wizard:1:spell:2:0",
+                "class:wizard:2:spell:2:0",
+            ])
+        );
     });
 });

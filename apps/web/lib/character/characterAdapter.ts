@@ -11,6 +11,7 @@ import {
     resolveStats,
 } from "@rpv/domain";
 import { SystemKey } from "@/presets";
+import { getSubclass } from "@rpv/content";
 import {
     buildBaseStatsFromForm,
     buildResourcesFromForm,
@@ -98,13 +99,22 @@ export function normalizeCharacterSelections(
               ? [startingItem]
               : [];
 
+    const characterClass =
+        selections?.characterClass ?? coerceCatalogSlug(systemData.characterClass);
+    let subclass = selections?.subclass ?? coerceCatalogSlug(systemData.subclass);
+
+    if (subclass) {
+        const entry = getSubclass(subclass);
+        if (!entry || !characterClass || entry.classSlug !== characterClass) {
+            subclass = undefined;
+        }
+    }
+
     return {
         race: selections?.race ?? coerceCatalogSlug(systemData.race),
         subrace: selections?.subrace ?? coerceCatalogSlug(systemData.subrace),
-        characterClass:
-            selections?.characterClass ??
-            coerceCatalogSlug(systemData.characterClass),
-        subclass: selections?.subclass ?? coerceCatalogSlug(systemData.subclass),
+        characterClass,
+        subclass,
         background:
             selections?.background ?? coerceCatalogSlug(systemData.background),
         items,

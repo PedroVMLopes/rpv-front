@@ -8,7 +8,7 @@ import {
 } from "../lib/character/grantChoiceOptions";
 
 const fighterSkillChoice: PendingChoiceGrant = {
-    key: "class:fighter:skill_proficiency:3:0",
+    key: "class:fighter:base:skill_proficiency:3:0",
     grant: {
         grantType: "skill_proficiency",
         choose: 2,
@@ -29,11 +29,11 @@ const fighterSkillChoice: PendingChoiceGrant = {
 
 describe("getGrantChoicePoolKey", () => {
     it("groups slots from the same grant", () => {
-        expect(getGrantChoicePoolKey("class:fighter:skill_proficiency:3:0")).toBe(
-            "class:fighter:skill_proficiency:3"
+        expect(getGrantChoicePoolKey("class:fighter:base:skill_proficiency:3:0")).toBe(
+            "class:fighter:base:skill_proficiency:3"
         );
-        expect(getGrantChoicePoolKey("class:fighter:skill_proficiency:3:1")).toBe(
-            "class:fighter:skill_proficiency:3"
+        expect(getGrantChoicePoolKey("class:fighter:base:skill_proficiency:3:1")).toBe(
+            "class:fighter:base:skill_proficiency:3"
         );
     });
 });
@@ -60,11 +60,11 @@ describe("buildGrantChoiceSelectOptions", () => {
         const options = buildGrantChoiceSelectOptions(
             {
                 ...fighterSkillChoice,
-                key: "class:fighter:skill_proficiency:3:1",
+                key: "class:fighter:base:skill_proficiency:3:1",
                 label: "Choose two skills. (2/2)",
             },
             {
-                "class:fighter:skill_proficiency:3:0": "athletics",
+                "class:fighter:base:skill_proficiency:3:0": "athletics",
             },
             new Set()
         );
@@ -84,8 +84,8 @@ describe("buildGrantChoiceSelectOptions", () => {
         const options = buildGrantChoiceSelectOptions(
             fighterSkillChoice,
             {
-                "class:fighter:skill_proficiency:3:0": "athletics",
-                "class:fighter:skill_proficiency:3:1": "athletics",
+                "class:fighter:base:skill_proficiency:3:0": "athletics",
+                "class:fighter:base:skill_proficiency:3:1": "athletics",
             },
             new Set()
         );
@@ -102,7 +102,7 @@ describe("buildGrantChoiceSelectOptions", () => {
 
     it("shows a language picked in another slot as disabled with a checkmark", () => {
         const highElfLanguageChoice: PendingChoiceGrant = {
-            key: "race:high-elf:language:0:0",
+            key: "race:high-elf:base:language:0:0",
             grant: {
                 grantType: "language",
                 choose: 1,
@@ -117,7 +117,7 @@ describe("buildGrantChoiceSelectOptions", () => {
         };
 
         const sageLanguageChoice: PendingChoiceGrant = {
-            key: "background:sage:language:0:0",
+            key: "background:sage:base:language:0:0",
             grant: {
                 grantType: "language",
                 choose: 2,
@@ -134,13 +134,13 @@ describe("buildGrantChoiceSelectOptions", () => {
         const otherPicks = getOtherPickedRefsForGrantType(
             "language",
             [highElfLanguageChoice, sageLanguageChoice],
-            { "race:high-elf:language:0:0": "draconic" },
+            { "race:high-elf:base:language:0:0": "draconic" },
             sageLanguageChoice.key
         );
 
         const options = buildGrantChoiceSelectOptions(
             sageLanguageChoice,
-            { "race:high-elf:language:0:0": "draconic" },
+            { "race:high-elf:base:language:0:0": "draconic" },
             new Set(["common", "elvish"]),
             otherPicks
         );
@@ -155,7 +155,7 @@ describe("buildGrantChoiceSelectOptions", () => {
 
     it("shows picks from other skill_proficiency slots as disabled with a checkmark", () => {
         const level3SkillChoice: PendingChoiceGrant = {
-            key: "class:fighter:skill_proficiency:0:0",
+            key: "class:fighter:3:skill_proficiency:0:0",
             grant: {
                 grantType: "skill_proficiency",
                 choose: 1,
@@ -175,7 +175,7 @@ describe("buildGrantChoiceSelectOptions", () => {
 
         const fighterSkillChoice2: PendingChoiceGrant = {
             ...fighterSkillChoice,
-            key: "class:fighter:skill_proficiency:3:1",
+            key: "class:fighter:base:skill_proficiency:3:1",
             label: "Choose two skills. (2/2)",
         };
 
@@ -183,8 +183,8 @@ describe("buildGrantChoiceSelectOptions", () => {
             "skill_proficiency",
             [fighterSkillChoice, fighterSkillChoice2, level3SkillChoice],
             {
-                "class:fighter:skill_proficiency:3:0": "athletics",
-                "class:fighter:skill_proficiency:3:1": "perception",
+                "class:fighter:base:skill_proficiency:3:0": "athletics",
+                "class:fighter:base:skill_proficiency:3:1": "perception",
             },
             level3SkillChoice.key
         );
@@ -213,7 +213,7 @@ describe("buildGrantChoiceSelectOptions", () => {
     it("keeps a selected ref visible even when it is missing from choice.options", () => {
         const options = buildGrantChoiceSelectOptions(
             fighterSkillChoice,
-            { "class:fighter:skill_proficiency:3:0": "survival" },
+            { "class:fighter:base:skill_proficiency:3:0": "survival" },
             new Set()
         );
 
@@ -233,12 +233,12 @@ describe("findDuplicateGrantPicksInPool", () => {
                 fighterSkillChoice,
                 {
                     ...fighterSkillChoice,
-                    key: "class:fighter:skill_proficiency:3:1",
+                    key: "class:fighter:base:skill_proficiency:3:1",
                 },
             ],
             {
-                "class:fighter:skill_proficiency:3:0": "athletics",
-                "class:fighter:skill_proficiency:3:1": "athletics",
+                "class:fighter:base:skill_proficiency:3:0": "athletics",
+                "class:fighter:base:skill_proficiency:3:1": "athletics",
             }
         );
 
@@ -246,8 +246,8 @@ describe("findDuplicateGrantPicksInPool", () => {
             expect.objectContaining({
                 ref: "athletics",
                 keys: [
-                    "class:fighter:skill_proficiency:3:0",
-                    "class:fighter:skill_proficiency:3:1",
+                    "class:fighter:base:skill_proficiency:3:0",
+                    "class:fighter:base:skill_proficiency:3:1",
                 ],
             }),
         ]);
@@ -258,13 +258,13 @@ describe("findGrantPicksOnOwnedRefs", () => {
     it("detects picks that repeat a fixed-grant ref", () => {
         const invalid = findGrantPicksOnOwnedRefs(
             [fighterSkillChoice],
-            { "class:fighter:skill_proficiency:3:0": "history" },
+            { "class:fighter:base:skill_proficiency:3:0": "history" },
             new Map([["skill_proficiency", new Set(["history"])]])
         );
 
         expect(invalid).toEqual([
             expect.objectContaining({
-                key: "class:fighter:skill_proficiency:3:0",
+                key: "class:fighter:base:skill_proficiency:3:0",
                 ref: "history",
             }),
         ]);

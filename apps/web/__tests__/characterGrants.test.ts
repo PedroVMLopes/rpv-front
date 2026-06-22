@@ -43,8 +43,8 @@ describe("deriveCharacterGrants", () => {
                 subrace: "high-elf",
                 choices: {
                     grantPicks: {
-                        "race:high-elf:language:0:0": "draconic",
-                        "race:high-elf:spell:0:0": "fire-bolt",
+                        "race:high-elf:base:language:0:0": "draconic",
+                        "race:high-elf:base:spell:0:0": "fire-bolt",
                     },
                 },
             },
@@ -136,8 +136,8 @@ describe("deriveCharacterGrants", () => {
                 characterClass: "fighter",
                 choices: {
                     grantPicks: {
-                        "class:fighter:skill_proficiency:3:0": "athletics",
-                        "class:fighter:skill_proficiency:3:1": "intimidation",
+                        "class:fighter:base:skill_proficiency:3:0": "athletics",
+                        "class:fighter:base:skill_proficiency:3:1": "intimidation",
                     },
                 },
             },

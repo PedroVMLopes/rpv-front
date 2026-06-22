@@ -23,7 +23,7 @@ design smell — generalize the primitive or move the specifics into content.
   pure data: `{ id, stat, operation, value, source, duration, stacking, priority }`.
   - `operation`: `add | multiply | set | sub`
   - `stacking`: `stack | replace | ignore-if-duplicate | ignore-if-higher`
-  - `source`: `{ type, id }` where type ∈ `race | class | item | background |
+  - `source`: `{ type, id }` where type ∈ `race | class | subclass | item | background |
     spell | condition | feat | system`
   - `duration`: permanent / temporary / condition-bound
   - `modifier.resolver.ts` applies modifiers deterministically:
@@ -31,9 +31,16 @@ design smell — generalize the primitive or move the specifics into content.
     `set → multiply → add → sub`, priority-sorted (ascending) within a group.
 - `grants/` — `CharacterGrant`: the resolved things a character has (kinds:
   `language | ability | proficiency | saving_throw | spell | resource`), each carrying its
-  `source`.
+  `source`. Resource grants may include `amount`; refs are opaque strings (e.g.
+  `spell-slots-1`) with no D&D meaning in this package.
 - `character/` — the `Character` aggregate and its types.
 - `i18n/locale.ts` — locale primitives.
+
+## Resource aggregation
+
+`aggregateResourceGrants(grants)` sums `CharacterGrant` entries where
+`kind === "resource"` by `ref`. The web app calls this via `deriveResourceTotals()`
+and merges totals into `stored.resources` without overwriting form-driven HP.
 
 ## Design guidance
 
@@ -47,4 +54,5 @@ design smell — generalize the primitive or move the specifics into content.
 ## Exports & tests
 
 - Public surface is re-exported from `src/index.ts`. Add new modules there.
-- Tests live in `__tests__/`. Run with `npm test` in this package.
+- Tests live in `__tests__/`. Run with `npm run test:packages` from the repo root
+  (or `jest` in this package directory when configured).

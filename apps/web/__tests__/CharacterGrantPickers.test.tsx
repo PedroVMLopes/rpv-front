@@ -118,7 +118,7 @@ describe("CharacterGrantPickers", () => {
                     characterClass: "fighter",
                     choices: {
                         grantPicks: {
-                            "class:fighter:skill_proficiency:3:0": "athletics",
+                            "class:fighter:base:skill_proficiency:3:0": "athletics",
                         },
                     },
                 }}
@@ -149,8 +149,8 @@ describe("CharacterGrantPickers", () => {
                     level: 3,
                     choices: {
                         grantPicks: {
-                            "class:fighter:skill_proficiency:3:0": "athletics",
-                            "class:fighter:skill_proficiency:3:1": "perception",
+                            "class:fighter:base:skill_proficiency:3:0": "athletics",
+                            "class:fighter:base:skill_proficiency:3:1": "perception",
                         },
                     },
                 }}
@@ -192,7 +192,7 @@ describe("CharacterGrantPickers", () => {
                     background: "sage",
                     choices: {
                         grantPicks: {
-                            "race:high-elf:language:0:0": "draconic",
+                            "race:high-elf:base:language:0:0": "draconic",
                         },
                     },
                 }}

@@ -34,7 +34,7 @@ describe("findMissingRequiredChoices", () => {
         );
 
         expect(missing.map((choice) => choice.key)).toEqual(
-            expect.arrayContaining(["race:dwarf:tool_proficiency:0:0"])
+            expect.arrayContaining(["race:dwarf:base:tool_proficiency:0:0"])
         );
     });
 
@@ -51,8 +51,8 @@ describe("findMissingRequiredChoices", () => {
 
         expect(missing.map((choice) => choice.key)).toEqual(
             expect.arrayContaining([
-                "race:high-elf:language:0:0",
-                "race:high-elf:spell:0:0",
+                "race:high-elf:base:language:0:0",
+                "race:high-elf:base:spell:0:0",
             ])
         );
     });
@@ -70,8 +70,8 @@ describe("findMissingRequiredChoices", () => {
 
         expect(missing.map((choice) => choice.key)).toEqual(
             expect.arrayContaining([
-                "class:fighter:skill_proficiency:3:0",
-                "class:fighter:skill_proficiency:3:1",
+                "class:fighter:base:skill_proficiency:3:0",
+                "class:fighter:base:skill_proficiency:3:1",
             ])
         );
     });
@@ -84,8 +84,8 @@ describe("findMissingRequiredChoices", () => {
                 characterClass: "fighter",
                 choices: {
                     grantPicks: {
-                        "class:fighter:skill_proficiency:3:0": "athletics",
-                        "class:fighter:skill_proficiency:3:1": "intimidation",
+                        "class:fighter:base:skill_proficiency:3:0": "athletics",
+                        "class:fighter:base:skill_proficiency:3:1": "intimidation",
                     },
                 },
             },
@@ -93,7 +93,7 @@ describe("findMissingRequiredChoices", () => {
         );
 
         expect(missing.map((choice) => choice.key)).toEqual([
-            "class:fighter:skill_proficiency:0:0",
+            "class:fighter:3:skill_proficiency:0:0",
         ]);
     });
 
@@ -106,10 +106,10 @@ describe("findMissingRequiredChoices", () => {
                 characterClass: "fighter",
                 choices: {
                     grantPicks: {
-                        "race:high-elf:language:0:0": "draconic",
-                        "race:high-elf:spell:0:0": "fire-bolt",
-                        "class:fighter:skill_proficiency:3:0": "athletics",
-                        "class:fighter:skill_proficiency:3:1": "intimidation",
+                        "race:high-elf:base:language:0:0": "draconic",
+                        "race:high-elf:base:spell:0:0": "fire-bolt",
+                        "class:fighter:base:skill_proficiency:3:0": "athletics",
+                        "class:fighter:base:skill_proficiency:3:1": "intimidation",
                     },
                 },
             },
@@ -127,8 +127,8 @@ describe("findMissingRequiredChoices", () => {
                 characterClass: "fighter",
                 choices: {
                     grantPicks: {
-                        "class:fighter:skill_proficiency:3:0": "athletics",
-                        "class:fighter:skill_proficiency:3:1": "athletics",
+                        "class:fighter:base:skill_proficiency:3:0": "athletics",
+                        "class:fighter:base:skill_proficiency:3:1": "athletics",
                     },
                 },
             },
@@ -147,8 +147,8 @@ describe("findMissingRequiredChoices", () => {
                 characterClass: "fighter",
                 choices: {
                     grantPicks: {
-                        "class:fighter:skill_proficiency:3:0": "history",
-                        "class:fighter:skill_proficiency:3:1": "athletics",
+                        "class:fighter:base:skill_proficiency:3:0": "history",
+                        "class:fighter:base:skill_proficiency:3:1": "athletics",
                     },
                 },
             },
@@ -228,12 +228,27 @@ describe("applyChoiceValidation", () => {
             race: "dwarf",
             choices: {
                 grantPicks: {
-                    "race:dwarf:tool_proficiency:0:0": "smiths-tools",
+                    "race:dwarf:base:tool_proficiency:0:0": "smiths-tools",
                 },
             },
         });
 
         expect(result.success).toBe(true);
+    });
+
+    it("rejects levels above 20", () => {
+        const result = schema.safeParse({
+            ...baseFormData,
+            level: 21,
+            race: "dwarf",
+            choices: {
+                grantPicks: {
+                    "race:dwarf:base:tool_proficiency:0:0": "smiths-tools",
+                },
+            },
+        });
+
+        expect(result.success).toBe(false);
     });
 
     it("fails validation when subclass is required but missing", () => {
@@ -244,10 +259,9 @@ describe("applyChoiceValidation", () => {
             race: "elf",
             choices: {
                 grantPicks: {
-                    "class:fighter:skill_proficiency:0:0": "athletics",
-                    "class:fighter:skill_proficiency:0:1": "intimidation",
-                    "class:fighter:skill_proficiency:3:0": "history",
-                    "class:fighter:skill_proficiency:3:1": "insight",
+                    "class:fighter:base:skill_proficiency:3:0": "athletics",
+                    "class:fighter:base:skill_proficiency:3:1": "intimidation",
+                    "class:fighter:3:skill_proficiency:0:0": "history",
                 },
             },
         });

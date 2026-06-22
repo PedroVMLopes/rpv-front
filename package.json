@@ -5,6 +5,11 @@
     "apps/*",
     "packages/*"
   ],
+  "scripts": {
+    "test": "jest && npm test -w rpv-front",
+    "test:packages": "jest",
+    "test:web": "npm test -w rpv-front"
+  },
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "jest": "^30.2.0",

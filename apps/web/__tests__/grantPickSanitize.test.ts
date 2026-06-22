@@ -12,8 +12,8 @@ describe("sanitizeGrantPicks", () => {
                 subrace: "high-elf",
                 choices: {
                     grantPicks: {
-                        "race:high-elf:language:0:0": "draconic",
-                        "race:high-elf:spell:0:0": "fire-bolt",
+                        "race:high-elf:base:language:0:0": "draconic",
+                        "race:high-elf:base:spell:0:0": "fire-bolt",
                     },
                 },
             },
@@ -21,8 +21,8 @@ describe("sanitizeGrantPicks", () => {
         );
 
         expect(selections.choices.grantPicks).toEqual({
-            "race:high-elf:language:0:0": "draconic",
-            "race:high-elf:spell:0:0": "fire-bolt",
+            "race:high-elf:base:language:0:0": "draconic",
+            "race:high-elf:base:spell:0:0": "fire-bolt",
         });
     });
 
@@ -34,9 +34,9 @@ describe("sanitizeGrantPicks", () => {
                 subrace: undefined,
                 choices: {
                     grantPicks: {
-                        "race:high-elf:language:0:0": "draconic",
-                        "race:high-elf:spell:0:0": "fire-bolt",
-                        "race:dwarf:tool_proficiency:0:0": "smiths-tools",
+                        "race:high-elf:base:language:0:0": "draconic",
+                        "race:high-elf:base:spell:0:0": "fire-bolt",
+                        "race:dwarf:base:tool_proficiency:0:0": "smiths-tools",
                     },
                 },
             },
@@ -44,7 +44,7 @@ describe("sanitizeGrantPicks", () => {
         );
 
         expect(selections.choices.grantPicks).toEqual({
-            "race:dwarf:tool_proficiency:0:0": "smiths-tools",
+            "race:dwarf:base:tool_proficiency:0:0": "smiths-tools",
         });
     });
 
@@ -56,7 +56,7 @@ describe("sanitizeGrantPicks", () => {
                 characterClass: "wizard",
                 choices: {
                     grantPicks: {
-                        "class:fighter:skill_proficiency:3:0": "athletics",
+                        "class:fighter:base:skill_proficiency:3:0": "athletics",
                     },
                 },
             },
@@ -74,7 +74,7 @@ describe("sanitizeGrantPicks", () => {
                 characterClass: "fighter",
                 choices: {
                     grantPicks: {
-                        "class:fighter:skill_proficiency:3:0": "athletics",
+                        "class:fighter:base:skill_proficiency:3:0": "athletics",
                     },
                 },
             },
@@ -82,7 +82,7 @@ describe("sanitizeGrantPicks", () => {
         );
 
         expect(selections.choices.grantPicks).toEqual({
-            "class:fighter:skill_proficiency:3:0": "athletics",
+            "class:fighter:base:skill_proficiency:3:0": "athletics",
         });
     });
 
@@ -93,9 +93,9 @@ describe("sanitizeGrantPicks", () => {
                 characterClass: "fighter",
                 choices: {
                     grantPicks: {
-                        "class:fighter:skill_proficiency:3:0": "athletics",
-                        "class:fighter:skill_proficiency:3:1": "intimidation",
-                        "class:fighter:skill_proficiency:0:0": "history",
+                        "class:fighter:base:skill_proficiency:3:0": "athletics",
+                        "class:fighter:base:skill_proficiency:3:1": "intimidation",
+                        "class:fighter:3:skill_proficiency:0:0": "history",
                     },
                 },
             },
@@ -104,8 +104,8 @@ describe("sanitizeGrantPicks", () => {
         );
 
         expect(selections.choices.grantPicks).toEqual({
-            "class:fighter:skill_proficiency:3:0": "athletics",
-            "class:fighter:skill_proficiency:3:1": "intimidation",
+            "class:fighter:base:skill_proficiency:3:0": "athletics",
+            "class:fighter:base:skill_proficiency:3:1": "intimidation",
         });
     });
 });
@@ -171,5 +171,31 @@ describe("sanitizeSelections", () => {
         );
 
         expect(selections.subclass).toBe("wizard-evocation");
+    });
+
+    it("clears subclass and stale picks when level drops below unlock", () => {
+        const selections = sanitizeSelections(
+            {
+                ...baseSelections,
+                characterClass: "fighter",
+                subclass: "fighter-champion",
+                choices: {
+                    grantPicks: {
+                        "class:fighter:base:skill_proficiency:3:0": "athletics",
+                        "class:fighter:base:skill_proficiency:3:1": "intimidation",
+                        "class:fighter:3:skill_proficiency:0:0": "history",
+                        "subclass:fighter-champion:base:ability:0:0": "unused",
+                    },
+                },
+            },
+            "en",
+            2
+        );
+
+        expect(selections.subclass).toBeUndefined();
+        expect(selections.choices.grantPicks).toEqual({
+            "class:fighter:base:skill_proficiency:3:0": "athletics",
+            "class:fighter:base:skill_proficiency:3:1": "intimidation",
+        });
     });
 });
