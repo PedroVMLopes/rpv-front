@@ -39,5 +39,25 @@
     "monk-open-hand": {
       "name": "Mão Aberta"
     }
+  },
+  "items": {
+    "scroll-of-fire-bolt": {
+      "name": "Pergaminho de Raio de Fogo"
+    },
+    "amulet-of-vitality": {
+      "name": "Amuleto de Vitalidade"
+    },
+    "ring-of-hardiness": {
+      "name": "Anel de Robustez"
+    },
+    "longsword": {
+      "name": "Espada Longa"
+    },
+    "leather-armor": {
+      "name": "Armadura de Couro"
+    },
+    "shield": {
+      "name": "Escudo"
+    }
   }
 }

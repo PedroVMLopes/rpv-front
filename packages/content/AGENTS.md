@@ -101,6 +101,39 @@ Convention: kebab-case refs (`spell-slots-1`, `rage-uses`, `ki-points`).
 
 Add pt-BR names in [`data/translations/pt-BR.json`](data/translations/pt-BR.json).
 
+## Item authoring
+
+### `ItemEntry` ([`itemGrants.dnd.ts`](src/curation/itemGrants.dnd.ts))
+
+- `system` — namespace tag (pilot: `"dnd"`).
+- `grants` — declarative bonuses/abilities applied when the item is **equipped**
+  (bag-only items do not grant until equipped).
+- `allowedSlots?` — slot IDs this item can occupy (validated in Etapa 2 via
+  `equipmentSlots.dnd.ts`).
+- `stackable?` — defaults to **true** when omitted; set `false` for unique gear
+  (rings, weapons, armor).
+
+Helpers: `getItem(slug, system?, locale?)`, `listItems(system?, locale?)`,
+`getItemGrants(slug, system?)`, `isItemStackable(entry)`.
+
+### Minimal example — item
+
+```ts
+{
+  slug: "longsword",
+  system: "dnd",
+  name: "Longsword",
+  description: "A well-balanced blade.",
+  allowedSlots: ["main-hand"],
+  stackable: false,
+  grants: [
+    { grantType: "stat_modifier", choose: 0, targetStat: "strength", amount: 1 },
+  ],
+}
+```
+
+Add pt-BR names under `items` in [`data/translations/pt-BR.json`](data/translations/pt-BR.json).
+
 ## Rules
 
 - **Content = data.** New content (items, classes, subclasses, races, …) is
