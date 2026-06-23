@@ -1,3 +1,4 @@
+import { emptyInventory } from "@rpv/domain";
 import { act } from "@testing-library/react";
 import { useCharacterStore } from "../store/useCharacterStore";
 import { useContentLocale } from "../store/useContentLocale";
@@ -41,7 +42,7 @@ describe("useCharacterStore race modifiers", () => {
         expect(character.selections).toMatchObject({
             race: "elf",
             subrace: undefined,
-            items: [],
+            inventory: emptyInventory(),
             choices: {},
         });
         expect(character.modifiers).toEqual([

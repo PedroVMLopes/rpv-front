@@ -4,17 +4,20 @@ import { useMemo } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import type { Locale } from "@rpv/domain";
+import type { SystemKey } from "@/presets";
 import { deriveResourcesFromForm } from "@/lib/character/deriveResourcesFromForm";
 import { DerivedResourcesDisplay } from "@/components/characters/DerivedResourcesDisplay";
 
 type ClassResourcesFieldProps = {
     form: UseFormReturn<Record<string, unknown>>;
     contentLocale: Locale;
+    system: SystemKey;
 };
 
 export function ClassResourcesField({
     form,
     contentLocale,
+    system,
 }: ClassResourcesFieldProps) {
     const t = useTranslations("classResources");
 
@@ -43,8 +46,8 @@ export function ClassResourcesField({
     );
 
     const derivedResources = useMemo(
-        () => deriveResourcesFromForm(formSnapshot, contentLocale),
-        [formSnapshot, contentLocale]
+        () => deriveResourcesFromForm(formSnapshot, contentLocale, system),
+        [formSnapshot, contentLocale, system]
     );
 
     const hasClass =

@@ -89,7 +89,7 @@ export default function EditPlayer() {
         formDefaults ? readLevelFromForm(formDefaults) : undefined
     );
 
-    useGrantPickSanitizer(form, contentLocale);
+    useGrantPickSanitizer(form, contentLocale, characterSystem);
 
     useEffect(() => {
         if (!formDefaults) {
@@ -204,6 +204,7 @@ export default function EditPlayer() {
             <ClassResourcesField
                 form={form}
                 contentLocale={contentLocale}
+                system={characterSystem}
             />
             <DynamicForm form={form} fields={fields} onSubmit={handleSave} />
             <CharacterGrantPickers form={form} contentLocale={contentLocale} />

@@ -27,12 +27,15 @@ describe("useCharacterStore stat modifiers", () => {
         });
     });
 
-    it("adds item HP bonus to resolved max HP on create", () => {
+    it("adds item HP bonus to resolved max HP when item is equipped", () => {
         act(() => {
             useCharacterStore.getState().addCharacter(
                 {
                     ...baseFormData,
-                    startingItem: "amulet-of-vitality",
+                    inventory: {
+                        bag: [],
+                        equipped: { neck: "amulet-of-vitality" },
+                    },
                 },
                 "player",
                 "dnd"
@@ -48,7 +51,7 @@ describe("useCharacterStore stat modifiers", () => {
         ).toBe(17);
     });
 
-    it("removes item HP bonus when starting item is cleared on update", () => {
+    it("does not add item HP bonus when item is only in bag", () => {
         act(() => {
             useCharacterStore.getState().addCharacter(
                 {
@@ -62,10 +65,34 @@ describe("useCharacterStore stat modifiers", () => {
 
         const character = useCharacterStore.getState().characters[0];
 
+        expect(character.baseStats.hitPoints).toBe(12);
+        expect(character.resources.hp).toBe(12);
+        expect(
+            useCharacterStore.getState().getResolvedStats(character.id)?.hitPoints
+        ).toBe(12);
+    });
+
+    it("removes item HP bonus when equipment is cleared on update", () => {
+        act(() => {
+            useCharacterStore.getState().addCharacter(
+                {
+                    ...baseFormData,
+                    inventory: {
+                        bag: [],
+                        equipped: { neck: "amulet-of-vitality" },
+                    },
+                },
+                "player",
+                "dnd"
+            );
+        });
+
+        const character = useCharacterStore.getState().characters[0];
+
         act(() => {
             useCharacterStore.getState().updateCharacter(character.id, {
                 ...baseFormData,
-                startingItem: "",
+                inventory: { bag: [], equipped: {} },
             });
         });
 
@@ -83,12 +110,15 @@ describe("useCharacterStore stat modifiers", () => {
         ).toBe(false);
     });
 
-    it("preserves manual non-derived modifiers when item changes", () => {
+    it("preserves manual non-derived modifiers when equipment changes", () => {
         act(() => {
             useCharacterStore.getState().addCharacter(
                 {
                     ...baseFormData,
-                    startingItem: "amulet-of-vitality",
+                    inventory: {
+                        bag: [],
+                        equipped: { neck: "amulet-of-vitality" },
+                    },
                 },
                 "player",
                 "dnd"
@@ -123,7 +153,7 @@ describe("useCharacterStore stat modifiers", () => {
         act(() => {
             useCharacterStore.getState().updateCharacter(character.id, {
                 ...baseFormData,
-                startingItem: "",
+                inventory: { bag: [], equipped: {} },
             });
         });
 

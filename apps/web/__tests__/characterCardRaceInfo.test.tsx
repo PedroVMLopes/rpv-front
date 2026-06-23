@@ -6,6 +6,7 @@ import { render, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { ClassSubclassBlock, RaceTraitsBlock } from "../components/characters/CharacterCard/CharacterCardRaceInfo";
 import { useContentLocale } from "../store/useContentLocale";
+import { emptyInventory } from "@rpv/domain";
 import type { StoredCharacter } from "../lib/character/storedCharacter";
 import enMessages from "../messages/en.json";
 
@@ -32,7 +33,7 @@ const storedCharacter: StoredCharacter = {
         subrace: "high-elf",
         characterClass: "wizard",
         subclass: "wizard-evocation",
-        items: [],
+        inventory: emptyInventory(),
         choices: {},
     },
     resources: { hp: 8 },

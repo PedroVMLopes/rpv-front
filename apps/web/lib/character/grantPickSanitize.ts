@@ -1,6 +1,9 @@
 import type { Locale } from "@rpv/domain";
+import { emptyInventory } from "@rpv/domain";
 import { getClassSubclassLevel, getSubclass } from "@rpv/content";
+import type { SystemKey } from "@/presets";
 import { collectPendingChoiceGrants } from "./grantChoices";
+import { sanitizeInventory } from "./inventory";
 import type { CharacterSelections } from "./storedCharacter";
 
 function isSubclassValidForClass(
@@ -42,9 +45,13 @@ function isSubclassUnlockedForLevel(
 export function sanitizeSelections(
     selections: CharacterSelections,
     locale: Locale,
+    system: SystemKey,
     characterLevel = 1
 ): CharacterSelections {
-    let next = selections;
+    let next: CharacterSelections = {
+        ...selections,
+        inventory: sanitizeInventory(selections.inventory ?? emptyInventory(), system),
+    };
 
     if (
         next.subclass &&
@@ -75,7 +82,7 @@ export function sanitizeSelections(
 
 /**
  * Drops grant pick entries whose keys no longer match pending choices for the
- * current race, subrace, class, subclass, background, items, or character level.
+ * current race, subrace, class, subclass, background, equipped items, or character level.
  */
 export function sanitizeGrantPicks(
     selections: CharacterSelections,

@@ -1,3 +1,4 @@
+import { emptyInventory } from "@rpv/domain";
 import {
     flattenStoredToForm,
     formDataToStoredCharacter,
@@ -48,7 +49,7 @@ describe("characterAdapter system-agnostic mapping", () => {
             characterClass: "fighter",
             subclass: undefined,
             background: undefined,
-            items: [],
+            inventory: emptyInventory(),
             choices: {},
         });
         expect(stored).not.toHaveProperty("hp");
@@ -118,7 +119,7 @@ describe("characterAdapter system-agnostic mapping", () => {
             characterClass: "fighter",
             subclass: undefined,
             background: undefined,
-            items: [],
+            inventory: emptyInventory(),
             choices: {},
         });
         expect(stored.systemData).not.toHaveProperty("race");
@@ -131,7 +132,7 @@ describe("characterAdapter system-agnostic mapping", () => {
             {
                 race: "elf",
                 subrace: "high-elf",
-                items: [],
+                inventory: emptyInventory(),
                 choices: { grantPicks: { cantrip: "acid-splash" } },
             }
         );
@@ -142,7 +143,7 @@ describe("characterAdapter system-agnostic mapping", () => {
             characterClass: undefined,
             subclass: undefined,
             background: undefined,
-            items: [],
+            inventory: emptyInventory(),
             choices: { grantPicks: { cantrip: "acid-splash" } },
         });
     });
@@ -166,7 +167,7 @@ describe("characterAdapter system-agnostic mapping", () => {
             characterClass: undefined,
             subclass: undefined,
             background: undefined,
-            items: [],
+            inventory: emptyInventory(),
             choices: {},
         });
     });
@@ -190,7 +191,7 @@ describe("characterAdapter system-agnostic mapping", () => {
             characterClass: undefined,
             subclass: undefined,
             background: undefined,
-            items: [],
+            inventory: emptyInventory(),
             choices: {},
         });
     });
@@ -273,10 +274,11 @@ describe("characterAdapter system-agnostic mapping", () => {
                 characterClass: undefined,
                 subclass: "wizard-evocation",
                 background: undefined,
-                items: [],
+                inventory: emptyInventory(),
                 choices: {},
             },
-            {}
+            {},
+            "dnd"
         );
 
         expect(normalized.characterClass).toBeUndefined();

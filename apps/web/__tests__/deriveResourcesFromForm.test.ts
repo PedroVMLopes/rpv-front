@@ -17,14 +17,15 @@ const baseFormData = {
 
 describe("deriveResourcesFromForm", () => {
     it("returns empty resources when no class is selected", () => {
-        expect(deriveResourcesFromForm(baseFormData, "en")).toEqual({});
+        expect(deriveResourcesFromForm(baseFormData, "en", "dnd")).toEqual({});
     });
 
     it("derives wizard spell slots at level 1", () => {
         expect(
             deriveResourcesFromForm(
                 { ...baseFormData, characterClass: "wizard", level: 1 },
-                "en"
+                "en",
+                "dnd"
             )
         ).toEqual({ "spell-slots-1": 2 });
     });
@@ -33,7 +34,8 @@ describe("deriveResourcesFromForm", () => {
         expect(
             deriveResourcesFromForm(
                 { ...baseFormData, characterClass: "wizard", level: 5 },
-                "en"
+                "en",
+                "dnd"
             )
         ).toMatchObject({
             "spell-slots-1": 4,
@@ -52,7 +54,8 @@ describe("deriveResourcesFromForm", () => {
                     subclass: "barbarian-berserker",
                     level: 5,
                 },
-                "en"
+                "en",
+                "dnd"
             )
         ).toMatchObject({ "rage-uses": 3 });
     });
@@ -66,7 +69,8 @@ describe("deriveResourcesFromForm", () => {
                     subclass: "monk-open-hand",
                     level: 5,
                 },
-                "en"
+                "en",
+                "dnd"
             )
         ).toMatchObject({ "ki-points": 5 });
     });
@@ -101,7 +105,7 @@ describe("deriveResourcesFromForm", () => {
         };
 
         const stored = buildNewStoredCharacter(formData, "player", "dnd", "en");
-        const derived = deriveResourcesFromForm(formData, "en");
+        const derived = deriveResourcesFromForm(formData, "en", "dnd");
 
         for (const [ref, count] of Object.entries(derived)) {
             expect(stored.resources[ref]).toBe(count);

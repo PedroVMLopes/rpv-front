@@ -4,12 +4,15 @@ import { emptyCharacterSelections } from "../lib/character/storedCharacter";
 const baseSelections = { ...emptyCharacterSelections() };
 
 describe("deriveStatModifiers", () => {
-    it("derives hitPoints modifier from starting item", () => {
+    it("derives hitPoints modifier from equipped item", () => {
         const modifiers = deriveStatModifiers(
             {
                 ...baseSelections,
                 race: "human",
-                items: ["amulet-of-vitality"],
+                inventory: {
+                    bag: [],
+                    equipped: { neck: "amulet-of-vitality" },
+                },
             },
             "en"
         );

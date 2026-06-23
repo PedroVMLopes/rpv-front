@@ -45,6 +45,7 @@ export function buildStoredCharacter(input: BuildCharacterInput): StoredCharacte
     let selections = sanitizeSelections(
         buildSelectionsFromForm(formData, existing?.selections),
         locale,
+        system,
         characterLevel
     );
     const modifiers = deriveModifiersForCharacter(selections, locale, {

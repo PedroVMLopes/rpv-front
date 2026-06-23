@@ -100,6 +100,7 @@ describe("sanitizeGrantPicks", () => {
                 },
             },
             "en",
+            "dnd",
             2
         );
 
@@ -124,6 +125,7 @@ describe("sanitizeSelections", () => {
                 },
             },
             "en",
+            "dnd",
             3
         );
 
@@ -139,6 +141,7 @@ describe("sanitizeSelections", () => {
                 subclass: "wizard-evocation",
             },
             "en",
+            "dnd",
             3
         );
 
@@ -153,6 +156,7 @@ describe("sanitizeSelections", () => {
                 subclass: "wizard-evocation",
             },
             "en",
+            "dnd",
             2
         );
 
@@ -167,6 +171,7 @@ describe("sanitizeSelections", () => {
                 subclass: "wizard-evocation",
             },
             "en",
+            "dnd",
             5
         );
 
@@ -189,6 +194,7 @@ describe("sanitizeSelections", () => {
                 },
             },
             "en",
+            "dnd",
             2
         );
 

@@ -1,4 +1,5 @@
 import type { Locale } from "@rpv/domain";
+import type { SystemKey } from "@/presets";
 import { buildSelectionsFromForm } from "./characterAdapter";
 import { deriveCharacterGrants } from "./characterGrants";
 import { deriveResourceTotals } from "./deriveResourceTotals";
@@ -15,12 +16,14 @@ import {
 
 export function deriveResourcesFromForm(
     formData: Record<string, unknown>,
-    locale: Locale
+    locale: Locale,
+    system: SystemKey
 ): Record<string, number> {
     const characterLevel = readLevelFromForm(formData);
     const selections = sanitizeSelections(
         buildSelectionsFromForm(formData),
         locale,
+        system,
         characterLevel
     );
     const grants = deriveCharacterGrants(

@@ -1,4 +1,5 @@
-import type { BaseStats, CharacterGrant, CharacterType, Locale, Modifier } from "@rpv/domain";
+import type { BaseStats, CharacterGrant, CharacterType, CharacterInventory, Locale, Modifier } from "@rpv/domain";
+import { emptyInventory } from "@rpv/domain";
 import type { SystemKey } from "@/presets";
 
 export type CharacterChoices = {
@@ -11,13 +12,12 @@ export type CharacterSelections = {
     characterClass?: string;
     subclass?: string;
     background?: string;
-    /** Item slugs that contribute grants. Phase 1: single starting item maps here. */
-    items: string[];
+    inventory: CharacterInventory;
     choices: CharacterChoices;
 };
 
 export function emptyCharacterSelections(): CharacterSelections {
-    return { items: [], choices: {} };
+    return { inventory: emptyInventory(), choices: {} };
 }
 
 export type StoredCharacter = {

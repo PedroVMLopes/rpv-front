@@ -26,13 +26,16 @@ const baseFormData = {
 };
 
 describe("buildStoredCharacter", () => {
-    it("creates a player with race, class, background, and item grants", () => {
+    it("creates a player with race, class, background, and equipped item grants", () => {
         const character = buildNewStoredCharacter(
             {
                 ...baseFormData,
                 race: "elf",
                 background: "sage",
-                startingItem: "scroll-of-fire-bolt",
+                inventory: {
+                    bag: [],
+                    equipped: { hand: "scroll-of-fire-bolt" },
+                },
             },
             "player",
             "dnd",
@@ -43,7 +46,10 @@ describe("buildStoredCharacter", () => {
             race: "elf",
             characterClass: "fighter",
             background: "sage",
-            items: ["scroll-of-fire-bolt"],
+            inventory: {
+                bag: [],
+                equipped: { hand: "scroll-of-fire-bolt" },
+            },
         });
         expect(character.grants).toEqual(
             expect.arrayContaining([
@@ -86,11 +92,38 @@ describe("buildStoredCharacter", () => {
         );
     });
 
-    it("derives item HP bonus and syncs current HP on create", () => {
+    it("puts startingItem in bag without applying grants", () => {
         const character = buildNewStoredCharacter(
             {
                 ...baseFormData,
-                startingItem: "amulet-of-vitality",
+                startingItem: "scroll-of-fire-bolt",
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        expect(character.selections.inventory).toEqual({
+            bag: [{ slug: "scroll-of-fire-bolt", quantity: 1 }],
+            equipped: {},
+        });
+        expect(
+            character.grants.some(
+                (grant) =>
+                    grant.source.type === "item" &&
+                    grant.source.id === "scroll-of-fire-bolt"
+            )
+        ).toBe(false);
+    });
+
+    it("derives item HP bonus when equipped and syncs current HP on create", () => {
+        const character = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                inventory: {
+                    bag: [],
+                    equipped: { neck: "amulet-of-vitality" },
+                },
             },
             "player",
             "dnd",
@@ -112,7 +145,10 @@ describe("buildStoredCharacter", () => {
         const created = buildNewStoredCharacter(
             {
                 ...baseFormData,
-                startingItem: "amulet-of-vitality",
+                inventory: {
+                    bag: [],
+                    equipped: { neck: "amulet-of-vitality" },
+                },
             },
             "player",
             "dnd",
@@ -140,7 +176,7 @@ describe("buildStoredCharacter", () => {
             withManualModifier,
             {
                 ...baseFormData,
-                startingItem: "",
+                inventory: { bag: [], equipped: {} },
             },
             "en"
         );
@@ -188,7 +224,7 @@ describe("buildStoredCharacter", () => {
         expect(updated.selections.choices.grantPicks).toEqual({});
     });
 
-    it("contributes grants from multiple items", () => {
+    it("contributes grants from multiple equipped items", () => {
         const character = buildStoredCharacter({
             id: "multi-item",
             type: "player",
@@ -196,14 +232,20 @@ describe("buildStoredCharacter", () => {
             locale: "en",
             formData: {
                 ...baseFormData,
-                items: ["scroll-of-fire-bolt", "amulet-of-vitality"],
+                inventory: {
+                    bag: [],
+                    equipped: {
+                        hand: "scroll-of-fire-bolt",
+                        neck: "amulet-of-vitality",
+                    },
+                },
             },
         });
 
-        expect(character.selections.items).toEqual([
-            "scroll-of-fire-bolt",
-            "amulet-of-vitality",
-        ]);
+        expect(character.selections.inventory.equipped).toEqual({
+            hand: "scroll-of-fire-bolt",
+            neck: "amulet-of-vitality",
+        });
         expect(character.grants).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
@@ -244,7 +286,10 @@ describe("buildStoredCharacter", () => {
         expect(stored.selections).toMatchObject({
             characterClass: "wizard",
             background: "sage",
-            items: ["scroll-of-fire-bolt"],
+            inventory: {
+                bag: [{ slug: "scroll-of-fire-bolt", quantity: 1 }],
+                equipped: {},
+            },
         });
         expect(stored.systemData).not.toHaveProperty("characterClass");
     });

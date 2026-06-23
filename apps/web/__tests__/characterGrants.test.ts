@@ -1,3 +1,4 @@
+import { emptyInventory } from "@rpv/domain";
 import {
     deriveCharacterGrants,
     getLanguageBudget,
@@ -65,13 +66,16 @@ describe("deriveCharacterGrants", () => {
         );
     });
 
-    it("includes background and item grants", () => {
+    it("includes background and equipped item grants", () => {
         const grants = deriveCharacterGrants(
             {
                 ...baseSelections,
                 race: "elf",
                 background: "sage",
-                items: ["scroll-of-fire-bolt"],
+                inventory: {
+                    bag: [],
+                    equipped: { hand: "scroll-of-fire-bolt" },
+                },
             },
             "en"
         );
@@ -394,7 +398,7 @@ describe("getFixedLanguageGrants", () => {
 });
 
 describe("buildSelectionsFromForm", () => {
-    it("maps grant source fields and starting item into selections", () => {
+    it("maps grant source fields and starting item into bag inventory", () => {
         expect(
             buildSelectionsFromForm({
                 race: "elf",
@@ -409,7 +413,10 @@ describe("buildSelectionsFromForm", () => {
             characterClass: "fighter",
             subclass: "fighter-champion",
             background: "sage",
-            items: ["scroll-of-fire-bolt"],
+            inventory: {
+                bag: [{ slug: "scroll-of-fire-bolt", quantity: 1 }],
+                equipped: {},
+            },
             choices: {},
         });
     });
@@ -428,7 +435,7 @@ describe("buildSelectionsFromForm", () => {
             characterClass: "fighter",
             subclass: "fighter-champion",
             background: "sage",
-            items: [],
+            inventory: emptyInventory(),
             choices: {},
         });
     });

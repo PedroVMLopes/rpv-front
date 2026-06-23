@@ -7,6 +7,7 @@ import {
     Locale,
     Modifier,
     Stats,
+    emptyInventory,
     isLocale,
     resolveStats,
 } from "@rpv/domain";
@@ -19,6 +20,7 @@ import {
     flattenStoredToForm,
 } from "./presetStats";
 import { deriveResourceTotals } from "./deriveResourceTotals";
+import { isCharacterInventory, sanitizeInventory } from "./inventory";
 import type { StoredCharacter, CharacterSelections, CharacterChoices } from "./storedCharacter";
 
 function coerceString(value: unknown, fallback: string): string {
@@ -69,36 +71,60 @@ function coerceChoices(value: unknown, existing?: CharacterChoices): CharacterCh
     return {};
 }
 
-function buildItemsFromForm(
+function bagFromLegacyItems(items: unknown): CharacterSelections["inventory"]["bag"] {
+    if (!Array.isArray(items)) {
+        return [];
+    }
+
+    return items
+        .map((entry) => coerceCatalogSlug(entry))
+        .filter((slug): slug is string => slug !== undefined)
+        .map((slug) => ({ slug, quantity: 1 }));
+}
+
+function buildInventoryFromForm(
     formData: Record<string, unknown>,
     existing?: CharacterSelections
-): string[] {
+): CharacterSelections["inventory"] {
+    if (isCharacterInventory(formData.inventory)) {
+        return formData.inventory;
+    }
+
+    const legacyBag = bagFromLegacyItems(formData.items);
+    if (legacyBag.length > 0) {
+        return {
+            bag: legacyBag,
+            equipped: existing?.inventory?.equipped ?? {},
+        };
+    }
+
     if ("startingItem" in formData) {
         const slug = coerceCatalogSlug(formData.startingItem);
-        return slug ? [slug] : [];
+        if (existing?.inventory) {
+            if (!slug) {
+                return existing.inventory;
+            }
+
+            const rest = existing.inventory.bag.slice(1);
+            return {
+                bag: [{ slug, quantity: 1 }, ...rest],
+                equipped: existing.inventory.equipped,
+            };
+        }
+
+        return slug
+            ? { bag: [{ slug, quantity: 1 }], equipped: {} }
+            : emptyInventory();
     }
 
-    if (Array.isArray(formData.items)) {
-        return formData.items
-            .map((entry) => coerceCatalogSlug(entry))
-            .filter((entry): entry is string => entry !== undefined);
-    }
-
-    return existing?.items ?? [];
+    return existing?.inventory ?? emptyInventory();
 }
 
 export function normalizeCharacterSelections(
     selections: CharacterSelections | undefined,
-    systemData: Record<string, unknown>
+    systemData: Record<string, unknown>,
+    system: SystemKey
 ): CharacterSelections {
-    const startingItem = coerceOptionalString(systemData.startingItem);
-    const items =
-        selections?.items && selections.items.length > 0
-            ? selections.items
-            : startingItem
-              ? [startingItem]
-              : [];
-
     const characterClass =
         selections?.characterClass ?? coerceCatalogSlug(systemData.characterClass);
     let subclass = selections?.subclass ?? coerceCatalogSlug(systemData.subclass);
@@ -110,6 +136,11 @@ export function normalizeCharacterSelections(
         }
     }
 
+    const inventory = sanitizeInventory(
+        selections?.inventory ?? emptyInventory(),
+        system
+    );
+
     return {
         race: selections?.race ?? coerceCatalogSlug(systemData.race),
         subrace: selections?.subrace ?? coerceCatalogSlug(systemData.subrace),
@@ -117,7 +148,7 @@ export function normalizeCharacterSelections(
         subclass,
         background:
             selections?.background ?? coerceCatalogSlug(systemData.background),
-        items,
+        inventory,
         choices: selections?.choices ?? {},
     };
 }
@@ -132,7 +163,7 @@ export function buildSelectionsFromForm(
         characterClass: coerceCatalogSlug(formData.characterClass),
         subclass: coerceCatalogSlug(formData.subclass),
         background: coerceCatalogSlug(formData.background),
-        items: buildItemsFromForm(formData, existing),
+        inventory: buildInventoryFromForm(formData, existing),
         choices: coerceChoices(formData.choices, existing?.choices),
     };
 }
@@ -290,7 +321,8 @@ export function normalizeStoredCharacter(char: unknown): StoredCharacter {
             grants: stored.grants ?? [],
             selections: normalizeCharacterSelections(
                 stored.selections,
-                stored.systemData ?? {}
+                stored.systemData ?? {},
+                stored.system
             ),
         };
     }
@@ -301,14 +333,16 @@ export function normalizeStoredCharacter(char: unknown): StoredCharacter {
             grants: stored.grants ?? [],
             selections: normalizeCharacterSelections(
                 buildSelectionsFromForm(stored.systemData ?? {}),
-                stored.systemData ?? {}
+                stored.systemData ?? {},
+                stored.system
             ),
         };
     }
 
     const normalizedSelections = normalizeCharacterSelections(
         stored.selections,
-        stored.systemData ?? {}
+        stored.systemData ?? {},
+        stored.system
     );
     const needsSelectionMigration =
         JSON.stringify(stored.selections) !== JSON.stringify(normalizedSelections);

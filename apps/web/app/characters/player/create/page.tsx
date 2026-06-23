@@ -64,7 +64,7 @@ export default function CreatePlayer() {
     const previousClassRef = useRef<string | undefined>(undefined);
     const previousLevelRef = useRef<number | undefined>(undefined);
 
-    useGrantPickSanitizer(form, contentLocale);
+    useGrantPickSanitizer(form, contentLocale, system);
 
     useEffect(() => {
         if (
@@ -173,6 +173,7 @@ export default function CreatePlayer() {
                 <ClassResourcesField
                     form={form}
                     contentLocale={contentLocale}
+                    system={system}
                 />
                 <DynamicForm form={form} fields={fields} onSubmit={handleSave} />
                 <CharacterGrantPickers form={form} contentLocale={contentLocale} />

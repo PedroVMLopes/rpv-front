@@ -1,7 +1,7 @@
 import { presets, SystemKey } from "@/presets";
 import type { PresetStatConfig } from "@/presets/types";
 import type { CharacterProps, Stats } from "@rpv/domain";
-import { createDefaultStats, resolveStats } from "@rpv/domain";
+import { createDefaultStats, emptyInventory, resolveStats } from "@rpv/domain";
 import type { StoredCharacter } from "./storedCharacter";
 
 function resolveCharacterStats(
@@ -191,11 +191,8 @@ export function flattenStoredToForm(
             selections?.characterClass ?? stored.systemData.characterClass,
         subclass: selections?.subclass ?? stored.systemData.subclass,
         background: selections?.background ?? stored.systemData.background,
-        startingItem:
-            selections?.items?.[0] ??
-            (typeof stored.systemData.startingItem === "string"
-                ? stored.systemData.startingItem
-                : ""),
+        inventory: selections?.inventory ?? emptyInventory(),
+        startingItem: selections?.inventory?.bag[0]?.slug ?? "",
         choices: selections?.choices ?? {},
         attributes: config.abilities.map((ability) => ({
             name: ability.name,

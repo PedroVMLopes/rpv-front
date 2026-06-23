@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import type { Locale } from "@rpv/domain";
+import type { SystemKey } from "@/presets";
 import { buildSelectionsFromForm } from "./characterAdapter";
 import { sanitizeSelections } from "./grantPickSanitize";
 import { readLevelFromForm } from "./level";
@@ -14,7 +15,8 @@ import type { CharacterChoices } from "./storedCharacter";
  */
 export function useGrantPickSanitizer(
     form: UseFormReturn<Record<string, unknown>>,
-    contentLocale: Locale
+    contentLocale: Locale,
+    system: SystemKey
 ) {
     const race = form.watch("race");
     const subrace = form.watch("subrace");
@@ -31,6 +33,7 @@ export function useGrantPickSanitizer(
         const sanitized = sanitizeSelections(
             selections,
             contentLocale,
+            system,
             characterLevel
         );
         const current =
@@ -59,6 +62,7 @@ export function useGrantPickSanitizer(
     }, [
         form,
         contentLocale,
+        system,
         race,
         subrace,
         characterClass,

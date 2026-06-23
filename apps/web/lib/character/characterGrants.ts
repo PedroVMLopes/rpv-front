@@ -21,6 +21,7 @@ import {
     collectPendingChoiceGrants,
     type PendingChoiceGrant,
 } from "./grantChoices";
+import { equippedItemSlugs } from "./inventory";
 
 export type GrantSourceEntry = {
     source: ModifierSource;
@@ -63,7 +64,7 @@ export function collectGrantSources(
         });
     }
 
-    for (const itemSlug of selections.items ?? []) {
+    for (const itemSlug of equippedItemSlugs(selections.inventory)) {
         sources.push({
             source: { type: "item", id: itemSlug },
             grants: getItemGrants(itemSlug),
