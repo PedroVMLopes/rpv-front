@@ -32,6 +32,13 @@ export const dndBackgrounds: BackgroundEntry[] = [
                     { optionType: "skill", ref: "history" },
                 ],
             },
+            {
+                grantType: "inventory_item",
+                choose: 0,
+                ref: "scroll-of-fire-bolt",
+                amount: 1,
+                description: "A scholarly scroll for note-taking.",
+            },
         ],
     },
 ];

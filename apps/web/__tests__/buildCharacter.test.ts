@@ -119,6 +119,99 @@ describe("buildStoredCharacter", () => {
         ).toBe(false);
     });
 
+    it("materializes sage background loot in the bag without item grants", () => {
+        const character = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                background: "sage",
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        expect(character.selections.inventory?.bag).toEqual([
+            {
+                slug: "scroll-of-fire-bolt",
+                quantity: 1,
+                provenance: "grant:background:sage:2",
+            },
+        ]);
+        expect(
+            character.grants.some(
+                (grant) =>
+                    grant.source.type === "item" &&
+                    grant.source.id === "scroll-of-fire-bolt"
+            )
+        ).toBe(false);
+    });
+
+    it("preserves manual bag stacks alongside re-materialized background loot", () => {
+        const created = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                background: "sage",
+                inventory: {
+                    bag: [{ slug: "amulet-of-vitality", quantity: 1 }],
+                    equipped: {},
+                },
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        const rebuilt = rebuildStoredCharacter(
+            created,
+            {
+                ...baseFormData,
+                background: "sage",
+                inventory: created.selections.inventory,
+            },
+            "en"
+        );
+
+        expect(rebuilt.selections.inventory?.bag).toEqual([
+            { slug: "amulet-of-vitality", quantity: 1 },
+            {
+                slug: "scroll-of-fire-bolt",
+                quantity: 1,
+                provenance: "grant:background:sage:2",
+            },
+        ]);
+    });
+
+    it("drops granted background loot when background is cleared but keeps manual bag items", () => {
+        const created = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                background: "sage",
+                inventory: {
+                    bag: [{ slug: "amulet-of-vitality", quantity: 1 }],
+                    equipped: {},
+                },
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        const rebuilt = rebuildStoredCharacter(
+            created,
+            {
+                ...baseFormData,
+                background: "",
+                inventory: created.selections.inventory,
+            },
+            "en"
+        );
+
+        expect(rebuilt.selections.inventory?.bag).toEqual([
+            { slug: "amulet-of-vitality", quantity: 1 },
+        ]);
+        expect(rebuilt.selections.background).toBeUndefined();
+    });
+
     it("removes invalid bag slugs during build sanitize", () => {
         const character = buildNewStoredCharacter(
             {

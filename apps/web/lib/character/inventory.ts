@@ -20,17 +20,28 @@ function isValidItemSlug(slug: string, system: SystemKey): boolean {
     return getItem(slug, system) !== undefined;
 }
 
+function stackMergeKey(stack: { slug: string; provenance?: string }): string {
+    return `${stack.slug}\0${stack.provenance ?? ""}`;
+}
+
 function mergeBagStacks(stacks: CharacterInventory["bag"]): CharacterInventory["bag"] {
-    const merged = new Map<string, number>();
+    const merged = new Map<string, CharacterInventory["bag"][number]>();
 
     for (const stack of stacks) {
-        merged.set(stack.slug, (merged.get(stack.slug) ?? 0) + stack.quantity);
+        const key = stackMergeKey(stack);
+        const existing = merged.get(key);
+        if (existing) {
+            merged.set(key, {
+                ...existing,
+                quantity: existing.quantity + stack.quantity,
+            });
+            continue;
+        }
+
+        merged.set(key, { ...stack });
     }
 
-    return Array.from(merged.entries()).map(([slug, quantity]) => ({
-        slug,
-        quantity,
-    }));
+    return Array.from(merged.values());
 }
 
 function sanitizeBag(
@@ -49,7 +60,13 @@ function sanitizeBag(
                 ? Math.min(stack.quantity, 1)
                 : stack.quantity;
 
-        return [{ slug, quantity }];
+        return [
+            {
+                slug,
+                quantity,
+                ...(stack.provenance ? { provenance: stack.provenance } : {}),
+            },
+        ];
     });
 
     return mergeBagStacks(validStacks);
@@ -84,23 +101,31 @@ function reconcileEquippedWithBag(
     bag: CharacterInventory["bag"],
     equipped: CharacterInventory["equipped"]
 ): { bag: CharacterInventory["bag"]; equipped: CharacterInventory["equipped"] } {
-    const bagCounts = new Map(bag.map((stack) => [stack.slug, stack.quantity]));
-    const nextEquipped: CharacterInventory["equipped"] = {};
+    const remainingBag = bag.map((stack) => ({ ...stack }));
+    const equippedCounts = new Map<string, number>();
 
-    for (const [slotId, slug] of Object.entries(equipped)) {
-        const available = bagCounts.get(slug) ?? 0;
-        if (available > 0) {
-            bagCounts.set(slug, available - 1);
-        }
-
-        nextEquipped[slotId] = slug;
+    for (const slug of Object.values(equipped)) {
+        equippedCounts.set(slug, (equippedCounts.get(slug) ?? 0) + 1);
     }
 
-    const nextBag = Array.from(bagCounts.entries())
-        .filter(([, quantity]) => quantity > 0)
-        .map(([slug, quantity]) => ({ slug, quantity }));
+    for (const [slug, needed] of equippedCounts) {
+        let toRemove = needed;
 
-    return { bag: nextBag, equipped: nextEquipped };
+        for (let index = 0; index < remainingBag.length && toRemove > 0; index++) {
+            const stack = remainingBag[index];
+            if (stack.slug !== slug) {
+                continue;
+            }
+
+            const take = Math.min(stack.quantity, toRemove);
+            stack.quantity -= take;
+            toRemove -= take;
+        }
+    }
+
+    const nextBag = remainingBag.filter((stack) => stack.quantity > 0);
+
+    return { bag: nextBag, equipped };
 }
 
 function decrementBag(
@@ -108,17 +133,57 @@ function decrementBag(
     slug: string,
     quantity: number
 ): CharacterInventory["bag"] {
-    return bag
-        .map((stack) =>
-            stack.slug === slug
-                ? { ...stack, quantity: stack.quantity - quantity }
-                : stack
-        )
-        .filter((stack) => stack.quantity > 0);
+    let remaining = quantity;
+    const nextBag: CharacterInventory["bag"] = [];
+
+    for (const stack of bag) {
+        if (stack.slug !== slug || remaining <= 0) {
+            nextBag.push(stack);
+            continue;
+        }
+
+        const take = Math.min(stack.quantity, remaining);
+        remaining -= take;
+        const nextQuantity = stack.quantity - take;
+
+        if (nextQuantity > 0) {
+            nextBag.push({ ...stack, quantity: nextQuantity });
+        }
+    }
+
+    return nextBag;
 }
 
 function getBagQuantity(bag: CharacterInventory["bag"], slug: string): number {
-    return bag.find((stack) => stack.slug === slug)?.quantity ?? 0;
+    return bag
+        .filter((stack) => stack.slug === slug)
+        .reduce((total, stack) => total + stack.quantity, 0);
+}
+
+function findBagStackIndex(
+    bag: CharacterInventory["bag"],
+    slug: string,
+    provenance?: string
+): number {
+    return bag.findIndex(
+        (stack) =>
+            stack.slug === slug &&
+            (stack.provenance ?? undefined) === (provenance ?? undefined)
+    );
+}
+
+function findRemovableBagStackIndex(
+    bag: CharacterInventory["bag"],
+    slug: string
+): number {
+    const manualIndex = bag.findIndex(
+        (stack) => stack.slug === slug && !stack.provenance
+    );
+    if (manualIndex >= 0) {
+        return manualIndex;
+    }
+
+    return bag.findIndex((stack) => stack.slug === slug);
 }
 
 function isSlugEquippedElsewhere(
@@ -149,19 +214,24 @@ export function equippedItemSlugs(inventory: CharacterInventory): string[] {
 export function addToBag(
     inventory: CharacterInventory,
     slug: string,
-    quantity = 1
+    quantity = 1,
+    provenance?: string
 ): CharacterInventory {
     const normalizedSlug = coerceSlug(slug);
     if (!normalizedSlug || quantity < 1) {
         return inventory;
     }
 
-    const existing = inventory.bag.find((stack) => stack.slug === normalizedSlug);
-    if (existing) {
+    const existingIndex = findBagStackIndex(
+        inventory.bag,
+        normalizedSlug,
+        provenance
+    );
+    if (existingIndex >= 0) {
         return {
             ...inventory,
-            bag: inventory.bag.map((stack) =>
-                stack.slug === normalizedSlug
+            bag: inventory.bag.map((stack, index) =>
+                index === existingIndex
                     ? { ...stack, quantity: stack.quantity + quantity }
                     : stack
             ),
@@ -170,7 +240,14 @@ export function addToBag(
 
     return {
         ...inventory,
-        bag: [...inventory.bag, { slug: normalizedSlug, quantity }],
+        bag: [
+            ...inventory.bag,
+            {
+                slug: normalizedSlug,
+                quantity,
+                ...(provenance ? { provenance } : {}),
+            },
+        ],
     };
 }
 
@@ -184,8 +261,13 @@ export function removeFromBag(
         return inventory;
     }
 
-    const existing = inventory.bag.find((stack) => stack.slug === normalizedSlug);
-    if (!existing || existing.quantity < quantity) {
+    const stackIndex = findRemovableBagStackIndex(inventory.bag, normalizedSlug);
+    if (stackIndex < 0) {
+        return inventory;
+    }
+
+    const existing = inventory.bag[stackIndex];
+    if (existing.quantity < quantity) {
         return inventory;
     }
 
@@ -193,14 +275,14 @@ export function removeFromBag(
     if (nextQuantity === 0) {
         return {
             ...inventory,
-            bag: inventory.bag.filter((stack) => stack.slug !== normalizedSlug),
+            bag: inventory.bag.filter((_, index) => index !== stackIndex),
         };
     }
 
     return {
         ...inventory,
-        bag: inventory.bag.map((stack) =>
-            stack.slug === normalizedSlug
+        bag: inventory.bag.map((stack, index) =>
+            index === stackIndex
                 ? { ...stack, quantity: nextQuantity }
                 : stack
         ),
@@ -273,8 +355,14 @@ export function isCharacterInventory(value: unknown): value is CharacterInventor
             stack &&
             typeof stack === "object" &&
             typeof (stack as ItemStackCandidate).slug === "string" &&
-            typeof (stack as ItemStackCandidate).quantity === "number"
+            typeof (stack as ItemStackCandidate).quantity === "number" &&
+            ((stack as ItemStackCandidate).provenance === undefined ||
+                typeof (stack as ItemStackCandidate).provenance === "string")
     );
 }
 
-type ItemStackCandidate = { slug: string; quantity: number };
+type ItemStackCandidate = {
+    slug: string;
+    quantity: number;
+    provenance?: string;
+};

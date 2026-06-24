@@ -49,6 +49,32 @@ describe("sanitizeInventory", () => {
         ]);
     });
 
+    it("does not merge stacks with different provenance", () => {
+        const result = sanitizeInventory(
+            {
+                bag: [
+                    { slug: "scroll-of-fire-bolt", quantity: 1 },
+                    {
+                        slug: "scroll-of-fire-bolt",
+                        quantity: 1,
+                        provenance: "grant:background:sage:2",
+                    },
+                ],
+                equipped: {},
+            },
+            "dnd"
+        );
+
+        expect(result.bag).toEqual([
+            { slug: "scroll-of-fire-bolt", quantity: 1 },
+            {
+                slug: "scroll-of-fire-bolt",
+                quantity: 1,
+                provenance: "grant:background:sage:2",
+            },
+        ]);
+    });
+
     it("removes stacks with quantity below 1", () => {
         const result = sanitizeInventory(
             {
@@ -171,6 +197,47 @@ describe("addToBag", () => {
 
         expect(addToBag(inventory, "amulet-of-vitality", 2)).toEqual({
             bag: [{ slug: "amulet-of-vitality", quantity: 3 }],
+            equipped: {},
+        });
+    });
+
+    it("keeps manual and granted stacks with the same slug separate", () => {
+        const manual = addToBag(emptyInventory(), "scroll-of-fire-bolt", 1);
+        const withGranted = addToBag(
+            manual,
+            "scroll-of-fire-bolt",
+            1,
+            "grant:background:sage:2"
+        );
+
+        expect(withGranted.bag).toEqual([
+            { slug: "scroll-of-fire-bolt", quantity: 1 },
+            {
+                slug: "scroll-of-fire-bolt",
+                quantity: 1,
+                provenance: "grant:background:sage:2",
+            },
+        ]);
+    });
+
+    it("merges stacks that share slug and provenance", () => {
+        const first = addToBag(
+            emptyInventory(),
+            "scroll-of-fire-bolt",
+            1,
+            "grant:background:sage:2"
+        );
+
+        expect(
+            addToBag(first, "scroll-of-fire-bolt", 2, "grant:background:sage:2")
+        ).toEqual({
+            bag: [
+                {
+                    slug: "scroll-of-fire-bolt",
+                    quantity: 3,
+                    provenance: "grant:background:sage:2",
+                },
+            ],
             equipped: {},
         });
     });

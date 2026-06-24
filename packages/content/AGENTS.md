@@ -183,6 +183,25 @@ No engine or UI code changes required if existing grant types suffice.
 }
 ```
 
+### `inventory_item` grant (background starting loot)
+
+Declares items that the build pipeline materializes into `selections.inventory.bag`.
+Does **not** produce `CharacterGrant`s or modifiers — equipping is still a player action.
+
+```ts
+{
+  grantType: "inventory_item",
+  choose: 0,
+  ref: "scroll-of-fire-bolt",  // item catalog slug
+  amount: 1,                   // optional, default 1
+}
+```
+
+- **v1:** `choose: 0` only; background source only (class equipment in a later etapa).
+- **Materialization:** [`apps/web/lib/character/materializeInventoryGrants.ts`](../../apps/web/lib/character/materializeInventoryGrants.ts) via `mergeInventoryWithGrants` in `buildCharacter`.
+- **Provenance:** granted `ItemStack`s get `provenance: grant:{sourceType}:{sourceId}:{grantIndex}`; manual bag stacks omit it.
+- **Helpers:** `extractInventoryItemGrants`, `inventoryGrantProvenance` in [`src/grant/inventoryGrants.ts`](src/grant/inventoryGrants.ts).
+
 ### Rules and anti-patterns
 
 - **Do not** add `if (slug === ...)` branches in the engine or web — express behavior via `Grant[]`.
@@ -193,7 +212,8 @@ No engine or UI code changes required if existing grant types suffice.
 
 ### Out of scope (pilot / future work)
 
-- **Background/class starting gear** — granting items into `selections.inventory.bag` or currency at character creation requires a future `inventory_item` grant primitive and build-time materialization (post–Etapa 6). Backgrounds today only resolve equipped-style grants (languages, proficiencies), not bag loot.
+- **Class starting gear** — `inventory_item` on class / `featuresByLevel` (background loot is implemented; class equipment is next).
+- **Equipment packages with choice** — `inventory_item` with `choose > 0` + `grantPicks` (e.g. Soldier A/B).
 - **Currency** — `gold` / `silver` / `bronze` on the player form remain manual `systemData` until a wealth model exists.
 - **Weight, attunement, consumable charges**, `choose > 0` on item grants, community publish API, moderation.
 - **HTTP API** — read-only item/slot catalog and inventory PATCH contract are documented in [`docs/API_INVENTORY.md`](../../docs/API_INVENTORY.md); no routes in this repo yet.

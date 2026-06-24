@@ -4,7 +4,10 @@ import type { SpellCatalogEntry } from "../spell/spell.types";
 import type { Grant, GrantOption, SelectionFilter } from "./grant.types";
 
 const GRANT_TYPE_TO_KIND: Record<
-    Exclude<Grant["grantType"], "ability_score" | "stat_modifier">,
+    Exclude<
+        Grant["grantType"],
+        "ability_score" | "stat_modifier" | "inventory_item"
+    >,
     CharacterGrant["kind"]
 > = {
     ability: "ability",
@@ -19,7 +22,11 @@ const GRANT_TYPE_TO_KIND: Record<
 };
 
 function grantKindFromType(grantType: Grant["grantType"]): CharacterGrant["kind"] | null {
-    if (grantType === "ability_score" || grantType === "stat_modifier") {
+    if (
+        grantType === "ability_score" ||
+        grantType === "stat_modifier" ||
+        grantType === "inventory_item"
+    ) {
         return null;
     }
     return GRANT_TYPE_TO_KIND[grantType];
@@ -114,6 +121,10 @@ export function fixedGrantsToCharacterGrants(
 
     for (const grant of grants) {
         if (grant.choose !== 0) {
+            continue;
+        }
+
+        if (grant.grantType === "inventory_item") {
             continue;
         }
 

@@ -24,6 +24,7 @@ Reference implementation (web):
    - **Derived** (`modifiers`, `grants`, `resources`) — rebuilt on every change; never trusted from the client
 3. **`schemaVersion`** lives on the `StoredCharacter` root (currently `1`). Inventory has no separate version in v1.
 4. **Only equipped slugs** feed `collectGrantSources`. Bag-only items do not alter stats or grants.
+5. **Starting loot** is materialized at **build/PUT** time from `inventory_item` grants (background v1), not via inventory PATCH alone. Granted stacks carry optional `provenance`; manual stacks omit it. Rebuild re-materializes provenance stacks and preserves manual ones.
 
 ```mermaid
 flowchart LR
@@ -118,7 +119,7 @@ On load, `normalizeStoredCharacter` → `sanitizeInventory` inside
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `bag` | `ItemStack[]` | Owned items: `{ slug, quantity }` |
+| `bag` | `ItemStack[]` | Owned items: `{ slug, quantity, provenance? }` |
 | `equipped` | `Record<string, string>` | `slotId → item slug` |
 
 Pilot D&D slot IDs: `armor`, `main-hand`, `off-hand`, `neck`, `ring` (from
@@ -138,7 +139,8 @@ before persisting. Behavior matches
 | Item incompatible with slot (`canEquipItem`) | Slot cleared |
 | Same slug in two slots | Only the first iterated slot kept |
 | Non-stackable item with `quantity > 1` in bag | Clamped to 1 |
-| Duplicate bag stacks (same slug) | Merged by slug |
+| Duplicate bag stacks (same slug + same provenance) | Merged |
+| Duplicate bag stacks (same slug, different provenance) | Kept separate (manual vs granted) |
 | Bag ↔ equipped reconciliation | Each equipped slug consumes 1 unit from bag (`reconcileEquippedWithBag`) |
 
 **PATCH clients:** the response may differ from the request after sanitize. The
@@ -379,7 +381,7 @@ Response: item modifiers removed; max HP back to **12**; `hp` clamped if needed.
 ## Future extensions (not v1)
 
 - PATCH with incremental **ops** (`addToBag`, `removeFromBag`, `equip`, `unequip`)
-- `inventory_item` grant for background/class starting loot
+- `inventory_item` on **class** starting equipment and `choose > 0` equipment packages
 - Currency, weight, attunement, unique instances
 - `POST /systems/:system/items` (community publish + moderation)
 - `If-Match` / ETag on character or inventory

@@ -11,7 +11,8 @@ export type GrantType =
     | "saving_throw_proficiency"
     | "language"
     | "spell"
-    | "resource";
+    | "resource"
+    | "inventory_item";
 
 /**
  * Describes a pool to choose from when a grant is not fixed. Either a spell

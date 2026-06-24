@@ -142,13 +142,33 @@ Full guide (contract, anti-patterns, pilot patterns):
 
 No engine or UI code changes required if existing grant types suffice.
 
-### Deferred — background/class starting equipment
+### Background starting loot (`inventory_item` grant)
 
-Backgrounds and classes may grant starting items or currency in tabletop rules.
-That is **not** automated yet: items reach `selections.inventory.bag` only via
-form/store actions today. A future etapa will add declarative inventory grants and
-build-time materialization. See [`packages/content/AGENTS.md`](packages/content/AGENTS.md)
-for the item catalog authoring guide.
+Backgrounds can declare fixed starting items via `inventory_item` grants. The
+web build pipeline materializes them into `selections.inventory.bag` on every
+`buildStoredCharacter` / `rebuildStoredCharacter` pass.
+
+| Field | Value |
+|-------|-------|
+| `grantType` | `"inventory_item"` |
+| `choose` | `0` (v1: no equipment packages with choices) |
+| `ref` | Item catalog slug |
+| `amount` | Quantity (default `1`) |
+
+**Provenance:** granted stacks carry `ItemStack.provenance` =
+`grant:{sourceType}:{sourceId}:{grantIndex}` (e.g. `grant:background:sage:2`).
+Stacks **without** provenance are manual (UI/store/form). On rebuild, provenance
+stacks are re-materialized from current grants; manual stacks are preserved.
+
+**v1 scope:** background only (`choose: 0`). Class starting equipment, currency,
+and `choose > 0` equipment packages are future work.
+
+**Limitation:** if a granted item is equipped and the background changes, the
+equipped slot is **not** auto-cleared (equipped has no provenance). The item may
+remain equipped even when its granted bag stack is removed.
+
+Pilot: Sage background grants `scroll-of-fire-bolt` — see
+[`backgroundGrants.dnd.ts`](packages/content/src/curation/backgroundGrants.dnd.ts).
 
 ---
 
