@@ -172,5 +172,27 @@
       "rage-uses": "Rage Uses",
       "ki-points": "Ki Points"
     }
+  },
+  "equipmentSlots": {
+    "armor": "Armor",
+    "mainHand": "Main hand",
+    "offHand": "Off hand",
+    "neck": "Neck",
+    "ring": "Ring"
+  },
+  "inventory": {
+    "bag": "Bag",
+    "equipment": "Equipment",
+    "addItem": "Add item",
+    "remove": "Remove",
+    "equip": "Equip",
+    "unequip": "Unequip",
+    "emptyBag": "No items in bag.",
+    "emptySlot": "Empty",
+    "quantity": "×{count}",
+    "resolvedMaxHp": "Max HP: {value}",
+    "resolvedAc": "AC: {value}",
+    "selectItem": "Select item",
+    "equipToSlot": "Equip to {slot}"
   }
 }

@@ -198,7 +198,7 @@ export default function CharacterCard({ characterId }: CharacterCardProps) {
 
                                         <CharacterCardAbilities characterId={characterId} />
 
-                                        <CharacterCardInventory />
+                                        <CharacterCardInventory characterId={characterId} />
                                     </CarouselContent>
                                 </ScrollArea>
                             </Carousel>

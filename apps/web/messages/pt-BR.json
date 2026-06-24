@@ -172,5 +172,27 @@
       "rage-uses": "Usos de Fúria",
       "ki-points": "Pontos de Ki"
     }
+  },
+  "equipmentSlots": {
+    "armor": "Armadura",
+    "mainHand": "Mão principal",
+    "offHand": "Mão secundária",
+    "neck": "Pescoço",
+    "ring": "Anel"
+  },
+  "inventory": {
+    "bag": "Bolsa",
+    "equipment": "Equipamento",
+    "addItem": "Adicionar item",
+    "remove": "Remover",
+    "equip": "Equipar",
+    "unequip": "Desequipar",
+    "emptyBag": "Nenhum item na bolsa.",
+    "emptySlot": "Vazio",
+    "quantity": "×{count}",
+    "resolvedMaxHp": "PV máx.: {value}",
+    "resolvedAc": "CA: {value}",
+    "selectItem": "Selecionar item",
+    "equipToSlot": "Equipar em {slot}"
   }
 }
