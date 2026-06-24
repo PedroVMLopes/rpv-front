@@ -3,28 +3,28 @@ name: Inventory Model
 overview: Modelo de inventário com bag (possuídos) e equipped (slots genéricos); apenas itens equipados alimentam grants/modifiers. Piloto sem peso/moeda/atunamento; itens como dados em @rpv/content; UI mínima só para validação.
 todos:
   - id: etapa-0-contrato
-    content: "Etapa 0 — Tipos CharacterInventory (bag + equipped), sanitizeInventory, substituir selections.items; testes unitários"
+    content: Etapa 0 — Tipos CharacterInventory (bag + equipped), sanitizeInventory, substituir selections.items; testes unitários
     status: pending
   - id: etapa-1-catalogo
-    content: "Etapa 1 — Evoluir ItemEntry (system, allowedSlots, stackable); 5–10 itens piloto; testes em packages/content"
+    content: Etapa 1 — Evoluir ItemEntry (system, allowedSlots, stackable); 5–10 itens piloto; testes em packages/content
     status: pending
   - id: etapa-2-slots
-    content: "Etapa 2 — equipmentSlots.dnd.ts + canEquipItem/sanitizeEquipped; regras bag↔equip; testes"
+    content: Etapa 2 — equipmentSlots.dnd.ts + canEquipItem/sanitizeEquipped; regras bag↔equip; testes
     status: pending
   - id: etapa-3-pipeline
-    content: "Etapa 3 — collectGrantSources só equipped; store equip/unequip + rebuildStoredCharacter; testes buildCharacter"
+    content: Etapa 3 — collectGrantSources só equipped; store equip/unequip + rebuildStoredCharacter; testes buildCharacter
     status: pending
   - id: etapa-4-stored
-    content: "Etapa 4 — StoredCharacter + normalize; remover startingItem como fonte de verdade; PROJECT_CONTEXT"
+    content: Etapa 4 — StoredCharacter + normalize; remover startingItem como fonte de verdade; PROJECT_CONTEXT
     status: pending
   - id: etapa-5-authoring
-    content: "Etapa 5 — Checklist authoring itens comunitários em AGENTS.md / PROJECT_CONTEXT"
+    content: Etapa 5 — Checklist authoring itens comunitários em AGENTS.md / PROJECT_CONTEXT
     status: pending
   - id: etapa-6-ui-smoke
-    content: "Etapa 6 — UI mínima CharacterCardInventory (bag, slots, equip/unequip) para smoke test"
+    content: Etapa 6 — UI mínima CharacterCardInventory (bag, slots, equip/unequip) para smoke test
     status: pending
   - id: etapa-7-api-notes
-    content: "Etapa 7 — Notas de contrato API (StoredCharacter payload, PATCH inventory, ItemDefinition vs estado)"
+    content: Etapa 7 — Notas de contrato API (StoredCharacter payload, PATCH inventory, ItemDefinition vs estado)
     status: pending
 isProject: false
 ---

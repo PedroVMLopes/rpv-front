@@ -59,5 +59,22 @@
     "shield": {
       "name": "Escudo"
     }
+  },
+  "equipmentSlots": {
+    "armor": {
+      "name": "Armadura"
+    },
+    "mainHand": {
+      "name": "Mão principal"
+    },
+    "offHand": {
+      "name": "Mão secundária"
+    },
+    "neck": {
+      "name": "Pescoço"
+    },
+    "ring": {
+      "name": "Anel"
+    }
   }
 }

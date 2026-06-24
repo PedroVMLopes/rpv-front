@@ -1,5 +1,10 @@
 import type { CharacterInventory } from "@rpv/domain";
-import { getItem } from "@rpv/content";
+import {
+    canEquipItem,
+    getItem,
+    isItemStackable,
+    isValidEquipmentSlot,
+} from "@rpv/content";
 import type { SystemKey } from "@/presets";
 
 function coerceSlug(value: unknown): string | undefined {
@@ -11,8 +16,8 @@ function coerceSlug(value: unknown): string | undefined {
     return slug.length > 0 ? slug : undefined;
 }
 
-function isValidItemSlug(slug: string, _system: SystemKey): boolean {
-    return getItem(slug) !== undefined;
+function isValidItemSlug(slug: string, system: SystemKey): boolean {
+    return getItem(slug, system) !== undefined;
 }
 
 function mergeBagStacks(stacks: CharacterInventory["bag"]): CharacterInventory["bag"] {
@@ -38,7 +43,13 @@ function sanitizeBag(
             return [];
         }
 
-        return [{ slug, quantity: stack.quantity }];
+        const entry = getItem(slug, system);
+        const quantity =
+            entry && !isItemStackable(entry)
+                ? Math.min(stack.quantity, 1)
+                : stack.quantity;
+
+        return [{ slug, quantity }];
     });
 
     return mergeBagStacks(validStacks);
@@ -53,7 +64,12 @@ function sanitizeEquipped(
 
     for (const [slotId, rawSlug] of Object.entries(equipped)) {
         const slug = coerceSlug(rawSlug);
-        if (!slug || !isValidItemSlug(slug, system) || seenSlugs.has(slug)) {
+        if (
+            !slug ||
+            !isValidEquipmentSlot(slotId, system) ||
+            !canEquipItem(slug, slotId, system) ||
+            seenSlugs.has(slug)
+        ) {
             continue;
         }
 
@@ -85,6 +101,35 @@ function reconcileEquippedWithBag(
         .map(([slug, quantity]) => ({ slug, quantity }));
 
     return { bag: nextBag, equipped: nextEquipped };
+}
+
+function decrementBag(
+    bag: CharacterInventory["bag"],
+    slug: string,
+    quantity: number
+): CharacterInventory["bag"] {
+    return bag
+        .map((stack) =>
+            stack.slug === slug
+                ? { ...stack, quantity: stack.quantity - quantity }
+                : stack
+        )
+        .filter((stack) => stack.quantity > 0);
+}
+
+function getBagQuantity(bag: CharacterInventory["bag"], slug: string): number {
+    return bag.find((stack) => stack.slug === slug)?.quantity ?? 0;
+}
+
+function isSlugEquippedElsewhere(
+    equipped: CharacterInventory["equipped"],
+    slug: string,
+    slotId: string
+): boolean {
+    return Object.entries(equipped).some(
+        ([existingSlotId, existingSlug]) =>
+            existingSlotId !== slotId && existingSlug === slug
+    );
 }
 
 export function sanitizeInventory(
@@ -127,6 +172,90 @@ export function addToBag(
         ...inventory,
         bag: [...inventory.bag, { slug: normalizedSlug, quantity }],
     };
+}
+
+export function removeFromBag(
+    inventory: CharacterInventory,
+    slug: string,
+    quantity = 1
+): CharacterInventory {
+    const normalizedSlug = coerceSlug(slug);
+    if (!normalizedSlug || quantity < 1) {
+        return inventory;
+    }
+
+    const existing = inventory.bag.find((stack) => stack.slug === normalizedSlug);
+    if (!existing || existing.quantity < quantity) {
+        return inventory;
+    }
+
+    const nextQuantity = existing.quantity - quantity;
+    if (nextQuantity === 0) {
+        return {
+            ...inventory,
+            bag: inventory.bag.filter((stack) => stack.slug !== normalizedSlug),
+        };
+    }
+
+    return {
+        ...inventory,
+        bag: inventory.bag.map((stack) =>
+            stack.slug === normalizedSlug
+                ? { ...stack, quantity: nextQuantity }
+                : stack
+        ),
+    };
+}
+
+// TODO(inventory-ui): when the slot is occupied, future UI should ask whether to
+// send the new item to the bag or equip it by moving the current item back to
+// the bag. For now equipItem fails (no-op).
+export function equipItem(
+    inventory: CharacterInventory,
+    slotId: string,
+    slug: string,
+    system: SystemKey
+): CharacterInventory {
+    const normalizedSlug = coerceSlug(slug);
+    if (
+        !normalizedSlug ||
+        !canEquipItem(normalizedSlug, slotId, system) ||
+        inventory.equipped[slotId] ||
+        isSlugEquippedElsewhere(inventory.equipped, normalizedSlug, slotId) ||
+        getBagQuantity(inventory.bag, normalizedSlug) < 1
+    ) {
+        return inventory;
+    }
+
+    return {
+        bag: decrementBag(inventory.bag, normalizedSlug, 1),
+        equipped: {
+            ...inventory.equipped,
+            [slotId]: normalizedSlug,
+        },
+    };
+}
+
+export function unequipItem(
+    inventory: CharacterInventory,
+    slotId: string,
+    _system: SystemKey
+): CharacterInventory {
+    const slug = inventory.equipped[slotId];
+    if (!slug) {
+        return inventory;
+    }
+
+    const { [slotId]: _removed, ...remainingEquipped } = inventory.equipped;
+
+    return addToBag(
+        {
+            ...inventory,
+            equipped: remainingEquipped,
+        },
+        slug,
+        1
+    );
 }
 
 export function isCharacterInventory(value: unknown): value is CharacterInventory {

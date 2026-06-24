@@ -44,4 +44,5 @@ export interface CatalogTranslations {
     classes?: Record<string, CatalogEntryTranslation>;
     subclasses?: Record<string, CatalogEntryTranslation>;
     items?: Record<string, CatalogEntryTranslation>;
+    equipmentSlots?: Record<string, CatalogEntryTranslation>;
 }

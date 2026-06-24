@@ -74,7 +74,7 @@ describe("deriveCharacterGrants", () => {
                 background: "sage",
                 inventory: {
                     bag: [],
-                    equipped: { hand: "scroll-of-fire-bolt" },
+                    equipped: { "main-hand": "scroll-of-fire-bolt" },
                 },
             },
             "en"

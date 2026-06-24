@@ -34,7 +34,7 @@ describe("buildStoredCharacter", () => {
                 background: "sage",
                 inventory: {
                     bag: [],
-                    equipped: { hand: "scroll-of-fire-bolt" },
+                    equipped: { "main-hand": "scroll-of-fire-bolt" },
                 },
             },
             "player",
@@ -48,7 +48,7 @@ describe("buildStoredCharacter", () => {
             background: "sage",
             inventory: {
                 bag: [],
-                equipped: { hand: "scroll-of-fire-bolt" },
+                equipped: { "main-hand": "scroll-of-fire-bolt" },
             },
         });
         expect(character.grants).toEqual(
@@ -235,7 +235,7 @@ describe("buildStoredCharacter", () => {
                 inventory: {
                     bag: [],
                     equipped: {
-                        hand: "scroll-of-fire-bolt",
+                        "main-hand": "scroll-of-fire-bolt",
                         neck: "amulet-of-vitality",
                     },
                 },
@@ -243,7 +243,7 @@ describe("buildStoredCharacter", () => {
         });
 
         expect(character.selections.inventory.equipped).toEqual({
-            hand: "scroll-of-fire-bolt",
+            "main-hand": "scroll-of-fire-bolt",
             neck: "amulet-of-vitality",
         });
         expect(character.grants).toEqual(
