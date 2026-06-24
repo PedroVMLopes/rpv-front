@@ -196,6 +196,7 @@ No engine or UI code changes required if existing grant types suffice.
 - **Background/class starting gear** — granting items into `selections.inventory.bag` or currency at character creation requires a future `inventory_item` grant primitive and build-time materialization (post–Etapa 6). Backgrounds today only resolve equipped-style grants (languages, proficiencies), not bag loot.
 - **Currency** — `gold` / `silver` / `bronze` on the player form remain manual `systemData` until a wealth model exists.
 - **Weight, attunement, consumable charges**, `choose > 0` on item grants, community publish API, moderation.
+- **HTTP API** — read-only item/slot catalog and inventory PATCH contract are documented in [`docs/API_INVENTORY.md`](../../docs/API_INVENTORY.md); no routes in this repo yet.
 
 Add pt-BR names under `items` in [`data/translations/pt-BR.json`](data/translations/pt-BR.json).
 

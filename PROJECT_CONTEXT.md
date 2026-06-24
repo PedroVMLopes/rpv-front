@@ -50,6 +50,15 @@ Item definitions (`grants`, `allowedSlots`) live in `@rpv/content`; inventory **
 - `schemaVersion` on the `StoredCharacter` root enables future migrations.
 - No `startingItem`, `items[]`, or numeric `inventory` in the persisted contract — use `selections.inventory` only.
 
+### API contract (deferred)
+
+Future HTTP contract for inventory and `StoredCharacter` persistence:
+[`docs/API_INVENTORY.md`](docs/API_INVENTORY.md).
+
+- **PATCH** `/characters/:id/inventory` — full-replace `{ bag, equipped }`; server runs `sanitizeInventory` + rebuild.
+- Only **equipped** slugs generate grants/modifiers (same as web).
+- Backend implementation is **out of scope** for the current frontend pilot.
+
 ---
 
 ## Level progression
