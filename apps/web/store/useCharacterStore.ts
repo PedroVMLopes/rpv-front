@@ -18,6 +18,8 @@ import {
     rebuildCharacterWithInventory,
     rebuildStoredCharacter,
 } from "@/lib/character/buildCharacter";
+import { readLevelFromForm } from "@/lib/character/level";
+import { resolveInventoryGrantProvenance } from "@/lib/character/materializeInventoryGrants";
 import {
     addToBag as addToBagInventory,
     equipItem as equipItemInventory,
@@ -127,9 +129,42 @@ export const useCharacterStore = create<CharacterStore>()(
                 ),
 
             unequipItem: (id, slotId) =>
-                updateCharacterInventory(set, get, id, (inventory, system) =>
-                    unequipItemInventory(inventory, slotId, system)
-                ),
+                set((state) => ({
+                    characters: state.characters.map((char) => {
+                        if (char.id !== id) return char;
+
+                        const locale = useContentLocale.getState().contentLocale;
+                        const level = readLevelFromForm(
+                            flattenStoredToForm(char, char.system)
+                        );
+                        const slug = char.selections.inventory.equipped[slotId];
+                        const provenance = slug
+                            ? resolveInventoryGrantProvenance(
+                                  char.selections,
+                                  slug,
+                                  locale,
+                                  char.system,
+                                  level
+                              )
+                            : undefined;
+                        const nextInventory = unequipItemInventory(
+                            char.selections.inventory,
+                            slotId,
+                            char.system,
+                            provenance
+                        );
+
+                        if (nextInventory === char.selections.inventory) {
+                            return char;
+                        }
+
+                        return rebuildCharacterWithInventory(
+                            char,
+                            nextInventory,
+                            locale
+                        );
+                    }),
+                })),
 
             addToBag: (id, slug, quantity = 1) =>
                 updateCharacterInventory(set, get, id, (inventory) =>

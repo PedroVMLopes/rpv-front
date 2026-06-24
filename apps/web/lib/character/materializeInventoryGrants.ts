@@ -48,6 +48,36 @@ export function materializeInventoryGrants(
     return inventory.bag;
 }
 
+export function resolveInventoryGrantProvenance(
+    selections: CharacterSelections,
+    slug: string,
+    locale: Locale,
+    system: SystemKey,
+    characterLevel: number
+): string | undefined {
+    const sources = collectGrantSources(selections, locale, characterLevel);
+
+    for (const entry of sources) {
+        if (entry.source.type !== "background") {
+            continue;
+        }
+
+        for (const grant of extractInventoryItemGrants(entry.grants)) {
+            if (grant.slug !== slug || !getItem(grant.slug, system)) {
+                continue;
+            }
+
+            return inventoryGrantProvenance(
+                entry.source.type,
+                entry.source.id,
+                grant.grantIndex
+            );
+        }
+    }
+
+    return undefined;
+}
+
 export function mergeInventoryWithGrants(
     selections: CharacterSelections,
     locale: Locale,

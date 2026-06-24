@@ -1,6 +1,7 @@
 import { emptyInventory } from "@rpv/domain";
 import {
     addToBag,
+    bagStackReactKey,
     equipItem,
     equippedItemSlugs,
     removeFromBag,
@@ -310,6 +311,19 @@ describe("equipItem", () => {
     });
 });
 
+describe("bagStackReactKey", () => {
+    it("uses different keys for manual and granted stacks with the same slug", () => {
+        const manual = { slug: "scroll-of-fire-bolt", quantity: 1 };
+        const granted = {
+            slug: "scroll-of-fire-bolt",
+            quantity: 1,
+            provenance: "grant:background:sage:2",
+        };
+
+        expect(bagStackReactKey(manual)).not.toBe(bagStackReactKey(granted));
+    });
+});
+
 describe("unequipItem", () => {
     it("returns the equipped item to the bag", () => {
         const inventory = {
@@ -327,5 +341,30 @@ describe("unequipItem", () => {
         const inventory = emptyInventory();
 
         expect(unequipItem(inventory, "neck", "dnd")).toBe(inventory);
+    });
+
+    it("restores provenance when unequipping a background-granted item", () => {
+        const inventory = {
+            bag: [],
+            equipped: { "main-hand": "scroll-of-fire-bolt" },
+        };
+
+        expect(
+            unequipItem(
+                inventory,
+                "main-hand",
+                "dnd",
+                "grant:background:sage:2"
+            )
+        ).toEqual({
+            bag: [
+                {
+                    slug: "scroll-of-fire-bolt",
+                    quantity: 1,
+                    provenance: "grant:background:sage:2",
+                },
+            ],
+            equipped: {},
+        });
     });
 });

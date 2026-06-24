@@ -24,6 +24,15 @@ function stackMergeKey(stack: { slug: string; provenance?: string }): string {
     return `${stack.slug}\0${stack.provenance ?? ""}`;
 }
 
+export function bagStackReactKey(stack: {
+    slug: string;
+    provenance?: string;
+}): string {
+    return stack.provenance
+        ? `${stack.slug}:${stack.provenance}`
+        : `${stack.slug}:manual`;
+}
+
 function mergeBagStacks(stacks: CharacterInventory["bag"]): CharacterInventory["bag"] {
     const merged = new Map<string, CharacterInventory["bag"][number]>();
 
@@ -321,7 +330,8 @@ export function equipItem(
 export function unequipItem(
     inventory: CharacterInventory,
     slotId: string,
-    _system: SystemKey
+    _system: SystemKey,
+    restoredProvenance?: string
 ): CharacterInventory {
     const slug = inventory.equipped[slotId];
     if (!slug) {
@@ -336,7 +346,8 @@ export function unequipItem(
             equipped: remainingEquipped,
         },
         slug,
-        1
+        1,
+        restoredProvenance
     );
 }
 

@@ -12,6 +12,7 @@ import {
 import type { SystemKey } from "@/presets";
 import { CarouselItem } from "@/components/ui/characterCarousel";
 import { Button } from "@/components/ui/button";
+import { bagStackReactKey } from "@/lib/character/inventory";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { useContentLocale } from "@/store/useContentLocale";
 
@@ -254,7 +255,7 @@ export default function CharacterCardInventory({
                         <ul className="space-y-1 text-sm">
                             {inventory.bag.map((stack) => (
                                 <li
-                                    key={stack.slug}
+                                    key={bagStackReactKey(stack)}
                                     className="flex items-center justify-between rounded-lg border px-2 py-1 bg-popover"
                                 >
                                     <span>

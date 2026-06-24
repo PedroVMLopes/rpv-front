@@ -187,6 +187,39 @@ describe("useCharacterStore inventory", () => {
         });
     });
 
+    it("does not duplicate sage granted scroll after equip and unequip", () => {
+        act(() => {
+            useCharacterStore.getState().addCharacter(
+                { ...baseFormData, background: "sage" },
+                "player",
+                "dnd"
+            );
+        });
+
+        const character = useCharacterStore.getState().characters[0];
+
+        act(() => {
+            useCharacterStore
+                .getState()
+                .equipItem(character.id, "main-hand", "scroll-of-fire-bolt");
+            useCharacterStore
+                .getState()
+                .unequipItem(character.id, "main-hand");
+        });
+
+        const updated = useCharacterStore
+            .getState()
+            .characters.find((entry) => entry.id === character.id)!;
+
+        expect(updated.selections.inventory.bag).toEqual([
+            {
+                slug: "scroll-of-fire-bolt",
+                quantity: 1,
+                provenance: "grant:background:sage:2",
+            },
+        ]);
+    });
+
     it("removes bag quantity without changing equipped items", () => {
         const character = addBaseCharacter();
 
