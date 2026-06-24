@@ -113,6 +113,9 @@ system-specific part into content/curation, or generalize the primitive.
 - System-specific data files use a system suffix (`*.dnd.ts`).
 - Catalog text is authored in a default locale with partial locale overlays;
   missing translations fall back, so never assume a field is localized.
+- For community **item** authoring (`ItemEntry`, slots, grants, bag vs equipped),
+  see the checklists in [`packages/content/AGENTS.md`](packages/content/AGENTS.md)
+  and [`PROJECT_CONTEXT.md`](PROJECT_CONTEXT.md).
 - Tests live in `__tests__/` per package; run `npm test` in the relevant package.
 
 See `packages/domain/AGENTS.md` and `packages/content/AGENTS.md` for the rules

@@ -116,6 +116,33 @@ No engine or UI code changes required if existing grant types suffice.
 
 ---
 
+## Authoring checklist — new item
+
+Full guide (contract, anti-patterns, pilot patterns):
+[`packages/content/AGENTS.md`](packages/content/AGENTS.md) (Item authoring).
+
+1. Add entry to [`itemGrants.dnd.ts`](packages/content/src/curation/itemGrants.dnd.ts) (`system: "dnd"`).
+2. Set `allowedSlots` using IDs from [`equipmentSlots.dnd.ts`](packages/content/src/curation/equipmentSlots.dnd.ts).
+3. Set `stackable` (`false` for unique gear).
+4. Define `grants` with `choose: 0` (`stat_modifier`, `spell`, or `ability`).
+5. Add pt-BR overlay under `items` in [`packages/content/data/translations/pt-BR.json`](packages/content/data/translations/pt-BR.json).
+6. If adding a new equipment slot, update `equipmentSlots.dnd.ts` + pt-BR `equipmentSlots`.
+7. Extend [`packages/content/__tests__/itemGrants.test.ts`](packages/content/__tests__/itemGrants.test.ts) for the new slug.
+8. Run `npm run test:packages` and `npm test -w rpv-front`.
+9. After Etapa 6 UI: smoke-test bag → equip → verify resolved stats/grants.
+
+No engine or UI code changes required if existing grant types suffice.
+
+### Deferred — background/class starting equipment
+
+Backgrounds and classes may grant starting items or currency in tabletop rules.
+That is **not** automated yet: items reach `selections.inventory.bag` only via
+form/store actions today. A future etapa will add declarative inventory grants and
+build-time materialization. See [`packages/content/AGENTS.md`](packages/content/AGENTS.md)
+for the item catalog authoring guide.
+
+---
+
 ## Pilot content (L1–L5)
 
 | Class | Resources | Subclass |
@@ -126,6 +153,8 @@ No engine or UI code changes required if existing grant types suffice.
 | Fighter | — (regression) | `fighter-champion` |
 
 Wizard spell picks (pilot): 3 cantrips + 6 leveled spell choice slots at L5 (reduced from full SRD).
+
+**Pilot items** (D&D): `scroll-of-fire-bolt`, `amulet-of-vitality`, `ring-of-hardiness`, `longsword`, `leather-armor`, `shield` — see [`itemGrants.dnd.ts`](packages/content/src/curation/itemGrants.dnd.ts).
 
 ---
 
