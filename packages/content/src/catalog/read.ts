@@ -5,6 +5,7 @@ import type {
     Catalog,
     CatalogEntryTranslation,
     CatalogTranslations,
+    Language,
 } from "./catalog.types";
 
 function applyTranslation<
@@ -108,4 +109,15 @@ export function getSpell(
         return spell;
     }
     return applyTranslation(spell, translations?.spells, locale);
+}
+
+export function listLanguages(catalog: Catalog): Language[] {
+    return catalog.languages;
+}
+
+export function getLanguage(
+    catalog: Catalog,
+    slug: string
+): Language | undefined {
+    return catalog.languages.find((entry) => entry.slug === slug);
 }

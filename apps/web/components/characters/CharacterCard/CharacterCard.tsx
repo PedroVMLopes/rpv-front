@@ -10,9 +10,11 @@ import { Carousel, CarouselApi, CarouselContent, CarouselNext, CarouselPrevious 
 import CharacterCardGameInfo from "./CharacterCardGameInfo";
 import CharacterCardInventory from "./CharacterCardInventory";
 import CharacterCardAbilities from "./CharacterCardAbilities";
+import { ClassSubclassBlock } from "./CharacterCardRaceInfo";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCharacterStore } from "@/store/useCharacterStore";
+import Link from "next/link";
 
 const HP_RESOURCE = "hp";
 
@@ -69,32 +71,6 @@ function HpAcOverlay({
             <div className="flex flex-row items-center backdrop-blur-2xl bg-black/15 rounded-2xl p-0.5 px-1.5 font-bold">
                 <FaShield className="mr-1" /> {ac}
             </div>
-        </div>
-    );
-}
-
-function ClassSubclassBlock({
-    race,
-    characterClass,
-    subclass,
-}: {
-    race?: unknown;
-    characterClass?: unknown;
-    subclass?: unknown;
-}) {
-    const raceStr = race ? String(race).trim() : "";
-    const classStr = characterClass ? String(characterClass).trim() : "";
-    const subclassStr = subclass ? String(subclass).trim() : "";
-    const title = [raceStr, classStr].filter(Boolean).join(" ");
-
-    if (!title && !subclassStr) {
-        return null;
-    }
-
-    return (
-        <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground">
-            {title ? <p className="font-bold">{title}</p> : null}
-            {subclassStr ? <p className="text-sm">{subclassStr}</p> : null}
         </div>
     );
 }
@@ -171,13 +147,7 @@ export default function CharacterCard({ characterId }: CharacterCardProps) {
         currentHp > 0 ||
         maxHp > 0;
 
-    const classBlock = (
-        <ClassSubclassBlock
-            race={systemData.race}
-            characterClass={systemData.characterClass}
-            subclass={systemData.subclass}
-        />
-    );
+    const classBlock = <ClassSubclassBlock stored={stored} />;
     const backgroundBlock = <BackgroundBlock background={systemData.background} />;
     const hasTopInfoBlocks = classBlock !== null || backgroundBlock !== null;
 
@@ -226,7 +196,7 @@ export default function CharacterCard({ characterId }: CharacterCardProps) {
 
                                         <CharacterCardGameInfo characterId={characterId} />
 
-                                        <CharacterCardAbilities />
+                                        <CharacterCardAbilities characterId={characterId} />
 
                                         <CharacterCardInventory />
                                     </CarouselContent>
@@ -260,8 +230,15 @@ export default function CharacterCard({ characterId }: CharacterCardProps) {
                         Save
                         <FaBookmark className="text-chart-3" />
                     </Button>
-                    <Button size={"icon"} variant={"ghost"} className="">
-                        <FaGear />
+                    <Button
+                        asChild
+                        size="icon"
+                        variant="ghost"
+                        aria-label="Edit character"
+                    >
+                        <Link href={`/characters/${stored.type}/edit/${stored.id}`}>
+                            <FaGear />
+                        </Link>
                     </Button>
                 </div>
             </CardFooter>

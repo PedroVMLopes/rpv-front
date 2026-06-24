@@ -37,10 +37,16 @@
     "equippedItems": "Equipped Items",
     "inventory": "Inventory",
     "race": "Race",
+    "subrace": "Subrace",
     "background": "Background",
+    "startingItem": "Starting Item",
     "creatureType": "Creature Type",
     "cr": "Challenge Rating",
-    "occupation": "Occupation"
+    "occupation": "Occupation",
+    "subclassLocked": "Available at level {level}"
+  },
+  "validation": {
+    "subclassRequired": "Subclass is required at this level."
   },
   "abilities": {
     "strength": "Strength",
@@ -68,6 +74,103 @@
     "noneSelected": "No character selected. Create a player to see resolved stats.",
     "base": "base",
     "commonFields": "Common Fields",
-    "activeModifiers": "{count, plural, one {# active modifier} other {# active modifiers}}"
+    "activeModifiers": "{count, plural, one {# active modifier} other {# active modifiers}}",
+    "traits": "Racial Traits",
+    "unresolvedChoices": "Choices to resolve",
+    "skills": "Skills",
+    "savingThrows": "Saving Throws",
+    "proficient": "Proficient",
+    "proficiencyBonus": "Proficiency Bonus",
+    "initiative": "Initiative",
+    "passivePerception": "Passive Perception"
+  },
+  "skills": {
+    "acrobatics": "Acrobatics",
+    "animal-handling": "Animal Handling",
+    "arcana": "Arcana",
+    "athletics": "Athletics",
+    "deception": "Deception",
+    "history": "History",
+    "insight": "Insight",
+    "intimidation": "Intimidation",
+    "investigation": "Investigation",
+    "medicine": "Medicine",
+    "nature": "Nature",
+    "perception": "Perception",
+    "performance": "Performance",
+    "persuasion": "Persuasion",
+    "religion": "Religion",
+    "sleight-of-hand": "Sleight of Hand",
+    "stealth": "Stealth",
+    "survival": "Survival"
+  },
+  "grants": {
+    "languagesTitle": "Languages",
+    "autoKnown": "automatic",
+    "languageBudget": "Choose {count, plural, one {# language} other {# languages}}",
+    "selectLanguage": "Select a language",
+    "selectOption": "Select an option",
+    "abilityChoicesTitle": "Ability Choices",
+    "grantedFeaturesTitle": "Granted Features",
+    "spellSlotsTitle": "Spell Slots",
+    "spellSlotEntry": "Level {level}: {count}",
+    "classResourcesTitle": "Class Resources",
+    "classResourceEntry": "{ref}: {count}",
+    "classFeaturesTitle": "Class Features",
+    "subclassFeaturesTitle": "Subclass Features",
+    "classSpellsTitle": "Class Spells",
+    "noneYet": "None yet",
+    "sourceRace": "From race: {id}",
+    "sourceClass": "From class: {id}",
+    "sourceSubclass": "From subclass: {id}",
+    "sourceBackground": "From background: {id}",
+    "sourceItem": "From item: {id}",
+    "sourceSpell": "From spell: {id}",
+    "sourceFeat": "From feat: {id}",
+    "sourceCondition": "From condition: {id}",
+    "sourceSystem": "From system: {id}",
+    "choicesIncomplete": "Complete all required choices before saving."
+  },
+  "abilityScores": {
+    "title": "Ability Scores",
+    "methods": {
+      "manual": "Manual",
+      "standard-array": "Standard Array",
+      "point-buy": "Point Buy",
+      "roll": "Roll (4d6 drop lowest)"
+    },
+    "pointsRemaining": "Points remaining: {count}",
+    "points": "pts",
+    "roll": "Roll scores",
+    "assignScore": "Assign score",
+    "preview": "{base} ({mod, plural, =0 {+0 race} other {+# race}}) = {total}",
+    "errors": {
+      "pointBuyInvalid": "Point-buy scores must stay within budget and allowed range.",
+      "standardArrayInvalid": "Assign each standard array value exactly once.",
+      "rollInvalid": "Assign every rolled score exactly once."
+    }
+  },
+  "hitPoints": {
+    "title": "Hit Points",
+    "resetToComputed": "Reset to computed",
+    "manualHint": "Select a class and level to compute max HP from hit die and Constitution.",
+    "overrideHint": "Max HP is manually overridden and will not update when class, level, or Constitution change.",
+    "fromSources": "Base {base} + {bonus} from items/feats = {total} max HP"
+  },
+  "armorClass": {
+    "title": "Armor Class",
+    "resetToComputed": "Reset to computed",
+    "manualHint": "Base AC is 10 + your Dexterity modifier.",
+    "overrideHint": "Armor Class is manually overridden and will not update when Dexterity changes.",
+    "fromSources": "Base {base} + {bonus} from items = {total} AC"
+  },
+  "classResources": {
+    "title": "Class Resources",
+    "emptyHint": "Select a class and level to see derived resources.",
+    "noneYet": "None at this level",
+    "refs": {
+      "rage-uses": "Rage Uses",
+      "ki-points": "Ki Points"
+    }
   }
 }

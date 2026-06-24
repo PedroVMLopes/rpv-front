@@ -4,6 +4,31 @@ export const DND_DEFAULT_ABILITY_VALUE = 10;
 
 export const dndStatConfig: PresetStatConfig = {
     defaultAbilityValue: DND_DEFAULT_ABILITY_VALUE,
+    abilityGeneration: {
+        methods: ["manual", "standard-array", "point-buy", "roll"],
+        standardArray: [15, 14, 13, 12, 10, 8],
+        pointBuy: {
+            budget: 27,
+            min: 8,
+            max: 15,
+            cost: {
+                8: 0,
+                9: 1,
+                10: 2,
+                11: 3,
+                12: 4,
+                13: 5,
+                14: 7,
+                15: 9,
+            },
+        },
+        roll: {
+            dice: 4,
+            sides: 6,
+            drop: 1,
+            count: 6,
+        },
+    },
     abilities: [
         { name: "strength", labelKey: "abilities.strength", statKey: "strength", shortLabelKey: "abilitiesShort.strength" },
         { name: "dexterity", labelKey: "abilities.dexterity", statKey: "dexterity", shortLabelKey: "abilitiesShort.dexterity" },

@@ -14,15 +14,21 @@ import { UseFormReturn } from "react-hook-form";
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 
+export type SelectOption = string | { value: string; label: string };
+
 interface FieldConfig {
     name: string;
     label?: string;
     /** Translation key for built-in systems; resolved against the active UI locale. */
     labelKey?: string;
+    /** Optional helper text below the field (UI locale). */
+    helperKey?: string;
+    helperValues?: Record<string, string | number>;
     type: string;
     required?: boolean;
+    disabled?: boolean;
     defaultValue?: any;
-    options?: string[];
+    options?: SelectOption[];
     order?: number;
     group?: string;
     inlineGroup?: string;
@@ -38,6 +44,14 @@ interface DynamicFormProps {
     form: UseFormReturn<any>;
     fields: FieldConfig[];
     onSubmit?: (data: any) => void;
+}
+
+function normalizeSelectOption(option: SelectOption): { value: string; label: string } {
+    if (typeof option === "string") {
+        return { value: option, label: option };
+    }
+
+    return option;
 }
 
 export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
@@ -127,30 +141,33 @@ export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
                             switch (fieldConfig.type) {
                                 case "text":
                                     return (
-                                        <Input 
-                                            {...field} 
-                                            value={field.value ?? ""} 
+                                        <Input
+                                            {...field}
+                                            value={field.value ?? ""}
+                                            disabled={fieldConfig.disabled}
                                         />
                                     );
-                                
+
                                 case "number":
                                     return (
                                         <Input
                                             type="number"
                                             {...field}
                                             value={field.value ?? ""}
+                                            disabled={fieldConfig.disabled}
                                             onChange={(e) => {
                                                 const value = e.target.value;
                                                 field.onChange(value === "" ? "" : Number(value));
                                             }}
                                         />
                                     );
-                                
+
                                 case "select":
                                     return (
                                         <select
                                             {...field}
                                             value={field.value ?? ""}
+                                            disabled={fieldConfig.disabled}
                                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         >
                                             <option value="">
@@ -158,24 +175,34 @@ export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
                                                     label: resolveLabel(fieldConfig),
                                                 })}
                                             </option>
-                                            {fieldConfig.options?.map((opt: string) => (
-                                                <option key={opt} value={opt}>
-                                                    {opt}
-                                                </option>
-                                            ))}
+                                            {fieldConfig.options?.map((opt: SelectOption) => {
+                                                const { value, label } =
+                                                    normalizeSelectOption(opt);
+                                                return (
+                                                    <option key={value} value={value}>
+                                                        {label}
+                                                    </option>
+                                                );
+                                            })}
                                         </select>
                                     );
                                 
                                 default:
                                     return (
-                                        <Input 
-                                            {...field} 
+                                        <Input
+                                            {...field}
                                             value={field.value ?? ""}
+                                            disabled={fieldConfig.disabled}
                                         />
                                     );
                             }
                         })()}
                     </FormControl>
+                    {fieldConfig.helperKey ? (
+                        <p className="text-sm text-muted-foreground">
+                            {t(fieldConfig.helperKey, fieldConfig.helperValues)}
+                        </p>
+                    ) : null}
                     <FormMessage />
                 </FormItem>
             )}

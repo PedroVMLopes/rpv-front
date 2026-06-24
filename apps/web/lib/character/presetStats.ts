@@ -1,7 +1,7 @@
 import { presets, SystemKey } from "@/presets";
 import type { PresetStatConfig } from "@/presets/types";
 import type { CharacterProps, Stats } from "@rpv/domain";
-import { createDefaultStats, resolveStats } from "@rpv/domain";
+import { createDefaultStats, emptyInventory, resolveStats } from "@rpv/domain";
 import type { StoredCharacter } from "./storedCharacter";
 
 function resolveCharacterStats(
@@ -20,9 +20,23 @@ export function getPresetStatConfig(system: SystemKey): PresetStatConfig {
     return config;
 }
 
+const GRANT_SOURCE_FIELD_NAMES = [
+    "race",
+    "subrace",
+    "characterClass",
+    "subclass",
+    "background",
+    "startingItem",
+] as const;
+
 export function getCoreFieldNames(system: SystemKey): Set<string> {
     const config = getPresetStatConfig(system);
-    const names = new Set<string>(["name", "attributes"]);
+    const names = new Set<string>([
+        "name",
+        "attributes",
+        "choices",
+        ...GRANT_SOURCE_FIELD_NAMES,
+    ]);
 
     for (const combat of config.combatStats) {
         for (const field of combat.formFields) {
@@ -167,9 +181,19 @@ export function flattenStoredToForm(
     system: SystemKey
 ): Record<string, unknown> {
     const config = getPresetStatConfig(system);
+    const selections = stored.selections;
     const form: Record<string, unknown> = {
         ...stored.systemData,
         name: stored.name,
+        race: selections?.race ?? stored.systemData.race,
+        subrace: selections?.subrace ?? stored.systemData.subrace,
+        characterClass:
+            selections?.characterClass ?? stored.systemData.characterClass,
+        subclass: selections?.subclass ?? stored.systemData.subclass,
+        background: selections?.background ?? stored.systemData.background,
+        inventory: selections?.inventory ?? emptyInventory(),
+        startingItem: selections?.inventory?.bag[0]?.slug ?? "",
+        choices: selections?.choices ?? {},
         attributes: config.abilities.map((ability) => ({
             name: ability.name,
             value: stored.baseStats[ability.statKey],

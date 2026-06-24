@@ -41,4 +41,7 @@ export interface CatalogTranslations {
     races?: Record<string, CatalogEntryTranslation>;
     subraces?: Record<string, CatalogEntryTranslation>;
     spells?: Record<string, CatalogEntryTranslation>;
+    classes?: Record<string, CatalogEntryTranslation>;
+    subclasses?: Record<string, CatalogEntryTranslation>;
+    items?: Record<string, CatalogEntryTranslation>;
 }

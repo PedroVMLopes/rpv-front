@@ -1,17 +1,24 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { CharacterProps, CharacterType, Stats } from "@rpv/domain";
+import type {
+    CharacterProps,
+    CharacterType,
+    Stats,
+} from "@rpv/domain";
 import { SystemKey } from "@/presets";
 import {
     flattenStoredToForm,
-    formDataToStoredCharacter,
     getResolvedStatsForCharacter,
     normalizeStoredCharacter,
     storedCharacterToProps,
 } from "@/lib/character/characterAdapter";
-import { getDefaultModifiersForCreation } from "@/lib/character/presetModifiers";
+import {
+    buildNewStoredCharacter,
+    rebuildStoredCharacter,
+} from "@/lib/character/buildCharacter";
 import { getResourceMax } from "@/lib/character/presetStats";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
+import { useContentLocale } from "@/store/useContentLocale";
 
 export type { CharacterType };
 export type { StoredCharacter };
@@ -35,21 +42,6 @@ interface CharacterStore {
     getFormDefaults: (id: string) => Record<string, unknown> | undefined;
 }
 
-const createStoredCharacter = (
-    formData: Record<string, unknown>,
-    type: CharacterType,
-    system: SystemKey
-): StoredCharacter => {
-    const id = crypto.randomUUID();
-    return formDataToStoredCharacter(
-        formData,
-        id,
-        type,
-        system,
-        getDefaultModifiersForCreation(system)
-    );
-};
-
 export const useCharacterStore = create<CharacterStore>()(
     persist(
         (set, get) => ({
@@ -59,7 +51,12 @@ export const useCharacterStore = create<CharacterStore>()(
                 set((state) => ({
                     characters: [
                         ...state.characters,
-                        createStoredCharacter(formData, type, system),
+                        buildNewStoredCharacter(
+                            formData,
+                            type,
+                            system,
+                            useContentLocale.getState().contentLocale
+                        ),
                     ],
                 })),
 
@@ -75,12 +72,10 @@ export const useCharacterStore = create<CharacterStore>()(
                     characters: state.characters.map((char) => {
                         if (char.id !== id) return char;
 
-                        return formDataToStoredCharacter(
+                        return rebuildStoredCharacter(
+                            char,
                             formData,
-                            char.id,
-                            char.type,
-                            char.system,
-                            char.modifiers
+                            useContentLocale.getState().contentLocale
                         );
                     }),
                 })),

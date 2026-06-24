@@ -2,12 +2,16 @@ import type { StatKey } from "@rpv/domain";
 
 export type GrantType =
     | "ability_score"
+    | "stat_modifier"
+    | "ability"
     | "skill_proficiency"
     | "weapon_proficiency"
     | "tool_proficiency"
     | "armor_proficiency"
+    | "saving_throw_proficiency"
     | "language"
-    | "spell";
+    | "spell"
+    | "resource";
 
 /**
  * Describes a pool to choose from when a grant is not fixed. Either a spell
@@ -36,6 +40,8 @@ export interface Grant {
     description?: string;
     targetStat?: StatKey;
     amount?: number;
+    /** Resource identifier when grantType is "resource" (e.g. "spell-slots-1"). */
+    ref?: string;
     options?: GrantOption[];
     selectionFilter?: SelectionFilter;
 }

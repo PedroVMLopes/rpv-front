@@ -65,7 +65,7 @@ export const dndCharacterFields = {
             name: "characterClass",
             labelKey: "fields.characterClass",
             type: "select",
-            options: ["Fighter", "Wizard", "Rogue"],
+            options: [],
             group: "general",
             order: 2,
             inlineGroup: "line2"
@@ -73,7 +73,8 @@ export const dndCharacterFields = {
         {
             name: "subclass",
             labelKey: "fields.subclass",
-            type: "text",
+            type: "select",
+            options: [],
             group: "general",
             order: 3,
             inlineGroup: "line2"
@@ -135,7 +136,16 @@ export const dndCharacterFields = {
             name: "race",
             labelKey: "fields.race",
             type: "select",
-            options: ["Todler", "Child", "Teenager", "Young Adult", "Adult", "Old Adult", "Old"],
+            options: [],
+            group: "general",
+            order: 2,
+            inlineGroup: "line3"
+        },
+        {
+            name: "subrace",
+            labelKey: "fields.subrace",
+            type: "select",
+            options: [],
             group: "general",
             order: 2,
             inlineGroup: "line3"
@@ -144,10 +154,19 @@ export const dndCharacterFields = {
             name: "background",
             labelKey: "fields.background",
             type: "select",
-            options: ["Todler", "Child", "Teenager", "Young Adult", "Adult", "Old Adult", "Old"],
+            options: [],
             group: "general",
             order: 3,
             inlineGroup: "line3"
+        },
+        {
+            name: "startingItem",
+            labelKey: "fields.startingItem",
+            type: "select",
+            options: [],
+            group: "general",
+            order: 4,
+            inlineGroup: "line5"
         },
     ],
     enemy: [

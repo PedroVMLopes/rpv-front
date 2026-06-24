@@ -1,3 +1,11 @@
+import { CharacterGrant } from "../grants/characterGrant.types";
+import {
+    getAbilities,
+    getLanguages,
+    getProficiencies,
+    getResources,
+    getSpells,
+} from "../grants/characterGrant.utils";
 import { Modifier } from "../modifiers/modifier.types";
 import { resolveStats, Stats } from "../modifiers/modifier.resolver";
 import { CharacterProps } from "./Character.types";
@@ -33,11 +41,36 @@ export class Character {
         return [...this.props.modifiers];
     }
 
+    getGrants(): CharacterGrant[] {
+        return [...(this.props.grants ?? [])];
+    }
+
+    getLanguages(): CharacterGrant[] {
+        return getLanguages(this.props.grants ?? []);
+    }
+
+    getAbilities(): CharacterGrant[] {
+        return getAbilities(this.props.grants ?? []);
+    }
+
+    getSpells(): CharacterGrant[] {
+        return getSpells(this.props.grants ?? []);
+    }
+
+    getProficiencies(): CharacterGrant[] {
+        return getProficiencies(this.props.grants ?? []);
+    }
+
+    getResources(): CharacterGrant[] {
+        return getResources(this.props.grants ?? []);
+    }
+
     toProps(): CharacterProps {
         return {
             ...this.props,
             baseStats: { ...this.props.baseStats },
             modifiers: [...this.props.modifiers],
+            grants: [...(this.props.grants ?? [])],
         };
     }
 
@@ -52,6 +85,20 @@ export class Character {
         return new Character({
             ...this.props,
             modifiers: this.props.modifiers.filter((m) => m.id !== id),
+        });
+    }
+
+    addGrant(grant: CharacterGrant): Character {
+        return new Character({
+            ...this.props,
+            grants: [...(this.props.grants ?? []), grant],
+        });
+    }
+
+    removeGrant(id: string): Character {
+        return new Character({
+            ...this.props,
+            grants: (this.props.grants ?? []).filter((g) => g.id !== id),
         });
     }
 

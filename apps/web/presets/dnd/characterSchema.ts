@@ -4,6 +4,16 @@ import {
     dndDefaultAttributes,
 } from "./characterStats";
 
+const itemStackSchema = z.object({
+    slug: z.string(),
+    quantity: z.number().int().min(1),
+});
+
+const characterInventorySchema = z.object({
+    bag: z.array(itemStackSchema),
+    equipped: z.record(z.string(), z.string()),
+});
+
 export const dndCharacterSchema = {
   common: z.object({
     name: z.string().min(1, "Name is required"),
@@ -24,8 +34,23 @@ export const dndCharacterSchema = {
     .default(dndDefaultAttributes).optional(),
   }),
   player: z.object({
-    level: z.coerce.number().optional(),
-    characterClass: z.string().optional()
+    level: z.coerce.number().min(1).max(20).optional().default(1),
+    characterClass: z.string().optional(),
+    subclass: z.string().optional(),
+    race: z.string().optional(),
+    subrace: z.string().optional(),
+    background: z.string().optional(),
+    startingItem: z.string().optional(),
+    inventory: characterInventorySchema.optional(),
+    choices: z
+      .object({
+        grantPicks: z.record(z.string(), z.string()).optional(),
+      })
+      .optional(),
+    abilityScoreMethod: z
+      .enum(["manual", "standard-array", "point-buy", "roll"])
+      .optional(),
+    abilityScoreRolls: z.array(z.coerce.number()).optional(),
   }),
   enemy: z.object({
     creatureType: z.string().optional(),
