@@ -56,7 +56,10 @@ describe("useCharacterStore stat modifiers", () => {
             useCharacterStore.getState().addCharacter(
                 {
                     ...baseFormData,
-                    startingItem: "amulet-of-vitality",
+                    inventory: {
+                        bag: [{ slug: "amulet-of-vitality", quantity: 1 }],
+                        equipped: {},
+                    },
                 },
                 "player",
                 "dnd"

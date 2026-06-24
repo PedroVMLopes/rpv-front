@@ -12,6 +12,7 @@ import enMessages from "../messages/en.json";
 
 const storedCharacter: StoredCharacter = {
     id: "char-1",
+    schemaVersion: 1,
     type: "player",
     system: "dnd",
     language: "en",

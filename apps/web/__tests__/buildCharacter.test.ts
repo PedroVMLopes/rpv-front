@@ -92,11 +92,14 @@ describe("buildStoredCharacter", () => {
         );
     });
 
-    it("puts startingItem in bag without applying grants", () => {
+    it("puts inventory bag items without applying grants when not equipped", () => {
         const character = buildNewStoredCharacter(
             {
                 ...baseFormData,
-                startingItem: "scroll-of-fire-bolt",
+                inventory: {
+                    bag: [{ slug: "scroll-of-fire-bolt", quantity: 1 }],
+                    equipped: {},
+                },
             },
             "player",
             "dnd",
@@ -293,7 +296,10 @@ describe("buildStoredCharacter", () => {
             ac: 11,
             characterClass: "Wizard",
             background: "sage",
-            startingItem: "scroll-of-fire-bolt",
+            inventory: {
+                bag: [{ slug: "scroll-of-fire-bolt", quantity: 1 }],
+                equipped: {},
+            },
             attributes: baseAttributes,
         };
 

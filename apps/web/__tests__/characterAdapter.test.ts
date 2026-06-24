@@ -54,6 +54,7 @@ describe("characterAdapter system-agnostic mapping", () => {
         });
         expect(stored).not.toHaveProperty("hp");
         expect(stored).not.toHaveProperty("characterClass");
+        expect(stored.schemaVersion).toBe(1);
     });
 
     it("round-trips stored character back to form shape", () => {
@@ -285,42 +286,84 @@ describe("characterAdapter system-agnostic mapping", () => {
         expect(normalized.subclass).toBeUndefined();
     });
 
-    it("overlays startingItem onto bag[0] when inventory is already present", () => {
-        const selections = buildSelectionsFromForm({
-            startingItem: "scroll-of-fire-bolt",
-            inventory: {
-                bag: [
-                    { slug: "amulet-of-vitality", quantity: 1 },
-                    { slug: "longsword", quantity: 1 },
-                ],
-                equipped: { ring: "ring-of-hardiness" },
+    it("backfills schemaVersion and inventory on normalize", () => {
+        const stored = normalizeStoredCharacter({
+            id: "no-version",
+            type: "player",
+            system: "dnd",
+            language: "en",
+            name: "Hero",
+            baseStats: {},
+            modifiers: [],
+            grants: [],
+            resources: { hp: 5 },
+            systemData: {},
+            selections: {
+                race: undefined,
+                subrace: undefined,
+                characterClass: undefined,
+                subclass: undefined,
+                background: undefined,
+                inventory: emptyInventory(),
+                choices: {},
             },
         });
 
-        expect(selections.inventory).toEqual({
-            bag: [
-                { slug: "scroll-of-fire-bolt", quantity: 1 },
-                { slug: "longsword", quantity: 1 },
-            ],
-            equipped: { ring: "ring-of-hardiness" },
-        });
+        expect(stored.schemaVersion).toBe(1);
+        expect(stored.selections.inventory).toEqual(emptyInventory());
     });
 
-    it("removes bag[0] when startingItem is cleared with inventory present", () => {
-        const selections = buildSelectionsFromForm({
-            startingItem: "",
-            inventory: {
-                bag: [
-                    { slug: "amulet-of-vitality", quantity: 1 },
-                    { slug: "longsword", quantity: 1 },
-                ],
-                equipped: { neck: "amulet-of-vitality" },
+    it("strips legacy inventory keys from systemData on normalize", () => {
+        const stored = normalizeStoredCharacter({
+            id: "legacy-inventory",
+            type: "player",
+            system: "dnd",
+            language: "en",
+            name: "Hero",
+            baseStats: {},
+            modifiers: [],
+            grants: [],
+            resources: { hp: 5 },
+            systemData: {
+                startingItem: "scroll-of-fire-bolt",
+                items: ["scroll-of-fire-bolt"],
+                equippedItems: "ring-of-hardiness",
+                inventory: 3,
+            },
+            selections: {
+                race: undefined,
+                subrace: undefined,
+                characterClass: undefined,
+                subclass: undefined,
+                background: undefined,
+                inventory: emptyInventory(),
+                choices: {},
             },
         });
 
-        expect(selections.inventory).toEqual({
-            bag: [{ slug: "longsword", quantity: 1 }],
-            equipped: { neck: "amulet-of-vitality" },
-        });
+        expect(stored.systemData).not.toHaveProperty("startingItem");
+        expect(stored.systemData).not.toHaveProperty("items");
+        expect(stored.systemData).not.toHaveProperty("equippedItems");
+        expect(stored.systemData).not.toHaveProperty("inventory");
+    });
+
+    it("keeps inventory out of systemData on build round-trip", () => {
+        const stored = formDataToStoredCharacter(
+            {
+                ...formData,
+                inventory: {
+                    bag: [{ slug: "scroll-of-fire-bolt", quantity: 1 }],
+                    equipped: { "main-hand": "longsword" },
+                },
+            },
+            "char-inv",
+            "player",
+            "dnd",
+            []
+        );
+
+        expect(stored.systemData).not.toHaveProperty("inventory");
+        expect(stored.systemData).not.toHaveProperty("startingItem");
+        expect(stored.selections.inventory.bag).toHaveLength(1);
     });
 });

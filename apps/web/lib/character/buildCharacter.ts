@@ -131,7 +131,6 @@ export function rebuildCharacterWithInventory(
         {
             ...formData,
             inventory: nextInventory,
-            startingItem: nextInventory.bag[0]?.slug ?? "",
         },
         locale
     );

@@ -398,14 +398,17 @@ describe("getFixedLanguageGrants", () => {
 });
 
 describe("buildSelectionsFromForm", () => {
-    it("maps grant source fields and starting item into bag inventory", () => {
+    it("maps grant source fields and inventory into selections", () => {
         expect(
             buildSelectionsFromForm({
                 race: "elf",
                 characterClass: "fighter",
                 subclass: "fighter-champion",
                 background: "sage",
-                startingItem: "scroll-of-fire-bolt",
+                inventory: {
+                    bag: [{ slug: "scroll-of-fire-bolt", quantity: 1 }],
+                    equipped: {},
+                },
             })
         ).toEqual({
             race: "elf",

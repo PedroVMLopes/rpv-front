@@ -22,6 +22,7 @@ import {
 import { deriveResourceTotals } from "./deriveResourceTotals";
 import { isCharacterInventory, sanitizeInventory } from "./inventory";
 import type { StoredCharacter, CharacterSelections, CharacterChoices } from "./storedCharacter";
+import { STORED_CHARACTER_SCHEMA_VERSION } from "./storedCharacter";
 
 function coerceString(value: unknown, fallback: string): string {
     if (typeof value === "string" && value.length > 0) {
@@ -71,62 +72,41 @@ function coerceChoices(value: unknown, existing?: CharacterChoices): CharacterCh
     return {};
 }
 
-function bagFromLegacyItems(items: unknown): CharacterSelections["inventory"]["bag"] {
-    if (!Array.isArray(items)) {
-        return [];
-    }
-
-    return items
-        .map((entry) => coerceCatalogSlug(entry))
-        .filter((slug): slug is string => slug !== undefined)
-        .map((slug) => ({ slug, quantity: 1 }));
-}
-
-function applyStartingItemOverlay(
-    base: CharacterSelections["inventory"],
-    formData: Record<string, unknown>
-): CharacterSelections["inventory"] {
-    if (!("startingItem" in formData)) {
-        return base;
-    }
-
-    const slug = coerceCatalogSlug(formData.startingItem);
-    const rest = base.bag.slice(1);
-
-    if (!slug) {
-        return {
-            bag: rest,
-            equipped: base.equipped,
-        };
-    }
-
-    return {
-        bag: [{ slug, quantity: 1 }, ...rest],
-        equipped: base.equipped,
-    };
-}
-
 function buildInventoryFromForm(
     formData: Record<string, unknown>,
     existing?: CharacterSelections
 ): CharacterSelections["inventory"] {
-    let base: CharacterSelections["inventory"];
-
     if (isCharacterInventory(formData.inventory)) {
-        base = formData.inventory;
-    } else {
-        const legacyBag = bagFromLegacyItems(formData.items);
-        if (legacyBag.length > 0) {
-            base = {
-                bag: legacyBag,
-                equipped: existing?.inventory?.equipped ?? {},
-            };
-        } else {
-            base = existing?.inventory ?? emptyInventory();
-        }
+        return formData.inventory;
     }
+    return existing?.inventory ?? emptyInventory();
+}
 
-    return applyStartingItemOverlay(base, formData);
+function stripLegacyInventoryFormKeys(
+    systemData: Record<string, unknown>
+): Record<string, unknown> {
+    const next = { ...systemData };
+    delete next.startingItem;
+    delete next.items;
+    delete next.equippedItems;
+    if (!isCharacterInventory(next.inventory)) {
+        delete next.inventory;
+    }
+    return next;
+}
+
+function finalizeStoredCharacter(
+    stored: StoredCharacter,
+    normalizedSelections: CharacterSelections
+): StoredCharacter {
+    return {
+        ...stored,
+        schemaVersion: stored.schemaVersion ?? STORED_CHARACTER_SCHEMA_VERSION,
+        language: isLocale(stored.language) ? stored.language : DEFAULT_LOCALE,
+        grants: stored.grants ?? [],
+        selections: normalizedSelections,
+        systemData: stripLegacyInventoryFormKeys(stored.systemData ?? {}),
+    };
 }
 
 export function normalizeCharacterSelections(
@@ -202,6 +182,7 @@ export function formDataToStoredCharacter(
 
     return {
         id,
+        schemaVersion: STORED_CHARACTER_SCHEMA_VERSION,
         type,
         system,
         language: coerceLocale(formData.language),
@@ -312,66 +293,29 @@ export function migrateLegacyToStored(legacy: Record<string, unknown>): StoredCh
 }
 
 export function normalizeStoredCharacter(char: unknown): StoredCharacter {
+    let stored: StoredCharacter;
+
     if (isLegacyStoredCharacter(char)) {
-        return migrateLegacyToStored(char as Record<string, unknown>);
-    }
-
-    const stored = char as StoredCharacter;
-
-    if (!stored.resources || !stored.systemData) {
-        return migrateLegacyToStored(stored as unknown as Record<string, unknown>);
-    }
-
-    // Backfill the language field for characters persisted before i18n support.
-    if (!isLocale(stored.language)) {
-        return {
-            ...stored,
-            language: DEFAULT_LOCALE,
-            grants: stored.grants ?? [],
-            selections: normalizeCharacterSelections(
-                stored.selections,
-                stored.systemData ?? {},
-                stored.system
-            ),
-        };
-    }
-
-    if (!stored.selections) {
-        return {
-            ...stored,
-            grants: stored.grants ?? [],
-            selections: normalizeCharacterSelections(
-                buildSelectionsFromForm(stored.systemData ?? {}),
-                stored.systemData ?? {},
-                stored.system
-            ),
-        };
+        stored = migrateLegacyToStored(char as Record<string, unknown>);
+    } else {
+        const candidate = char as StoredCharacter;
+        if (!candidate.resources || !candidate.systemData) {
+            stored = migrateLegacyToStored(
+                candidate as unknown as Record<string, unknown>
+            );
+        } else {
+            stored = candidate;
+        }
     }
 
     const normalizedSelections = normalizeCharacterSelections(
-        stored.selections,
+        stored.selections ??
+            buildSelectionsFromForm(stored.systemData ?? {}),
         stored.systemData ?? {},
         stored.system
     );
-    const needsSelectionMigration =
-        JSON.stringify(stored.selections) !== JSON.stringify(normalizedSelections);
 
-    if (!stored.grants) {
-        return {
-            ...stored,
-            grants: [],
-            selections: normalizedSelections,
-        };
-    }
-
-    if (needsSelectionMigration) {
-        return {
-            ...stored,
-            selections: normalizedSelections,
-        };
-    }
-
-    return stored;
+    return finalizeStoredCharacter(stored, normalizedSelections);
 }
 
 export { flattenStoredToForm };

@@ -23,7 +23,6 @@ export function useGrantPickSanitizer(
     const characterClass = form.watch("characterClass");
     const subclass = form.watch("subclass");
     const background = form.watch("background");
-    const startingItem = form.watch("startingItem");
     const inventory = form.watch("inventory");
     const level = form.watch("level");
 
@@ -69,7 +68,6 @@ export function useGrantPickSanitizer(
         characterClass,
         subclass,
         background,
-        startingItem,
         inventory,
         level,
     ]);

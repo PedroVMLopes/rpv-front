@@ -40,8 +40,7 @@ export const dndCharacterSchema = {
     race: z.string().optional(),
     subrace: z.string().optional(),
     background: z.string().optional(),
-    startingItem: z.string().optional(),
-    inventory: characterInventorySchema.optional(),
+    inventory: characterInventorySchema.default({ bag: [], equipped: {} }),
     choices: z
       .object({
         grantPicks: z.record(z.string(), z.string()).optional(),

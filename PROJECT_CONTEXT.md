@@ -23,7 +23,7 @@ flowchart TD
 1. **Form** — player create/edit pages collect race, class, subclass, level, grant picks.
 2. **`readLevelFromForm`** — reads `systemData.level`, coerces, floors, clamps **1–20** (default 1).
 3. **`sanitizeSelections`** — clears invalid subclass (wrong class or below `subclassLevel`), then prunes stale `grantPicks`.
-4. **`collectGrantSources`** — gathers `Grant[]` blocks from race, subrace, class, subclass (when unlocked), background, items.
+4. **`collectGrantSources`** — gathers `Grant[]` blocks from race, subrace, class, subclass (when unlocked), background, **equipped item slugs** (`selections.inventory.equipped`).
 5. **`deriveCharacterGrants`** — resolves grants + `grantPicks` into domain `CharacterGrant[]`.
 6. **`deriveResourceTotals`** — sums `kind: "resource"` grants by `ref` into `stored.resources` (HP stays form-driven).
 
@@ -34,11 +34,21 @@ flowchart TD
 | Field | Location | Notes |
 |-------|----------|-------|
 | `level` | `systemData.level` | Not in `CharacterSelections`; always read via `readLevelFromForm` |
-| Race, class, subclass, background, items | `selections` | Slugs; normalized on load |
+| Inventário (possuídos) | `selections.inventory.bag` | `{ slug, quantity }[]`; sanitizado no load/build |
+| Equipamento | `selections.inventory.equipped` | `slotId → slug`; só equipado gera grants/modifiers |
+| Race, class, subclass, background | `selections` | Slugs; normalized on load |
 | Grant pick answers | `selections.choices.grantPicks` | Keys include feature level segment (see below) |
 | Resolved abilities, spells, proficiencies | `grants[]` | Traceable via `source` |
 | Aggregated totals (spell slots, rage, ki) | `resources` | Merged with form HP; derived from grants |
 | Ability scores, AC, free text | `systemData` / `baseStats` | Preset-specific |
+
+Item definitions (`grants`, `allowedSlots`) live in `@rpv/content`; inventory **state** lives in `selections.inventory`.
+
+### Inventory contract
+
+- **Bag** does not alter stats; only **equipped** slugs feed `collectGrantSources`.
+- `schemaVersion` on the `StoredCharacter` root enables future migrations.
+- No `startingItem`, `items[]`, or numeric `inventory` in the persisted contract — use `selections.inventory` only.
 
 ---
 
@@ -123,7 +133,7 @@ Wizard spell picks (pilot): 3 cantrips + 6 leveled spell choice slots at L5 (red
 
 - **Catalog spells:** pilot catalog has cantrips only; L1+ spell pick slots exist in data but may have empty option pools until more spells are added to the catalog.
 - **Multiclass, ASI/Feat:** out of scope.
-- **Legacy characters:** `normalizeStoredCharacter` coerces slugs and clears subclass when it does not match the selected class.
+- **Legacy characters:** `normalizeStoredCharacter` coerces slugs, clears invalid subclass, backfills `schemaVersion` and `selections.inventory`, and strips legacy inventory keys from `systemData`.
 
 ---
 

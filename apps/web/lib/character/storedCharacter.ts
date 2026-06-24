@@ -20,8 +20,11 @@ export function emptyCharacterSelections(): CharacterSelections {
     return { inventory: emptyInventory(), choices: {} };
 }
 
+export const STORED_CHARACTER_SCHEMA_VERSION = 1;
+
 export type StoredCharacter = {
     id: string;
+    schemaVersion: number;
     type: CharacterType;
     system: SystemKey;
     /** Language the user authored this character's free text in. */

@@ -26,7 +26,6 @@ const GRANT_SOURCE_FIELD_NAMES = [
     "characterClass",
     "subclass",
     "background",
-    "startingItem",
 ] as const;
 
 export function getCoreFieldNames(system: SystemKey): Set<string> {
@@ -35,6 +34,7 @@ export function getCoreFieldNames(system: SystemKey): Set<string> {
         "name",
         "attributes",
         "choices",
+        "inventory",
         ...GRANT_SOURCE_FIELD_NAMES,
     ]);
 
@@ -192,7 +192,6 @@ export function flattenStoredToForm(
         subclass: selections?.subclass ?? stored.systemData.subclass,
         background: selections?.background ?? stored.systemData.background,
         inventory: selections?.inventory ?? emptyInventory(),
-        startingItem: selections?.inventory?.bag[0]?.slug ?? "",
         choices: selections?.choices ?? {},
         attributes: config.abilities.map((ability) => ({
             name: ability.name,

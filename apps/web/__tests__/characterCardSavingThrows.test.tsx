@@ -17,6 +17,7 @@ jest.mock("../components/ui/characterCarousel", () => ({
 
 const storedCharacter: StoredCharacter = {
     id: "char-saves-1",
+    schemaVersion: 1,
     type: "player",
     system: "dnd",
     language: "en",

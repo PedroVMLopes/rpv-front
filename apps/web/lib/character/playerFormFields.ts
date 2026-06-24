@@ -7,7 +7,6 @@ import {
 } from "@/lib/catalog/raceCatalog";
 import {
     listBackgroundOptions,
-    listStartingItemOptions,
     listClassOptions,
     listSubclassOptions,
 } from "@/lib/catalog/grantCatalog";
@@ -32,7 +31,6 @@ export function buildPlayerGrantSourceFields(
     const raceOptions = listRaceOptions(contentLocale);
     const subraceOptions = listSubraceOptions(raceSlug, contentLocale);
     const backgroundOptions = listBackgroundOptions();
-    const startingItemOptions = listStartingItemOptions();
     const classOptions = listClassOptions(contentLocale);
     const subclassOptions = listSubclassOptions(classSlug, contentLocale);
     const subclassLevel = classSlug ? getClassSubclassLevel(classSlug) : undefined;
@@ -52,10 +50,6 @@ export function buildPlayerGrantSourceFields(
 
         if (field.name === "background" && backgroundOptions.length > 0) {
             return { ...field, options: backgroundOptions };
-        }
-
-        if (field.name === "startingItem" && startingItemOptions.length > 0) {
-            return { ...field, options: startingItemOptions };
         }
 
         if (field.name === "characterClass" && classOptions.length > 0) {

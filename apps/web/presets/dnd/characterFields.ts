@@ -116,23 +116,6 @@ export const dndCharacterFields = {
             inlineGroup: "line4"
         },
         {
-            name: "equippedItems",
-            labelKey: "fields.equippedItems",
-            type: "text",
-            group: "general",
-            order: 3,
-            inlineGroup: "line5"
-        },
-        {
-            name: "inventory",
-            labelKey: "fields.inventory",
-            type: "number",
-            defaultValue: 0,
-            group: "general",
-            order: 3,
-            inlineGroup: "line5"
-        },
-        {
             name: "race",
             labelKey: "fields.race",
             type: "select",
@@ -158,15 +141,6 @@ export const dndCharacterFields = {
             group: "general",
             order: 3,
             inlineGroup: "line3"
-        },
-        {
-            name: "startingItem",
-            labelKey: "fields.startingItem",
-            type: "select",
-            options: [],
-            group: "general",
-            order: 4,
-            inlineGroup: "line5"
         },
     ],
     enemy: [
