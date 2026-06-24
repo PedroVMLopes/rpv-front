@@ -1,9 +1,10 @@
-import type { CharacterType, Locale } from "@rpv/domain";
+import type { CharacterInventory, CharacterType, Locale } from "@rpv/domain";
 import type { SystemKey } from "@/presets";
 import {
     buildSelectionsFromForm,
     formDataToStoredCharacter,
 } from "./characterAdapter";
+import { flattenStoredToForm } from "./presetStats";
 import { deriveCharacterGrants } from "./characterGrants";
 import { deriveModifiersForCharacter } from "./deriveModifiers";
 import { applyDerivedCombatStats } from "./applyDerivedCombatStats";
@@ -116,4 +117,22 @@ export function rebuildStoredCharacter(
         formData,
         existing,
     });
+}
+
+export function rebuildCharacterWithInventory(
+    existing: StoredCharacter,
+    nextInventory: CharacterInventory,
+    locale: Locale
+): StoredCharacter {
+    const formData = flattenStoredToForm(existing, existing.system);
+
+    return rebuildStoredCharacter(
+        existing,
+        {
+            ...formData,
+            inventory: nextInventory,
+            startingItem: nextInventory.bag[0]?.slug ?? "",
+        },
+        locale
+    );
 }

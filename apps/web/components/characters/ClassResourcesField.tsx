@@ -31,6 +31,7 @@ export function ClassResourcesField({
             subrace: watchedValues.subrace,
             background: watchedValues.background,
             startingItem: watchedValues.startingItem,
+            inventory: watchedValues.inventory,
             choices: watchedValues.choices,
         }),
         [
@@ -41,6 +42,7 @@ export function ClassResourcesField({
             watchedValues.subrace,
             watchedValues.background,
             watchedValues.startingItem,
+            watchedValues.inventory,
             watchedValues.choices,
         ]
     );

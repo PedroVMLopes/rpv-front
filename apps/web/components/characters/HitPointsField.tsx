@@ -50,6 +50,7 @@ export function HitPointsField({
             race: watchedValues.race,
             subrace: watchedValues.subrace,
             startingItem: watchedValues.startingItem,
+            inventory: watchedValues.inventory,
             maxHp: watchedValues.maxHp,
             hp: watchedValues.hp,
         }),
@@ -60,6 +61,7 @@ export function HitPointsField({
             watchedValues.race,
             watchedValues.subrace,
             watchedValues.startingItem,
+            watchedValues.inventory,
             watchedValues.maxHp,
             watchedValues.hp,
         ]

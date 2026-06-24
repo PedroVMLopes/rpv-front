@@ -38,5 +38,9 @@ export function syncResourceHpToResolvedMax(
         return { ...processedForm, hp: resolvedHp };
     }
 
+    if (currentHp !== undefined && currentHp > resolvedHp) {
+        return { ...processedForm, hp: resolvedHp };
+    }
+
     return processedForm;
 }

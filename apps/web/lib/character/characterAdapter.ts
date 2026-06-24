@@ -82,42 +82,51 @@ function bagFromLegacyItems(items: unknown): CharacterSelections["inventory"]["b
         .map((slug) => ({ slug, quantity: 1 }));
 }
 
+function applyStartingItemOverlay(
+    base: CharacterSelections["inventory"],
+    formData: Record<string, unknown>
+): CharacterSelections["inventory"] {
+    if (!("startingItem" in formData)) {
+        return base;
+    }
+
+    const slug = coerceCatalogSlug(formData.startingItem);
+    const rest = base.bag.slice(1);
+
+    if (!slug) {
+        return {
+            bag: rest,
+            equipped: base.equipped,
+        };
+    }
+
+    return {
+        bag: [{ slug, quantity: 1 }, ...rest],
+        equipped: base.equipped,
+    };
+}
+
 function buildInventoryFromForm(
     formData: Record<string, unknown>,
     existing?: CharacterSelections
 ): CharacterSelections["inventory"] {
+    let base: CharacterSelections["inventory"];
+
     if (isCharacterInventory(formData.inventory)) {
-        return formData.inventory;
-    }
-
-    const legacyBag = bagFromLegacyItems(formData.items);
-    if (legacyBag.length > 0) {
-        return {
-            bag: legacyBag,
-            equipped: existing?.inventory?.equipped ?? {},
-        };
-    }
-
-    if ("startingItem" in formData) {
-        const slug = coerceCatalogSlug(formData.startingItem);
-        if (existing?.inventory) {
-            if (!slug) {
-                return existing.inventory;
-            }
-
-            const rest = existing.inventory.bag.slice(1);
-            return {
-                bag: [{ slug, quantity: 1 }, ...rest],
-                equipped: existing.inventory.equipped,
+        base = formData.inventory;
+    } else {
+        const legacyBag = bagFromLegacyItems(formData.items);
+        if (legacyBag.length > 0) {
+            base = {
+                bag: legacyBag,
+                equipped: existing?.inventory?.equipped ?? {},
             };
+        } else {
+            base = existing?.inventory ?? emptyInventory();
         }
-
-        return slug
-            ? { bag: [{ slug, quantity: 1 }], equipped: {} }
-            : emptyInventory();
     }
 
-    return existing?.inventory ?? emptyInventory();
+    return applyStartingItemOverlay(base, formData);
 }
 
 export function normalizeCharacterSelections(

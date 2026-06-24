@@ -116,6 +116,28 @@ describe("buildStoredCharacter", () => {
         ).toBe(false);
     });
 
+    it("removes invalid bag slugs during build sanitize", () => {
+        const character = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                inventory: {
+                    bag: [
+                        { slug: "not-a-real-item", quantity: 2 },
+                        { slug: "amulet-of-vitality", quantity: 1 },
+                    ],
+                    equipped: {},
+                },
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        expect(character.selections.inventory.bag).toEqual([
+            { slug: "amulet-of-vitality", quantity: 1 },
+        ]);
+    });
+
     it("derives item HP bonus when equipped and syncs current HP on create", () => {
         const character = buildNewStoredCharacter(
             {

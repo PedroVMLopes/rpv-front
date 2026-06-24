@@ -24,6 +24,7 @@ export function useGrantPickSanitizer(
     const subclass = form.watch("subclass");
     const background = form.watch("background");
     const startingItem = form.watch("startingItem");
+    const inventory = form.watch("inventory");
     const level = form.watch("level");
 
     useEffect(() => {
@@ -69,6 +70,7 @@ export function useGrantPickSanitizer(
         subclass,
         background,
         startingItem,
+        inventory,
         level,
     ]);
 }

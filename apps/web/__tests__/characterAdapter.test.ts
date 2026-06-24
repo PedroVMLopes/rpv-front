@@ -284,4 +284,43 @@ describe("characterAdapter system-agnostic mapping", () => {
         expect(normalized.characterClass).toBeUndefined();
         expect(normalized.subclass).toBeUndefined();
     });
+
+    it("overlays startingItem onto bag[0] when inventory is already present", () => {
+        const selections = buildSelectionsFromForm({
+            startingItem: "scroll-of-fire-bolt",
+            inventory: {
+                bag: [
+                    { slug: "amulet-of-vitality", quantity: 1 },
+                    { slug: "longsword", quantity: 1 },
+                ],
+                equipped: { ring: "ring-of-hardiness" },
+            },
+        });
+
+        expect(selections.inventory).toEqual({
+            bag: [
+                { slug: "scroll-of-fire-bolt", quantity: 1 },
+                { slug: "longsword", quantity: 1 },
+            ],
+            equipped: { ring: "ring-of-hardiness" },
+        });
+    });
+
+    it("removes bag[0] when startingItem is cleared with inventory present", () => {
+        const selections = buildSelectionsFromForm({
+            startingItem: "",
+            inventory: {
+                bag: [
+                    { slug: "amulet-of-vitality", quantity: 1 },
+                    { slug: "longsword", quantity: 1 },
+                ],
+                equipped: { neck: "amulet-of-vitality" },
+            },
+        });
+
+        expect(selections.inventory).toEqual({
+            bag: [{ slug: "longsword", quantity: 1 }],
+            equipped: { neck: "amulet-of-vitality" },
+        });
+    });
 });

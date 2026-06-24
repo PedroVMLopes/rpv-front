@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type {
+    CharacterInventory,
     CharacterProps,
     CharacterType,
     Stats,
@@ -14,8 +15,15 @@ import {
 } from "@/lib/character/characterAdapter";
 import {
     buildNewStoredCharacter,
+    rebuildCharacterWithInventory,
     rebuildStoredCharacter,
 } from "@/lib/character/buildCharacter";
+import {
+    addToBag as addToBagInventory,
+    equipItem as equipItemInventory,
+    removeFromBag as removeFromBagInventory,
+    unequipItem as unequipItemInventory,
+} from "@/lib/character/inventory";
 import { getResourceMax } from "@/lib/character/presetStats";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useContentLocale } from "@/store/useContentLocale";
@@ -36,10 +44,43 @@ interface CharacterStore {
     removeCharacter: (id: string) => void;
     clearCharacters: () => void;
     updateCharacter: (id: string, formData: Record<string, unknown>) => void;
+    equipItem: (id: string, slotId: string, slug: string) => void;
+    unequipItem: (id: string, slotId: string) => void;
+    addToBag: (id: string, slug: string, quantity?: number) => void;
+    removeFromBag: (id: string, slug: string, quantity?: number) => void;
     updateResource: (id: string, resourceName: string, delta: number) => void;
     getResolvedStats: (id: string) => Stats | undefined;
     getCharacterProps: (id: string) => CharacterProps | undefined;
     getFormDefaults: (id: string) => Record<string, unknown> | undefined;
+}
+
+function updateCharacterInventory(
+    set: (
+        partial:
+            | CharacterStore
+            | Partial<CharacterStore>
+            | ((state: CharacterStore) => CharacterStore | Partial<CharacterStore>)
+    ) => void,
+    get: () => CharacterStore,
+    id: string,
+    transform: (inventory: CharacterInventory, system: SystemKey) => CharacterInventory
+) {
+    set((state) => ({
+        characters: state.characters.map((char) => {
+            if (char.id !== id) return char;
+
+            const nextInventory = transform(char.selections.inventory, char.system);
+            if (nextInventory === char.selections.inventory) {
+                return char;
+            }
+
+            return rebuildCharacterWithInventory(
+                char,
+                nextInventory,
+                useContentLocale.getState().contentLocale
+            );
+        }),
+    }));
 }
 
 export const useCharacterStore = create<CharacterStore>()(
@@ -79,6 +120,26 @@ export const useCharacterStore = create<CharacterStore>()(
                         );
                     }),
                 })),
+
+            equipItem: (id, slotId, slug) =>
+                updateCharacterInventory(set, get, id, (inventory, system) =>
+                    equipItemInventory(inventory, slotId, slug, system)
+                ),
+
+            unequipItem: (id, slotId) =>
+                updateCharacterInventory(set, get, id, (inventory, system) =>
+                    unequipItemInventory(inventory, slotId, system)
+                ),
+
+            addToBag: (id, slug, quantity = 1) =>
+                updateCharacterInventory(set, get, id, (inventory) =>
+                    addToBagInventory(inventory, slug, quantity)
+                ),
+
+            removeFromBag: (id, slug, quantity = 1) =>
+                updateCharacterInventory(set, get, id, (inventory) =>
+                    removeFromBagInventory(inventory, slug, quantity)
+                ),
 
             updateResource: (id, resourceName, delta) =>
                 set((state) => ({

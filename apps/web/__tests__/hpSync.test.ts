@@ -63,4 +63,24 @@ describe("syncResourceHpToResolvedMax", () => {
 
         expect(synced.hp).toBe(8);
     });
+
+    it("clamps current hp when resolved max decreases", () => {
+        const synced = syncResourceHpToResolvedMax(
+            { maxHp: 17, hp: 17 },
+            baseStats,
+            []
+        );
+
+        expect(synced.hp).toBe(12);
+    });
+
+    it("preserves damaged hp when resolved max decreases but current is below new max", () => {
+        const synced = syncResourceHpToResolvedMax(
+            { maxHp: 17, hp: 8 },
+            baseStats,
+            []
+        );
+
+        expect(synced.hp).toBe(8);
+    });
 });

@@ -48,6 +48,7 @@ export function ArmorClassField({
             race: watchedValues.race,
             subrace: watchedValues.subrace,
             startingItem: watchedValues.startingItem,
+            inventory: watchedValues.inventory,
             ac: watchedValues.ac,
         }),
         [
@@ -55,6 +56,7 @@ export function ArmorClassField({
             watchedValues.race,
             watchedValues.subrace,
             watchedValues.startingItem,
+            watchedValues.inventory,
             watchedValues.ac,
         ]
     );
