@@ -3,26 +3,16 @@
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { useContentLocale } from "@/store/useContentLocale";
 import { useParams } from "next/navigation";
-import { DynamicForm } from "@/components/forms/DynamicForm";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { createDynamicSchema } from "@/lib/schema/zodDynamic";
 import { applyChoiceValidation } from "@/lib/character/choiceValidation";
 import { applyAbilityScoreValidation } from "@/lib/character/abilityScoreGeneration";
-import { AbilityScoresField } from "@/components/characters/AbilityScoresField";
-import { HitPointsField } from "@/components/characters/HitPointsField";
-import { ArmorClassField } from "@/components/characters/ArmorClassField";
-import { ClassResourcesField } from "@/components/characters/ClassResourcesField";
 import { presets } from "@/presets";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { buildPlayerGrantSourceFields } from "@/lib/character/playerFormFields";
-import { CharacterGrantPickers } from "@/components/characters/CharacterGrantPickers";
-import { StartingEquipmentField } from "@/components/characters/StartingEquipmentField";
-import { useGrantPickSanitizer } from "@/lib/character/useGrantPickSanitizer";
-import { getClassSubclassLevel } from "@rpv/content";
-import { readLevelFromForm } from "@/lib/character/level";
-import { useEffect, useMemo, useRef } from "react";
+import { PlayerCharacterForm } from "@/components/characters/PlayerCharacterForm";
+import { useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function EditPlayer() {
@@ -77,98 +67,14 @@ export default function EditPlayer() {
         defaultValues: formDefaults ?? {},
     });
 
-    const raceSlug = form.watch("race");
-    const classSlug = form.watch("characterClass");
-    const level = form.watch("level");
-    const previousRaceRef = useRef<string | undefined>(
-        typeof formDefaults?.race === "string" ? formDefaults.race : undefined
-    );
-    const previousClassRef = useRef<string | undefined>(
-        typeof formDefaults?.characterClass === "string"
-            ? formDefaults.characterClass
-            : undefined
-    );
-    const previousLevelRef = useRef<number | undefined>(
-        formDefaults ? readLevelFromForm(formDefaults) : undefined
-    );
-
-    useGrantPickSanitizer(form, contentLocale, characterSystem);
-
     useEffect(() => {
-        if (!formDefaults) {
-            return;
+        if (formDefaults) {
+            form.reset(formDefaults);
         }
-
-        form.reset(formDefaults);
-        previousRaceRef.current =
-            typeof formDefaults.race === "string" ? formDefaults.race : undefined;
-        previousClassRef.current =
-            typeof formDefaults.characterClass === "string"
-                ? formDefaults.characterClass
-                : undefined;
     }, [form, formDefaults]);
 
-    useEffect(() => {
-        if (
-            previousRaceRef.current !== undefined &&
-            previousRaceRef.current !== raceSlug
-        ) {
-            form.setValue("subrace", "");
-        }
-
-        previousRaceRef.current = raceSlug;
-    }, [form, raceSlug]);
-
-    useEffect(() => {
-        if (
-            previousClassRef.current !== undefined &&
-            previousClassRef.current !== classSlug
-        ) {
-            form.setValue("subclass", "");
-        }
-
-        previousClassRef.current = classSlug;
-    }, [form, classSlug]);
-
-    useEffect(() => {
-        const characterLevel = readLevelFromForm(form.getValues());
-        const subclassLevel = classSlug
-            ? getClassSubclassLevel(classSlug)
-            : undefined;
-
-        if (
-            previousLevelRef.current !== undefined &&
-            subclassLevel !== undefined &&
-            characterLevel < subclassLevel
-        ) {
-            form.setValue("subclass", "");
-        }
-
-        previousLevelRef.current = characterLevel;
-    }, [form, classSlug, level]);
-
-    const fields = useMemo(
-        () =>
-            buildPlayerGrantSourceFields(baseFields, {
-                raceSlug,
-                classSlug,
-                level: readLevelFromForm({ level }),
-                contentLocale,
-            }).filter(
-                (field) =>
-                    field.type !== "attributeGroup" &&
-                    field.name !== "hp" &&
-                    field.name !== "maxHp" &&
-                    field.name !== "ac"
-            ),
-        [baseFields, raceSlug, classSlug, level, contentLocale]
-    );
-
     function handleSave(data: Record<string, unknown>) {
-        updateCharacter(id, {
-            ...data,
-            choices: form.getValues("choices"),
-        });
+        updateCharacter(id, data);
         router.push("/characters/player");
     }
 
@@ -185,33 +91,20 @@ export default function EditPlayer() {
             >
                 <Link href={"/characters/player"}>Cancel</Link>
             </Button>
-            <h1 className="mb-2 text-lg font-bold bg-muted p-1 px-2 rounded">
-                Edit {character.name}
-            </h1>
-            <AbilityScoresField
+            <PlayerCharacterForm
+                mode="edit"
+                system={characterSystem}
                 form={form}
-                abilities={presetData.statConfig.abilities}
+                baseFields={baseFields}
                 statConfig={presetData.statConfig}
                 contentLocale={contentLocale}
+                onSave={handleSave}
+                header={
+                    <h1 className="mb-2 text-lg font-bold bg-muted p-1 px-2 rounded">
+                        Edit {character.name}
+                    </h1>
+                }
             />
-            <HitPointsField
-                form={form}
-                system={characterSystem}
-                contentLocale={contentLocale}
-            />
-            <ArmorClassField
-                form={form}
-                system={characterSystem}
-                contentLocale={contentLocale}
-            />
-            <ClassResourcesField
-                form={form}
-                contentLocale={contentLocale}
-                system={characterSystem}
-            />
-            <DynamicForm form={form} fields={fields} onSubmit={handleSave} />
-            <CharacterGrantPickers form={form} contentLocale={contentLocale} system={characterSystem} />
-            <StartingEquipmentField form={form} contentLocale={contentLocale} system={characterSystem} />
         </div>
     );
 }

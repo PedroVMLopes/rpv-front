@@ -229,5 +229,27 @@
     "resolvedAc": "AC: {value}",
     "selectItem": "Select item",
     "equipToSlot": "Equip to {slot}"
+  },
+  "characterCreation": {
+    "steps": {
+      "race": "Race",
+      "class": "Class",
+      "abilities": "Ability Scores",
+      "background": "Background & Details",
+      "equipment": "Starting Equipment"
+    },
+    "navigation": {
+      "back": "Back",
+      "next": "Next",
+      "save": "Save Character"
+    },
+    "hints": {
+      "selectRace": "Select a race before continuing.",
+      "selectClass": "Select a class before continuing.",
+      "selectBackground": "Select a background before continuing.",
+      "completeStep": "Complete the required fields before continuing.",
+      "fixErrors": "Fix the highlighted errors before saving."
+    },
+    "combatPreviewTitle": "Combat preview"
   }
 }

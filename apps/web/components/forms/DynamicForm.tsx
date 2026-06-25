@@ -44,6 +44,7 @@ interface DynamicFormProps {
     form: UseFormReturn<any>;
     fields: FieldConfig[];
     onSubmit?: (data: any) => void;
+    hideSubmit?: boolean;
 }
 
 function normalizeSelectOption(option: SelectOption): { value: string; label: string } {
@@ -54,7 +55,7 @@ function normalizeSelectOption(option: SelectOption): { value: string; label: st
     return option;
 }
 
-export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
+export function DynamicForm({ form, fields, onSubmit, hideSubmit = false }: DynamicFormProps) {
     const t = useTranslations();
 
     /**
@@ -290,12 +291,11 @@ export function DynamicForm({ form, fields, onSubmit }: DynamicFormProps) {
                     </div>
                 ))}
 
-                <Button 
-                    type="submit" 
-                    className="font-semibold"
-                >
-                    {t("forms.saveCharacter")}
-                </Button>
+                {!hideSubmit ? (
+                    <Button type="submit" className="font-semibold">
+                        {t("forms.saveCharacter")}
+                    </Button>
+                ) : null}
             </form>
         </Form>
     );

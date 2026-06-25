@@ -229,5 +229,27 @@
     "resolvedAc": "CA: {value}",
     "selectItem": "Selecionar item",
     "equipToSlot": "Equipar em {slot}"
+  },
+  "characterCreation": {
+    "steps": {
+      "race": "Raça",
+      "class": "Classe",
+      "abilities": "Atributos",
+      "background": "Antecedente e Detalhes",
+      "equipment": "Equipamento Inicial"
+    },
+    "navigation": {
+      "back": "Voltar",
+      "next": "Avançar",
+      "save": "Salvar Personagem"
+    },
+    "hints": {
+      "selectRace": "Selecione uma raça antes de continuar.",
+      "selectClass": "Selecione uma classe antes de continuar.",
+      "selectBackground": "Selecione um antecedente antes de continuar.",
+      "completeStep": "Preencha os campos obrigatórios antes de continuar.",
+      "fixErrors": "Corrija os erros destacados antes de salvar."
+    },
+    "combatPreviewTitle": "Prévia de combate"
   }
 }

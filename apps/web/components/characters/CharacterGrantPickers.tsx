@@ -3,8 +3,9 @@
 import { useMemo } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useTranslations } from "next-intl";
-import type { Locale } from "@rpv/domain";
+import type { Locale, ModifierSource } from "@rpv/domain";
 import type { Grant } from "@rpv/content";
+import { matchesGrantSourceTypes } from "@/lib/character/characterCreationSteps";
 import {
     getFixedLanguageGrants,
     getFixedRefsForGrantType,
@@ -32,6 +33,7 @@ type CharacterGrantPickersProps = {
     form: UseFormReturn<Record<string, unknown>>;
     contentLocale: Locale;
     system: SystemKey;
+    sourceTypes?: Array<ModifierSource["type"]>;
 };
 
 function readGrantPicks(form: UseFormReturn<Record<string, unknown>>): Record<string, string> {
@@ -86,6 +88,7 @@ export function CharacterGrantPickers({
     form,
     contentLocale,
     system,
+    sourceTypes,
 }: CharacterGrantPickersProps) {
     const t = useTranslations("grants");
     const tAbilities = useTranslations("abilities");
@@ -108,8 +111,10 @@ export function CharacterGrantPickers({
                 contentLocale,
                 characterLevel,
                 system
+            ).filter((choice) =>
+                matchesGrantSourceTypes(choice.source, sourceTypes)
             ),
-        [selections, contentLocale, characterLevel, system]
+        [selections, contentLocale, characterLevel, system, sourceTypes]
     );
 
     const ownedRefsByGrantType = useMemo(
@@ -125,8 +130,10 @@ export function CharacterGrantPickers({
 
     const fixedLanguages = useMemo(
         () =>
-            getFixedLanguageGrants(selections, contentLocale, characterLevel),
-        [selections, contentLocale, characterLevel]
+            getFixedLanguageGrants(selections, contentLocale, characterLevel).filter(
+                (grant) => matchesGrantSourceTypes(grant.source, sourceTypes)
+            ),
+        [selections, contentLocale, characterLevel, sourceTypes]
     );
 
     const languageChoices = useMemo(
@@ -136,8 +143,10 @@ export function CharacterGrantPickers({
                 contentLocale,
                 characterLevel,
                 system
+            ).filter((choice) =>
+                matchesGrantSourceTypes(choice.source, sourceTypes)
             ),
-        [selections, contentLocale, characterLevel, system]
+        [selections, contentLocale, characterLevel, system, sourceTypes]
     );
 
     const nonInventoryChoices = useMemo(
@@ -147,8 +156,12 @@ export function CharacterGrantPickers({
                 contentLocale,
                 characterLevel,
                 system
-            ).filter((choice) => choice.grant.grantType !== "inventory_item"),
-        [selections, contentLocale, characterLevel, system]
+            )
+                .filter((choice) => choice.grant.grantType !== "inventory_item")
+                .filter((choice) =>
+                    matchesGrantSourceTypes(choice.source, sourceTypes)
+                ),
+        [selections, contentLocale, characterLevel, system, sourceTypes]
     );
 
     const racialAsiChoices = useMemo(
@@ -167,20 +180,47 @@ export function CharacterGrantPickers({
         [nonInventoryChoices]
     );
 
-    const languageBudget = useMemo(
-        () => getLanguageBudget(selections, contentLocale, characterLevel),
-        [selections, contentLocale, characterLevel]
-    );
+    const languageBudget = useMemo(() => {
+        if (sourceTypes && sourceTypes.length > 0) {
+            return languageChoices.length;
+        }
+
+        return getLanguageBudget(selections, contentLocale, characterLevel);
+    }, [
+        sourceTypes,
+        languageChoices.length,
+        selections,
+        contentLocale,
+        characterLevel,
+    ]);
 
     const grantPicks = readGrantPicks(form);
     const choicesError = form.formState.errors.choices;
     const missingChoices = useMemo(
-        () => findMissingRequiredChoices(formValues, contentLocale, system),
-        [formValues, contentLocale, system]
+        () =>
+            findMissingRequiredChoices(formValues, contentLocale, system).filter(
+                (choice) => matchesGrantSourceTypes(choice.source, sourceTypes)
+            ),
+        [formValues, contentLocale, system, sourceTypes]
     );
     const invalidPicks = useMemo(
-        () => findInvalidGrantPicks(formValues, contentLocale, system),
-        [formValues, contentLocale, system]
+        () =>
+            findInvalidGrantPicks(formValues, contentLocale, system).filter(
+                (issue) => {
+                    if (!issue.key) {
+                        return !sourceTypes || sourceTypes.length === 0;
+                    }
+
+                    return matchesGrantSourceTypes(
+                        {
+                            type: issue.key.split(":")[0] as ModifierSource["type"],
+                            id: issue.key.split(":")[1] ?? "",
+                        },
+                        sourceTypes
+                    );
+                }
+            ),
+        [formValues, contentLocale, system, sourceTypes]
     );
     const missingChoiceKeys = useMemo(
         () => new Set(missingChoices.map((choice) => choice.key)),

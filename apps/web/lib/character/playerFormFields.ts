@@ -1,5 +1,9 @@
 import type { Locale } from "@rpv/domain";
 import { getClassSubclassLevel } from "@rpv/content";
+import type { CharacterCreationStepId } from "@/lib/character/characterCreationSteps";
+import {
+    filterFieldsForStep,
+} from "@/lib/character/characterCreationSteps";
 import {
     listRaceOptions,
     listSubraceOptions,
@@ -70,6 +74,34 @@ export function buildPlayerGrantSourceFields(
 
         return field;
     });
+}
+
+export function getVisiblePlayerFields(
+    fields: FieldConfig[],
+    stepId: CharacterCreationStepId,
+    { raceSlug, contentLocale }: Pick<PlayerGrantSourceFieldOptions, "raceSlug" | "contentLocale">
+): FieldConfig[] {
+    let visible = filterFieldsForStep(fields, stepId);
+
+    if (stepId === "race") {
+        const subraceOptions = listSubraceOptions(raceSlug, contentLocale);
+        if (!raceSlug || subraceOptions.length === 0) {
+            visible = visible.filter((field) => field.name !== "subrace");
+        }
+    }
+
+    return visible;
+}
+
+export function filterPlayerFormFields(
+    fields: FieldConfig[],
+    excludedNames: string[] = ["hp", "maxHp", "ac"]
+): FieldConfig[] {
+    return fields.filter(
+        (field) =>
+            field.type !== "attributeGroup" &&
+            !excludedNames.includes(field.name)
+    );
 }
 
 /** @deprecated Use buildPlayerGrantSourceFields */
