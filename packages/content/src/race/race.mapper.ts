@@ -5,6 +5,7 @@ import type {
 } from "../open5e/open5e.types";
 import type { Grant } from "../grant/grant.types";
 import {
+    dndRaceAsiOverrides,
     dndRaceGrantOverrides,
     type TraitOverride,
 } from "../curation/raceGrants.dnd";
@@ -40,10 +41,12 @@ function asiToGrants(asi: Open5eAsiEntry[] | undefined): Grant[] {
 }
 
 function buildAsiTrait(
+    sourceSlug: string,
     asiDesc: string,
     asi: Open5eAsiEntry[] | undefined
 ): CatalogTrait | null {
-    const grants = asiToGrants(asi);
+    const grants =
+        dndRaceAsiOverrides[sourceSlug] ?? asiToGrants(asi);
     if (grants.length === 0) {
         return null;
     }
@@ -81,7 +84,7 @@ function mapSubrace(
     raceSlug: string,
     overrides: GrantOverrides
 ): SubraceCatalogEntry {
-    const asiTrait = buildAsiTrait(api.asi_desc, api.asi);
+    const asiTrait = buildAsiTrait(api.slug, api.asi_desc, api.asi);
     const traits = buildTraits(api.traits, api.slug, overrides);
 
     return {
@@ -99,7 +102,7 @@ export function mapOpen5eRace(
     api: Open5eRace,
     overrides: GrantOverrides = dndRaceGrantOverrides
 ): RaceCatalogEntry {
-    const asiTrait = buildAsiTrait(api.asi_desc, api.asi);
+    const asiTrait = buildAsiTrait(api.slug, api.asi_desc, api.asi);
     const traits = buildTraits(api.traits, api.slug, overrides);
 
     return {

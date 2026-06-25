@@ -247,7 +247,24 @@ describe("CharacterGrantPickers", () => {
 
         expect(screen.getByText("Ability Choices")).toBeInTheDocument();
         expect(
-            screen.queryByText(/Starting sidearm \(pilot fixture\)/)
+            screen.queryByText(/Starting sidearm/)
         ).not.toBeInTheDocument();
+    });
+
+    it("shows half-elf racial ability increase pickers", () => {
+        render(
+            <GrantPickerHarness
+                defaultValues={{
+                    name: "Test Hero",
+                    race: "half-elf",
+                    choices: {},
+                }}
+            />
+        );
+
+        expect(screen.getByText("Racial ability increases")).toBeInTheDocument();
+        expect(
+            screen.getAllByText(/Two other ability scores of your choice/).length
+        ).toBe(2);
     });
 });

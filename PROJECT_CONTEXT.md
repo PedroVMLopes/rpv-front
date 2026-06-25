@@ -125,6 +125,26 @@ HP remains form-driven via `HitPointsField`. Combat tracking of rage/ki uses in 
 
 No engine or UI code changes required if existing grant types suffice.
 
+### Racial ability score increases (`ability_score` grant)
+
+**Fixed:** `{ grantType: "ability_score", choose: 0, targetStat, amount }` →
+`abilityScoreGrantsToModifiers` in `@rpv/content`.
+
+**Distributable:** `{ choose: N, amount: 1, options: [{ optionType: "stat", ref }] }`.
+Picks live in `choices.grantPicks`; resolved via `resolveAbilityScoreGrants`.
+UI: `CharacterGrantPickers` (racial ASI section) + `AbilityScoresField` (base /
+racial / total columns).
+
+**Half-elf pilot:** `dndRaceAsiOverrides` in [`raceGrants.dnd.ts`](packages/content/src/curation/raceGrants.dnd.ts)
+(+2 CHA fixed, +1 to two other stats). Variant Human (feat vs ASI) is follow-up.
+
+### Independent equipment choices + bundles
+
+SRD starting gear uses **multiple separate `choose: 1` grants** (armor, weapons,
+pack), not one multi-pick grant. Bundle options use `inventory_bundle` with a
+human-readable `label`; `formatInventoryBundleLabel` falls back to item names.
+Fighter pilot: see [`classGrants.dnd.ts`](packages/content/src/curation/classGrants.dnd.ts).
+
 ---
 
 ## Authoring checklist — new item

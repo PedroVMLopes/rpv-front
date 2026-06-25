@@ -25,6 +25,8 @@ export interface SelectionFilter {
     spellLists?: string[];
     levelInt?: number;
     any?: boolean;
+    /** Choosable ability stats when grantType is ability_score and options omitted. */
+    stats?: StatKey[];
     itemCategory?: string;
     itemTags?: string[];
 }
@@ -33,7 +35,8 @@ export type CatalogGrantOption =
     | { optionType: "spell"; ref: string }
     | { optionType: "skill"; ref: string }
     | { optionType: "language"; ref: string }
-    | { optionType: "proficiency"; ref: string };
+    | { optionType: "proficiency"; ref: string }
+    | { optionType: "stat"; ref: StatKey };
 
 export type InventoryGrantOption =
     | { optionType: "item"; ref: string; amount?: number }

@@ -301,7 +301,7 @@ describe("buildStoredCharacter", () => {
                 choices: {
                     grantPicks: {
                         ...fighterStartingWealthPick,
-                        "class:fighter:base:inventory_item:5:0": "0",
+                        "class:fighter:base:inventory_item:8:0": "0",
                     },
                 },
             },
@@ -318,9 +318,9 @@ describe("buildStoredCharacter", () => {
                     provenance: "grant:class:fighter:4",
                 },
                 {
-                    slug: "pilot-test-dagger",
+                    slug: "crossbow-light",
                     quantity: 1,
-                    provenance: "grant:class:fighter:5",
+                    provenance: "grant:class:fighter:8",
                 },
             ])
         );

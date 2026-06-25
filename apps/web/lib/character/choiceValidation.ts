@@ -4,6 +4,7 @@ import type { SystemKey } from "@/presets";
 import {
     getClassSubclassLevel,
     getSubclass,
+    isValidAbilityScorePick,
     isValidCurrencyPick,
     isValidInventoryItemPick,
 } from "@rpv/content";
@@ -192,6 +193,21 @@ export function findInvalidGrantPicks(
 
         if (!isValidInventoryItemPick(choice.grant, pick, system)) {
             errors.push(`invalidInventoryPick:${choice.key}`);
+        }
+    }
+
+    for (const choice of pending) {
+        if (choice.grant.grantType !== "ability_score") {
+            continue;
+        }
+
+        const pick = grantPicks[choice.key]?.trim();
+        if (!pick) {
+            continue;
+        }
+
+        if (!isValidAbilityScorePick(choice.grant, pick)) {
+            errors.push(`invalidAbilityScorePick:${choice.key}`);
         }
     }
 

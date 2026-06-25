@@ -111,6 +111,8 @@
     "languageBudget": "Escolha {count, plural, one {# idioma} other {# idiomas}}",
     "selectLanguage": "Selecione um idioma",
     "selectOption": "Selecione uma opção",
+    "selectStat": "Selecione um atributo",
+    "racialAsiTitle": "Aumento racial de atributos",
     "abilityChoicesTitle": "Escolhas de Habilidades",
     "grantedFeaturesTitle": "Recursos Concedidos",
     "spellSlotsTitle": "Espaços de Magia",
@@ -162,6 +164,11 @@
     "roll": "Rolar atributos",
     "assignScore": "Atribuir valor",
     "preview": "{base} ({mod, plural, =0 {+0 raça} other {+# raça}}) = {total}",
+    "columns": {
+      "base": "Base: {value}",
+      "racial": "Racial: {mod, plural, =0 {+0} other {+#}}",
+      "total": "Total: {total}"
+    },
     "errors": {
       "pointBuyInvalid": "Os atributos de compra de pontos devem respeitar o orçamento e a faixa permitida.",
       "standardArrayInvalid": "Atribua cada valor do array padrão exatamente uma vez.",

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-13T04:19:58.371Z",
+  "generatedAt": "2026-06-25T20:24:37.859Z",
   "source": "open5e",
   "defaultLocale": "en",
   "races": [
@@ -297,6 +297,85 @@
           ]
         }
       ]
+    },
+    {
+      "slug": "half-elf",
+      "language": "en",
+      "name": "Half-Elf",
+      "system": "dnd",
+      "sourceDocument": "wotc-srd",
+      "description": "## Half-Elf Traits\nYour half-elf character shares some qualities with elves and some that are unique to half-elves.",
+      "size": "Medium",
+      "speedWalk": 30,
+      "languagesDesc": "**_Languages._** You can speak, read, and write Common, Elvish, and one extra language of your choice.",
+      "visionDesc": "**_Darkvision._** Thanks to your elf blood, you have superior vision in dark and dim conditions.",
+      "asiDesc": "**_Ability Score Increase._** Your Charisma score increases by 2, and two other ability scores of your choice increase by 1.",
+      "traits": [
+        {
+          "slug": "ability-score-increase",
+          "name": "Ability Score Increase",
+          "description": "**_Ability Score Increase._** Your Charisma score increases by 2, and two other ability scores of your choice increase by 1.",
+          "category": "ability_score",
+          "grants": [
+            {
+              "grantType": "ability_score",
+              "choose": 0,
+              "targetStat": "charisma",
+              "amount": 2
+            },
+            {
+              "grantType": "ability_score",
+              "choose": 2,
+              "amount": 1,
+              "description": "Two other ability scores of your choice",
+              "options": [
+                {
+                  "optionType": "stat",
+                  "ref": "strength"
+                },
+                {
+                  "optionType": "stat",
+                  "ref": "dexterity"
+                },
+                {
+                  "optionType": "stat",
+                  "ref": "constitution"
+                },
+                {
+                  "optionType": "stat",
+                  "ref": "intelligence"
+                },
+                {
+                  "optionType": "stat",
+                  "ref": "wisdom"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "fey-ancestry",
+          "name": "Fey Ancestry",
+          "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep.",
+          "category": "other",
+          "grants": []
+        },
+        {
+          "slug": "skill-versatility",
+          "name": "Skill Versatility",
+          "description": "You gain proficiency in two skills of your choice.",
+          "category": "other",
+          "grants": []
+        },
+        {
+          "slug": "extra-language",
+          "name": "Extra Language",
+          "description": "You can speak, read, and write one extra language of your choice.",
+          "category": "other",
+          "grants": []
+        }
+      ],
+      "subraces": []
     }
   ],
   "spells": [

@@ -111,6 +111,8 @@
     "languageBudget": "Choose {count, plural, one {# language} other {# languages}}",
     "selectLanguage": "Select a language",
     "selectOption": "Select an option",
+    "selectStat": "Select an ability score",
+    "racialAsiTitle": "Racial ability increases",
     "abilityChoicesTitle": "Ability Choices",
     "grantedFeaturesTitle": "Granted Features",
     "spellSlotsTitle": "Spell Slots",
@@ -162,6 +164,11 @@
     "roll": "Roll scores",
     "assignScore": "Assign score",
     "preview": "{base} ({mod, plural, =0 {+0 race} other {+# race}}) = {total}",
+    "columns": {
+      "base": "Base: {value}",
+      "racial": "Racial: {mod, plural, =0 {+0} other {+#}}",
+      "total": "Total: {total}"
+    },
     "errors": {
       "pointBuyInvalid": "Point-buy scores must stay within budget and allowed range.",
       "standardArrayInvalid": "Assign each standard array value exactly once.",

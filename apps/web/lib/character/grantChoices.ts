@@ -67,6 +67,18 @@ function expandChoiceGrant(
         }));
     } else if (pool.inventoryOptions) {
         options = pool.inventoryOptions;
+    } else if (
+        pool.options?.some((option) => option.optionType === "stat")
+    ) {
+        options = pool.options
+            .filter(
+                (option): option is Extract<typeof option, { optionType: "stat" }> =>
+                    option.optionType === "stat"
+            )
+            .map((option) => ({
+                value: option.ref,
+                label: option.ref,
+            }));
     } else if (pool.options) {
         const skillNames = new Map(
             catalog.skills.map((skill) => [skill.slug, skill.name])

@@ -160,6 +160,8 @@ describe("AbilityScoresField", () => {
             />
         );
 
-        expect(screen.getByText("14 (+2 race) = 16")).toBeInTheDocument();
+        expect(screen.getByText("Base: 14")).toBeInTheDocument();
+        expect(screen.getByText("Racial: +2")).toBeInTheDocument();
+        expect(screen.getByText("Total: 16")).toBeInTheDocument();
     });
 });

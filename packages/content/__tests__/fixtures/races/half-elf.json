@@ -1,0 +1,26 @@
+{
+    "name": "Half-Elf",
+    "slug": "half-elf",
+    "desc": "## Half-Elf Traits\nYour half-elf character shares some qualities with elves and some that are unique to half-elves.",
+    "asi_desc": "**_Ability Score Increase._** Your Charisma score increases by 2, and two other ability scores of your choice increase by 1.",
+    "asi": [
+        {
+            "attributes": ["Charisma"],
+            "value": 2
+        }
+    ],
+    "age": "**_Age._** Half-elves mature at the same rate humans do and reach adulthood around the age of 20.",
+    "alignment": "**_Alignment._** Half-elves share the chaotic bent of their elven heritage.",
+    "size": "**_Size._** Half-elves are about the same size as humans. Your size is Medium.",
+    "size_raw": "Medium",
+    "speed": {
+        "walk": 30
+    },
+    "speed_desc": "**_Speed._** Your base walking speed is 30 feet.",
+    "languages": "**_Languages._** You can speak, read, and write Common, Elvish, and one extra language of your choice.",
+    "vision": "**_Darkvision._** Thanks to your elf blood, you have superior vision in dark and dim conditions.",
+    "traits": "**_Fey Ancestry._** You have advantage on saving throws against being charmed, and magic can't put you to sleep.\n\n**_Skill Versatility._** You gain proficiency in two skills of your choice.\n\n**_Extra Language._** You can speak, read, and write one extra language of your choice.",
+    "subraces": [],
+    "document__slug": "wotc-srd",
+    "document__title": "5e Core Rules"
+}

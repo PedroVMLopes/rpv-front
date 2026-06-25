@@ -46,7 +46,10 @@ describe("StartingEquipmentField", () => {
         expect(screen.getAllByText(/Longsword/).length).toBeGreaterThan(0);
         expect(screen.getAllByText(/From class: fighter/).length).toBeGreaterThan(0);
         expect(
-            screen.getByText(/Starting sidearm \(pilot fixture\)/)
+            screen.getByText(/Starting sidearm/)
+        ).toBeInTheDocument();
+        expect(
+            screen.getByText(/Leather armor, longbow, and 20 arrows/)
         ).toBeInTheDocument();
     });
 
@@ -71,9 +74,9 @@ describe("StartingEquipmentField", () => {
         expect(sidearmSelect).toBeDefined();
         await user.selectOptions(sidearmSelect!, "0");
 
-        expect(screen.getAllByText(/Pilot Test Dagger/).length).toBeGreaterThan(0);
+        expect(screen.getAllByText(/Light Crossbow/).length).toBeGreaterThan(0);
         expect(screen.getByTestId("choices-output")).toHaveTextContent(
-            "class:fighter:base:inventory_item:5:0"
+            "class:fighter:base:inventory_item:8:0"
         );
     });
 

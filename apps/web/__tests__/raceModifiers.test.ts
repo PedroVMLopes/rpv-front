@@ -46,4 +46,40 @@ describe("deriveRaceModifiers", () => {
     it("returns no modifiers when no race is selected", () => {
         expect(deriveRaceModifiers({}, "en")).toEqual([]);
     });
+
+    it("derives half-elf fixed charisma and distributable picks", () => {
+        const modifiers = deriveRaceModifiers(
+            {
+                race: "half-elf",
+                choices: {
+                    grantPicks: {
+                        "race:half-elf:base:ability_score:1:0": "strength",
+                        "race:half-elf:base:ability_score:1:1": "dexterity",
+                    },
+                },
+            },
+            "en"
+        );
+
+        expect(modifiers).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    stat: "charisma",
+                    value: 2,
+                    source: { type: "race", id: "half-elf" },
+                }),
+                expect.objectContaining({
+                    stat: "strength",
+                    value: 1,
+                    source: { type: "race", id: "half-elf" },
+                }),
+                expect.objectContaining({
+                    stat: "dexterity",
+                    value: 1,
+                    source: { type: "race", id: "half-elf" },
+                }),
+            ])
+        );
+        expect(modifiers).toHaveLength(3);
+    });
 });

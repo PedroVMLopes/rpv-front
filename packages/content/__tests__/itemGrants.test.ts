@@ -17,6 +17,14 @@ describe("itemGrants.dnd", () => {
             "longsword",
             "leather-armor",
             "shield",
+            "chain-mail",
+            "longbow",
+            "shortbow",
+            "arrows",
+            "crossbow-light",
+            "handaxe",
+            "dungeoneers-pack",
+            "explorers-pack",
             "pilot-test-dagger",
             "pilot-test-pack-a",
             "pilot-test-starter-kit",
@@ -127,7 +135,7 @@ describe("itemGrants.dnd", () => {
 
     it("keeps backward-compatible defaults for getItem and listItems", () => {
         expect(getItem("shield")?.slug).toBe("shield");
-        expect(listItems().length).toBe(9);
+        expect(listItems().length).toBe(17);
         expect(getItemGrants("shield").length).toBe(1);
     });
 

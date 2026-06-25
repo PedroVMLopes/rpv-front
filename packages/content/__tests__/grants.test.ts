@@ -434,4 +434,39 @@ describe("resolveGrantPool", () => {
 
         expect(pool).toEqual({});
     });
+
+    it("returns stat options for distributable ability_score grants", () => {
+        const grant: Grant = {
+            grantType: "ability_score",
+            choose: 2,
+            amount: 1,
+            options: [
+                { optionType: "stat", ref: "strength" },
+                { optionType: "stat", ref: "dexterity" },
+            ],
+        };
+
+        const pool = resolveGrantPool(grant, { spells: [] });
+
+        expect(pool.options).toEqual([
+            { optionType: "stat", ref: "strength" },
+            { optionType: "stat", ref: "dexterity" },
+        ]);
+    });
+
+    it("returns stat options from selectionFilter.stats", () => {
+        const grant: Grant = {
+            grantType: "ability_score",
+            choose: 1,
+            amount: 1,
+            selectionFilter: { stats: ["intelligence", "wisdom"] },
+        };
+
+        const pool = resolveGrantPool(grant, { spells: [] });
+
+        expect(pool.options).toEqual([
+            { optionType: "stat", ref: "intelligence" },
+            { optionType: "stat", ref: "wisdom" },
+        ]);
+    });
 });

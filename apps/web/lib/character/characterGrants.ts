@@ -134,6 +134,10 @@ export function getFixedRefsForGrantType(
                 continue;
             }
 
+            if (grantType === "ability_score" && grant.targetStat) {
+                refs.add(grant.targetStat);
+            }
+
             for (const option of grant.options ?? []) {
                 refs.add(option.ref);
             }

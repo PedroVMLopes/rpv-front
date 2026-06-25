@@ -1,5 +1,46 @@
+import type { StatKey } from "@rpv/domain";
 import type { Grant } from "../grant/grant.types";
 import type { TraitCategory } from "../race/race.types";
+
+const ALL_SIX_STATS: StatKey[] = [
+    "strength",
+    "dexterity",
+    "constitution",
+    "intelligence",
+    "wisdom",
+    "charisma",
+];
+
+/** All ability stats except Charisma (for half-elf +1 picks). */
+const NON_CHARISMA_STATS: StatKey[] = ALL_SIX_STATS.filter(
+    (stat) => stat !== "charisma"
+);
+
+function statOptions(stats: StatKey[]): Grant["options"] {
+    return stats.map((ref) => ({ optionType: "stat" as const, ref }));
+}
+
+/**
+ * Replaces Open5e `asi[]` mapping for races whose ASI is partially or fully
+ * player-distributed (e.g. half-elf +2 CHA, +1 to two other stats).
+ */
+export const dndRaceAsiOverrides: Record<string, Grant[]> = {
+    "half-elf": [
+        {
+            grantType: "ability_score",
+            choose: 0,
+            targetStat: "charisma",
+            amount: 2,
+        },
+        {
+            grantType: "ability_score",
+            choose: 2,
+            amount: 1,
+            description: "Two other ability scores of your choice",
+            options: statOptions(NON_CHARISMA_STATS),
+        },
+    ],
+};
 
 export interface TraitOverride {
     category?: TraitCategory;

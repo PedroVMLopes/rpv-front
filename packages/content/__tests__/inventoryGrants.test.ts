@@ -3,6 +3,7 @@ import {
     collectInventoryItemChoiceGrants,
     extractInventoryItemGrants,
     flattenGrantOptionToEntries,
+    formatInventoryBundleLabel,
     inventoryGrantProvenance,
     isValidInventoryItemPick,
     resolveInventoryItemGrants,
@@ -96,6 +97,30 @@ describe("buildInventoryItemChoiceKey", () => {
                 featureLevel: 3,
             })
         ).toBe("class:fighter:3:inventory_item:1:0");
+    });
+});
+
+describe("formatInventoryBundleLabel", () => {
+    it("uses explicit label when provided", () => {
+        expect(
+            formatInventoryBundleLabel({
+                optionType: "inventory_bundle",
+                label: "Leather armor and longbow",
+                items: [{ ref: "leather-armor" }, { ref: "longbow" }],
+            })
+        ).toBe("Leather armor and longbow");
+    });
+
+    it("falls back to localized item names joined with +", () => {
+        expect(
+            formatInventoryBundleLabel({
+                optionType: "inventory_bundle",
+                items: [
+                    { ref: "leather-armor", amount: 1 },
+                    { ref: "pilot-test-dagger", amount: 2 },
+                ],
+            })
+        ).toBe("Leather Armor + Pilot Test Dagger");
     });
 });
 

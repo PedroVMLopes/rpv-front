@@ -378,13 +378,17 @@ export function AbilityScoresField({
                             )}
 
                             {total !== null && (
-                                <p className="text-xs text-muted-foreground">
-                                    {t("preview", {
-                                        base: value,
-                                        mod: raceBonus,
-                                        total,
-                                    })}
-                                </p>
+                                <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
+                                    <span>{t("columns.base", { value })}</span>
+                                    <span>
+                                        {t("columns.racial", {
+                                            mod: raceBonus,
+                                        })}
+                                    </span>
+                                    <span className="font-medium text-foreground">
+                                        {t("columns.total", { total })}
+                                    </span>
+                                </div>
                             )}
                         </div>
                     );

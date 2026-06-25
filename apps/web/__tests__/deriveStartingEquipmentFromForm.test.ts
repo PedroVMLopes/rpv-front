@@ -13,6 +13,14 @@ const fighterEquipmentPicks = {
     "class:fighter:base:exclusive:starting-wealth": "equipment",
 };
 
+const allFighterInventoryPicks = {
+    ...fighterEquipmentPicks,
+    "class:fighter:base:inventory_item:5:0": "0",
+    "class:fighter:base:inventory_item:6:0": "0",
+    "class:fighter:base:inventory_item:7:0": "0",
+    "class:fighter:base:inventory_item:8:0": "0",
+};
+
 describe("deriveStartingEquipmentFromForm", () => {
     it("lists sage fixed scroll and granted gold", () => {
         const preview = deriveStartingEquipmentFromForm(
@@ -47,10 +55,7 @@ describe("deriveStartingEquipmentFromForm", () => {
                 ...baseFormData,
                 characterClass: "fighter",
                 choices: {
-                    grantPicks: {
-                        ...fighterEquipmentPicks,
-                        "class:fighter:base:inventory_item:5:0": "0",
-                    },
+                    grantPicks: allFighterInventoryPicks,
                 },
             },
             "en",
@@ -66,6 +71,9 @@ describe("deriveStartingEquipmentFromForm", () => {
         ]);
         expect(preview.choiceGrants.map((choice) => choice.key)).toEqual([
             "class:fighter:base:inventory_item:5:0",
+            "class:fighter:base:inventory_item:6:0",
+            "class:fighter:base:inventory_item:7:0",
+            "class:fighter:base:inventory_item:8:0",
         ]);
         expect(preview.bag).toEqual(
             expect.arrayContaining([
@@ -74,8 +82,20 @@ describe("deriveStartingEquipmentFromForm", () => {
                     provenance: "grant:class:fighter:4",
                 }),
                 expect.objectContaining({
-                    slug: "pilot-test-dagger",
+                    slug: "chain-mail",
                     provenance: "grant:class:fighter:5",
+                }),
+                expect.objectContaining({
+                    slug: "shield",
+                    provenance: "grant:class:fighter:6",
+                }),
+                expect.objectContaining({
+                    slug: "dungeoneers-pack",
+                    provenance: "grant:class:fighter:7",
+                }),
+                expect.objectContaining({
+                    slug: "crossbow-light",
+                    provenance: "grant:class:fighter:8",
                 }),
             ])
         );

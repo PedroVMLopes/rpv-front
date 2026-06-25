@@ -88,6 +88,7 @@ export function CharacterGrantPickers({
     system,
 }: CharacterGrantPickersProps) {
     const t = useTranslations("grants");
+    const tAbilities = useTranslations("abilities");
     const formValues = form.watch();
 
     const characterLevel = useMemo(
@@ -139,7 +140,7 @@ export function CharacterGrantPickers({
         [selections, contentLocale, characterLevel, system]
     );
 
-    const otherChoices = useMemo(
+    const nonInventoryChoices = useMemo(
         () =>
             collectNonLanguageChoiceGrants(
                 selections,
@@ -148,6 +149,22 @@ export function CharacterGrantPickers({
                 system
             ).filter((choice) => choice.grant.grantType !== "inventory_item"),
         [selections, contentLocale, characterLevel, system]
+    );
+
+    const racialAsiChoices = useMemo(
+        () =>
+            nonInventoryChoices.filter(
+                (choice) => choice.grant.grantType === "ability_score"
+            ),
+        [nonInventoryChoices]
+    );
+
+    const otherChoices = useMemo(
+        () =>
+            nonInventoryChoices.filter(
+                (choice) => choice.grant.grantType !== "ability_score"
+            ),
+        [nonInventoryChoices]
     );
 
     const languageBudget = useMemo(
@@ -178,9 +195,65 @@ export function CharacterGrantPickers({
     if (
         fixedLanguages.length === 0 &&
         languageChoices.length === 0 &&
+        racialAsiChoices.length === 0 &&
         otherChoices.length === 0
     ) {
         return null;
+    }
+
+    function renderChoiceSelect(
+        choice: (typeof nonInventoryChoices)[number],
+        placeholder: string
+    ) {
+        const ownedRefs =
+            ownedRefsByGrantType.get(choice.grant.grantType) ??
+            new Set<string>();
+        const otherPickedRefs = getOtherPickedRefsForGrantType(
+            choice.grant.grantType,
+            pendingChoices,
+            grantPicks,
+            choice.key
+        );
+        const options = buildGrantChoiceSelectOptions(
+            choice,
+            grantPicks,
+            ownedRefs,
+            otherPickedRefs
+        ).map((option) => ({
+            ...option,
+            label:
+                choice.grant.grantType === "ability_score"
+                    ? tAbilities(option.label)
+                    : option.label,
+        }));
+
+        return (
+            <label key={choice.key} className="flex flex-col gap-1 text-sm">
+                <span className="font-medium">{choice.label}</span>
+                <select
+                    className={`bg-background rounded border px-2 py-1${
+                        missingChoiceKeys.has(choice.key)
+                            ? " border-destructive"
+                            : ""
+                    }`}
+                    value={grantPicks[choice.key] ?? ""}
+                    onChange={(event) =>
+                        setGrantPick(form, choice.key, event.target.value)
+                    }
+                >
+                    <option value="">{placeholder}</option>
+                    {options.map((option) => (
+                        <option
+                            key={option.value}
+                            value={option.value}
+                            disabled={option.disabled}
+                        >
+                            {option.label}
+                        </option>
+                    ))}
+                </select>
+            </label>
+        );
     }
 
     return (
@@ -269,61 +342,21 @@ export function CharacterGrantPickers({
                 </section>
             )}
 
+            {racialAsiChoices.length > 0 && (
+                <section className="flex flex-col gap-2">
+                    <h2 className="text-sm font-bold">{t("racialAsiTitle")}</h2>
+                    {racialAsiChoices.map((choice) =>
+                        renderChoiceSelect(choice, t("selectStat"))
+                    )}
+                </section>
+            )}
+
             {otherChoices.length > 0 && (
                 <section className="flex flex-col gap-2">
                     <h2 className="text-sm font-bold">{t("abilityChoicesTitle")}</h2>
-                    {otherChoices.map((choice) => {
-                        const ownedRefs =
-                            ownedRefsByGrantType.get(choice.grant.grantType) ??
-                            new Set<string>();
-                        const otherPickedRefs = getOtherPickedRefsForGrantType(
-                            choice.grant.grantType,
-                            pendingChoices,
-                            grantPicks,
-                            choice.key
-                        );
-                        const options = buildGrantChoiceSelectOptions(
-                            choice,
-                            grantPicks,
-                            ownedRefs,
-                            otherPickedRefs
-                        );
-
-                        return (
-                            <label
-                                key={choice.key}
-                                className="flex flex-col gap-1 text-sm"
-                            >
-                                <span className="font-medium">{choice.label}</span>
-                                <select
-                                    className={`bg-background rounded border px-2 py-1${
-                                        missingChoiceKeys.has(choice.key)
-                                            ? " border-destructive"
-                                            : ""
-                                    }`}
-                                    value={grantPicks[choice.key] ?? ""}
-                                    onChange={(event) =>
-                                        setGrantPick(
-                                            form,
-                                            choice.key,
-                                            event.target.value
-                                        )
-                                    }
-                                >
-                                    <option value="">{t("selectOption")}</option>
-                                    {options.map((option) => (
-                                        <option
-                                            key={option.value}
-                                            value={option.value}
-                                            disabled={option.disabled}
-                                        >
-                                            {option.label}
-                                        </option>
-                                    ))}
-                                </select>
-                            </label>
-                        );
-                    })}
+                    {otherChoices.map((choice) =>
+                        renderChoiceSelect(choice, t("selectOption"))
+                    )}
                 </section>
             )}
         </div>

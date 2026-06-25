@@ -58,6 +58,30 @@
     },
     "shield": {
       "name": "Escudo"
+    },
+    "chain-mail": {
+      "name": "Cota de Malha"
+    },
+    "longbow": {
+      "name": "Arco Longo"
+    },
+    "shortbow": {
+      "name": "Arco Curto"
+    },
+    "arrows": {
+      "name": "Flechas"
+    },
+    "crossbow-light": {
+      "name": "Besta Leve"
+    },
+    "handaxe": {
+      "name": "Machadinha"
+    },
+    "dungeoneers-pack": {
+      "name": "Pacote de Explorador de Masmorras"
+    },
+    "explorers-pack": {
+      "name": "Pacote de Explorador"
     }
   },
   "equipmentSlots": {

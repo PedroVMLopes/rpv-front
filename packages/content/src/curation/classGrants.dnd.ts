@@ -80,19 +80,67 @@ export const dndClasses: ClassEntry[] = [
                 choose: 0,
                 ref: "longsword",
                 amount: 1,
-                description: "Standard equipment",
+                description: "Starting martial weapon",
                 exclusiveGroup: "starting-wealth",
                 exclusiveBranch: "equipment",
             },
             {
                 grantType: "inventory_item",
                 choose: 1,
-                description: "Starting sidearm (pilot fixture).",
+                description: "Starting armor",
                 exclusiveGroup: "starting-wealth",
                 exclusiveBranch: "equipment",
                 options: [
-                    { optionType: "item", ref: "pilot-test-dagger" },
-                    { optionType: "item", ref: "pilot-test-pack-a" },
+                    { optionType: "item", ref: "chain-mail" },
+                    {
+                        optionType: "inventory_bundle",
+                        label: "Leather armor, longbow, and 20 arrows",
+                        items: [
+                            { ref: "leather-armor", amount: 1 },
+                            { ref: "longbow", amount: 1 },
+                            { ref: "arrows", amount: 20 },
+                        ],
+                    },
+                ],
+            },
+            {
+                grantType: "inventory_item",
+                choose: 1,
+                description: "Starting weapon loadout",
+                exclusiveGroup: "starting-wealth",
+                exclusiveBranch: "equipment",
+                options: [
+                    { optionType: "item", ref: "shield" },
+                    {
+                        optionType: "inventory_bundle",
+                        label: "Two martial weapons",
+                        items: [
+                            { ref: "longsword", amount: 1 },
+                            { ref: "handaxe", amount: 1 },
+                        ],
+                    },
+                ],
+            },
+            {
+                grantType: "inventory_item",
+                choose: 1,
+                description: "Adventuring pack",
+                exclusiveGroup: "starting-wealth",
+                exclusiveBranch: "equipment",
+                options: [
+                    { optionType: "item", ref: "dungeoneers-pack" },
+                    { optionType: "item", ref: "explorers-pack" },
+                ],
+            },
+            {
+                grantType: "inventory_item",
+                choose: 1,
+                description: "Starting sidearm",
+                exclusiveGroup: "starting-wealth",
+                exclusiveBranch: "equipment",
+                options: [
+                    { optionType: "item", ref: "crossbow-light" },
+                    { optionType: "item", ref: "handaxe" },
                 ],
             },
             {

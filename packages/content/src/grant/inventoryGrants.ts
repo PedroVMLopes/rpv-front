@@ -1,4 +1,5 @@
 import { getItem, type ItemSystem } from "../curation/itemGrants.dnd";
+import type { Locale } from "@rpv/domain";
 import type { Grant, GrantOption } from "./grant.types";
 
 export type InventoryItemGrantEntry = {
@@ -89,6 +90,28 @@ export function flattenGrantOptionToEntries(
     }
 
     return [];
+}
+
+type InventoryBundleOption = Extract<
+    GrantOption,
+    { optionType: "inventory_bundle" }
+>;
+
+export function formatInventoryBundleLabel(
+    option: InventoryBundleOption,
+    system: ItemSystem = "dnd",
+    locale?: Locale
+): string {
+    const explicit = option.label?.trim();
+    if (explicit) {
+        return explicit;
+    }
+
+    const names = option.items
+        .map((item) => getItem(item.ref, system, locale)?.name ?? item.ref)
+        .filter((name) => name.length > 0);
+
+    return names.length > 0 ? names.join(" + ") : "Bundle";
 }
 
 function parseOptionIndex(pickValue: string | undefined): number | undefined {

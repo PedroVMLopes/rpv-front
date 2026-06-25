@@ -188,6 +188,48 @@ No engine or UI code changes required if existing grant types suffice.
 
 ### Starting equipment grants (Etapa 1 — data contract)
 
+#### `ability_score` — fixed racial ASI
+
+```ts
+{ grantType: "ability_score", choose: 0, targetStat: "dexterity", amount: 2 }
+```
+
+#### `ability_score` — distributable racial ASI
+
+Player picks `choose` distinct stats from `options` (pick value = stat slug):
+
+```ts
+{
+  grantType: "ability_score",
+  choose: 2,
+  amount: 1,
+  description: "Two other ability scores of your choice",
+  options: [
+    { optionType: "stat", ref: "strength" },
+    { optionType: "stat", ref: "dexterity" },
+    // …
+  ],
+}
+```
+
+Mixed fixed + distributable (half-elf): use `dndRaceAsiOverrides` in
+[`raceGrants.dnd.ts`](src/curation/raceGrants.dnd.ts) — Open5e `asi[]` cannot
+express flexible picks alone.
+
+Alternative pool via filter:
+
+```ts
+{
+  grantType: "ability_score",
+  choose: 1,
+  amount: 1,
+  selectionFilter: { stats: ["intelligence", "wisdom"] },
+}
+```
+
+Resolution: [`abilityScoreGrants.ts`](src/grant/abilityScoreGrants.ts). Pick keys:
+`{sourceType}:{sourceId}:{levelSegment}:ability_score:{grantIndex}:{slot}`.
+
 Declares starting gear and currency from class/background grants. Materialization
 into `selections.inventory.bag` and `selections.grantedCurrency` is implemented
 in the web pipeline ([`materializeInventoryGrants.ts`](../../apps/web/lib/character/materializeInventoryGrants.ts),
@@ -238,6 +280,20 @@ in the web pipeline ([`materializeInventoryGrants.ts`](../../apps/web/lib/charac
   ],
 }
 ```
+
+Pick value for bundles is the **option index** (same as single-item options).
+`formatInventoryBundleLabel()` uses `label` when set, otherwise joins localized
+item names with ` + `.
+
+#### Independent equipment choices (SRD pattern)
+
+SRD classes often require **several separate `choose: 1` grants** (armor pick,
+weapon pick, pack pick), not one grant with `choose: N`. Each grant gets its own
+`grantIndex` and pick keys. Combine with `exclusiveGroup` / `exclusiveBranch` when
+equipment and gold are mutually exclusive (see below).
+
+Example (Fighter equipment branch): fixed longsword + armor choice + loadout
+choice + pack choice + sidearm choice — see [`classGrants.dnd.ts`](src/curation/classGrants.dnd.ts).
 
 #### `currency` — starting wealth
 

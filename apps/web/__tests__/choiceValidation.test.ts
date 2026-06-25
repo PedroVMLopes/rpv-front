@@ -26,6 +26,14 @@ const fighterEquipmentPicks = {
     "class:fighter:base:exclusive:starting-wealth": "equipment",
 };
 
+const allFighterInventoryPicks = {
+    ...fighterEquipmentPicks,
+    "class:fighter:base:inventory_item:5:0": "0",
+    "class:fighter:base:inventory_item:6:0": "0",
+    "class:fighter:base:inventory_item:7:0": "0",
+    "class:fighter:base:inventory_item:8:0": "0",
+};
+
 describe("findMissingRequiredChoices", () => {
     it("returns dwarf tool proficiency slot when unpicked", () => {
         const missing = findMissingRequiredChoices(
@@ -105,6 +113,9 @@ describe("findMissingRequiredChoices", () => {
             expect.arrayContaining([
                 "class:fighter:3:skill_proficiency:0:0",
                 "class:fighter:base:inventory_item:5:0",
+                "class:fighter:base:inventory_item:6:0",
+                "class:fighter:base:inventory_item:7:0",
+                "class:fighter:base:inventory_item:8:0",
             ])
         );
     });
@@ -123,7 +134,7 @@ describe("findMissingRequiredChoices", () => {
                         "race:high-elf:base:spell:0:0": "fire-bolt",
                         "class:fighter:base:skill_proficiency:3:0": "athletics",
                         "class:fighter:base:skill_proficiency:3:1": "intimidation",
-                        "class:fighter:base:inventory_item:5:0": "0",
+                        ...allFighterInventoryPicks,
                     },
                 },
             },
@@ -187,7 +198,7 @@ describe("findMissingRequiredChoices", () => {
         );
 
         expect(missing.map((choice) => choice.key)).not.toContain(
-            "class:fighter:base:inventory_item:5:0"
+            "class:fighter:base:inventory_item:8:0"
         );
     });
 
@@ -205,7 +216,12 @@ describe("findMissingRequiredChoices", () => {
         );
 
         expect(missing.map((choice) => choice.key)).toEqual(
-            expect.arrayContaining(["class:fighter:base:inventory_item:5:0"])
+            expect.arrayContaining([
+                "class:fighter:base:inventory_item:5:0",
+                "class:fighter:base:inventory_item:6:0",
+                "class:fighter:base:inventory_item:7:0",
+                "class:fighter:base:inventory_item:8:0",
+            ])
         );
     });
 
@@ -216,10 +232,9 @@ describe("findMissingRequiredChoices", () => {
                 characterClass: "fighter",
                 choices: {
                     grantPicks: {
-                        ...fighterEquipmentPicks,
                         "class:fighter:base:skill_proficiency:3:0": "athletics",
                         "class:fighter:base:skill_proficiency:3:1": "intimidation",
-                        "class:fighter:base:inventory_item:5:0": "0",
+                        ...allFighterInventoryPicks,
                     },
                 },
             },
@@ -240,7 +255,7 @@ describe("findMissingRequiredChoices", () => {
                 choices: {
                     grantPicks: {
                         ...fighterEquipmentPicks,
-                        "class:fighter:base:inventory_item:5:0": "9",
+                        "class:fighter:base:inventory_item:8:0": "9",
                     },
                 },
             },
@@ -249,7 +264,7 @@ describe("findMissingRequiredChoices", () => {
         );
 
         expect(invalid).toContain(
-            "invalidInventoryPick:class:fighter:base:inventory_item:5:0"
+            "invalidInventoryPick:class:fighter:base:inventory_item:8:0"
         );
     });
 });

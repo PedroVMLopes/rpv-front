@@ -1,7 +1,8 @@
-import type { CharacterGrant, Modifier, ModifierSource } from "@rpv/domain";
+import type { CharacterGrant, Locale, Modifier, ModifierSource } from "@rpv/domain";
 import type { Language } from "../catalog/catalog.types";
 import { getItem, type ItemSystem } from "../curation/itemGrants.dnd";
 import type { SpellCatalogEntry } from "../spell/spell.types";
+import { formatInventoryBundleLabel } from "./inventoryGrants";
 import type { Grant, GrantOption, SelectionFilter } from "./grant.types";
 
 const GRANT_TYPE_TO_KIND: Record<
@@ -259,6 +260,7 @@ export function resolveGrantPool(
         spells: SpellCatalogEntry[];
         languages?: Language[];
         system?: ItemSystem;
+        locale?: Locale;
     } = { spells: [] }
 ): {
     spells?: SpellCatalogEntry[];
@@ -266,6 +268,27 @@ export function resolveGrantPool(
     languages?: Language[];
     inventoryOptions?: Array<{ value: string; label: string }>;
 } {
+    if (grant.grantType === "ability_score") {
+        if (grant.options && grant.options.length > 0) {
+            return {
+                options: grant.options.filter(
+                    (option) => option.optionType === "stat"
+                ),
+            };
+        }
+
+        if (grant.selectionFilter?.stats?.length) {
+            return {
+                options: grant.selectionFilter.stats.map((ref) => ({
+                    optionType: "stat" as const,
+                    ref,
+                })),
+            };
+        }
+
+        return {};
+    }
+
     if (grant.grantType === "inventory_item") {
         if (grant.selectionFilter?.itemCategory || grant.selectionFilter?.itemTags) {
             return {};
@@ -273,9 +296,10 @@ export function resolveGrantPool(
 
         if (grant.options && grant.options.length > 0) {
             const system = catalog.system ?? "dnd";
+            const locale = catalog.locale;
             const inventoryOptions = grant.options.map((option, index) => {
                 if (option.optionType === "item") {
-                    const item = getItem(option.ref, system);
+                    const item = getItem(option.ref, system, locale);
                     return {
                         value: String(index),
                         label: item?.name ?? option.ref,
@@ -285,7 +309,7 @@ export function resolveGrantPool(
                 if (option.optionType === "inventory_bundle") {
                     return {
                         value: String(index),
-                        label: option.label?.trim() || `Bundle ${index + 1}`,
+                        label: formatInventoryBundleLabel(option, system, locale),
                     };
                 }
 

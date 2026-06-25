@@ -78,4 +78,33 @@ describe("mapOpen5eRace", () => {
         expect(toughness).toBeDefined();
         expect(toughness?.grants).toEqual([]);
     });
+
+    it("applies dndRaceAsiOverrides for distributable racial ASI", () => {
+        const halfElf = mapOpen5eRace(loadRace("half-elf"));
+        const asiTrait = halfElf.traits.find(
+            (t) => t.slug === "ability-score-increase"
+        );
+
+        expect(asiTrait?.grants).toEqual([
+            {
+                grantType: "ability_score",
+                choose: 0,
+                targetStat: "charisma",
+                amount: 2,
+            },
+            {
+                grantType: "ability_score",
+                choose: 2,
+                amount: 1,
+                description: "Two other ability scores of your choice",
+                options: [
+                    { optionType: "stat", ref: "strength" },
+                    { optionType: "stat", ref: "dexterity" },
+                    { optionType: "stat", ref: "constitution" },
+                    { optionType: "stat", ref: "intelligence" },
+                    { optionType: "stat", ref: "wisdom" },
+                ],
+            },
+        ]);
+    });
 });
