@@ -1,12 +1,13 @@
 import type { CharacterGrant, Modifier, ModifierSource } from "@rpv/domain";
 import type { Language } from "../catalog/catalog.types";
+import { getItem, type ItemSystem } from "../curation/itemGrants.dnd";
 import type { SpellCatalogEntry } from "../spell/spell.types";
 import type { Grant, GrantOption, SelectionFilter } from "./grant.types";
 
 const GRANT_TYPE_TO_KIND: Record<
     Exclude<
         Grant["grantType"],
-        "ability_score" | "stat_modifier" | "inventory_item"
+        "ability_score" | "stat_modifier" | "inventory_item" | "currency"
     >,
     CharacterGrant["kind"]
 > = {
@@ -25,7 +26,8 @@ function grantKindFromType(grantType: Grant["grantType"]): CharacterGrant["kind"
     if (
         grantType === "ability_score" ||
         grantType === "stat_modifier" ||
-        grantType === "inventory_item"
+        grantType === "inventory_item" ||
+        grantType === "currency"
     ) {
         return null;
     }
@@ -90,6 +92,13 @@ function optionToGrant(
     source: ModifierSource,
     index: number
 ): CharacterGrant | null {
+    if (
+        option.optionType === "item" ||
+        option.optionType === "inventory_bundle"
+    ) {
+        return null;
+    }
+
     const kindFromGrantType = grantKindFromType(grant.grantType);
     const kind =
         kindFromGrantType ??
@@ -124,7 +133,7 @@ export function fixedGrantsToCharacterGrants(
             continue;
         }
 
-        if (grant.grantType === "inventory_item") {
+        if (grant.grantType === "inventory_item" || grant.grantType === "currency") {
             continue;
         }
 
@@ -246,12 +255,52 @@ export function resolveSpellPool(
  */
 export function resolveGrantPool(
     grant: Grant,
-    catalog: { spells: SpellCatalogEntry[]; languages?: Language[] }
+    catalog: {
+        spells: SpellCatalogEntry[];
+        languages?: Language[];
+        system?: ItemSystem;
+    } = { spells: [] }
 ): {
     spells?: SpellCatalogEntry[];
     options?: GrantOption[];
     languages?: Language[];
+    inventoryOptions?: Array<{ value: string; label: string }>;
 } {
+    if (grant.grantType === "inventory_item") {
+        if (grant.selectionFilter?.itemCategory || grant.selectionFilter?.itemTags) {
+            return {};
+        }
+
+        if (grant.options && grant.options.length > 0) {
+            const system = catalog.system ?? "dnd";
+            const inventoryOptions = grant.options.map((option, index) => {
+                if (option.optionType === "item") {
+                    const item = getItem(option.ref, system);
+                    return {
+                        value: String(index),
+                        label: item?.name ?? option.ref,
+                    };
+                }
+
+                if (option.optionType === "inventory_bundle") {
+                    return {
+                        value: String(index),
+                        label: option.label?.trim() || `Bundle ${index + 1}`,
+                    };
+                }
+
+                return {
+                    value: String(index),
+                    label: String(index),
+                };
+            });
+
+            return { inventoryOptions };
+        }
+
+        return {};
+    }
+
     if (grant.options && grant.options.length > 0) {
         return { options: grant.options };
     }

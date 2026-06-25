@@ -12,22 +12,38 @@ export type GrantType =
     | "language"
     | "spell"
     | "resource"
-    | "inventory_item";
+    | "inventory_item"
+    | "currency";
 
 /**
  * Describes a pool to choose from when a grant is not fixed. Either a spell
  * filter (resolved against the spell catalog) or an open choice (`any`).
+ *
+ * `itemCategory` / `itemTags` are reserved for future item-catalog filters (v2).
  */
 export interface SelectionFilter {
     spellLists?: string[];
     levelInt?: number;
     any?: boolean;
+    itemCategory?: string;
+    itemTags?: string[];
 }
 
-export interface GrantOption {
-    optionType: "spell" | "skill" | "language" | "proficiency";
-    ref: string;
-}
+export type CatalogGrantOption =
+    | { optionType: "spell"; ref: string }
+    | { optionType: "skill"; ref: string }
+    | { optionType: "language"; ref: string }
+    | { optionType: "proficiency"; ref: string };
+
+export type InventoryGrantOption =
+    | { optionType: "item"; ref: string; amount?: number }
+    | {
+          optionType: "inventory_bundle";
+          items: Array<{ ref: string; amount?: number }>;
+          label?: string;
+      };
+
+export type GrantOption = CatalogGrantOption | InventoryGrantOption;
 
 /**
  * A single thing a trait gives a character.

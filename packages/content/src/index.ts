@@ -9,6 +9,7 @@ export * from "./grant/levelFeature.types";
 export * from "./grant/levelFeatures";
 export * from "./grant/grants";
 export * from "./grant/inventoryGrants";
+export * from "./grant/currencyGrants";
 
 export * from "./race/race.types";
 export * from "./race/ability";

@@ -17,6 +17,9 @@ describe("itemGrants.dnd", () => {
             "longsword",
             "leather-armor",
             "shield",
+            "pilot-test-dagger",
+            "pilot-test-pack-a",
+            "pilot-test-starter-kit",
         ]);
         expect(listItems("dnd").every((entry) => entry.system === "dnd")).toBe(true);
     });
@@ -124,7 +127,22 @@ describe("itemGrants.dnd", () => {
 
     it("keeps backward-compatible defaults for getItem and listItems", () => {
         expect(getItem("shield")?.slug).toBe("shield");
-        expect(listItems().length).toBe(6);
+        expect(listItems().length).toBe(9);
         expect(getItemGrants("shield").length).toBe(1);
+    });
+
+    it("exposes optional category and tags on fixture items", () => {
+        expect(getItem("pilot-test-dagger")).toEqual(
+            expect.objectContaining({
+                category: "weapon",
+                tags: ["simple", "melee"],
+            })
+        );
+        expect(getItem("pilot-test-pack-a")).toEqual(
+            expect.objectContaining({
+                category: "pack",
+                tags: ["adventuring"],
+            })
+        );
     });
 });

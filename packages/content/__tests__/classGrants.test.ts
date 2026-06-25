@@ -85,19 +85,35 @@ describe("classGrants.dnd", () => {
             (grant) => grant.grantType === "saving_throw_proficiency"
         );
 
-        expect(fighterSaveGrant?.options?.map((option) => option.ref)).toEqual([
+        expect(
+            fighterSaveGrant?.options
+                ?.filter((option) => option.optionType === "proficiency")
+                .map((option) => option.ref)
+        ).toEqual([
             "strength",
             "constitution",
         ]);
-        expect(wizardSaveGrant?.options?.map((option) => option.ref)).toEqual([
+        expect(
+            wizardSaveGrant?.options
+                ?.filter((option) => option.optionType === "proficiency")
+                .map((option) => option.ref)
+        ).toEqual([
             "intelligence",
             "wisdom",
         ]);
-        expect(rogueSaveGrant?.options?.map((option) => option.ref)).toEqual([
+        expect(
+            rogueSaveGrant?.options
+                ?.filter((option) => option.optionType === "proficiency")
+                .map((option) => option.ref)
+        ).toEqual([
             "dexterity",
             "intelligence",
         ]);
-        expect(clericSaveGrant?.options?.map((option) => option.ref)).toEqual([
+        expect(
+            clericSaveGrant?.options
+                ?.filter((option) => option.optionType === "proficiency")
+                .map((option) => option.ref)
+        ).toEqual([
             "wisdom",
             "charisma",
         ]);

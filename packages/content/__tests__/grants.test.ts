@@ -400,4 +400,38 @@ describe("resolveGrantPool", () => {
             { optionType: "proficiency", ref: "longsword" },
         ]);
     });
+
+    it("returns inventoryOptions with index values and item labels", () => {
+        const grant: Grant = {
+            grantType: "inventory_item",
+            choose: 1,
+            options: [
+                { optionType: "item", ref: "pilot-test-dagger" },
+                {
+                    optionType: "inventory_bundle",
+                    label: "Starter kit",
+                    items: [{ ref: "leather-armor" }],
+                },
+            ],
+        };
+
+        const pool = resolveGrantPool(grant, { spells: [] });
+
+        expect(pool.inventoryOptions).toEqual([
+            { value: "0", label: "Pilot Test Dagger" },
+            { value: "1", label: "Starter kit" },
+        ]);
+    });
+
+    it("returns empty pool for reserved item selection filters", () => {
+        const grant: Grant = {
+            grantType: "inventory_item",
+            choose: 1,
+            selectionFilter: { itemCategory: "weapon", itemTags: ["martial"] },
+        };
+
+        const pool = resolveGrantPool(grant, { spells: [] });
+
+        expect(pool).toEqual({});
+    });
 });

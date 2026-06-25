@@ -12,6 +12,10 @@ export interface ItemEntry {
     grants: Grant[];
     allowedSlots?: string[];
     stackable?: boolean;
+    /** Generic category for future catalog filters (e.g. weapon, armor, pack). */
+    category?: string;
+    /** Generic tags for future catalog filters (e.g. martial, ranged). */
+    tags?: string[];
 }
 
 /**
@@ -114,6 +118,37 @@ export const dndItems: ItemEntry[] = [
                 amount: 1,
             },
         ],
+    },
+    // Contract-test fixtures for starting-equipment grants (not SRD content).
+    {
+        slug: "pilot-test-dagger",
+        system: "dnd",
+        name: "Pilot Test Dagger",
+        description: "Fixture item for inventory_item choice tests.",
+        category: "weapon",
+        tags: ["simple", "melee"],
+        allowedSlots: ["main-hand"],
+        stackable: false,
+        grants: [],
+    },
+    {
+        slug: "pilot-test-pack-a",
+        system: "dnd",
+        name: "Pilot Test Pack A",
+        description: "Fixture pack item for inventory_item choice tests.",
+        category: "pack",
+        tags: ["adventuring"],
+        stackable: true,
+        grants: [],
+    },
+    {
+        slug: "pilot-test-starter-kit",
+        system: "dnd",
+        name: "Pilot Test Starter Kit",
+        description: "Fixture bundle reference for inventory_bundle tests.",
+        category: "pack",
+        stackable: true,
+        grants: [],
     },
 ];
 

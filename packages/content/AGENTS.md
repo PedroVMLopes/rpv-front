@@ -27,7 +27,8 @@ data here.
   of content gives a character.
   - `grantType`: `ability_score | stat_modifier | ability | skill_proficiency |
     weapon_proficiency | tool_proficiency | armor_proficiency |
-    saving_throw_proficiency | language | spell | resource`
+    saving_throw_proficiency | language | spell | resource | inventory_item |
+    currency`
   - `choose === 0` → fixed (everything applies); `choose > 0` → the player picks
     `choose` entries from `options` or from a `selectionFilter` pool.
   - `grants.ts` is the **bridge**: it converts `Grant`s into domain `Modifier`s
@@ -110,9 +111,9 @@ Whether a character **owns** or **wears** an item is runtime state in
 **equipped** slugs feed `collectGrantSources`; bag-only items do not alter
 stats until equipped.
 
-Pilot catalog (6 items): `scroll-of-fire-bolt`, `amulet-of-vitality`,
-`ring-of-hardiness`, `longsword`, `leather-armor`, `shield` in
-[`itemGrants.dnd.ts`](src/curation/itemGrants.dnd.ts).
+Pilot catalog: 6 SRD pilot items plus 3 `pilot-test-*` contract fixtures in
+[`itemGrants.dnd.ts`](src/curation/itemGrants.dnd.ts). Full item catalogs arrive
+with Supabase-backed content later.
 
 ### `ItemEntry` contract
 
@@ -125,6 +126,8 @@ interface ItemEntry {
   grants: Grant[];         // pilot: choose === 0 only
   allowedSlots?: string[]; // IDs from equipmentSlots.dnd.ts
   stackable?: boolean;     // default true; false for unique gear
+  category?: string;       // optional; future catalog filters (weapon, armor, pack, …)
+  tags?: string[];         // optional; future catalog filters (martial, ranged, …)
 }
 ```
 
@@ -183,24 +186,105 @@ No engine or UI code changes required if existing grant types suffice.
 }
 ```
 
-### `inventory_item` grant (background starting loot)
+### Starting equipment grants (Etapa 1 — data contract)
 
-Declares items that the build pipeline materializes into `selections.inventory.bag`.
-Does **not** produce `CharacterGrant`s or modifiers — equipping is still a player action.
+Declares starting gear and currency from class/background grants. Materialization
+into `selections.inventory.bag` and `systemData` currency is **Etapa 2** (web).
+
+#### `inventory_item` — fixed loot
 
 ```ts
 {
   grantType: "inventory_item",
   choose: 0,
-  ref: "scroll-of-fire-bolt",  // item catalog slug
-  amount: 1,                   // optional, default 1
+  ref: "scroll-of-fire-bolt",
+  amount: 1,
 }
 ```
 
-- **v1:** `choose: 0` only; background source only (class equipment in a later etapa).
-- **Materialization:** [`apps/web/lib/character/materializeInventoryGrants.ts`](../../apps/web/lib/character/materializeInventoryGrants.ts) via `mergeInventoryWithGrants` in `buildCharacter`.
-- **Provenance:** granted `ItemStack`s get `provenance: grant:{sourceType}:{sourceId}:{grantIndex}`; manual bag stacks omit it.
-- **Helpers:** `extractInventoryItemGrants`, `inventoryGrantProvenance` in [`src/grant/inventoryGrants.ts`](src/grant/inventoryGrants.ts).
+#### `inventory_item` — player choice (single item per option)
+
+```ts
+{
+  grantType: "inventory_item",
+  choose: 1,
+  description: "Starting weapon",
+  options: [
+    { optionType: "item", ref: "pilot-test-dagger" },
+    { optionType: "item", ref: "longsword" },
+  ],
+}
+```
+
+#### `inventory_item` — composite bundle option
+
+```ts
+{
+  grantType: "inventory_item",
+  choose: 1,
+  description: "Adventuring pack",
+  options: [
+    { optionType: "item", ref: "pilot-test-pack-a" },
+    {
+      optionType: "inventory_bundle",
+      label: "Starter kit",
+      items: [
+        { ref: "leather-armor", amount: 1 },
+        { ref: "pilot-test-dagger", amount: 2 },
+      ],
+    },
+  ],
+}
+```
+
+#### `currency` — starting wealth
+
+```ts
+{ grantType: "currency", choose: 0, ref: "gold", amount: 15, description: "Belt pouch" }
+```
+
+`ref` is a generic currency unit (`gold`, `silver`, `copper`). No D&D logic in
+`@rpv/domain`.
+
+#### `grantPicks` convention for equipment
+
+Key format (same as other choice grants):
+
+```
+{sourceType}:{sourceId}:{levelSegment}:inventory_item:{grantIndex}:{slot}
+```
+
+**Pick value:** option **index as string** (`"0"`, `"1"`, …) — not item slug.
+Unlike skill/spell picks, equipment uses index because bundle options expand to
+multiple slugs.
+
+Helpers in [`src/grant/inventoryGrants.ts`](src/grant/inventoryGrants.ts):
+`buildInventoryItemChoiceKey`, `resolveInventoryItemGrants`,
+`collectInventoryItemChoiceGrants`, `resolveInventoryItemPick`,
+`isValidInventoryItemPick`, `flattenGrantOptionToEntries`.
+
+Currency helpers in [`src/grant/currencyGrants.ts`](src/grant/currencyGrants.ts):
+`extractCurrencyGrants`, `aggregateCurrencyByRef`, `currencyGrantProvenance`.
+
+`resolveGrantPool` returns `inventoryOptions` (index + label) for
+`inventory_item` grants with enumerated `options`. `selectionFilter.itemCategory`
+/ `itemTags` are reserved (returns empty pool until v2).
+
+#### Anti-patterns
+
+- **Do not** use `optionType: "proficiency"` with item slugs — use `item` or
+  `inventory_bundle`.
+- **Do not** expect `inventory_item` or `currency` to produce `CharacterGrant`s.
+- **`pilot-test-*` slugs** are contract fixtures, not SRD content.
+
+### `inventory_item` grant (background starting loot — web v1)
+
+Background fixed loot is already materialized by the web pipeline (`choose: 0`
+only, background source). See [`materializeInventoryGrants.ts`](../../apps/web/lib/character/materializeInventoryGrants.ts).
+
+- **Provenance:** `grant:{sourceType}:{sourceId}:{grantIndex}` on bag stacks.
+- **Legacy helper:** `extractInventoryItemGrants` (fixed grants only; unchanged
+  signature for web retrocompat).
 
 ### Rules and anti-patterns
 
@@ -210,13 +294,15 @@ Does **not** produce `CharacterGrant`s or modifiers — equipping is still a pla
 - **Do not** reference spells that are not in the catalog.
 - Items are **not** included in `buildCatalog` yet; they live in hand-curated `*.dnd.ts` files.
 
-### Out of scope (pilot / future work)
+### Out of scope (next etapas)
 
-- **Class starting gear** — `inventory_item` on class / `featuresByLevel` (background loot is implemented; class equipment is next).
-- **Equipment packages with choice** — `inventory_item` with `choose > 0` + `grantPicks` (e.g. Soldier A/B).
-- **Currency** — `gold` / `silver` / `bronze` on the player form remain manual `systemData` until a wealth model exists.
-- **Weight, attunement, consumable charges**, `choose > 0` on item grants, community publish API, moderation.
-- **HTTP API** — read-only item/slot catalog and inventory PATCH contract are documented in [`docs/API_INVENTORY.md`](../../docs/API_INVENTORY.md); no routes in this repo yet.
+- **Web materialization** — class/background choices + currency → bag / form
+  (Etapa 2); UI pickers (Etapa 3).
+- **SRD item/class/background catalogs** — real content when Supabase is live.
+- **`selectionFilter` item pools** — `itemCategory` / `itemTags` (v2).
+- **Starting gold roll alternative** — mutually exclusive with default equipment.
+- **Weight, attunement, consumable charges**, community publish API, moderation.
+- **HTTP API** — [`docs/API_INVENTORY.md`](../../docs/API_INVENTORY.md).
 
 Add pt-BR names under `items` in [`data/translations/pt-BR.json`](data/translations/pt-BR.json).
 

@@ -144,28 +144,29 @@ No engine or UI code changes required if existing grant types suffice.
 
 ### Background starting loot (`inventory_item` grant)
 
-Backgrounds can declare fixed starting items via `inventory_item` grants. The
-web build pipeline materializes them into `selections.inventory.bag` on every
+**Etapa 1 (content):** data contract for `inventory_item` (fixed + choices +
+bundles) and `currency` grants. Resolution helpers live in `@rpv/content`
+(`resolveInventoryItemGrants`, `extractCurrencyGrants`, …).
+
+**Web today:** only fixed `inventory_item` from **background** (`choose: 0`) is
+materialized into `selections.inventory.bag` on every
 `buildStoredCharacter` / `rebuildStoredCharacter` pass.
 
 | Field | Value |
 |-------|-------|
-| `grantType` | `"inventory_item"` |
-| `choose` | `0` (v1: no equipment packages with choices) |
-| `ref` | Item catalog slug |
-| `amount` | Quantity (default `1`) |
+| `grantType` | `"inventory_item"` or `"currency"` |
+| `choose` | `0` fixed; `> 0` player picks (Etapa 2+ web) |
+| `ref` | Item slug (`inventory_item`) or currency unit (`currency`) |
+| `amount` | Quantity (default `1` for items) |
 
-**Provenance:** granted stacks carry `ItemStack.provenance` =
+**Provenance:** granted bag stacks carry `ItemStack.provenance` =
 `grant:{sourceType}:{sourceId}:{grantIndex}` (e.g. `grant:background:sage:2`).
-Stacks **without** provenance are manual (UI/store/form). On rebuild, provenance
-stacks are re-materialized from current grants; manual stacks are preserved.
 
-**v1 scope:** background only (`choose: 0`). Class starting equipment, currency,
-and `choose > 0` equipment packages are future work.
+**Etapa 2 (next):** materialize class grants, choice picks, and currency;
+equipment UI on character creation.
 
 **Limitation:** if a granted item is equipped and the background changes, the
-equipped slot is **not** auto-cleared (equipped has no provenance). The item may
-remain equipped even when its granted bag stack is removed.
+equipped slot is **not** auto-cleared (equipped has no provenance).
 
 Pilot: Sage background grants `scroll-of-fire-bolt` — see
 [`backgroundGrants.dnd.ts`](packages/content/src/curation/backgroundGrants.dnd.ts).
@@ -183,7 +184,19 @@ Pilot: Sage background grants `scroll-of-fire-bolt` — see
 
 Wizard spell picks (pilot): 3 cantrips + 6 leveled spell choice slots at L5 (reduced from full SRD).
 
-**Pilot items** (D&D): `scroll-of-fire-bolt`, `amulet-of-vitality`, `ring-of-hardiness`, `longsword`, `leather-armor`, `shield` — see [`itemGrants.dnd.ts`](packages/content/src/curation/itemGrants.dnd.ts).
+**Pilot items** (D&D): 6 pilot gear items + 3 `pilot-test-*` contract fixtures —
+see [`itemGrants.dnd.ts`](packages/content/src/curation/itemGrants.dnd.ts).
+
+---
+
+## Starting equipment roadmap
+
+| Etapa | Status | Scope |
+|-------|--------|-------|
+| 1 — Data contract | Done | `@rpv/content`: `inventory_item` choices/bundles, `currency`, resolution helpers |
+| 2 — Web pipeline | Next | `materializeInventoryGrants` + class/background + currency |
+| 3 — Creation UI | Planned | Equipment pickers on character create |
+| 4 — Content | With Supabase | SRD classes, backgrounds, item catalog |
 
 ---
 
