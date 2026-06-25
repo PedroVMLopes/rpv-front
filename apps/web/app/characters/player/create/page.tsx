@@ -17,6 +17,7 @@ import { useCharacterStore } from "@/store/useCharacterStore";
 import { useContentLocale } from "@/store/useContentLocale";
 import { buildPlayerGrantSourceFields } from "@/lib/character/playerFormFields";
 import { CharacterGrantPickers } from "@/components/characters/CharacterGrantPickers";
+import { StartingEquipmentField } from "@/components/characters/StartingEquipmentField";
 import { useGrantPickSanitizer } from "@/lib/character/useGrantPickSanitizer";
 import { getClassSubclassLevel } from "@rpv/content";
 import { readLevelFromForm } from "@/lib/character/level";
@@ -178,6 +179,7 @@ export default function CreatePlayer() {
                 />
                 <DynamicForm form={form} fields={fields} onSubmit={handleSave} />
                 <CharacterGrantPickers form={form} contentLocale={contentLocale} system={system} />
+                <StartingEquipmentField form={form} contentLocale={contentLocale} system={system} />
             </div>
         </div>
     );

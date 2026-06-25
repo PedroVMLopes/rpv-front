@@ -131,6 +131,21 @@
     "sourceSystem": "From system: {id}",
     "choicesIncomplete": "Complete all required choices before saving."
   },
+  "startingEquipment": {
+    "title": "Starting Equipment",
+    "autoGranted": "Granted automatically",
+    "choicesTitle": "Equipment choices",
+    "bagTitle": "Starting bag",
+    "bagEmpty": "No items in starting bag yet.",
+    "currencyManual": "Manual currency",
+    "currencyGranted": "Granted currency",
+    "currencyTotal": "Total currency",
+    "selectOption": "Select equipment",
+    "provenanceGrant": "Granted ({provenance})",
+    "choicesIncomplete": "Complete all required equipment choices before saving.",
+    "sourceClass": "From class: {id}",
+    "sourceBackground": "From background: {id}"
+  },
   "abilityScores": {
     "title": "Ability Scores",
     "methods": {

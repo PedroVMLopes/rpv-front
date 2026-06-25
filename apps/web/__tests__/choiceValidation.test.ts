@@ -96,9 +96,12 @@ describe("findMissingRequiredChoices", () => {
             "dnd"
         );
 
-        expect(missing.map((choice) => choice.key)).toEqual([
-            "class:fighter:3:skill_proficiency:0:0",
-        ]);
+        expect(missing.map((choice) => choice.key)).toEqual(
+            expect.arrayContaining([
+                "class:fighter:3:skill_proficiency:0:0",
+                "class:fighter:base:inventory_item:5:0",
+            ])
+        );
     });
 
     it("returns empty when all required picks are filled", () => {
@@ -114,6 +117,7 @@ describe("findMissingRequiredChoices", () => {
                         "race:high-elf:base:spell:0:0": "fire-bolt",
                         "class:fighter:base:skill_proficiency:3:0": "athletics",
                         "class:fighter:base:skill_proficiency:3:1": "intimidation",
+                        "class:fighter:base:inventory_item:5:0": "0",
                     },
                 },
             },
@@ -163,6 +167,64 @@ describe("findMissingRequiredChoices", () => {
         );
 
         expect(invalid).toContain("alreadyGranted:history");
+    });
+
+    it("requires fighter sidearm inventory_item pick when class is fighter", () => {
+        const missing = findMissingRequiredChoices(
+            {
+                ...baseFormData,
+                characterClass: "fighter",
+                choices: {},
+            },
+            "en",
+            "dnd"
+        );
+
+        expect(missing.map((choice) => choice.key)).toEqual(
+            expect.arrayContaining(["class:fighter:base:inventory_item:5:0"])
+        );
+    });
+
+    it("accepts valid fighter sidearm inventory_item pick", () => {
+        const missing = findMissingRequiredChoices(
+            {
+                ...baseFormData,
+                characterClass: "fighter",
+                choices: {
+                    grantPicks: {
+                        "class:fighter:base:skill_proficiency:3:0": "athletics",
+                        "class:fighter:base:skill_proficiency:3:1": "intimidation",
+                        "class:fighter:base:inventory_item:5:0": "0",
+                    },
+                },
+            },
+            "en",
+            "dnd"
+        );
+
+        expect(
+            missing.filter((choice) => choice.grant.grantType === "inventory_item")
+        ).toEqual([]);
+    });
+
+    it("flags invalid inventory_item pick index", () => {
+        const invalid = findInvalidGrantPicks(
+            {
+                ...baseFormData,
+                characterClass: "fighter",
+                choices: {
+                    grantPicks: {
+                        "class:fighter:base:inventory_item:5:0": "9",
+                    },
+                },
+            },
+            "en",
+            "dnd"
+        );
+
+        expect(invalid).toContain(
+            "invalidInventoryPick:class:fighter:base:inventory_item:5:0"
+        );
     });
 });
 

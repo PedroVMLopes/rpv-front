@@ -1,7 +1,7 @@
 import type { Locale } from "@rpv/domain";
 import type { Grant } from "@rpv/content";
 import type { SystemKey } from "@/presets";
-import { getClassSubclassLevel, getSubclass } from "@rpv/content";
+import { getClassSubclassLevel, getSubclass, isValidInventoryItemPick } from "@rpv/content";
 import type { ZodObject, ZodRawShape } from "zod";
 import { buildSelectionsFromForm } from "./characterAdapter";
 import { getFixedRefsForGrantType } from "./characterGrants";
@@ -114,10 +114,6 @@ export function findMissingRequiredChoices(
     const grantPicks = readGrantPicks(formData);
 
     return pending.filter((choice) => {
-        if (choice.grant.grantType === "inventory_item") {
-            return false;
-        }
-
         const picked = grantPicks[choice.key];
         return !picked || picked.trim() === "";
     });
@@ -150,6 +146,21 @@ export function findInvalidGrantPicks(
         ownedRefsByGrantType
     )) {
         errors.push(`alreadyGranted:${invalid.ref}`);
+    }
+
+    for (const choice of pending) {
+        if (choice.grant.grantType !== "inventory_item") {
+            continue;
+        }
+
+        const pick = grantPicks[choice.key]?.trim();
+        if (!pick) {
+            continue;
+        }
+
+        if (!isValidInventoryItemPick(choice.grant, pick, system)) {
+            errors.push(`invalidInventoryPick:${choice.key}`);
+        }
     }
 
     return errors;

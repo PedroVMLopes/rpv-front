@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { buildPlayerGrantSourceFields } from "@/lib/character/playerFormFields";
 import { CharacterGrantPickers } from "@/components/characters/CharacterGrantPickers";
+import { StartingEquipmentField } from "@/components/characters/StartingEquipmentField";
 import { useGrantPickSanitizer } from "@/lib/character/useGrantPickSanitizer";
 import { getClassSubclassLevel } from "@rpv/content";
 import { readLevelFromForm } from "@/lib/character/level";
@@ -210,6 +211,7 @@ export default function EditPlayer() {
             />
             <DynamicForm form={form} fields={fields} onSubmit={handleSave} />
             <CharacterGrantPickers form={form} contentLocale={contentLocale} system={characterSystem} />
+            <StartingEquipmentField form={form} contentLocale={contentLocale} system={characterSystem} />
         </div>
     );
 }

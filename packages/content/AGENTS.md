@@ -279,10 +279,13 @@ Currency helpers in [`src/grant/currencyGrants.ts`](src/grant/currencyGrants.ts)
 - **Do not** expect `inventory_item` or `currency` to produce `CharacterGrant`s.
 - **`pilot-test-*` slugs** are contract fixtures, not SRD content.
 
-### `inventory_item` grant (background starting loot — web v1)
+### `inventory_item` grant (starting loot — web)
 
-Background fixed loot is already materialized by the web pipeline (`choose: 0`
-only, background source). See [`materializeInventoryGrants.ts`](../../apps/web/lib/character/materializeInventoryGrants.ts).
+Class and background starting loot is materialized by the web pipeline
+(`mergeStartingGrants`). Fixed grants (`choose: 0`) and player choices
+(`choose > 0` via `grantPicks`) are supported. See
+[`materializeInventoryGrants.ts`](../../apps/web/lib/character/materializeInventoryGrants.ts)
+and [`deriveStartingEquipmentFromForm.ts`](../../apps/web/lib/character/deriveStartingEquipmentFromForm.ts).
 
 - **Provenance:** `grant:{sourceType}:{sourceId}:{grantIndex}` on bag stacks.
 - **Legacy helper:** `extractInventoryItemGrants` (fixed grants only; unchanged
@@ -298,8 +301,6 @@ only, background source). See [`materializeInventoryGrants.ts`](../../apps/web/l
 
 ### Out of scope (next etapas)
 
-- **Web materialization** — class/background choices + currency → bag /
-  `grantedCurrency` (done); UI pickers (Etapa 3).
 - **SRD item/class/background catalogs** — real content when Supabase is live.
 - **`selectionFilter` item pools** — `itemCategory` / `itemTags` (v2).
 - **Starting gold roll alternative** — mutually exclusive with default equipment.

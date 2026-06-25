@@ -382,8 +382,11 @@ Response: item modifiers removed; max HP back to **12**; `hp` clamped if needed.
 ## Future extensions (not v1)
 
 - PATCH with incremental **ops** (`addToBag`, `removeFromBag`, `equip`, `unequip`)
-- `inventory_item` on **class** starting equipment and `choose > 0` equipment packages
-- Currency, weight, attunement, unique instances
+- Weight, attunement, unique instances
 - `POST /systems/:system/items` (community publish + moderation)
 - `If-Match` / ETag on character or inventory
 - Shared build package for server (`@rpv/build` or extract `inventory.ts` + `buildCharacter` from web)
+
+**Already implemented in web (pilot):** class/background `inventory_item` (fixed
+and `choose > 0`), `currency` grants, `grantedCurrency`, and create/edit UI via
+`StartingEquipmentField`.

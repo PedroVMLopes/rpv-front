@@ -146,7 +146,7 @@ export function CharacterGrantPickers({
                 contentLocale,
                 characterLevel,
                 system
-            ),
+            ).filter((choice) => choice.grant.grantType !== "inventory_item"),
         [selections, contentLocale, characterLevel, system]
     );
 

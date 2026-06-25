@@ -170,8 +170,12 @@ materialized into `selections.inventory.bag` on every
 Helpers: [`materializeInventoryGrants.ts`](apps/web/lib/character/materializeInventoryGrants.ts),
 [`materializeCurrencyGrants.ts`](apps/web/lib/character/materializeCurrencyGrants.ts).
 
-**Etapa 3 (next):** equipment pickers na criação; validação obrigatória de
-`inventory_item`; exibir total de moeda (`getTotalCurrency`).
+**Etapa 3 (web):** `StartingEquipmentField` na criação/edição — pills de itens
+fixos, dropdowns de `inventory_item` com `choose > 0`, preview da bag
+materializada e breakdown de moeda (`getTotalCurrencyFromForm`). Validação
+obrigatória de escolhas de equipamento em `choiceValidation`. Helpers:
+[`deriveStartingEquipmentFromForm.ts`](apps/web/lib/character/deriveStartingEquipmentFromForm.ts),
+[`StartingEquipmentField.tsx`](apps/web/components/characters/StartingEquipmentField.tsx).
 
 **Limitation:** if a granted item is equipped and the background changes, the
 equipped slot is **not** auto-cleared (equipped has no provenance).
@@ -203,7 +207,7 @@ see [`itemGrants.dnd.ts`](packages/content/src/curation/itemGrants.dnd.ts).
 |-------|--------|-------|
 | 1 — Data contract | Done | `@rpv/content`: `inventory_item` choices/bundles, `currency`, resolution helpers |
 | 2 — Web pipeline | Done | `mergeStartingGrants`, class/background materialization, `grantedCurrency` |
-| 3 — Creation UI | Next | Equipment pickers on character create |
+| 3 — Creation UI | Done | `StartingEquipmentField`, required `inventory_item` validation, currency preview |
 | 4 — Content | With Supabase | SRD classes, backgrounds, item catalog |
 
 ---

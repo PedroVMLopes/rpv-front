@@ -131,6 +131,21 @@
     "sourceSystem": "Do sistema: {id}",
     "choicesIncomplete": "Complete todas as escolhas obrigatórias antes de salvar."
   },
+  "startingEquipment": {
+    "title": "Equipamento Inicial",
+    "autoGranted": "Concedido automaticamente",
+    "choicesTitle": "Escolhas de equipamento",
+    "bagTitle": "Bolsa inicial",
+    "bagEmpty": "Nenhum item na bolsa inicial ainda.",
+    "currencyManual": "Moeda manual",
+    "currencyGranted": "Moeda concedida",
+    "currencyTotal": "Moeda total",
+    "selectOption": "Selecione o equipamento",
+    "provenanceGrant": "Concedido ({provenance})",
+    "choicesIncomplete": "Complete todas as escolhas de equipamento obrigatórias antes de salvar.",
+    "sourceClass": "Da classe: {id}",
+    "sourceBackground": "Do antecedente: {id}"
+  },
   "abilityScores": {
     "title": "Atributos",
     "methods": {

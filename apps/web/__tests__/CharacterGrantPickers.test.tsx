@@ -233,4 +233,21 @@ describe("CharacterGrantPickers", () => {
             screen.getByText("Complete all required choices before saving.")
         ).toBeInTheDocument();
     });
+
+    it("does not show fighter sidearm inventory choice under ability choices", () => {
+        render(
+            <GrantPickerHarness
+                defaultValues={{
+                    name: "Test Hero",
+                    characterClass: "fighter",
+                    choices: {},
+                }}
+            />
+        );
+
+        expect(screen.getByText("Ability Choices")).toBeInTheDocument();
+        expect(
+            screen.queryByText(/Starting sidearm \(pilot fixture\)/)
+        ).not.toBeInTheDocument();
+    });
 });
