@@ -109,7 +109,7 @@ export default function CharacterCardAbilities({
     const classSlug = stored.selections.characterClass;
     const subclassSlug = stored.selections.subclass;
     const className = classSlug
-        ? (contentRepo().getClass(classSlug)?.name ?? classSlug)
+        ? (contentRepo().getClass(classSlug, contentLocale)?.name ?? classSlug)
         : undefined;
     const subclassName = subclassSlug
         ? (contentRepo().getSubclass(subclassSlug, contentLocale)?.name ?? subclassSlug)

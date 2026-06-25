@@ -10,14 +10,20 @@ import messages from "../messages/en.json";
 
 function StartingEquipmentHarness({
     defaultValues,
+    contentLocale = "en",
 }: {
     defaultValues: Record<string, unknown>;
+    contentLocale?: "en" | "pt-BR";
 }) {
     const form = useForm({ defaultValues });
 
     return (
         <NextIntlClientProvider locale="en" messages={messages}>
-            <StartingEquipmentField form={form} contentLocale="en" system="dnd" />
+            <StartingEquipmentField
+                form={form}
+                contentLocale={contentLocale}
+                system="dnd"
+            />
             <pre data-testid="choices-output">
                 {JSON.stringify(form.watch("choices"))}
             </pre>
@@ -78,6 +84,26 @@ describe("StartingEquipmentField", () => {
         expect(screen.getByTestId("choices-output")).toHaveTextContent(
             "class:fighter:base:inventory_item:8:0"
         );
+    });
+
+    it("shows localized bag item names for pt-BR content locale", () => {
+        render(
+            <StartingEquipmentHarness
+                contentLocale="pt-BR"
+                defaultValues={{
+                    characterClass: "fighter",
+                    choices: {
+                        grantPicks: {
+                            "class:fighter:base:exclusive:starting-wealth":
+                                "equipment",
+                        },
+                    },
+                }}
+            />
+        );
+
+        expect(screen.getAllByText(/Espada Longa/).length).toBeGreaterThan(0);
+        expect(screen.queryByText(/Longsword/)).not.toBeInTheDocument();
     });
 
     it("shows sage currency breakdown and granted scroll", () => {

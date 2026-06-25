@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { UseFormReturn } from "react-hook-form";
+import { FormProvider, UseFormReturn } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import type { Locale } from "@rpv/domain";
 import { getClassSubclassLevel } from "@rpv/content";
@@ -245,7 +245,7 @@ export function PlayerCharacterForm({
         setIsSaving(false);
     }, [form, onSave, t]);
 
-    const stepContent = useMemo(() => {
+    const stepContent = (() => {
         switch (activeStepId) {
             case "race":
                 return (
@@ -342,32 +342,25 @@ export function PlayerCharacterForm({
             default:
                 return null;
         }
-    }, [
-        activeStepId,
-        contentLocale,
-        form,
-        grantSourceTypes,
-        statConfig,
-        stepFields,
-        system,
-        t,
-    ]);
+    })();
 
     return (
-        <div className="flex flex-col gap-4">
-            {header}
-            <CharacterCreationStepper
-                activeStep={activeStep}
-                maxUnlockedStep={maxUnlockedStep}
-                stepHint={stepHint}
-                isLastStep={activeStep === CHARACTER_CREATION_STEP_COUNT - 1}
-                onStepSelect={handleStepSelect}
-                onBack={handleBack}
-                onNext={handleNext}
-                onSave={() => void handleSave()}
-                isSaving={isSaving}
-            />
-            <div key={activeStepId}>{stepContent}</div>
-        </div>
+        <FormProvider {...form}>
+            <div className="flex flex-col gap-4">
+                {header}
+                <CharacterCreationStepper
+                    activeStep={activeStep}
+                    maxUnlockedStep={maxUnlockedStep}
+                    stepHint={stepHint}
+                    isLastStep={activeStep === CHARACTER_CREATION_STEP_COUNT - 1}
+                    onStepSelect={handleStepSelect}
+                    onBack={handleBack}
+                    onNext={handleNext}
+                    onSave={() => void handleSave()}
+                    isSaving={isSaving}
+                />
+                <div key={activeStepId}>{stepContent}</div>
+            </div>
+        </FormProvider>
     );
 }

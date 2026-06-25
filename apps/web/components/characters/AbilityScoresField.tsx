@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
-import { UseFormReturn } from "react-hook-form";
+import { useWatch, type UseFormReturn } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import type { Locale } from "@rpv/domain";
 import type {
@@ -31,10 +31,10 @@ type AbilityScoresFieldProps = {
     contentLocale: Locale;
 };
 
-function readAttributes(
+function getAttributes(
     form: UseFormReturn<Record<string, unknown>>
 ): AttributeEntry[] {
-    return (form.watch("attributes") as AttributeEntry[] | undefined) ?? [];
+    return (form.getValues("attributes") as AttributeEntry[] | undefined) ?? [];
 }
 
 function writeAttributes(
@@ -53,7 +53,7 @@ function setAttributeValue(
     index: number,
     value: number
 ) {
-    const current = readAttributes(form);
+    const current = getAttributes(form);
     const next = abilities.map((ability, abilityIndex) => ({
         name: ability.name,
         value:
@@ -74,11 +74,22 @@ export function AbilityScoresField({
     const tAbilities = useTranslations("abilities");
     const config = statConfig.abilityGeneration;
 
-    const formValues = form.watch();
-    const method =
-        (form.watch("abilityScoreMethod") as AbilityScoreMethod | undefined) ??
-        "manual";
-    const rolls = (form.watch("abilityScoreRolls") as number[] | undefined) ?? [];
+    const { control } = form;
+
+    const attributes = useWatch({
+        control,
+        name: "attributes",
+    }) as AttributeEntry[] | undefined;
+    const race = useWatch({ control, name: "race" });
+    const subrace = useWatch({ control, name: "subrace" });
+    const choices = useWatch({ control, name: "choices" });
+    const watchedMethod = useWatch({
+        control,
+        name: "abilityScoreMethod",
+    });
+    const method = (watchedMethod ?? "manual") as AbilityScoreMethod;
+    const rolls = (useWatch({ control, name: "abilityScoreRolls" }) ??
+        []) as number[];
 
     const previousMethodRef = useRef<AbilityScoreMethod>(method);
     const initializedRef = useRef(false);
@@ -121,8 +132,8 @@ export function AbilityScoresField({
     }, [abilities, form, method, statConfig]);
 
     const attributeValues = useMemo(
-        () => readAttributeValues(readAttributes(form), abilities),
-        [formValues, abilities]
+        () => readAttributeValues(attributes, abilities),
+        [attributes, abilities]
     );
 
     const remainingPoints = useMemo(() => {
@@ -134,9 +145,9 @@ export function AbilityScoresField({
     }, [attributeValues, config, method]);
 
     const raceModifiers = useMemo(() => {
-        const selections = buildSelectionsFromForm(formValues);
+        const selections = buildSelectionsFromForm({ race, subrace, choices });
         return deriveRaceModifiers(selections, contentLocale);
-    }, [formValues, contentLocale]);
+    }, [race, subrace, choices, contentLocale]);
 
     const raceBonusByStat = useMemo(() => {
         const bonuses = new Map<string, number>();

@@ -370,7 +370,8 @@ export function StartingEquipmentField({
                     <ul className="flex flex-col gap-1 text-sm">
                         {preview.bag.map((stack) => {
                             const itemName =
-                                contentRepo(system).getItem(stack.slug)?.name ?? stack.slug;
+                                contentRepo(system).getItem(stack.slug, contentLocale)?.name ??
+                                stack.slug;
                             return (
                                 <li
                                     key={bagStackReactKey(stack)}
