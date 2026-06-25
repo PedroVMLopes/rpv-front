@@ -7,7 +7,7 @@ import { CarouselItem } from "@/components/ui/characterCarousel";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { useContentLocale } from "@/store/useContentLocale";
 import { getLanguage } from "@/lib/catalog/grantCatalog";
-import { getClass, getSpell, getSubclass } from "@rpv/content";
+import { contentRepo } from "@/lib/content/contentRepository";
 import {
     isGrantedFeaturesEntry,
     listGrantsBySource,
@@ -39,7 +39,7 @@ function displayName(
     }
 
     if (grant.kind === "spell") {
-        return getSpell(grant.ref, contentLocale)?.name ?? grant.ref;
+        return contentRepo().getSpell(grant.ref, contentLocale)?.name ?? grant.ref;
     }
 
     return grant.ref;
@@ -109,10 +109,10 @@ export default function CharacterCardAbilities({
     const classSlug = stored.selections.characterClass;
     const subclassSlug = stored.selections.subclass;
     const className = classSlug
-        ? (getClass(classSlug)?.name ?? classSlug)
+        ? (contentRepo().getClass(classSlug)?.name ?? classSlug)
         : undefined;
     const subclassName = subclassSlug
-        ? (getSubclass(subclassSlug, contentLocale)?.name ?? subclassSlug)
+        ? (contentRepo().getSubclass(subclassSlug, contentLocale)?.name ?? subclassSlug)
         : undefined;
 
     const languages = grants.filter((grant) => grant.kind === "language");

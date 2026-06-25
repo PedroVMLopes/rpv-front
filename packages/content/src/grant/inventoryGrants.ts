@@ -1,4 +1,5 @@
-import { getItem, type ItemSystem } from "../curation/itemGrants.dnd";
+import { readItem } from "../curation/curationReaders";
+import type { ItemSystem } from "../curation/itemGrants.dnd";
 import type { Locale } from "@rpv/domain";
 import type { Grant, GrantOption } from "./grant.types";
 
@@ -108,7 +109,7 @@ export function formatInventoryBundleLabel(
     }
 
     const names = option.items
-        .map((item) => getItem(item.ref, system, locale)?.name ?? item.ref)
+        .map((item) => readItem(item.ref, locale)?.name ?? item.ref)
         .filter((name) => name.length > 0);
 
     return names.length > 0 ? names.join(" + ") : "Bundle";
@@ -162,7 +163,7 @@ export function isValidInventoryItemPick(
         return false;
     }
 
-    return entries.every((entry) => getItem(entry.slug, system) !== undefined);
+    return entries.every((entry) => readItem(entry.slug) !== undefined);
 }
 
 export function extractInventoryItemGrants(grants: Grant[]): InventoryItemGrantEntry[] {
@@ -275,7 +276,7 @@ export function resolveInventoryItemGrants(
             const resolved = resolveInventoryItemPick(grant, pickValue);
 
             for (const item of resolved) {
-                if (getItem(item.slug, system) === undefined) {
+                if (readItem(item.slug) === undefined) {
                     continue;
                 }
 

@@ -5,7 +5,7 @@ import {
     getClassHitDie,
     getClassSubclassLevel,
     listClasses,
-} from "../src/curation/classGrants.dnd";
+} from "../src";
 
 describe("classGrants.dnd", () => {
     it("lists curated classes", () => {

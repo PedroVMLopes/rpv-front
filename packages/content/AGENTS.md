@@ -430,7 +430,44 @@ Add pt-BR names under `items` in [`data/translations/pt-BR.json`](data/translati
 - **Catalog references use slugs.** Grants reference catalog entries by slug;
   resolution against the catalog happens through the provided helpers.
 
-## Exports & tests
+## ContentRepository (read seam)
+
+Content **lookup** (catalog entries + curation entries) goes through
+[`ContentRepository`](src/repository/contentRepository.types.ts):
+
+- [`StaticContentRepository`](src/repository/staticContentRepository.ts) — bundled
+  `catalog.json` + hand-curated `*.dnd.ts` arrays (today).
+- [`getContentRepository(system)`](src/repository/getContentRepository.ts) — factory;
+  `"dnd"` is the only system registered now.
+
+Legacy exports (`getClass`, `listItems`, `listSpells`, …) are thin wrappers over
+the default repository. **Grant resolution** (`grants.ts`, `getClassGrants`, …)
+stays outside the repository — it reads entries via those helpers.
+
+### Future Supabase contract
+
+A `SupabaseContentRepository` will implement the same `ContentRepository`
+interface. Swap via `getContentRepository` — no changes to grant resolution or
+character pipeline logic.
+
+Persist the same JSON shapes as curation/catalog types:
+
+| Entity | Type | Notes |
+|--------|------|-------|
+| Class | `ClassEntry` | `grants`, `featuresByLevel`, `hitDie`, `subclassLevel` |
+| Subclass | `SubclassEntry` | `classSlug`, `grants`, `featuresByLevel` |
+| Background | `BackgroundEntry` | `grants` |
+| Item | `ItemEntry` | `grants`, slots, `stackable`, `category` |
+| Race / spell | `RaceCatalogEntry`, `SpellCatalogEntry` | Open5e-mapped catalog rows |
+
+Locale overlays follow the partial-merge strategy in
+[`data/translations/pt-BR.json`](data/translations/pt-BR.json). The backend stores
+**data only** — no per-class resolution logic.
+
+The web app reads content exclusively via
+[`apps/web/lib/content/contentRepository.ts`](../../apps/web/lib/content/contentRepository.ts)
+(`contentRepo()`), not by importing `catalog` or raw `dnd*` arrays.
+
 
 - Public surface is re-exported from `src/index.ts`. Add new modules there.
 - Tests live in `__tests__/`. Run with `npm run test:packages` from the repo root.

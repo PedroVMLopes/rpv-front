@@ -746,6 +746,67 @@ describe("buildStoredCharacter", () => {
         );
     });
 
+    it("builds wizard level 1 with cantrip and leveled spell picks in grants", () => {
+        const selections = {
+            ...emptyCharacterSelections(),
+            characterClass: "wizard",
+        };
+        const pending = collectPendingChoiceGrants(selections, "en", 1);
+        const grantPicks: Record<string, string> = {};
+
+        for (const choice of pending) {
+            if (choice.grant.grantType !== "spell") {
+                continue;
+            }
+
+            if (choice.grant.selectionFilter?.levelInt === 0) {
+                grantPicks[choice.key] = "fire-bolt";
+                continue;
+            }
+
+            if (choice.key === "class:wizard:1:spell:2:0") {
+                grantPicks[choice.key] = "magic-missile";
+                continue;
+            }
+
+            if (choice.key === "class:wizard:1:spell:2:1") {
+                grantPicks[choice.key] = "shield";
+            }
+        }
+
+        const character = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                characterClass: "wizard",
+                level: 1,
+                choices: { grantPicks },
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        expect(character.grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    kind: "spell",
+                    ref: "fire-bolt",
+                    source: { type: "class", id: "wizard" },
+                }),
+                expect.objectContaining({
+                    kind: "spell",
+                    ref: "magic-missile",
+                    source: { type: "class", id: "wizard" },
+                }),
+                expect.objectContaining({
+                    kind: "spell",
+                    ref: "shield",
+                    source: { type: "class", id: "wizard" },
+                }),
+            ])
+        );
+    });
+
     it("builds wizard level 5 with evocation and all accumulated picks", () => {
         const selections = {
             ...emptyCharacterSelections(),

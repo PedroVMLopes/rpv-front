@@ -1,10 +1,6 @@
 import type { Locale } from "@rpv/domain";
-import { listSubclassesForClass } from "@rpv/content";
-import { listLanguages as listCatalogLanguages, getLanguage as getCatalogLanguage } from "@rpv/content";
 import type { Language } from "@rpv/content";
-import { listBackgrounds } from "@rpv/content";
-import { listItems } from "@rpv/content";
-import { getClassHitDie as getContentClassHitDie, listClasses } from "@rpv/content";
+import { contentRepo } from "@/lib/content/contentRepository";
 
 export type CatalogSelectOption = {
     value: string;
@@ -12,11 +8,11 @@ export type CatalogSelectOption = {
 };
 
 export function listLanguages(): Language[] {
-    return listCatalogLanguages();
+    return contentRepo().listLanguages();
 }
 
 export function getLanguage(slug: string): Language | undefined {
-    return getCatalogLanguage(slug);
+    return contentRepo().getLanguage(slug);
 }
 
 export function listLanguageOptions(): CatalogSelectOption[] {
@@ -27,21 +23,21 @@ export function listLanguageOptions(): CatalogSelectOption[] {
 }
 
 export function listBackgroundOptions(): CatalogSelectOption[] {
-    return listBackgrounds().map((background) => ({
+    return contentRepo().listBackgrounds().map((background) => ({
         value: background.slug,
         label: background.name,
     }));
 }
 
 export function listStartingItemOptions(): CatalogSelectOption[] {
-    return listItems().map((item) => ({
+    return contentRepo().listItems().map((item) => ({
         value: item.slug,
         label: item.name,
     }));
 }
 
 export function listClassOptions(locale?: Locale): CatalogSelectOption[] {
-    return listClasses(locale).map((characterClass) => ({
+    return contentRepo().listClasses(locale).map((characterClass) => ({
         value: characterClass.slug,
         label: characterClass.name,
     }));
@@ -55,12 +51,12 @@ export function listSubclassOptions(
         return [];
     }
 
-    return listSubclassesForClass(classSlug, locale).map((subclass) => ({
+    return contentRepo().listSubclassesForClass(classSlug, locale).map((subclass) => ({
         value: subclass.slug,
         label: subclass.name,
     }));
 }
 
 export function getClassHitDie(slug: string): number | undefined {
-    return getContentClassHitDie(slug);
+    return contentRepo().getClass(slug)?.hitDie;
 }

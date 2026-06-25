@@ -99,24 +99,12 @@ function localizeSubclass(entry: SubclassEntry, locale?: Locale): SubclassEntry 
     return localizeCurationEntry(entry, "subclasses", locale);
 }
 
-export function getSubclass(
-    slug: string,
-    locale?: Locale
-): SubclassEntry | undefined {
+function resolveSubclass(slug: string, locale?: Locale): SubclassEntry | undefined {
     const entry = dndSubclasses.find((subclass) => subclass.slug === slug);
     if (!entry) {
         return undefined;
     }
     return localizeSubclass(entry, locale);
-}
-
-export function listSubclassesForClass(
-    classSlug: string,
-    locale?: Locale
-): SubclassEntry[] {
-    return dndSubclasses
-        .filter((entry) => entry.classSlug === classSlug)
-        .map((entry) => localizeSubclass(entry, locale));
 }
 
 export function getSubclassGrantSourcesForLevel(

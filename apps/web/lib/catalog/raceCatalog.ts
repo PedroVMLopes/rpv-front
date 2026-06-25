@@ -1,11 +1,6 @@
-import {
-    getRace as getCatalogRace,
-    getSubrace as getCatalogSubrace,
-    listRaces as listCatalogRaces,
-    type RaceCatalogEntry,
-    type SubraceCatalogEntry,
-} from "@rpv/content";
 import type { Locale } from "@rpv/domain";
+import type { RaceCatalogEntry, SubraceCatalogEntry } from "@rpv/content";
+import { contentRepo } from "@/lib/content/contentRepository";
 
 export type CatalogSelectOption = {
     value: string;
@@ -15,25 +10,24 @@ export type CatalogSelectOption = {
 /**
  * Catalog read seam for the web app.
  *
- * Currently backed by the bundled `@rpv/content` JSON snapshot. In Group B this
- * file becomes the Supabase-backed repository; the signatures are kept stable
- * (they will become async then) so call sites change minimally. The optional
- * `locale` selects the content language, independently of the UI language.
+ * Delegates to `contentRepo()` (backed by StaticContentRepository today).
+ * A future SupabaseContentRepository will implement the same ContentRepository
+ * interface; signatures may become async then.
  */
 export function listRaces(locale?: Locale): RaceCatalogEntry[] {
-    return listCatalogRaces(locale);
+    return contentRepo().listRaces(locale);
 }
 
 export function getRace(slug: string, locale?: Locale): RaceCatalogEntry | undefined {
-    return getCatalogRace(slug, locale);
+    return contentRepo().getRace(slug, locale);
 }
 
 export function getSubrace(slug: string, locale?: Locale): SubraceCatalogEntry | undefined {
-    return getCatalogSubrace(slug, locale);
+    return contentRepo().getSubrace(slug, locale);
 }
 
 export function listRaceOptions(locale?: Locale): CatalogSelectOption[] {
-    return listCatalogRaces(locale).map((race) => ({
+    return listRaces(locale).map((race) => ({
         value: race.slug,
         label: race.name,
     }));
@@ -47,7 +41,7 @@ export function listSubraceOptions(
         return [];
     }
 
-    const race = getCatalogRace(raceSlug, locale);
+    const race = getRace(raceSlug, locale);
     if (!race) {
         return [];
     }

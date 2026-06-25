@@ -3,7 +3,7 @@ import {
     getSubclassGrantSourcesForLevel,
     getSubclassGrants,
     listSubclassesForClass,
-} from "../src/curation/subclassGrants.dnd";
+} from "../src";
 
 describe("subclassGrants.dnd", () => {
     it("lists subclasses for a class slug", () => {

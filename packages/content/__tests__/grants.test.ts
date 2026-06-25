@@ -371,6 +371,38 @@ describe("resolveSpellPool", () => {
         );
         expect(wizardCantrips.every((s) => s.levelInt === 0)).toBe(true);
     });
+
+    it("returns a non-empty wizard level 1 pool disjoint from cantrips", () => {
+        const spells = loadAllSpells();
+        const wizardL1 = resolveSpellPool(
+            { spellLists: ["wizard"], levelInt: 1 },
+            spells
+        );
+        const wizardCantrips = resolveSpellPool(
+            { spellLists: ["wizard"], levelInt: 0 },
+            spells
+        );
+
+        expect(wizardL1.length).toBeGreaterThanOrEqual(8);
+        expect(wizardL1.every((s) => s.levelInt === 1)).toBe(true);
+        expect(wizardL1.every((s) => s.spellLists.includes("wizard"))).toBe(true);
+
+        const cantripSlugs = new Set(wizardCantrips.map((s) => s.slug));
+        expect(wizardL1.every((s) => !cantripSlugs.has(s.slug))).toBe(true);
+    });
+
+    it("resolves wizard L1 spell grant pool with at least two options", () => {
+        const spells = loadAllSpells();
+        const grant: Grant = {
+            grantType: "spell",
+            choose: 2,
+            selectionFilter: { spellLists: ["wizard"], levelInt: 1 },
+        };
+
+        const pool = resolveGrantPool(grant, { spells });
+
+        expect(pool.spells?.length).toBeGreaterThanOrEqual(2);
+    });
 });
 
 describe("resolveGrantPool", () => {

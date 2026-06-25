@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import type { Locale, ModifierSource } from "@rpv/domain";
-import { getItem } from "@rpv/content";
+import { contentRepo } from "@/lib/content/contentRepository";
 import type { SystemKey } from "@/presets";
 import {
     currencyChoiceToPending,
@@ -362,7 +362,7 @@ export function StartingEquipmentField({
                     <ul className="flex flex-col gap-1 text-sm">
                         {preview.bag.map((stack) => {
                             const itemName =
-                                getItem(stack.slug, system)?.name ?? stack.slug;
+                                contentRepo(system).getItem(stack.slug)?.name ?? stack.slug;
                             return (
                                 <li
                                     key={bagStackReactKey(stack)}

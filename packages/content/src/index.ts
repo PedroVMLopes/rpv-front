@@ -30,4 +30,28 @@ export * from "./curation/equipmentSlots.dnd";
 export * from "./curation/classGrants.dnd";
 export * from "./curation/subclassGrants.dnd";
 
-export { catalog, listRaces, getRace, getSubrace, getSpell, listLanguages, getLanguage } from "./catalog/bundled";
+export {
+    getClass,
+    listClasses,
+    getBackground,
+    listBackgrounds,
+    getItem,
+    listItems,
+    getSubclass,
+    listSubclassesForClass,
+} from "./curation/contentRepoWrappers.dnd";
+
+export type { ContentRepository } from "./repository/contentRepository.types";
+export { StaticContentRepository } from "./repository/staticContentRepository";
+export { getContentRepository } from "./repository/getContentRepository";
+
+export {
+    catalog,
+    listRaces,
+    getRace,
+    getSubrace,
+    listSpells,
+    getSpell,
+    listLanguages,
+    getLanguage,
+} from "./catalog/bundled";

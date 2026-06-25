@@ -248,7 +248,7 @@ function localizeItem(entry: ItemEntry, locale?: Locale): ItemEntry {
     return localizeCurationEntry(entry, "items", locale);
 }
 
-export function getItem(
+function resolveItem(
     slug: string,
     system: ItemSystem = "dnd",
     locale?: Locale
@@ -260,10 +260,6 @@ export function getItem(
     return localizeItem(entry, locale);
 }
 
-export function listItems(system: ItemSystem = "dnd", locale?: Locale): ItemEntry[] {
-    return itemsForSystem(system).map((entry) => localizeItem(entry, locale));
-}
-
 export function getItemGrants(slug: string, system: ItemSystem = "dnd"): Grant[] {
-    return getItem(slug, system)?.grants ?? [];
+    return resolveItem(slug, system)?.grants ?? [];
 }

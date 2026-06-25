@@ -91,6 +91,33 @@ describe("findMissingRequiredChoices", () => {
         );
     });
 
+    it("requires five wizard L1 spell picks when unpicked", () => {
+        const missing = findMissingRequiredChoices(
+            {
+                ...baseFormData,
+                characterClass: "wizard",
+                choices: {},
+            },
+            "en",
+            "dnd"
+        );
+
+        const spellKeys = missing
+            .filter((choice) => choice.grant.grantType === "spell")
+            .map((choice) => choice.key);
+
+        expect(spellKeys).toHaveLength(5);
+        expect(spellKeys).toEqual(
+            expect.arrayContaining([
+                "class:wizard:1:spell:1:0",
+                "class:wizard:1:spell:1:1",
+                "class:wizard:1:spell:1:2",
+                "class:wizard:1:spell:2:0",
+                "class:wizard:1:spell:2:1",
+            ])
+        );
+    });
+
     it("requires level 3 fighter skill pick when character level is 3", () => {
         const missing = findMissingRequiredChoices(
             {

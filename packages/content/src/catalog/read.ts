@@ -95,6 +95,19 @@ export function getSubrace(
     return undefined;
 }
 
+export function listSpells(
+    catalog: Catalog,
+    locale: Locale = catalog.defaultLocale,
+    translations?: CatalogTranslations
+): SpellCatalogEntry[] {
+    if (locale === catalog.defaultLocale || !translations) {
+        return catalog.spells;
+    }
+    return catalog.spells.map((spell) =>
+        applyTranslation(spell, translations?.spells, locale)
+    );
+}
+
 export function getSpell(
     catalog: Catalog,
     slug: string,

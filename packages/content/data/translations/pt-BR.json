@@ -10,6 +10,30 @@
   "spells": {
     "acid-splash": {
       "name": "Respingo Ácido"
+    },
+    "magic-missile": {
+      "name": "Mísseis Mágicos"
+    },
+    "shield": {
+      "name": "Escudo Mágico"
+    },
+    "detect-magic": {
+      "name": "Detectar Magia"
+    },
+    "mage-armor": {
+      "name": "Armadura Arcana"
+    },
+    "sleep": {
+      "name": "Sono"
+    },
+    "burning-hands": {
+      "name": "Mãos Flamejantes"
+    },
+    "feather-fall": {
+      "name": "Queda Suave"
+    },
+    "identify": {
+      "name": "Identificar"
     }
   },
   "classes": {

@@ -1,6 +1,7 @@
 import type { CharacterGrant, Locale, Modifier, ModifierSource } from "@rpv/domain";
 import type { Language } from "../catalog/catalog.types";
-import { getItem, type ItemSystem } from "../curation/itemGrants.dnd";
+import { readItem } from "../curation/curationReaders";
+import type { ItemSystem } from "../curation/itemGrants.dnd";
 import type { SpellCatalogEntry } from "../spell/spell.types";
 import { formatInventoryBundleLabel } from "./inventoryGrants";
 import type { Grant, GrantOption, SelectionFilter } from "./grant.types";
@@ -299,7 +300,7 @@ export function resolveGrantPool(
             const locale = catalog.locale;
             const inventoryOptions = grant.options.map((option, index) => {
                 if (option.optionType === "item") {
-                    const item = getItem(option.ref, system, locale);
+                    const item = readItem(option.ref, locale);
                     return {
                         value: String(index),
                         label: item?.name ?? option.ref,

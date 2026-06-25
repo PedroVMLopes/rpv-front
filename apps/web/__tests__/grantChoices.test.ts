@@ -95,4 +95,44 @@ describe("collectPendingChoiceGrants", () => {
             ])
         );
     });
+
+    it("exposes named wizard L1 cantrip and leveled spell options", () => {
+        const pending = collectPendingChoiceGrants(
+            {
+                ...baseSelections,
+                characterClass: "wizard",
+            },
+            "en",
+            1
+        );
+
+        const spellChoices = pending.filter(
+            (choice) => choice.grant.grantType === "spell"
+        );
+
+        expect(spellChoices).toHaveLength(5);
+
+        for (const choice of spellChoices) {
+            expect(choice.options.length).toBeGreaterThan(0);
+            expect(choice.options.every((option) => option.label.length > 0)).toBe(
+                true
+            );
+        }
+
+        const cantripChoice = spellChoices.find((choice) =>
+            choice.label.toLowerCase().includes("cantrip")
+        );
+        const leveledChoice = spellChoices.find(
+            (choice) =>
+                choice.grant.selectionFilter?.levelInt === 1 &&
+                !choice.label.toLowerCase().includes("cantrip")
+        );
+
+        expect(cantripChoice?.options.map((option) => option.value)).toEqual(
+            expect.arrayContaining(["fire-bolt", "acid-splash"])
+        );
+        expect(leveledChoice?.options.map((option) => option.value)).toEqual(
+            expect.arrayContaining(["magic-missile", "shield"])
+        );
+    });
 });

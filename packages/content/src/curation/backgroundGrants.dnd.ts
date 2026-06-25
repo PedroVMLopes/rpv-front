@@ -50,14 +50,10 @@ export const dndBackgrounds: BackgroundEntry[] = [
     },
 ];
 
-export function getBackground(slug: string): BackgroundEntry | undefined {
+function resolveBackground(slug: string): BackgroundEntry | undefined {
     return dndBackgrounds.find((entry) => entry.slug === slug);
 }
 
-export function listBackgrounds(): BackgroundEntry[] {
-    return dndBackgrounds;
-}
-
 export function getBackgroundGrants(slug: string): Grant[] {
-    return getBackground(slug)?.grants ?? [];
+    return resolveBackground(slug)?.grants ?? [];
 }

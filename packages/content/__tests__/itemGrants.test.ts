@@ -4,7 +4,7 @@ import {
     isItemStackable,
     listItems,
     type ItemSystem,
-} from "../src/curation/itemGrants.dnd";
+} from "../src";
 
 describe("itemGrants.dnd", () => {
     it("lists all curated dnd items", () => {

@@ -4,15 +4,14 @@ import {
     collectExclusiveGroupChoices,
     collectInventoryItemChoiceGrants,
     extractInventoryItemGrants,
-    getItem,
     listLanguages,
     resolveGrantPool,
     type CurrencyChoiceGrant,
     type ExclusiveGroupChoice,
     type InventoryItemChoiceGrant,
 } from "@rpv/content";
-import { catalog } from "@rpv/content";
 import type { SystemKey } from "@/presets";
+import { contentRepo } from "@/lib/content/contentRepository";
 import { buildSelectionsFromForm } from "./characterAdapter";
 import { collectGrantSources } from "./characterGrants";
 import type { PendingChoiceGrant } from "./grantChoices";
@@ -69,10 +68,11 @@ function mergeCurrencyTotals(
 
 export function inventoryChoiceToPending(
     choice: StartingEquipmentChoiceGrant,
-    system: SystemKey
+    system: SystemKey,
+    locale: Locale = "en"
 ): PendingChoiceGrant {
     const pool = resolveGrantPool(choice.grant, {
-        spells: catalog.spells,
+        spells: contentRepo(system).listSpells(locale),
         languages: listLanguages(),
         system,
     });
@@ -168,7 +168,7 @@ export function deriveStartingEquipmentFromForm(
         );
 
         for (const item of extractInventoryItemGrants(filtered)) {
-            const itemEntry = getItem(item.slug, system);
+            const itemEntry = contentRepo(system).getItem(item.slug, locale);
             fixedItems.push({
                 slug: item.slug,
                 name: itemEntry?.name ?? item.slug,

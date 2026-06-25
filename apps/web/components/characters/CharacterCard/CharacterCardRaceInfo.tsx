@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { getClass, getSubclass } from "@rpv/content";
+import { contentRepo } from "@/lib/content/contentRepository";
 import { useContentLocale } from "@/store/useContentLocale";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import {
@@ -15,11 +15,11 @@ export function ClassSubclassBlock({ stored }: { stored: StoredCharacter }) {
     const raceLine = getRaceLineFromSelections(stored.selections, contentLocale);
     const classSlug = stored.selections.characterClass;
     const classStr = classSlug
-        ? (getClass(classSlug, contentLocale)?.name ?? classSlug)
+        ? (contentRepo().getClass(classSlug, contentLocale)?.name ?? classSlug)
         : "";
     const subclassSlug = stored.selections.subclass;
     const subclassStr = subclassSlug
-        ? (getSubclass(subclassSlug, contentLocale)?.name ?? subclassSlug)
+        ? (contentRepo().getSubclass(subclassSlug, contentLocale)?.name ?? subclassSlug)
         : "";
     const title = [raceLine, classStr].filter(Boolean).join(" ");
 

@@ -714,7 +714,7 @@ function localizeClass(entry: ClassEntry, locale?: Locale): ClassEntry {
     return localizeCurationEntry(entry, "classes", locale);
 }
 
-export function getClass(slug: string, locale?: Locale): ClassEntry | undefined {
+function resolveClass(slug: string, locale?: Locale): ClassEntry | undefined {
     const entry = dndClasses.find((item) => item.slug === slug);
     if (!entry) {
         return undefined;
@@ -722,19 +722,15 @@ export function getClass(slug: string, locale?: Locale): ClassEntry | undefined 
     return localizeClass(entry, locale);
 }
 
-export function listClasses(locale?: Locale): ClassEntry[] {
-    return dndClasses.map((entry) => localizeClass(entry, locale));
-}
-
 export function getClassSubclassLevel(classSlug: string): number | undefined {
-    return getClass(classSlug)?.subclassLevel;
+    return resolveClass(classSlug)?.subclassLevel;
 }
 
 export function getClassGrantSourcesForLevel(
     slug: string,
     characterLevel: number
 ): ClassGrantSourceBlock[] {
-    const entry = getClass(slug);
+    const entry = resolveClass(slug);
     if (!entry) {
         return [];
     }
@@ -761,5 +757,5 @@ export function getClassGrants(slug: string, characterLevel = 1): Grant[] {
 }
 
 export function getClassHitDie(slug: string): number | undefined {
-    return getClass(slug)?.hitDie;
+    return resolveClass(slug)?.hitDie;
 }

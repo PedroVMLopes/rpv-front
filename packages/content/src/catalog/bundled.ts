@@ -38,6 +38,10 @@ export function getSubrace(
     return read.getSubrace(catalog, slug, locale, overlayFor(locale));
 }
 
+export function listSpells(locale: Locale = catalog.defaultLocale): SpellCatalogEntry[] {
+    return read.listSpells(catalog, locale, overlayFor(locale));
+}
+
 export function getSpell(
     slug: string,
     locale: Locale = catalog.defaultLocale

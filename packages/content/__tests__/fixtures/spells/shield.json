@@ -1,0 +1,22 @@
+{
+    "slug": "shield",
+    "name": "Shield",
+    "desc": "An invisible barrier of magical force appears and protects you. Until the start of your next turn, you have a +5 bonus to AC, including against the triggering attack, and you take no damage from magic missile.",
+    "higher_level": "",
+    "range": "Self",
+    "components": "V, S",
+    "material": "",
+    "can_be_cast_as_ritual": false,
+    "ritual": "no",
+    "duration": "1 round",
+    "concentration": "no",
+    "requires_concentration": false,
+    "casting_time": "1 reaction",
+    "level": "1st-level",
+    "level_int": 1,
+    "school": "Abjuration",
+    "dnd_class": "Sorcerer, Wizard",
+    "spell_lists": ["sorcerer", "wizard"],
+    "document__slug": "wotc-srd",
+    "document__title": "5e Core Rules"
+}

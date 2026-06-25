@@ -1,0 +1,22 @@
+{
+    "slug": "sleep",
+    "name": "Sleep",
+    "desc": "This spell sends creatures into a magical slumber. Roll 5d8; the total is how many hit points of creatures this spell can affect. Creatures within 20 feet of a point you choose within range are affected in ascending order of their current hit points.",
+    "higher_level": "When you cast this spell using a spell slot of 2nd level or higher, roll an additional 2d8 for each slot level above 1st.",
+    "range": "90 feet",
+    "components": "V, S, M",
+    "material": "a pinch of fine sand, rose petals, or a cricket",
+    "can_be_cast_as_ritual": false,
+    "ritual": "no",
+    "duration": "1 minute",
+    "concentration": "no",
+    "requires_concentration": false,
+    "casting_time": "1 action",
+    "level": "1st-level",
+    "level_int": 1,
+    "school": "Enchantment",
+    "dnd_class": "Bard, Sorcerer, Wizard",
+    "spell_lists": ["bard", "sorcerer", "wizard"],
+    "document__slug": "wotc-srd",
+    "document__title": "5e Core Rules"
+}

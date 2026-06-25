@@ -239,9 +239,17 @@ see [`itemGrants.dnd.ts`](packages/content/src/curation/itemGrants.dnd.ts).
 
 ## Known limitations
 
-- **Catalog spells:** pilot catalog has cantrips only; L1+ spell pick slots exist in data but may have empty option pools until more spells are added to the catalog.
+- **Catalog spells:** pilot catalog includes cantrips plus a wizard L1 subset (8 spells); higher-level pools remain sparse until the catalog expands.
 - **Multiclass, ASI/Feat:** out of scope.
 - **Legacy characters:** `normalizeStoredCharacter` coerces slugs, clears invalid subclass, backfills `schemaVersion` and `selections.inventory`, and strips legacy inventory keys from `systemData`.
+
+### ContentRepository
+
+Read-only content access is abstracted in `@rpv/content` (`ContentRepository`,
+`StaticContentRepository`, `getContentRepository`). The web app uses
+`apps/web/lib/content/contentRepository.ts`. A future `SupabaseContentRepository`
+will store the same `ClassEntry` / `ItemEntry` / catalog JSON shapes; grant
+resolution stays in `@rpv/content` grant helpers, not in the backend.
 
 ---
 
@@ -259,6 +267,6 @@ Web tests are the primary integration coverage for the character pipeline.
 
 ## Next steps
 
-- Expand spell catalog for wizard leveled spell picks.
+- Extend spell catalog beyond wizard L1 toward full SRD coverage.
 - Extend class progression beyond L5 toward L20.
 - Initiative tracker: editable current uses for derived resources (rage, ki).
