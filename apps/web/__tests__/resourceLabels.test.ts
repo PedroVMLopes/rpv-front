@@ -20,4 +20,14 @@ describe("formatResourceRefLabel", () => {
             "Custom Resource"
         );
     });
+
+    it("humanizes refs when translation throws for missing keys", () => {
+        const strictT = (key: string) => {
+            throw new Error(`MISSING_MESSAGE: Could not resolve '${key}'`);
+        };
+
+        expect(formatResourceRefLabel("spell-slots-1", strictT)).toBe(
+            "Spell Slots 1"
+        );
+    });
 });

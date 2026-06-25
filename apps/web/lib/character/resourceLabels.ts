@@ -12,10 +12,14 @@ export function formatResourceRefLabel(
     t: (key: string, values?: Record<string, unknown>) => string
 ): string {
     const key = `${REF_LABEL_PREFIX}${ref}`;
-    const translated = t(key);
 
-    if (translated !== key) {
-        return translated;
+    try {
+        const translated = t(key);
+        if (translated !== key) {
+            return translated;
+        }
+    } catch {
+        // next-intl throws MISSING_MESSAGE for unknown keys in strict mode.
     }
 
     return humanizeSlug(ref);

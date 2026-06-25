@@ -141,7 +141,14 @@ export function formatClassStepGrantLabel(
     }
 
     if (grant.kind === "resource") {
-        return translateResource(grant.ref);
+        if (grant.ref.startsWith("spell-slots-")) {
+            const level = grant.ref.slice("spell-slots-".length);
+            const label = `L${level} spell slots`;
+            return grant.amount !== undefined ? `${label}: ${grant.amount}` : label;
+        }
+
+        const label = translateResource(grant.ref);
+        return grant.amount !== undefined ? `${label}: ${grant.amount}` : label;
     }
 
     if (grant.kind === "proficiency" && ABILITY_STAT_REFS.has(grant.ref)) {
