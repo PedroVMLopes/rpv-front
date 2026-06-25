@@ -1,10 +1,14 @@
 import type { CharacterInventory, Locale, ModifierSource } from "@rpv/domain";
 import {
+    collectCurrencyChoiceGrants,
+    collectExclusiveGroupChoices,
     collectInventoryItemChoiceGrants,
     extractInventoryItemGrants,
     getItem,
     listLanguages,
     resolveGrantPool,
+    type CurrencyChoiceGrant,
+    type ExclusiveGroupChoice,
     type InventoryItemChoiceGrant,
 } from "@rpv/content";
 import { catalog } from "@rpv/content";
@@ -19,6 +23,7 @@ import {
     STARTING_EQUIPMENT_SOURCES,
 } from "./materializeCurrencyGrants";
 import { sanitizeSelections } from "./grantPickSanitize";
+import { filterStartingGrantsForEntry } from "./startingEquipmentGrants";
 
 export type StartingEquipmentFixedItem = {
     slug: string;
@@ -31,9 +36,17 @@ export type StartingEquipmentChoiceGrant = InventoryItemChoiceGrant & {
     source: ModifierSource;
 };
 
+export type StartingEquipmentCurrencyChoiceGrant = CurrencyChoiceGrant & {
+    source: ModifierSource;
+};
+
+export type StartingEquipmentExclusiveGroupChoice = ExclusiveGroupChoice;
+
 export type StartingEquipmentPreview = {
+    exclusiveGroups: StartingEquipmentExclusiveGroupChoice[];
     fixedItems: StartingEquipmentFixedItem[];
     choiceGrants: StartingEquipmentChoiceGrant[];
+    currencyChoiceGrants: StartingEquipmentCurrencyChoiceGrant[];
     bag: CharacterInventory["bag"];
     manualCurrency: Record<string, number>;
     grantedCurrency: Record<string, number>;
@@ -73,12 +86,46 @@ export function inventoryChoiceToPending(
     };
 }
 
+export function currencyChoiceToPending(
+    choice: StartingEquipmentCurrencyChoiceGrant
+): PendingChoiceGrant {
+    const options =
+        choice.grant.options
+            ?.map((option, index) => {
+                if (option.optionType !== "currency") {
+                    return null;
+                }
+
+                const label =
+                    option.label?.trim() ||
+                    `${option.amount} ${option.ref}`;
+
+                return { value: String(index), label };
+            })
+            .filter(
+                (option): option is { value: string; label: string } =>
+                    option !== null
+            ) ?? [];
+
+    return {
+        key: choice.key,
+        grant: choice.grant,
+        source: choice.source,
+        label: choice.label,
+        options,
+    };
+}
+
 export function deriveStartingEquipmentFromForm(
     formData: Record<string, unknown>,
     locale: Locale,
     system: SystemKey
 ): StartingEquipmentPreview {
     const characterLevel = readLevelFromForm(formData);
+    const grantPicks =
+        (formData.choices as { grantPicks?: Record<string, string> } | undefined)
+            ?.grantPicks ?? {};
+
     let selections = sanitizeSelections(
         buildSelectionsFromForm(formData),
         locale,
@@ -92,8 +139,10 @@ export function deriveStartingEquipmentFromForm(
         characterLevel
     );
 
+    const exclusiveGroups: StartingEquipmentExclusiveGroupChoice[] = [];
     const fixedItems: StartingEquipmentFixedItem[] = [];
     const choiceGrants: StartingEquipmentChoiceGrant[] = [];
+    const currencyChoiceGrants: StartingEquipmentCurrencyChoiceGrant[] = [];
 
     for (const entry of collectGrantSources(
         selections,
@@ -104,7 +153,21 @@ export function deriveStartingEquipmentFromForm(
             continue;
         }
 
-        for (const item of extractInventoryItemGrants(entry.grants)) {
+        exclusiveGroups.push(
+            ...collectExclusiveGroupChoices(
+                entry.grants,
+                entry.source,
+                entry.featureLevel
+            )
+        );
+
+        const filtered = filterStartingGrantsForEntry(
+            entry.grants,
+            grantPicks,
+            entry
+        );
+
+        for (const item of extractInventoryItemGrants(filtered)) {
             const itemEntry = getItem(item.slug, system);
             fixedItems.push({
                 slug: item.slug,
@@ -116,7 +179,18 @@ export function deriveStartingEquipmentFromForm(
 
         choiceGrants.push(
             ...collectInventoryItemChoiceGrants(
-                entry.grants,
+                filtered,
+                entry.source,
+                entry.featureLevel
+            ).map((choice) => ({
+                ...choice,
+                source: entry.source,
+            }))
+        );
+
+        currencyChoiceGrants.push(
+            ...collectCurrencyChoiceGrants(
+                filtered,
                 entry.source,
                 entry.featureLevel
             ).map((choice) => ({
@@ -130,8 +204,10 @@ export function deriveStartingEquipmentFromForm(
     const grantedCurrency = selections.grantedCurrency ?? {};
 
     return {
+        exclusiveGroups,
         fixedItems,
         choiceGrants,
+        currencyChoiceGrants,
         bag: selections.inventory?.bag ?? [],
         manualCurrency,
         grantedCurrency,
@@ -155,9 +231,50 @@ export function hasStartingEquipmentContent(
     );
 
     return (
+        preview.exclusiveGroups.length > 0 ||
         preview.fixedItems.length > 0 ||
         preview.choiceGrants.length > 0 ||
+        preview.currencyChoiceGrants.length > 0 ||
         preview.bag.length > 0 ||
         hasGrantedCurrency
     );
+}
+
+export function collectStartingEquipmentExclusiveGroups(
+    formData: Record<string, unknown>,
+    locale: Locale,
+    system: SystemKey
+): StartingEquipmentExclusiveGroupChoice[] {
+    const characterLevel = readLevelFromForm(formData);
+    const selections = buildSelectionsFromForm(formData);
+    const groups: StartingEquipmentExclusiveGroupChoice[] = [];
+
+    for (const entry of collectGrantSources(
+        selections,
+        locale,
+        characterLevel
+    )) {
+        if (!STARTING_EQUIPMENT_SOURCES.has(entry.source.type)) {
+            continue;
+        }
+
+        groups.push(
+            ...collectExclusiveGroupChoices(
+                entry.grants,
+                entry.source,
+                entry.featureLevel
+            )
+        );
+    }
+
+    return groups;
+}
+
+export function collectStartingEquipmentCurrencyChoices(
+    formData: Record<string, unknown>,
+    locale: Locale,
+    system: SystemKey
+): StartingEquipmentCurrencyChoiceGrant[] {
+    const preview = deriveStartingEquipmentFromForm(formData, locale, system);
+    return preview.currencyChoiceGrants;
 }

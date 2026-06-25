@@ -22,6 +22,10 @@ const baseFormData = {
     ],
 };
 
+const fighterEquipmentPicks = {
+    "class:fighter:base:exclusive:starting-wealth": "equipment",
+};
+
 describe("findMissingRequiredChoices", () => {
     it("returns dwarf tool proficiency slot when unpicked", () => {
         const missing = findMissingRequiredChoices(
@@ -87,6 +91,7 @@ describe("findMissingRequiredChoices", () => {
                 characterClass: "fighter",
                 choices: {
                     grantPicks: {
+                        ...fighterEquipmentPicks,
                         "class:fighter:base:skill_proficiency:3:0": "athletics",
                         "class:fighter:base:skill_proficiency:3:1": "intimidation",
                     },
@@ -113,6 +118,7 @@ describe("findMissingRequiredChoices", () => {
                 characterClass: "fighter",
                 choices: {
                     grantPicks: {
+                        ...fighterEquipmentPicks,
                         "race:high-elf:base:language:0:0": "draconic",
                         "race:high-elf:base:spell:0:0": "fire-bolt",
                         "class:fighter:base:skill_proficiency:3:0": "athletics",
@@ -169,12 +175,30 @@ describe("findMissingRequiredChoices", () => {
         expect(invalid).toContain("alreadyGranted:history");
     });
 
-    it("requires fighter sidearm inventory_item pick when class is fighter", () => {
+    it("does not require fighter sidearm before equipment branch is selected", () => {
         const missing = findMissingRequiredChoices(
             {
                 ...baseFormData,
                 characterClass: "fighter",
                 choices: {},
+            },
+            "en",
+            "dnd"
+        );
+
+        expect(missing.map((choice) => choice.key)).not.toContain(
+            "class:fighter:base:inventory_item:5:0"
+        );
+    });
+
+    it("requires fighter sidearm inventory_item pick when equipment branch is selected", () => {
+        const missing = findMissingRequiredChoices(
+            {
+                ...baseFormData,
+                characterClass: "fighter",
+                choices: {
+                    grantPicks: fighterEquipmentPicks,
+                },
             },
             "en",
             "dnd"
@@ -192,6 +216,7 @@ describe("findMissingRequiredChoices", () => {
                 characterClass: "fighter",
                 choices: {
                     grantPicks: {
+                        ...fighterEquipmentPicks,
                         "class:fighter:base:skill_proficiency:3:0": "athletics",
                         "class:fighter:base:skill_proficiency:3:1": "intimidation",
                         "class:fighter:base:inventory_item:5:0": "0",
@@ -214,6 +239,7 @@ describe("findMissingRequiredChoices", () => {
                 characterClass: "fighter",
                 choices: {
                     grantPicks: {
+                        ...fighterEquipmentPicks,
                         "class:fighter:base:inventory_item:5:0": "9",
                     },
                 },

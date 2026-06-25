@@ -46,7 +46,8 @@
     "subclassLocked": "Disponível no nível {level}"
   },
   "validation": {
-    "subclassRequired": "Subclasse é obrigatória neste nível."
+    "subclassRequired": "Subclasse é obrigatória neste nível.",
+    "exclusiveGroupRequired": "Escolha uma opção de riqueza inicial"
   },
   "abilities": {
     "strength": "Força",
@@ -143,6 +144,8 @@
     "selectOption": "Selecione o equipamento",
     "provenanceGrant": "Concedido ({provenance})",
     "choicesIncomplete": "Complete todas as escolhas de equipamento obrigatórias antes de salvar.",
+    "exclusiveTitle": "Riqueza inicial",
+    "exclusiveSelect": "Escolha uma opção",
     "sourceClass": "Da classe: {id}",
     "sourceBackground": "Do antecedente: {id}"
   },

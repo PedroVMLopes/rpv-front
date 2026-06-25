@@ -17,12 +17,19 @@ const baseAttributes = [
     { name: "charisma", value: 10 },
 ];
 
+const fighterStartingWealthPick = {
+    "class:fighter:base:exclusive:starting-wealth": "equipment",
+};
+
 const baseFormData = {
     name: "Test Hero",
     ac: 12,
     attributes: baseAttributes,
     characterClass: "fighter",
     level: 1,
+    choices: {
+        grantPicks: fighterStartingWealthPick,
+    },
 };
 
 describe("buildStoredCharacter", () => {
@@ -242,12 +249,58 @@ describe("buildStoredCharacter", () => {
         expect(rebuilt.selections.background).toBeUndefined();
     });
 
+    it("materializes fighter starting gold when gold branch is selected", () => {
+        const character = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                choices: {
+                    grantPicks: {
+                        "class:fighter:base:exclusive:starting-wealth": "gold",
+                    },
+                },
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        expect(character.selections.inventory?.bag).toEqual([]);
+        expect(character.selections.grantedCurrency).toEqual({ gold: 50 });
+    });
+
+    it("does not materialize fighter equipment when gold branch is selected", () => {
+        const character = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                background: "sage",
+                choices: {
+                    grantPicks: {
+                        "class:fighter:base:exclusive:starting-wealth": "gold",
+                    },
+                },
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        expect(
+            character.selections.inventory?.bag.some(
+                (stack) => stack.slug === "longsword"
+            )
+        ).toBe(false);
+        expect(character.selections.grantedCurrency).toEqual({
+            gold: 50 + 15,
+        });
+    });
+
     it("materializes fighter sidearm from grant picks on build", () => {
         const character = buildNewStoredCharacter(
             {
                 ...baseFormData,
                 choices: {
                     grantPicks: {
+                        ...fighterStartingWealthPick,
                         "class:fighter:base:inventory_item:5:0": "0",
                     },
                 },

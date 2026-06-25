@@ -9,6 +9,10 @@ const baseFormData = {
     level: 1,
 };
 
+const fighterEquipmentPicks = {
+    "class:fighter:base:exclusive:starting-wealth": "equipment",
+};
+
 describe("deriveStartingEquipmentFromForm", () => {
     it("lists sage fixed scroll and granted gold", () => {
         const preview = deriveStartingEquipmentFromForm(
@@ -44,6 +48,7 @@ describe("deriveStartingEquipmentFromForm", () => {
                 characterClass: "fighter",
                 choices: {
                     grantPicks: {
+                        ...fighterEquipmentPicks,
                         "class:fighter:base:inventory_item:5:0": "0",
                     },
                 },
@@ -52,6 +57,7 @@ describe("deriveStartingEquipmentFromForm", () => {
             "dnd"
         );
 
+        expect(preview.exclusiveGroups).toHaveLength(1);
         expect(preview.fixedItems).toEqual([
             expect.objectContaining({
                 slug: "longsword",
@@ -98,6 +104,21 @@ describe("deriveStartingEquipmentFromForm", () => {
             "en",
             "dnd"
         )).toEqual({ gold: 23, silver: 0, bronze: 0 });
+    });
+
+    it("shows exclusive group for fighter even before branch is selected", () => {
+        const preview = deriveStartingEquipmentFromForm(
+            {
+                ...baseFormData,
+                characterClass: "fighter",
+            },
+            "en",
+            "dnd"
+        );
+
+        expect(preview.exclusiveGroups).toHaveLength(1);
+        expect(preview.fixedItems).toEqual([]);
+        expect(hasStartingEquipmentContent(preview)).toBe(true);
     });
 
     it("returns empty preview when no starting equipment sources are selected", () => {

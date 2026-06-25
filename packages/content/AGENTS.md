@@ -241,12 +241,61 @@ in the web pipeline ([`materializeInventoryGrants.ts`](../../apps/web/lib/charac
 
 #### `currency` — starting wealth
 
+Fixed:
+
 ```ts
 { grantType: "currency", choose: 0, ref: "gold", amount: 15, description: "Belt pouch" }
 ```
 
-`ref` is a generic currency unit (`gold`, `silver`, `copper`). No D&D logic in
+With player choice (`choose > 0`):
+
+```ts
+{
+  grantType: "currency",
+  choose: 1,
+  options: [
+    { optionType: "currency", ref: "gold", amount: 30, label: "30 gp" },
+    { optionType: "currency", ref: "gold", amount: 50, label: "50 gp" },
+  ],
+}
+```
+
+`ref` is a generic currency unit (`gold`, `silver`, `bronze`). No D&D logic in
 `@rpv/domain`.
+
+#### Exclusive starting wealth groups (`exclusiveGroup` / `exclusiveBranch`)
+
+SRD classes often grant **equipment OR gold**, not both. Tag grants with the same
+`exclusiveGroup` and distinct `exclusiveBranch` values; only the selected branch
+materializes.
+
+```ts
+// Branch "equipment"
+{
+  grantType: "inventory_item",
+  choose: 0,
+  ref: "longsword",
+  exclusiveGroup: "starting-wealth",
+  exclusiveBranch: "equipment",
+}
+// Branch "gold"
+{
+  grantType: "currency",
+  choose: 0,
+  ref: "gold",
+  amount: 50,
+  exclusiveGroup: "starting-wealth",
+  exclusiveBranch: "gold",
+}
+```
+
+**Pick key:** `{sourceType}:{sourceId}:{levelSegment}:exclusive:{exclusiveGroup}`  
+**Pick value:** branch id (`"equipment"`, `"gold"`, …).
+
+Helpers: [`exclusiveGroups.ts`](src/grant/exclusiveGroups.ts) —
+`collectExclusiveGroupChoices`, `filterGrantsByExclusiveGroups`.
+
+Pilot: Fighter in [`classGrants.dnd.ts`](src/curation/classGrants.dnd.ts).
 
 #### `grantPicks` convention for equipment
 
@@ -266,7 +315,8 @@ Helpers in [`src/grant/inventoryGrants.ts`](src/grant/inventoryGrants.ts):
 `isValidInventoryItemPick`, `flattenGrantOptionToEntries`.
 
 Currency helpers in [`src/grant/currencyGrants.ts`](src/grant/currencyGrants.ts):
-`extractCurrencyGrants`, `aggregateCurrencyByRef`, `currencyGrantProvenance`.
+`extractCurrencyGrants`, `resolveCurrencyGrants`, `collectCurrencyChoiceGrants`,
+`aggregateCurrencyByRef`, `currencyGrantProvenance`.
 
 `resolveGrantPool` returns `inventoryOptions` (index + label) for
 `inventory_item` grants with enumerated `options`. `selectionFilter.itemCategory`
@@ -303,7 +353,7 @@ and [`deriveStartingEquipmentFromForm.ts`](../../apps/web/lib/character/deriveSt
 
 - **SRD item/class/background catalogs** — real content when Supabase is live.
 - **`selectionFilter` item pools** — `itemCategory` / `itemTags` (v2).
-- **Starting gold roll alternative** — mutually exclusive with default equipment.
+- **Dice-roll UI for starting gold** — optional button; fixed/choice amounts work today.
 - **Weight, attunement, consumable charges**, community publish API, moderation.
 - **HTTP API** — [`docs/API_INVENTORY.md`](../../docs/API_INVENTORY.md).
 

@@ -194,6 +194,12 @@ describe("useCharacterStore inventory", () => {
                     ...baseFormData,
                     characterClass: "fighter",
                     background: "sage",
+                    choices: {
+                        grantPicks: {
+                            "class:fighter:base:exclusive:starting-wealth":
+                                "equipment",
+                        },
+                    },
                 },
                 "player",
                 "dnd"

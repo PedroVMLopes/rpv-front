@@ -4,6 +4,7 @@ import type { SystemKey } from "@/presets";
 import { addToBag, sanitizeInventory } from "./inventory";
 import { collectGrantSources } from "./characterGrants";
 import { materializeCurrencyGrants, STARTING_EQUIPMENT_SOURCES } from "./materializeCurrencyGrants";
+import { filterStartingGrantsForEntry } from "./startingEquipmentGrants";
 import type { CharacterSelections } from "./storedCharacter";
 
 export function materializeInventoryGrants(
@@ -25,7 +26,11 @@ export function materializeInventoryGrants(
         }
 
         const resolved = resolveInventoryItemGrants(
-            entry.grants,
+            filterStartingGrantsForEntry(
+                entry.grants,
+                grantPicks,
+                entry
+            ),
             grantPicks,
             {
                 sourceType: entry.source.type,
@@ -71,7 +76,11 @@ export function resolveInventoryGrantProvenance(
         }
 
         for (const item of resolveInventoryItemGrants(
-            entry.grants,
+            filterStartingGrantsForEntry(
+                entry.grants,
+                grantPicks,
+                entry
+            ),
             grantPicks,
             {
                 sourceType: entry.source.type,

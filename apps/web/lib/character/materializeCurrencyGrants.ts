@@ -1,11 +1,12 @@
 import type { Locale } from "@rpv/domain";
 import {
     aggregateCurrencyByRef,
-    extractCurrencyGrants,
+    resolveCurrencyGrants,
     type CurrencyGrantEntry,
 } from "@rpv/content";
 import type { SystemKey } from "@/presets";
 import { collectGrantSources } from "./characterGrants";
+import { filterStartingGrantsForEntry } from "./startingEquipmentGrants";
 import type { CharacterSelections, StoredCharacter } from "./storedCharacter";
 
 export const STARTING_EQUIPMENT_SOURCES = new Set(["background", "class"]);
@@ -27,6 +28,7 @@ export function materializeCurrencyGrants(
     characterLevel: number
 ): Record<string, number> {
     const entries: CurrencyGrantEntry[] = [];
+    const grantPicks = selections.choices.grantPicks ?? {};
 
     for (const entry of collectGrantSources(
         selections,
@@ -37,7 +39,19 @@ export function materializeCurrencyGrants(
             continue;
         }
 
-        entries.push(...extractCurrencyGrants(entry.grants));
+        const filtered = filterStartingGrantsForEntry(
+            entry.grants,
+            grantPicks,
+            entry
+        );
+
+        entries.push(
+            ...resolveCurrencyGrants(filtered, grantPicks, {
+                sourceType: entry.source.type,
+                sourceId: entry.source.id,
+                featureLevel: entry.featureLevel,
+            })
+        );
     }
 
     return aggregateCurrencyByRef(entries);

@@ -2,6 +2,7 @@ import {
     aggregateCurrencyByRef,
     currencyGrantProvenance,
     extractCurrencyGrants,
+    resolveCurrencyGrants,
 } from "../src/grant/currencyGrants";
 import { fixedGrantsToCharacterGrants } from "../src/grant/grants";
 import type { Grant } from "../src/grant/grant.types";
@@ -95,6 +96,55 @@ describe("fixedGrantsToCharacterGrants", () => {
 
         expect(
             fixedGrantsToCharacterGrants(grants, { type: "background", id: "acolyte" })
+        ).toEqual([]);
+    });
+});
+
+describe("resolveCurrencyGrants", () => {
+    it("resolves fixed and choice currency grants", () => {
+        const grants: Grant[] = [
+            {
+                grantType: "currency",
+                choose: 0,
+                ref: "gold",
+                amount: 15,
+            },
+            {
+                grantType: "currency",
+                choose: 1,
+                options: [
+                    { optionType: "currency", ref: "gold", amount: 30 },
+                    { optionType: "currency", ref: "gold", amount: 50 },
+                    { optionType: "currency", ref: "gold", amount: 70 },
+                ],
+            },
+        ];
+
+        expect(
+            resolveCurrencyGrants(grants, { "class:fighter:base:currency:1:0": "1" }, {
+                sourceType: "class",
+                sourceId: "fighter",
+            })
+        ).toEqual([
+            { ref: "gold", amount: 15, grantIndex: 0 },
+            { ref: "gold", amount: 50, grantIndex: 1 },
+        ]);
+    });
+
+    it("ignores invalid currency picks", () => {
+        const grants: Grant[] = [
+            {
+                grantType: "currency",
+                choose: 1,
+                options: [{ optionType: "currency", ref: "gold", amount: 30 }],
+            },
+        ];
+
+        expect(
+            resolveCurrencyGrants(grants, { "class:fighter:base:currency:0:0": "9" }, {
+                sourceType: "class",
+                sourceId: "fighter",
+            })
         ).toEqual([]);
     });
 });

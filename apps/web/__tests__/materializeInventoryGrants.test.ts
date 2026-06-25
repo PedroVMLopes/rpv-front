@@ -5,6 +5,10 @@ import {
     resolveInventoryGrantProvenance,
 } from "../lib/character/materializeInventoryGrants";
 
+const fighterEquipmentPicks = {
+    "class:fighter:base:exclusive:starting-wealth": "equipment",
+};
+
 describe("materializeInventoryGrants", () => {
     it("materializes sage background loot with provenance", () => {
         const bag = materializeInventoryGrants(
@@ -31,6 +35,9 @@ describe("materializeInventoryGrants", () => {
             {
                 ...emptyCharacterSelections(),
                 characterClass: "fighter",
+                choices: {
+                    grantPicks: fighterEquipmentPicks,
+                },
             },
             "en",
             "dnd",
@@ -53,6 +60,7 @@ describe("materializeInventoryGrants", () => {
                 characterClass: "fighter",
                 choices: {
                     grantPicks: {
+                        ...fighterEquipmentPicks,
                         "class:fighter:base:inventory_item:5:0": "0",
                     },
                 },
@@ -116,6 +124,9 @@ describe("resolveInventoryGrantProvenance", () => {
                 {
                     ...emptyCharacterSelections(),
                     characterClass: "fighter",
+                    choices: {
+                        grantPicks: fighterEquipmentPicks,
+                    },
                 },
                 "longsword",
                 "en",
@@ -166,6 +177,9 @@ describe("mergeStartingGrants", () => {
                 ...emptyCharacterSelections(),
                 background: "sage",
                 characterClass: "fighter",
+                choices: {
+                    grantPicks: fighterEquipmentPicks,
+                },
                 inventory: {
                     bag: [],
                     equipped: { "main-hand": "scroll-of-fire-bolt" },

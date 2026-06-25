@@ -43,7 +43,17 @@ export type InventoryGrantOption =
           label?: string;
       };
 
-export type GrantOption = CatalogGrantOption | InventoryGrantOption;
+export type CurrencyGrantOption = {
+    optionType: "currency";
+    ref: string;
+    amount: number;
+    label?: string;
+};
+
+export type GrantOption =
+    | CatalogGrantOption
+    | InventoryGrantOption
+    | CurrencyGrantOption;
 
 /**
  * A single thing a trait gives a character.
@@ -61,4 +71,8 @@ export interface Grant {
     ref?: string;
     options?: GrantOption[];
     selectionFilter?: SelectionFilter;
+    /** When set, only grants matching the selected exclusive branch materialize. */
+    exclusiveGroup?: string;
+    /** Branch id within exclusiveGroup (e.g. "equipment" | "gold"). */
+    exclusiveBranch?: string;
 }

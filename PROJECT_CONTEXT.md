@@ -150,38 +150,43 @@ No engine or UI code changes required if existing grant types suffice.
 bundles) and `currency` grants. Resolution helpers live in `@rpv/content`
 (`resolveInventoryItemGrants`, `extractCurrencyGrants`, …).
 
-**Web today:** only fixed `inventory_item` from **background** (`choose: 0`) is
-materialized into `selections.inventory.bag` on every
-`buildStoredCharacter` / `rebuildStoredCharacter` pass.
+**Web today:** class + background starting loot materializes on every
+`buildStoredCharacter` / `rebuildStoredCharacter` pass via `mergeStartingGrants`.
+Grants in an `exclusiveGroup` materialize only when the player picks a branch
+(equipment vs gold). Background grants without `exclusiveGroup` always apply.
 
 | Field | Value |
 |-------|-------|
 | `grantType` | `"inventory_item"` or `"currency"` |
-| `choose` | `0` fixed; `> 0` player picks (Etapa 2+ web) |
+| `choose` | `0` fixed; `> 0` player picks |
 | `ref` | Item slug (`inventory_item`) or currency unit (`currency`) |
 | `amount` | Quantity (default `1` for items) |
+| `exclusiveGroup` / `exclusiveBranch` | Mutually exclusive starting wealth branches |
+
+**Exclusive pick key:** `{sourceType}:{sourceId}:{levelSegment}:exclusive:{exclusiveGroup}` → branch id.
 
 **Provenance:** granted bag stacks carry `ItemStack.provenance` =
 `grant:{sourceType}:{sourceId}:{grantIndex}` (e.g. `grant:background:sage:2`).
 
 **Etapa 2 (web):** `mergeStartingGrants` materializa class + background
-(`resolveInventoryItemGrants` + `grantPicks`) e `currency` em
-`selections.grantedCurrency`. Manual em `systemData.gold/silver/bronze`.
+(`resolveInventoryItemGrants` + `grantPicks`) e `currency` (`resolveCurrencyGrants`)
+em `selections.grantedCurrency`. Manual em `systemData.gold/silver/bronze`.
 Helpers: [`materializeInventoryGrants.ts`](apps/web/lib/character/materializeInventoryGrants.ts),
-[`materializeCurrencyGrants.ts`](apps/web/lib/character/materializeCurrencyGrants.ts).
+[`materializeCurrencyGrants.ts`](apps/web/lib/character/materializeCurrencyGrants.ts),
+[`exclusiveGroups.ts`](packages/content/src/grant/exclusiveGroups.ts).
 
-**Etapa 3 (web):** `StartingEquipmentField` na criação/edição — pills de itens
-fixos, dropdowns de `inventory_item` com `choose > 0`, preview da bag
-materializada e breakdown de moeda (`getTotalCurrencyFromForm`). Validação
-obrigatória de escolhas de equipamento em `choiceValidation`. Helpers:
-[`deriveStartingEquipmentFromForm.ts`](apps/web/lib/character/deriveStartingEquipmentFromForm.ts),
-[`StartingEquipmentField.tsx`](apps/web/components/characters/StartingEquipmentField.tsx).
+**Etapa 3 (web):** `StartingEquipmentField` — seletor de branch exclusivo,
+dropdowns de `inventory_item` / `currency` com `choose > 0`, preview da bag
+materializada e breakdown de moeda. Validação em `choiceValidation` +
+`startingEquipmentValidation`.
 
 **Limitation:** if a granted item is equipped and the background changes, the
 equipped slot is **not** auto-cleared (equipped has no provenance).
 
-Pilot: Sage background grants `scroll-of-fire-bolt` — see
-[`backgroundGrants.dnd.ts`](packages/content/src/curation/backgroundGrants.dnd.ts).
+Pilot: Sage background grants `scroll-of-fire-bolt` + 15 gp; Fighter grants
+equipment **or** 50 gp (avg 5d4×10) — see
+[`backgroundGrants.dnd.ts`](packages/content/src/curation/backgroundGrants.dnd.ts),
+[`classGrants.dnd.ts`](packages/content/src/curation/classGrants.dnd.ts).
 
 ---
 
@@ -205,9 +210,9 @@ see [`itemGrants.dnd.ts`](packages/content/src/curation/itemGrants.dnd.ts).
 
 | Etapa | Status | Scope |
 |-------|--------|-------|
-| 1 — Data contract | Done | `@rpv/content`: `inventory_item` choices/bundles, `currency`, resolution helpers |
-| 2 — Web pipeline | Done | `mergeStartingGrants`, class/background materialization, `grantedCurrency` |
-| 3 — Creation UI | Done | `StartingEquipmentField`, required `inventory_item` validation, currency preview |
+| 1 — Data contract | Done | `@rpv/content`: `inventory_item` choices/bundles, `currency`, `exclusiveGroup`, resolution helpers |
+| 2 — Web pipeline | Done | `mergeStartingGrants`, exclusive branch filter, `grantedCurrency` via `resolveCurrencyGrants` |
+| 3 — Creation UI | Done | `StartingEquipmentField`, exclusive branch selector, equipment/currency validation |
 | 4 — Content | With Supabase | SRD classes, backgrounds, item catalog |
 
 ---

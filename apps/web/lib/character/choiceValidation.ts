@@ -1,7 +1,12 @@
 import type { Locale } from "@rpv/domain";
 import type { Grant } from "@rpv/content";
 import type { SystemKey } from "@/presets";
-import { getClassSubclassLevel, getSubclass, isValidInventoryItemPick } from "@rpv/content";
+import {
+    getClassSubclassLevel,
+    getSubclass,
+    isValidCurrencyPick,
+    isValidInventoryItemPick,
+} from "@rpv/content";
 import type { ZodObject, ZodRawShape } from "zod";
 import { buildSelectionsFromForm } from "./characterAdapter";
 import { getFixedRefsForGrantType } from "./characterGrants";
@@ -15,12 +20,18 @@ import {
 } from "./grantChoiceOptions";
 import type { CharacterChoices } from "./storedCharacter";
 import { readLevelFromForm } from "./level";
+import {
+    currencyChoiceToPending,
+    deriveStartingEquipmentFromForm,
+    inventoryChoiceToPending,
+} from "./deriveStartingEquipmentFromForm";
+import { findMissingExclusiveGroupPicks } from "./startingEquipmentValidation";
 import enMessages from "@/messages/en.json";
 import ptBRMessages from "@/messages/pt-BR.json";
 
 const validationMessages: Record<
     Locale,
-    { subclassRequired: string }
+    { subclassRequired: string; exclusiveGroupRequired: string }
 > = {
     en: enMessages.validation,
     "pt-BR": ptBRMessages.validation,
@@ -110,13 +121,34 @@ export function findMissingRequiredChoices(
         locale,
         characterLevel,
         system
+    ).filter(
+        (choice) =>
+            choice.grant.grantType !== "inventory_item" &&
+            choice.grant.grantType !== "currency"
     );
     const grantPicks = readGrantPicks(formData);
-
-    return pending.filter((choice) => {
+    const missing = pending.filter((choice) => {
         const picked = grantPicks[choice.key];
         return !picked || picked.trim() === "";
     });
+
+    const preview = deriveStartingEquipmentFromForm(formData, locale, system);
+
+    for (const choice of preview.choiceGrants) {
+        const picked = grantPicks[choice.key];
+        if (!picked || picked.trim() === "") {
+            missing.push(inventoryChoiceToPending(choice, system));
+        }
+    }
+
+    for (const choice of preview.currencyChoiceGrants) {
+        const picked = grantPicks[choice.key];
+        if (!picked || picked.trim() === "") {
+            missing.push(currencyChoiceToPending(choice));
+        }
+    }
+
+    return missing;
 }
 
 export function findInvalidGrantPicks(
@@ -163,6 +195,30 @@ export function findInvalidGrantPicks(
         }
     }
 
+    const preview = deriveStartingEquipmentFromForm(formData, locale, system);
+
+    for (const choice of preview.choiceGrants) {
+        const pick = grantPicks[choice.key]?.trim();
+        if (!pick) {
+            continue;
+        }
+
+        if (!isValidInventoryItemPick(choice.grant, pick, system)) {
+            errors.push(`invalidInventoryPick:${choice.key}`);
+        }
+    }
+
+    for (const choice of preview.currencyChoiceGrants) {
+        const pick = grantPicks[choice.key]?.trim();
+        if (!pick) {
+            continue;
+        }
+
+        if (!isValidCurrencyPick(choice.grant, pick)) {
+            errors.push(`invalidCurrencyPick:${choice.key}`);
+        }
+    }
+
     return errors;
 }
 
@@ -188,6 +244,18 @@ export function applyChoiceValidation<T extends ZodRawShape>(
                 code: "custom",
                 path: ["choices"],
                 message: errorKey,
+            });
+        }
+
+        for (const missingGroup of findMissingExclusiveGroupPicks(
+            formData,
+            locale,
+            system
+        )) {
+            ctx.addIssue({
+                code: "custom",
+                path: ["choices"],
+                message: `${validationMessages[locale].exclusiveGroupRequired}: ${missingGroup.label}`,
             });
         }
 

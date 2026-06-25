@@ -26,19 +26,25 @@ function StartingEquipmentHarness({
 }
 
 describe("StartingEquipmentField", () => {
-    it("shows fighter auto-granted longsword and sidearm choice", () => {
+    it("shows fighter exclusive wealth choice and sidearm when equipment branch selected", () => {
         render(
             <StartingEquipmentHarness
                 defaultValues={{
                     characterClass: "fighter",
-                    choices: {},
+                    choices: {
+                        grantPicks: {
+                            "class:fighter:base:exclusive:starting-wealth":
+                                "equipment",
+                        },
+                    },
                 }}
             />
         );
 
         expect(screen.getByText("Starting Equipment")).toBeInTheDocument();
+        expect(screen.getByText(/Starting wealth/)).toBeInTheDocument();
         expect(screen.getAllByText(/Longsword/).length).toBeGreaterThan(0);
-        expect(screen.getByText(/From class: fighter/)).toBeInTheDocument();
+        expect(screen.getAllByText(/From class: fighter/).length).toBeGreaterThan(0);
         expect(
             screen.getByText(/Starting sidearm \(pilot fixture\)/)
         ).toBeInTheDocument();
@@ -51,13 +57,19 @@ describe("StartingEquipmentField", () => {
             <StartingEquipmentHarness
                 defaultValues={{
                     characterClass: "fighter",
-                    choices: {},
+                    choices: {
+                        grantPicks: {
+                            "class:fighter:base:exclusive:starting-wealth":
+                                "equipment",
+                        },
+                    },
                 }}
             />
         );
 
-        const sidearmSelect = screen.getByRole("combobox");
-        await user.selectOptions(sidearmSelect, "0");
+        const sidearmSelect = screen.getAllByRole("combobox").at(-1);
+        expect(sidearmSelect).toBeDefined();
+        await user.selectOptions(sidearmSelect!, "0");
 
         expect(screen.getAllByText(/Pilot Test Dagger/).length).toBeGreaterThan(0);
         expect(screen.getByTestId("choices-output")).toHaveTextContent(

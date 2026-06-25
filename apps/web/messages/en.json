@@ -46,7 +46,8 @@
     "subclassLocked": "Available at level {level}"
   },
   "validation": {
-    "subclassRequired": "Subclass is required at this level."
+    "subclassRequired": "Subclass is required at this level.",
+    "exclusiveGroupRequired": "Choose a starting wealth option"
   },
   "abilities": {
     "strength": "Strength",
@@ -143,6 +144,8 @@
     "selectOption": "Select equipment",
     "provenanceGrant": "Granted ({provenance})",
     "choicesIncomplete": "Complete all required equipment choices before saving.",
+    "exclusiveTitle": "Starting wealth",
+    "exclusiveSelect": "Choose an option",
     "sourceClass": "From class: {id}",
     "sourceBackground": "From background: {id}"
   },

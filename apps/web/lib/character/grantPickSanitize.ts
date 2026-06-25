@@ -4,6 +4,7 @@ import { getClassSubclassLevel, getSubclass } from "@rpv/content";
 import type { SystemKey } from "@/presets";
 import { collectPendingChoiceGrants } from "./grantChoices";
 import { sanitizeInventory } from "./inventory";
+import { collectValidStartingEquipmentPickKeys } from "./startingEquipmentValidation";
 import type { CharacterSelections } from "./storedCharacter";
 
 function isSubclassValidForClass(
@@ -95,13 +96,36 @@ export function sanitizeGrantPicks(
         locale,
         characterLevel,
         system
+    ).filter(
+        (choice) =>
+            choice.grant.grantType !== "inventory_item" &&
+            choice.grant.grantType !== "currency"
     );
     const validKeys = new Set(pending.map((choice) => choice.key));
+    const startingKeys = collectValidStartingEquipmentPickKeys(
+        selections,
+        locale,
+        system,
+        characterLevel
+    );
+
+    for (const key of startingKeys) {
+        validKeys.add(key);
+    }
+
     const grantPicks = selections.choices.grantPicks ?? {};
 
     const sanitizedPicks = Object.fromEntries(
         Object.entries(grantPicks).filter(([key]) => validKeys.has(key))
     );
+
+    let next: CharacterSelections = {
+        ...selections,
+        choices: {
+            ...selections.choices,
+            grantPicks: sanitizedPicks,
+        },
+    };
 
     if (
         Object.keys(sanitizedPicks).length === Object.keys(grantPicks).length
@@ -109,11 +133,5 @@ export function sanitizeGrantPicks(
         return selections;
     }
 
-    return {
-        ...selections,
-        choices: {
-            ...selections.choices,
-            grantPicks: sanitizedPicks,
-        },
-    };
+    return next;
 }
