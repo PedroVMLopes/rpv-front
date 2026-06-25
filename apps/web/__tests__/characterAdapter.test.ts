@@ -170,6 +170,7 @@ describe("characterAdapter system-agnostic mapping", () => {
             background: undefined,
             inventory: emptyInventory(),
             choices: {},
+            grantedCurrency: {},
         });
     });
 
@@ -194,6 +195,7 @@ describe("characterAdapter system-agnostic mapping", () => {
             background: undefined,
             inventory: emptyInventory(),
             choices: {},
+            grantedCurrency: {},
         });
     });
 
@@ -286,9 +288,20 @@ describe("characterAdapter system-agnostic mapping", () => {
         expect(normalized.subclass).toBeUndefined();
     });
 
-    it("preserves grantedCurrency on normalize", () => {
-        const normalized = normalizeCharacterSelections(
-            {
+    it("recalculates grantedCurrency on normalize from selections", () => {
+        const normalized = normalizeStoredCharacter({
+            id: "sage-gold",
+            schemaVersion: 1,
+            type: "player",
+            system: "dnd",
+            language: "en",
+            name: "Hero",
+            baseStats: {},
+            modifiers: [],
+            grants: [],
+            resources: { hp: 5 },
+            systemData: { level: 1 },
+            selections: {
                 race: undefined,
                 subrace: undefined,
                 characterClass: "fighter",
@@ -296,13 +309,16 @@ describe("characterAdapter system-agnostic mapping", () => {
                 background: "sage",
                 inventory: emptyInventory(),
                 choices: {},
-                grantedCurrency: { gold: 15 },
+                grantedCurrency: { gold: 999 },
             },
-            {},
-            "dnd"
-        );
+        });
 
-        expect(normalized.grantedCurrency).toEqual({ gold: 15 });
+        expect(normalized.selections.grantedCurrency).toEqual({ gold: 15 });
+        expect(
+            normalized.selections.inventory?.bag.some(
+                (stack) => stack.slug === "scroll-of-fire-bolt"
+            )
+        ).toBe(true);
     });
 
     it("backfills schemaVersion and inventory on normalize", () => {

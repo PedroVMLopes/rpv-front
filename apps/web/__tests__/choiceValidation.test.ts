@@ -5,6 +5,9 @@ import {
     findMissingRequiredChoices,
     findMissingSubclass,
 } from "../lib/character/choiceValidation";
+import { collectCurrencyChoiceGrants, isValidCurrencyPick } from "@rpv/content";
+import { resolveGrantPickValidationMessage } from "../lib/character/choiceValidationMessages";
+import { currencyChoiceToPending } from "../lib/character/deriveStartingEquipmentFromForm";
 import { dndCharacterSchema } from "../presets/dnd/characterSchema";
 
 const baseFormData = {
@@ -77,7 +80,9 @@ describe("findMissingRequiredChoices", () => {
                 ...baseFormData,
                 race: "elf",
                 characterClass: "fighter",
-                choices: {},
+                choices: {
+                    grantPicks: fighterEquipmentPicks,
+                },
             },
             "en",
             "dnd"
@@ -180,6 +185,7 @@ describe("findMissingRequiredChoices", () => {
                 characterClass: "fighter",
                 choices: {
                     grantPicks: {
+                        ...fighterEquipmentPicks,
                         "class:fighter:base:skill_proficiency:3:0": "athletics",
                         "class:fighter:base:skill_proficiency:3:1": "athletics",
                     },
@@ -189,7 +195,12 @@ describe("findMissingRequiredChoices", () => {
             "dnd"
         );
 
-        expect(invalid).toContain("duplicateGrantPick:athletics");
+        expect(invalid).toEqual([
+            expect.objectContaining({
+                code: "duplicateGrantPick",
+                ref: "athletics",
+            }),
+        ]);
     });
 
     it("flags skill picks that repeat a fixed background proficiency", () => {
@@ -201,6 +212,7 @@ describe("findMissingRequiredChoices", () => {
                 characterClass: "fighter",
                 choices: {
                     grantPicks: {
+                        ...fighterEquipmentPicks,
                         "class:fighter:base:skill_proficiency:3:0": "history",
                         "class:fighter:base:skill_proficiency:3:1": "athletics",
                     },
@@ -210,7 +222,12 @@ describe("findMissingRequiredChoices", () => {
             "dnd"
         );
 
-        expect(invalid).toContain("alreadyGranted:history");
+        expect(invalid).toEqual([
+            expect.objectContaining({
+                code: "alreadyGranted",
+                ref: "history",
+            }),
+        ]);
     });
 
     it("does not require fighter sidearm before equipment branch is selected", () => {
@@ -290,9 +307,68 @@ describe("findMissingRequiredChoices", () => {
             "dnd"
         );
 
-        expect(invalid).toContain(
-            "invalidInventoryPick:class:fighter:base:inventory_item:8:0"
+        expect(invalid).toEqual([
+            expect.objectContaining({
+                code: "invalidInventoryPick",
+                key: "class:fighter:base:inventory_item:8:0",
+            }),
+        ]);
+    });
+
+    it("requires fighter exclusive wealth pick when missing", () => {
+        const missing = findMissingRequiredChoices(
+            {
+                ...baseFormData,
+                characterClass: "fighter",
+                choices: {},
+            },
+            "en",
+            "dnd"
         );
+
+        expect(missing.map((choice) => choice.key)).toEqual(
+            expect.arrayContaining([
+                "class:fighter:base:exclusive:starting-wealth",
+            ])
+        );
+    });
+
+    it("handles currency grants with choose greater than zero", () => {
+        const [choiceGrant] = collectCurrencyChoiceGrants(
+            [
+                {
+                    grantType: "currency",
+                    choose: 1,
+                    description: "Starting purse",
+                    options: [
+                        { optionType: "currency", ref: "gold", amount: 10 },
+                        { optionType: "currency", ref: "silver", amount: 50 },
+                    ],
+                },
+            ],
+            { type: "class", id: "fixture" }
+        );
+
+        expect(isValidCurrencyPick(choiceGrant.grant, "0")).toBe(true);
+        expect(isValidCurrencyPick(choiceGrant.grant, "9")).toBe(false);
+
+        const pending = currencyChoiceToPending({
+            ...choiceGrant,
+            source: { type: "class", id: "fixture" },
+        });
+
+        expect(pending.key).toBe("class:fixture:base:currency:0:0");
+        expect(pending.label).toBe("Starting purse");
+        expect(
+            resolveGrantPickValidationMessage(
+                {
+                    code: "invalidCurrencyPick",
+                    key: pending.key,
+                    label: pending.label,
+                },
+                "en"
+            )
+        ).toContain("Starting purse");
     });
 });
 
@@ -397,9 +473,11 @@ describe("applyChoiceValidation", () => {
             race: "elf",
             choices: {
                 grantPicks: {
+                    ...fighterEquipmentPicks,
                     "class:fighter:base:skill_proficiency:3:0": "athletics",
                     "class:fighter:base:skill_proficiency:3:1": "intimidation",
                     "class:fighter:3:skill_proficiency:0:0": "history",
+                    ...allFighterInventoryPicks,
                 },
             },
         });
@@ -410,5 +488,40 @@ describe("applyChoiceValidation", () => {
                 result.error.issues.some((issue) => issue.path[0] === "subclass")
             ).toBe(true);
         }
+    });
+
+    it("fails validation for fighter L1 with exclusive pick but missing inventory choices", () => {
+        const result = schema.safeParse({
+            ...baseFormData,
+            characterClass: "fighter",
+            choices: {
+                grantPicks: fighterEquipmentPicks,
+            },
+        });
+
+        expect(result.success).toBe(false);
+        if (!result.success) {
+            const messages = result.error.issues.map((issue) => issue.message);
+            expect(messages.some((message) => message.includes("sidearm"))).toBe(
+                true
+            );
+            expect(
+                messages.every((message) => !message.startsWith("invalidInventoryPick:"))
+            ).toBe(true);
+        }
+    });
+
+    it("returns human-readable invalid inventory messages", () => {
+        const message = resolveGrantPickValidationMessage(
+            {
+                code: "invalidInventoryPick",
+                key: "class:fighter:base:inventory_item:8:0",
+                label: "Starting sidearm",
+            },
+            "en"
+        );
+
+        expect(message).toContain("Starting sidearm");
+        expect(message).not.toContain("invalidInventoryPick:");
     });
 });

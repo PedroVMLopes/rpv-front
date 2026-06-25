@@ -132,7 +132,12 @@
     "sourceFeat": "From feat: {id}",
     "sourceCondition": "From condition: {id}",
     "sourceSystem": "From system: {id}",
-    "choicesIncomplete": "Complete all required choices before saving."
+    "choicesIncomplete": "Complete all required choices before saving.",
+    "validation": {
+      "duplicatePick": "Cannot pick {ref} more than once in the same choice pool.",
+      "alreadyGranted": "{ref} is already granted and cannot be chosen again.",
+      "invalidAbilityScore": "Invalid ability score choice: {label}."
+    }
   },
   "startingEquipment": {
     "title": "Starting Equipment",
@@ -149,7 +154,12 @@
     "exclusiveTitle": "Starting wealth",
     "exclusiveSelect": "Choose an option",
     "sourceClass": "From class: {id}",
-    "sourceBackground": "From background: {id}"
+    "sourceBackground": "From background: {id}",
+    "validation": {
+      "invalidPick": "Invalid equipment choice: {label}.",
+      "invalidCurrencyPick": "Invalid currency choice: {label}.",
+      "exclusiveRequired": "Choose a starting wealth option: {label}."
+    }
   },
   "abilityScores": {
     "title": "Ability Scores",

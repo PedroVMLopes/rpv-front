@@ -388,7 +388,7 @@ describe("buildStoredCharacter", () => {
             {
                 ...baseFormData,
                 inventory: {
-                    bag: [],
+                    bag: [{ slug: "amulet-of-vitality", quantity: 1 }],
                     equipped: { neck: "amulet-of-vitality" },
                 },
             },
@@ -413,7 +413,7 @@ describe("buildStoredCharacter", () => {
             {
                 ...baseFormData,
                 inventory: {
-                    bag: [],
+                    bag: [{ slug: "amulet-of-vitality", quantity: 1 }],
                     equipped: { neck: "amulet-of-vitality" },
                 },
             },
@@ -500,7 +500,10 @@ describe("buildStoredCharacter", () => {
             formData: {
                 ...baseFormData,
                 inventory: {
-                    bag: [],
+                    bag: [
+                        { slug: "scroll-of-fire-bolt", quantity: 1 },
+                        { slug: "amulet-of-vitality", quantity: 1 },
+                    ],
                     equipped: {
                         "main-hand": "scroll-of-fire-bolt",
                         neck: "amulet-of-vitality",

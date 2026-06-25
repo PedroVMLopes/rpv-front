@@ -27,13 +27,16 @@ import {
     inventoryChoiceToPending,
 } from "./deriveStartingEquipmentFromForm";
 import { findMissingExclusiveGroupPicks } from "./startingEquipmentValidation";
+import {
+    formatExclusiveRequiredMessage,
+    isExclusiveChoiceKey,
+    resolveGrantPickValidationMessage,
+    type GrantPickValidationIssue,
+} from "./choiceValidationMessages";
 import enMessages from "@/messages/en.json";
 import ptBRMessages from "@/messages/pt-BR.json";
 
-const validationMessages: Record<
-    Locale,
-    { subclassRequired: string; exclusiveGroupRequired: string }
-> = {
+const validationMessages: Record<Locale, { subclassRequired: string }> = {
     en: enMessages.validation,
     "pt-BR": ptBRMessages.validation,
 };
@@ -110,6 +113,26 @@ function buildOwnedRefsByGrantType(
     return owned;
 }
 
+function exclusiveGroupToPendingChoice(
+    group: { key: string; label: string; source: { type: string; id: string } },
+    locale: Locale
+): PendingChoiceGrant {
+    return {
+        key: group.key,
+        grant: {
+            grantType: "currency",
+            choose: 1,
+            description: group.label,
+        },
+        source: {
+            type: group.source.type as PendingChoiceGrant["source"]["type"],
+            id: group.source.id,
+        },
+        label: formatExclusiveRequiredMessage(locale, group.label),
+        options: [],
+    };
+}
+
 export function findMissingRequiredChoices(
     formData: Record<string, unknown>,
     locale: Locale,
@@ -138,7 +161,7 @@ export function findMissingRequiredChoices(
     for (const choice of preview.choiceGrants) {
         const picked = grantPicks[choice.key];
         if (!picked || picked.trim() === "") {
-            missing.push(inventoryChoiceToPending(choice, system));
+            missing.push(inventoryChoiceToPending(choice, system, locale));
         }
     }
 
@@ -149,6 +172,10 @@ export function findMissingRequiredChoices(
         }
     }
 
+    for (const group of findMissingExclusiveGroupPicks(formData, locale, system)) {
+        missing.push(exclusiveGroupToPendingChoice(group, locale));
+    }
+
     return missing;
 }
 
@@ -156,7 +183,7 @@ export function findInvalidGrantPicks(
     formData: Record<string, unknown>,
     locale: Locale,
     system: SystemKey
-): string[] {
+): GrantPickValidationIssue[] {
     const selections = buildSelectionsFromForm(formData);
     const characterLevel = readLevelFromForm(formData);
     const pending = collectPendingChoiceGrants(
@@ -164,13 +191,20 @@ export function findInvalidGrantPicks(
         locale,
         characterLevel,
         system
+    ).filter(
+        (choice) =>
+            choice.grant.grantType !== "inventory_item" &&
+            choice.grant.grantType !== "currency"
     );
     const grantPicks = readGrantPicks(formData);
     const ownedRefsByGrantType = buildOwnedRefsByGrantType(formData, locale, system);
-    const errors: string[] = [];
+    const errors: GrantPickValidationIssue[] = [];
 
     for (const duplicate of findDuplicateGrantPicksInPool(pending, grantPicks)) {
-        errors.push(`duplicateGrantPick:${duplicate.ref}`);
+        errors.push({
+            code: "duplicateGrantPick",
+            ref: duplicate.ref,
+        });
     }
 
     for (const invalid of findGrantPicksOnOwnedRefs(
@@ -178,7 +212,10 @@ export function findInvalidGrantPicks(
         grantPicks,
         ownedRefsByGrantType
     )) {
-        errors.push(`alreadyGranted:${invalid.ref}`);
+        errors.push({
+            code: "alreadyGranted",
+            ref: invalid.ref,
+        });
     }
 
     for (const choice of pending) {
@@ -192,7 +229,11 @@ export function findInvalidGrantPicks(
         }
 
         if (!isValidInventoryItemPick(choice.grant, pick, system)) {
-            errors.push(`invalidInventoryPick:${choice.key}`);
+            errors.push({
+                code: "invalidInventoryPick",
+                key: choice.key,
+                label: choice.label,
+            });
         }
     }
 
@@ -207,7 +248,11 @@ export function findInvalidGrantPicks(
         }
 
         if (!isValidAbilityScorePick(choice.grant, pick)) {
-            errors.push(`invalidAbilityScorePick:${choice.key}`);
+            errors.push({
+                code: "invalidAbilityScorePick",
+                key: choice.key,
+                label: choice.label,
+            });
         }
     }
 
@@ -220,7 +265,11 @@ export function findInvalidGrantPicks(
         }
 
         if (!isValidInventoryItemPick(choice.grant, pick, system)) {
-            errors.push(`invalidInventoryPick:${choice.key}`);
+            errors.push({
+                code: "invalidInventoryPick",
+                key: choice.key,
+                label: choice.label,
+            });
         }
     }
 
@@ -231,7 +280,11 @@ export function findInvalidGrantPicks(
         }
 
         if (!isValidCurrencyPick(choice.grant, pick)) {
-            errors.push(`invalidCurrencyPick:${choice.key}`);
+            errors.push({
+                code: "invalidCurrencyPick",
+                key: choice.key,
+                label: choice.label,
+            });
         }
     }
 
@@ -255,23 +308,11 @@ export function applyChoiceValidation<T extends ZodRawShape>(
             });
         }
 
-        for (const errorKey of findInvalidGrantPicks(formData, locale, system)) {
+        for (const issue of findInvalidGrantPicks(formData, locale, system)) {
             ctx.addIssue({
                 code: "custom",
                 path: ["choices"],
-                message: errorKey,
-            });
-        }
-
-        for (const missingGroup of findMissingExclusiveGroupPicks(
-            formData,
-            locale,
-            system
-        )) {
-            ctx.addIssue({
-                code: "custom",
-                path: ["choices"],
-                message: `${validationMessages[locale].exclusiveGroupRequired}: ${missingGroup.label}`,
+                message: resolveGrantPickValidationMessage(issue, locale),
             });
         }
 
@@ -284,3 +325,5 @@ export function applyChoiceValidation<T extends ZodRawShape>(
         }
     });
 }
+
+export { isExclusiveChoiceKey, resolveGrantPickValidationMessage };

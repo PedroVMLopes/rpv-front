@@ -16,12 +16,11 @@ import { buildSelectionsFromForm } from "./characterAdapter";
 import { collectGrantSources } from "./characterGrants";
 import type { PendingChoiceGrant } from "./grantChoices";
 import { readLevelFromForm } from "./level";
-import { mergeStartingGrants } from "./materializeInventoryGrants";
 import {
     getManualCurrency,
     STARTING_EQUIPMENT_SOURCES,
 } from "./materializeCurrencyGrants";
-import { sanitizeSelections } from "./grantPickSanitize";
+import { sanitizeSelectionsWithStartingMaterialization } from "./grantPickSanitize";
 import { filterStartingGrantsForEntry } from "./startingEquipmentGrants";
 
 export type StartingEquipmentFixedItem = {
@@ -126,14 +125,8 @@ export function deriveStartingEquipmentFromForm(
         (formData.choices as { grantPicks?: Record<string, string> } | undefined)
             ?.grantPicks ?? {};
 
-    let selections = sanitizeSelections(
+    let selections = sanitizeSelectionsWithStartingMaterialization(
         buildSelectionsFromForm(formData),
-        locale,
-        system,
-        characterLevel
-    );
-    selections = mergeStartingGrants(
-        selections,
         locale,
         system,
         characterLevel

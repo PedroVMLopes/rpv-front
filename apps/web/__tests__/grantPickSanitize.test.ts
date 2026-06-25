@@ -1,4 +1,4 @@
-import { sanitizeGrantPicks, sanitizeSelections } from "../lib/character/grantPickSanitize";
+import { sanitizeGrantPicks, sanitizeSelections, sanitizeSelectionsWithStartingMaterialization } from "../lib/character/grantPickSanitize";
 import { emptyCharacterSelections } from "../lib/character/storedCharacter";
 
 const baseSelections = { ...emptyCharacterSelections() };
@@ -207,5 +207,29 @@ describe("sanitizeSelections", () => {
             "class:fighter:base:skill_proficiency:3:0": "athletics",
             "class:fighter:base:skill_proficiency:3:1": "intimidation",
         });
+    });
+
+    it("drops equipment-branch picks when exclusive branch switches to gold", () => {
+        const selections = sanitizeSelectionsWithStartingMaterialization(
+            {
+                ...baseSelections,
+                characterClass: "fighter",
+                choices: {
+                    grantPicks: {
+                        "class:fighter:base:exclusive:starting-wealth": "gold",
+                        "class:fighter:base:inventory_item:8:0": "0",
+                        "class:fighter:base:skill_proficiency:3:0": "athletics",
+                    },
+                },
+            },
+            "en",
+            "dnd"
+        );
+
+        expect(selections.choices.grantPicks).toEqual({
+            "class:fighter:base:exclusive:starting-wealth": "gold",
+            "class:fighter:base:skill_proficiency:3:0": "athletics",
+        });
+        expect(selections.grantedCurrency).toEqual({ gold: 50 });
     });
 });

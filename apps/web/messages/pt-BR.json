@@ -132,7 +132,12 @@
     "sourceFeat": "Do talento: {id}",
     "sourceCondition": "Da condição: {id}",
     "sourceSystem": "Do sistema: {id}",
-    "choicesIncomplete": "Complete todas as escolhas obrigatórias antes de salvar."
+    "choicesIncomplete": "Complete todas as escolhas obrigatórias antes de salvar.",
+    "validation": {
+      "duplicatePick": "Não é possível escolher {ref} mais de uma vez no mesmo grupo.",
+      "alreadyGranted": "{ref} já foi concedido e não pode ser escolhido novamente.",
+      "invalidAbilityScore": "Escolha de atributo inválida: {label}."
+    }
   },
   "startingEquipment": {
     "title": "Equipamento Inicial",
@@ -149,7 +154,12 @@
     "exclusiveTitle": "Riqueza inicial",
     "exclusiveSelect": "Escolha uma opção",
     "sourceClass": "Da classe: {id}",
-    "sourceBackground": "Do antecedente: {id}"
+    "sourceBackground": "Do antecedente: {id}",
+    "validation": {
+      "invalidPick": "Escolha de equipamento inválida: {label}.",
+      "invalidCurrencyPick": "Escolha de moeda inválida: {label}.",
+      "exclusiveRequired": "Escolha uma opção de riqueza inicial: {label}."
+    }
   },
   "abilityScores": {
     "title": "Atributos",

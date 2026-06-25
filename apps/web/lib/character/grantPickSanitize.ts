@@ -4,6 +4,7 @@ import { getClassSubclassLevel, getSubclass } from "@rpv/content";
 import type { SystemKey } from "@/presets";
 import { collectPendingChoiceGrants } from "./grantChoices";
 import { sanitizeInventory } from "./inventory";
+import { mergeStartingGrants } from "./materializeInventoryGrants";
 import { collectValidStartingEquipmentPickKeys } from "./startingEquipmentValidation";
 import type { CharacterSelections } from "./storedCharacter";
 
@@ -79,6 +80,53 @@ export function sanitizeSelections(
     }
 
     return sanitizeGrantPicks(next, locale, system, characterLevel);
+}
+
+/**
+ * Clears invalid subclass, prunes stale grant picks, and rematerializes
+ * granted inventory and currency from active starting-equipment branches.
+ */
+export function sanitizeSelectionsWithStartingMaterialization(
+    selections: CharacterSelections,
+    locale: Locale,
+    system: SystemKey,
+    characterLevel = 1
+): CharacterSelections {
+    let next: CharacterSelections = {
+        ...selections,
+        inventory: sanitizeInventory(selections.inventory ?? emptyInventory(), system),
+    };
+
+    if (
+        next.subclass &&
+        !isSubclassValidForClass(
+            next.subclass,
+            next.characterClass,
+            locale
+        )
+    ) {
+        next = {
+            ...next,
+            subclass: undefined,
+        };
+    }
+
+    if (
+        next.subclass &&
+        !isSubclassUnlockedForLevel(next.characterClass, characterLevel)
+    ) {
+        next = {
+            ...next,
+            subclass: undefined,
+        };
+    }
+
+    return mergeStartingGrants(
+        sanitizeGrantPicks(next, locale, system, characterLevel),
+        locale,
+        system,
+        characterLevel
+    );
 }
 
 /**

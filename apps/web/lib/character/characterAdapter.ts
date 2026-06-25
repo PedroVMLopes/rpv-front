@@ -21,6 +21,8 @@ import {
 } from "./presetStats";
 import { deriveResourceTotals } from "./deriveResourceTotals";
 import { isCharacterInventory, sanitizeInventory } from "./inventory";
+import { readLevelFromForm } from "./level";
+import { sanitizeStartingMaterialization } from "./sanitizeStartingMaterialization";
 import type { StoredCharacter, CharacterSelections, CharacterChoices } from "./storedCharacter";
 import { STORED_CHARACTER_SCHEMA_VERSION } from "./storedCharacter";
 
@@ -316,7 +318,16 @@ export function normalizeStoredCharacter(char: unknown): StoredCharacter {
         stored.system
     );
 
-    return finalizeStoredCharacter(stored, normalizedSelections);
+    const locale = stored.language ?? DEFAULT_LOCALE;
+    const characterLevel = readLevelFromForm(stored.systemData ?? {});
+    const materializedSelections = sanitizeStartingMaterialization(
+        normalizedSelections,
+        locale,
+        stored.system,
+        characterLevel
+    );
+
+    return finalizeStoredCharacter(stored, materializedSelections);
 }
 
 export { flattenStoredToForm };

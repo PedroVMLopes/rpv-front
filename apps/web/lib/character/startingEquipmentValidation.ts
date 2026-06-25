@@ -12,14 +12,6 @@ import { STARTING_EQUIPMENT_SOURCES } from "./materializeCurrencyGrants";
 import type { CharacterSelections } from "./storedCharacter";
 import { readLevelFromForm } from "./level";
 
-function isStartingEquipmentGrantKey(key: string): boolean {
-    return (
-        key.includes(":inventory_item:") ||
-        key.includes(":currency:") ||
-        key.includes(":exclusive:")
-    );
-}
-
 export function collectValidStartingEquipmentPickKeys(
     selections: CharacterSelections,
     locale: Locale,
@@ -90,57 +82,22 @@ export function collectValidStartingEquipmentPickKeys(
     return validKeys;
 }
 
-export function sanitizeStartingEquipmentGrantPicks(
-    selections: CharacterSelections,
-    locale: Locale,
-    system: SystemKey,
-    characterLevel: number
-): CharacterSelections {
-    const validKeys = collectValidStartingEquipmentPickKeys(
-        selections,
-        locale,
-        system,
-        characterLevel
-    );
-    const grantPicks = selections.choices.grantPicks ?? {};
-
-    const sanitizedPicks = Object.fromEntries(
-        Object.entries(grantPicks).filter(([key]) => {
-            if (!isStartingEquipmentGrantKey(key)) {
-                return true;
-            }
-
-            return validKeys.has(key);
-        })
-    );
-
-    if (
-        Object.keys(sanitizedPicks).length === Object.keys(grantPicks).length
-    ) {
-        return selections;
-    }
-
-    return {
-        ...selections,
-        choices: {
-            ...selections.choices,
-            grantPicks: sanitizedPicks,
-        },
-    };
-}
-
 export function findMissingExclusiveGroupPicks(
     formData: Record<string, unknown>,
     locale: Locale,
     system: SystemKey
-): Array<{ key: string; label: string }> {
+): Array<{ key: string; label: string; source: { type: string; id: string } }> {
     const characterSelections = buildSelectionsFromForm(formData);
     const characterLevel = readLevelFromForm(formData);
     const grantPicks =
         (formData.choices as { grantPicks?: Record<string, string> } | undefined)
             ?.grantPicks ?? {};
 
-    const missing: Array<{ key: string; label: string }> = [];
+    const missing: Array<{
+        key: string;
+        label: string;
+        source: { type: string; id: string };
+    }> = [];
 
     for (const entry of collectGrantSources(
         characterSelections,
@@ -158,7 +115,11 @@ export function findMissingExclusiveGroupPicks(
         )) {
             const pick = grantPicks[group.key]?.trim();
             if (!pick) {
-                missing.push({ key: group.key, label: group.label });
+                missing.push({
+                    key: group.key,
+                    label: group.label,
+                    source: group.source,
+                });
             }
         }
     }

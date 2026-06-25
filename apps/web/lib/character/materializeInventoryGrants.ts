@@ -7,6 +7,37 @@ import { materializeCurrencyGrants, STARTING_EQUIPMENT_SOURCES } from "./materia
 import { filterStartingGrantsForEntry } from "./startingEquipmentGrants";
 import type { CharacterSelections } from "./storedCharacter";
 
+function pruneOrphanedGrantEquipped(
+    mergedBag: CharacterInventory["bag"],
+    equipped: CharacterInventory["equipped"],
+    previousBag: CharacterInventory["bag"],
+    newGrantedBag: CharacterInventory["bag"]
+): CharacterInventory["equipped"] {
+    const previousGrantedSlugs = new Set(
+        previousBag
+            .filter((stack) => stack.provenance)
+            .map((stack) => stack.slug)
+    );
+    const newGrantedSlugs = new Set(newGrantedBag.map((stack) => stack.slug));
+    const nextEquipped: CharacterInventory["equipped"] = { ...equipped };
+
+    for (const [slotId, slug] of Object.entries(equipped)) {
+        const wasGrantSourced = previousGrantedSlugs.has(slug);
+        const stillGranted = newGrantedSlugs.has(slug);
+        const manualBacked =
+            previousBag.some(
+                (stack) => stack.slug === slug && !stack.provenance
+            ) ||
+            mergedBag.some((stack) => stack.slug === slug && !stack.provenance);
+
+        if (wasGrantSourced && !stillGranted && !manualBacked) {
+            delete nextEquipped[slotId];
+        }
+    }
+
+    return nextEquipped;
+}
+
 export function materializeInventoryGrants(
     selections: CharacterSelections,
     locale: Locale,
@@ -14,7 +45,7 @@ export function materializeInventoryGrants(
     characterLevel: number
 ): CharacterInventory["bag"] {
     let inventory = { bag: [] as CharacterInventory["bag"], equipped: {} };
-    const grantPicks = selections.choices.grantPicks ?? {};
+    const grantPicks = selections.choices?.grantPicks ?? {};
 
     for (const entry of collectGrantSources(
         selections,
@@ -104,9 +135,8 @@ export function mergeStartingGrants(
     system: SystemKey,
     characterLevel: number
 ): CharacterSelections {
-    const manualBag = (selections.inventory?.bag ?? []).filter(
-        (stack) => !stack.provenance
-    );
+    const previousBag = selections.inventory?.bag ?? [];
+    const manualBag = previousBag.filter((stack) => !stack.provenance);
     const grantedBag = materializeInventoryGrants(
         selections,
         locale,
@@ -118,12 +148,18 @@ export function mergeStartingGrants(
         locale,
         characterLevel
     );
+    const mergedBag = [...manualBag, ...grantedBag];
 
     const inventory = sanitizeInventory(
         {
             ...selections.inventory,
-            bag: [...manualBag, ...grantedBag],
-            equipped: selections.inventory?.equipped ?? {},
+            bag: mergedBag,
+            equipped: pruneOrphanedGrantEquipped(
+                mergedBag,
+                selections.inventory?.equipped ?? {},
+                previousBag,
+                grantedBag
+            ),
         },
         system
     );

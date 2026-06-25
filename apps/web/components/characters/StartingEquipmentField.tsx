@@ -16,8 +16,8 @@ import { buildGrantChoiceSelectOptions } from "@/lib/character/grantChoiceOption
 import {
     findInvalidGrantPicks,
     findMissingRequiredChoices,
+    isExclusiveChoiceKey,
 } from "@/lib/character/choiceValidation";
-import { findMissingExclusiveGroupPicks } from "@/lib/character/startingEquipmentValidation";
 import { bagStackReactKey } from "@/lib/character/inventory";
 import type { CharacterChoices } from "@/lib/character/storedCharacter";
 
@@ -129,7 +129,9 @@ export function StartingEquipmentField({
     );
     const missingExclusiveGroups = useMemo(
         () =>
-            findMissingExclusiveGroupPicks(formSnapshot, contentLocale, system),
+            findMissingRequiredChoices(formSnapshot, contentLocale, system).filter(
+                (choice) => isExclusiveChoiceKey(choice.key)
+            ),
         [formSnapshot, contentLocale, system]
     );
     const invalidPicks = useMemo(
@@ -148,8 +150,9 @@ export function StartingEquipmentField({
         () =>
             new Set(
                 invalidPicks
-                    .filter((error) => error.startsWith("invalidInventoryPick:"))
-                    .map((error) => error.slice("invalidInventoryPick:".length))
+                    .filter((issue) => issue.code === "invalidInventoryPick")
+                    .map((issue) => issue.key)
+                    .filter((key): key is string => key !== undefined)
             ),
         [invalidPicks]
     );
@@ -157,8 +160,9 @@ export function StartingEquipmentField({
         () =>
             new Set(
                 invalidPicks
-                    .filter((error) => error.startsWith("invalidCurrencyPick:"))
-                    .map((error) => error.slice("invalidCurrencyPick:".length))
+                    .filter((issue) => issue.code === "invalidCurrencyPick")
+                    .map((issue) => issue.key)
+                    .filter((key): key is string => key !== undefined)
             ),
         [invalidPicks]
     );
@@ -267,7 +271,11 @@ export function StartingEquipmentField({
                 <div className="flex flex-col gap-2">
                     <h3 className="text-sm font-semibold">{t("choicesTitle")}</h3>
                     {preview.choiceGrants.map((choice) => {
-                        const pending = inventoryChoiceToPending(choice, system);
+                        const pending = inventoryChoiceToPending(
+                            choice,
+                            system,
+                            contentLocale
+                        );
                         const options = buildGrantChoiceSelectOptions(
                             pending,
                             grantPicks,
