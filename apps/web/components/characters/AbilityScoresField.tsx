@@ -11,13 +11,16 @@ import type {
     PresetStatConfig,
 } from "@/presets/types";
 import { buildSelectionsFromForm } from "@/lib/character/characterAdapter";
+import { readLevelFromForm } from "@/lib/character/level";
 import { deriveRaceModifiers } from "@/lib/character/raceModifiers";
 import {
+    defaultAbilityScoreMethodForLevel,
     getMethodDefaults,
     pointBuyCost,
     pointBuyRemaining,
     readAttributeValues,
     rollAbilityPool,
+    shouldShowMigrationHint,
     UNASSIGNED_ABILITY_VALUE,
     type AttributeEntry,
 } from "@/lib/character/abilityScoreGeneration";
@@ -83,15 +86,20 @@ export function AbilityScoresField({
     const race = useWatch({ control, name: "race" });
     const subrace = useWatch({ control, name: "subrace" });
     const choices = useWatch({ control, name: "choices" });
+    const watchedLevel = useWatch({ control, name: "level" });
+    const level = readLevelFromForm({ level: watchedLevel });
     const watchedMethod = useWatch({
         control,
         name: "abilityScoreMethod",
     });
-    const method = (watchedMethod ?? "manual") as AbilityScoreMethod;
+    const method = (watchedMethod ??
+        defaultAbilityScoreMethodForLevel(level)) as AbilityScoreMethod;
     const rolls = (useWatch({ control, name: "abilityScoreRolls" }) ??
         []) as number[];
 
     const previousMethodRef = useRef<AbilityScoreMethod>(method);
+    const previousLevelRef = useRef<number | undefined>(undefined);
+    const userChangedMethodRef = useRef(false);
     const initializedRef = useRef(false);
 
     useEffect(() => {
@@ -101,9 +109,21 @@ export function AbilityScoresField({
 
         initializedRef.current = true;
 
-        if (!form.getValues("abilityScoreMethod")) {
-            form.setValue("abilityScoreMethod", "manual", { shouldDirty: false });
+        const currentLevel = readLevelFromForm(form.getValues());
+        const storedMethod = form.getValues("abilityScoreMethod") as
+            | AbilityScoreMethod
+            | undefined;
+        const initialMethod =
+            storedMethod ?? defaultAbilityScoreMethodForLevel(currentLevel);
+
+        if (!storedMethod) {
+            form.setValue("abilityScoreMethod", initialMethod, {
+                shouldDirty: false,
+            });
         }
+
+        previousMethodRef.current = initialMethod;
+        previousLevelRef.current = currentLevel;
 
         const currentAttributes = form.getValues("attributes") as
             | AttributeEntry[]
@@ -112,10 +132,29 @@ export function AbilityScoresField({
         if (!currentAttributes || currentAttributes.length === 0) {
             writeAttributes(
                 form,
-                getMethodDefaults("manual", abilities, statConfig)
+                getMethodDefaults(initialMethod, abilities, statConfig)
             );
         }
     }, [abilities, form, statConfig]);
+
+    useEffect(() => {
+        if (previousLevelRef.current === undefined) {
+            previousLevelRef.current = level;
+            return;
+        }
+
+        if (previousLevelRef.current === level || userChangedMethodRef.current) {
+            previousLevelRef.current = level;
+            return;
+        }
+
+        previousLevelRef.current = level;
+        const nextMethod = defaultAbilityScoreMethodForLevel(level);
+        form.setValue("abilityScoreMethod", nextMethod, {
+            shouldDirty: true,
+            shouldValidate: true,
+        });
+    }, [form, level]);
 
     useEffect(() => {
         if (previousMethodRef.current === method) {
@@ -212,13 +251,14 @@ export function AbilityScoresField({
                 <select
                     className="bg-background rounded border px-2 py-1 text-sm"
                     value={method}
-                    onChange={(event) =>
+                    onChange={(event) => {
+                        userChangedMethodRef.current = true;
                         form.setValue(
                             "abilityScoreMethod",
                             event.target.value as AbilityScoreMethod,
                             { shouldDirty: true, shouldValidate: true }
-                        )
-                    }
+                        );
+                    }}
                 >
                     {config.methods.map((entry) => (
                         <option key={entry} value={entry}>
@@ -238,6 +278,10 @@ export function AbilityScoresField({
                 <Button type="button" variant="outline" onClick={handleRoll}>
                     {t("roll")}
                 </Button>
+            )}
+
+            {shouldShowMigrationHint(level, method) && (
+                <p className="text-xs text-muted-foreground">{t("migrationHint")}</p>
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -388,16 +432,36 @@ export function AbilityScoresField({
                                 </select>
                             )}
 
-                            {total !== null && (
-                                <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
-                                    <span>{t("columns.base", { value })}</span>
-                                    <span>
-                                        {t("columns.racial", {
-                                            mod: raceBonus,
-                                        })}
-                                    </span>
+                            {value !== UNASSIGNED_ABILITY_VALUE && (
+                                <div
+                                    className={`grid gap-2 text-xs text-muted-foreground ${
+                                        [
+                                            value !== statConfig.defaultAbilityValue,
+                                            raceBonus !== 0,
+                                            true,
+                                        ].filter(Boolean).length === 1
+                                            ? "grid-cols-1"
+                                            : [
+                                                    value !==
+                                                        statConfig.defaultAbilityValue,
+                                                    raceBonus !== 0,
+                                                ].filter(Boolean).length === 2
+                                              ? "grid-cols-2"
+                                              : "grid-cols-3"
+                                    }`}
+                                >
+                                    {value !== statConfig.defaultAbilityValue && (
+                                        <span>{t("columns.base", { value })}</span>
+                                    )}
+                                    {raceBonus !== 0 && (
+                                        <span>
+                                            {t("columns.racial", {
+                                                mod: raceBonus,
+                                            })}
+                                        </span>
+                                    )}
                                     <span className="font-medium text-foreground">
-                                        {t("columns.total", { total })}
+                                        {t("columns.total", { total: total ?? value })}
                                     </span>
                                 </div>
                             )}

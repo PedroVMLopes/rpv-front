@@ -102,8 +102,32 @@ describe("PlayerCharacterForm", () => {
 
         await user.click(screen.getByRole("button", { name: "Next" }));
 
-        expect(screen.getByText("Level")).toBeInTheDocument();
+        expect(screen.getByText("Character level")).toBeInTheDocument();
+        expect(screen.queryByLabelText("Level")).not.toBeInTheDocument();
         expect(screen.getByRole("button", { name: /Class/ })).not.toBeDisabled();
+    });
+
+    it("shows fighter fixed proficiencies and equipment teaser on class step", async () => {
+        const user = userEvent.setup();
+
+        render(
+            <PlayerFormHarness
+                defaultValues={{
+                    race: "elf",
+                    characterClass: "fighter",
+                    level: 1,
+                }}
+            />
+        );
+
+        await user.click(screen.getByRole("button", { name: /Class/ }));
+
+        expect(
+            screen.getByText("Proficiencies & resources (automatic)")
+        ).toBeInTheDocument();
+        expect(screen.getByText("Strength save")).toBeInTheDocument();
+        expect(screen.getByText("Starting equipment")).toBeInTheDocument();
+        expect(screen.getByText(/Equipment or 50 gp/i)).toBeInTheDocument();
     });
 
     it("unlocks equipment step for a partially built character", () => {

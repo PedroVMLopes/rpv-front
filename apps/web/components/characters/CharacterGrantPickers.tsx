@@ -34,6 +34,8 @@ type CharacterGrantPickersProps = {
     contentLocale: Locale;
     system: SystemKey;
     sourceTypes?: Array<ModifierSource["type"]>;
+    sections?: "all" | "choices-only";
+    displayLevel?: number;
 };
 
 function readGrantPicks(form: UseFormReturn<Record<string, unknown>>): Record<string, string> {
@@ -89,14 +91,16 @@ export function CharacterGrantPickers({
     contentLocale,
     system,
     sourceTypes,
+    sections = "all",
+    displayLevel,
 }: CharacterGrantPickersProps) {
     const t = useTranslations("grants");
     const tAbilities = useTranslations("abilities");
     const formValues = form.watch();
 
     const characterLevel = useMemo(
-        () => readLevelFromForm(formValues),
-        [formValues]
+        () => displayLevel ?? readLevelFromForm(formValues),
+        [displayLevel, formValues]
     );
 
     const selections = useMemo(
@@ -232,10 +236,15 @@ export function CharacterGrantPickers({
         ownedRefsByGrantType.get("language") ??
         new Set(fixedLanguages.map((grant) => grant.ref));
 
+    const showLanguages =
+        sections === "all" &&
+        (fixedLanguages.length > 0 || languageChoices.length > 0);
+    const showRacialAsi =
+        sections === "all" && racialAsiChoices.length > 0;
+
     if (
-        fixedLanguages.length === 0 &&
-        languageChoices.length === 0 &&
-        racialAsiChoices.length === 0 &&
+        !showLanguages &&
+        !showRacialAsi &&
         otherChoices.length === 0
     ) {
         return null;
@@ -303,7 +312,7 @@ export function CharacterGrantPickers({
                     {t("choicesIncomplete")}
                 </p>
             ) : null}
-            {(fixedLanguages.length > 0 || languageChoices.length > 0) && (
+            {showLanguages && (
                 <section className="flex flex-col gap-2">
                     <h2 className="text-sm font-bold">{t("languagesTitle")}</h2>
 
@@ -382,7 +391,7 @@ export function CharacterGrantPickers({
                 </section>
             )}
 
-            {racialAsiChoices.length > 0 && (
+            {showRacialAsi && (
                 <section className="flex flex-col gap-2">
                     <h2 className="text-sm font-bold">{t("racialAsiTitle")}</h2>
                     {racialAsiChoices.map((choice) =>

@@ -72,7 +72,7 @@ describe("PlayerCharacterForm abilities step", () => {
         await openAbilitiesStepViaNext(user);
 
         const methodSelect = screen.getAllByRole("combobox")[0];
-        await user.selectOptions(methodSelect, "standard-array");
+        expect(methodSelect).toHaveValue("standard-array");
 
         const strengthCard = screen.getByText("Strength").closest("div.rounded");
         expect(strengthCard).not.toBeNull();
@@ -80,6 +80,31 @@ describe("PlayerCharacterForm abilities step", () => {
         await user.selectOptions(strengthSelect, "15");
 
         expect(within(strengthCard!).getByText("Base: 15")).toBeInTheDocument();
+    });
+
+    it("uses manual method and migration hint for Lv 3 preset", async () => {
+        const user = userEvent.setup();
+
+        render(<PlayerFormHarness defaultValues={{ name: "Hero" }} />);
+
+        await user.selectOptions(
+            screen.getByRole("combobox", { name: "Race" }),
+            "elf"
+        );
+        await user.click(screen.getByRole("button", { name: "Next" }));
+        await user.click(screen.getByRole("button", { name: "Lv 3" }));
+        await user.selectOptions(
+            screen.getByRole("combobox", { name: "Class" }),
+            "fighter"
+        );
+        await user.click(screen.getByRole("button", { name: "Next" }));
+
+        expect(screen.getAllByRole("combobox")[0]).toHaveValue("manual");
+        expect(
+            screen.getByText(
+                /the Total below each field is the value that matters/i
+            )
+        ).toBeInTheDocument();
     });
 
     it("reflects point-buy changes without leaving and returning to the step", async () => {
@@ -115,12 +140,11 @@ describe("PlayerCharacterForm abilities step", () => {
         render(<PlayerFormHarness defaultValues={{ name: "Hero" }} />);
         await openAbilitiesStepViaNext(user);
 
-        expect(screen.getAllByRole("spinbutton").length).toBeGreaterThan(0);
+        expect(screen.queryByRole("spinbutton")).not.toBeInTheDocument();
 
         const methodSelect = screen.getAllByRole("combobox")[0];
-        await user.selectOptions(methodSelect, "standard-array");
+        await user.selectOptions(methodSelect, "manual");
 
-        expect(screen.queryByRole("spinbutton")).not.toBeInTheDocument();
-        expect(screen.getAllByRole("combobox").length).toBeGreaterThan(1);
+        expect(screen.getAllByRole("spinbutton").length).toBeGreaterThan(0);
     });
 });

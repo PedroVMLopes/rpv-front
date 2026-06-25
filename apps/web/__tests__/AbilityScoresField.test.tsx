@@ -145,6 +145,77 @@ describe("AbilityScoresField", () => {
         randomSpy.mockRestore();
     });
 
+    it("defaults to standard array at level 1", () => {
+        render(
+            <AbilityScoresHarness
+                defaultValues={{
+                    name: "Test Hero",
+                    level: 1,
+                }}
+            />
+        );
+
+        expect(screen.getByTestId("ability-output")).toHaveTextContent(
+            "standard-array"
+        );
+    });
+
+    it("defaults to manual at level above 1", () => {
+        render(
+            <AbilityScoresHarness
+                defaultValues={{
+                    name: "Test Hero",
+                    level: 3,
+                }}
+            />
+        );
+
+        expect(screen.getByTestId("ability-output")).toHaveTextContent("manual");
+        expect(
+            screen.getByText(
+                /the Total below each field is the value that matters/i
+            )
+        ).toBeInTheDocument();
+    });
+
+    it("hides base preview for default manual score of 10", () => {
+        render(
+            <AbilityScoresHarness
+                defaultValues={{
+                    name: "Test Hero",
+                    level: 3,
+                    abilityScoreMethod: "manual",
+                    attributes: dndStatConfig.abilities.map((ability) => ({
+                        name: ability.name,
+                        value: 10,
+                    })),
+                }}
+            />
+        );
+
+        expect(screen.queryByText("Base: 10")).not.toBeInTheDocument();
+        expect(screen.getAllByText("Total: 10").length).toBeGreaterThan(0);
+    });
+
+    it("hides racial preview when bonus is zero", () => {
+        render(
+            <AbilityScoresHarness
+                defaultValues={{
+                    name: "Test Hero",
+                    race: "human",
+                    abilityScoreMethod: "manual",
+                    attributes: dndStatConfig.abilities.map((ability) => ({
+                        name: ability.name,
+                        value: ability.name === "strength" ? 14 : 10,
+                    })),
+                }}
+            />
+        );
+
+        expect(screen.getByText("Base: 14")).toBeInTheDocument();
+        expect(screen.queryByText(/Racial:/)).not.toBeInTheDocument();
+    });
+
     it("shows racial bonus preview for elf dexterity", () => {
         render(
             <AbilityScoresHarness

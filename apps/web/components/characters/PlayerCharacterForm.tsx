@@ -13,6 +13,7 @@ import { HitPointsField } from "@/components/characters/HitPointsField";
 import { ArmorClassField } from "@/components/characters/ArmorClassField";
 import { ClassResourcesField } from "@/components/characters/ClassResourcesField";
 import { CharacterGrantPickers } from "@/components/characters/CharacterGrantPickers";
+import { ClassStepContent } from "@/components/characters/ClassStepContent";
 import { StartingEquipmentField } from "@/components/characters/StartingEquipmentField";
 import { CharacterCreationStepper } from "@/components/characters/CharacterCreationStepper";
 import {
@@ -183,7 +184,7 @@ export function PlayerCharacterForm({
             return;
         }
 
-        if (!canCompleteStep(stepId, form.getValues())) {
+        if (!canCompleteStep(stepId, form.getValues(), { statConfig })) {
             showStepHint(stepId);
             return;
         }
@@ -197,7 +198,7 @@ export function PlayerCharacterForm({
         setActiveStep((current) =>
             Math.min(current + 1, CHARACTER_CREATION_STEP_COUNT - 1)
         );
-    }, [activeStep, form, showStepHint]);
+    }, [activeStep, form, showStepHint, statConfig]);
 
     const handleBack = useCallback(() => {
         setStepHint(null);
@@ -265,19 +266,15 @@ export function PlayerCharacterForm({
                 );
             case "class":
                 return (
-                    <>
-                        <DynamicForm
-                            form={form}
-                            fields={stepFields}
-                            hideSubmit
-                        />
-                        <CharacterGrantPickers
-                            form={form}
-                            contentLocale={contentLocale}
-                            system={system}
-                            sourceTypes={grantSourceTypes}
-                        />
-                    </>
+                    <ClassStepContent
+                        form={form}
+                        fields={stepFields}
+                        contentLocale={contentLocale}
+                        system={system}
+                        equipmentStepIndex={CHARACTER_CREATION_STEP_COUNT - 1}
+                        maxUnlockedStep={maxUnlockedStep}
+                        onNavigateToStep={handleStepSelect}
+                    />
                 );
             case "abilities":
                 return (

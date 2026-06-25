@@ -173,6 +173,7 @@
     "points": "pts",
     "roll": "Roll scores",
     "assignScore": "Assign score",
+    "migrationHint": "Enter your existing ability scores below. Racial bonuses are applied automatically — the Total below each field is the value that matters.",
     "preview": "{base} ({mod, plural, =0 {+0 race} other {+# race}}) = {total}",
     "columns": {
       "base": "Base: {value}",
@@ -250,6 +251,23 @@
       "completeStep": "Complete the required fields before continuing.",
       "fixErrors": "Fix the highlighted errors before saving."
     },
-    "combatPreviewTitle": "Combat preview"
+    "combatPreviewTitle": "Combat preview",
+    "level": {
+      "label": "Character level",
+      "lv1": "Lv 1",
+      "lv3": "Lv 3",
+      "custom": "Custom",
+      "customInput": "Custom level",
+      "hint": "Starting level for this character. Class features and ability score defaults follow this level."
+    },
+    "classStep": {
+      "fixedTitle": "Proficiencies & resources (automatic)",
+      "choicesTitle": "Class choices",
+      "equipmentTitle": "Starting equipment",
+      "equipmentHint": "Configured in the Starting Equipment step.",
+      "equipmentLink": "Go to Starting Equipment",
+      "equipmentLinkLocked": "Complete earlier steps to configure starting equipment.",
+      "equipmentPreviewEquipment": "Equipment"
+    }
   }
 }

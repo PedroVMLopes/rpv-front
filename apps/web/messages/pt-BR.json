@@ -173,6 +173,7 @@
     "points": "pts",
     "roll": "Rolar atributos",
     "assignScore": "Atribuir valor",
+    "migrationHint": "Informe abaixo os atributos do seu personagem. Os bônus raciais são aplicados automaticamente — o Total abaixo de cada campo é o valor que importa.",
     "preview": "{base} ({mod, plural, =0 {+0 raça} other {+# raça}}) = {total}",
     "columns": {
       "base": "Base: {value}",
@@ -250,6 +251,23 @@
       "completeStep": "Preencha os campos obrigatórios antes de continuar.",
       "fixErrors": "Corrija os erros destacados antes de salvar."
     },
-    "combatPreviewTitle": "Prévia de combate"
+    "combatPreviewTitle": "Prévia de combate",
+    "level": {
+      "label": "Nível do personagem",
+      "lv1": "Nv 1",
+      "lv3": "Nv 3",
+      "custom": "Personalizado",
+      "customInput": "Nível personalizado",
+      "hint": "Nível inicial deste personagem. Recursos de classe e padrões de atributos seguem este nível."
+    },
+    "classStep": {
+      "fixedTitle": "Proficiências e recursos (automático)",
+      "choicesTitle": "Escolhas de classe",
+      "equipmentTitle": "Equipamento inicial",
+      "equipmentHint": "Configurado no passo Equipamento Inicial.",
+      "equipmentLink": "Ir para Equipamento Inicial",
+      "equipmentLinkLocked": "Complete os passos anteriores para configurar o equipamento inicial.",
+      "equipmentPreviewEquipment": "Equipamento"
+    }
   }
 }

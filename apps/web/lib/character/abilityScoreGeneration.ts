@@ -8,6 +8,19 @@ import type {
 
 export const UNASSIGNED_ABILITY_VALUE = 0;
 
+export function defaultAbilityScoreMethodForLevel(
+    level: number
+): AbilityScoreMethod {
+    return level === 1 ? "standard-array" : "manual";
+}
+
+export function shouldShowMigrationHint(
+    level: number,
+    method: AbilityScoreMethod
+): boolean {
+    return level > 1 && method === "manual";
+}
+
 export type AttributeEntry = { name: string; value?: number };
 
 export function pointBuyCost(

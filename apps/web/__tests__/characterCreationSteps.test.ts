@@ -5,6 +5,7 @@ import {
     getStepIndexForField,
     getStepIndexForGrantPickKey,
 } from "../lib/character/characterCreationSteps";
+import { dndStatConfig } from "../presets/dnd/characterStats";
 
 describe("characterCreationSteps", () => {
     it("requires race before race step can complete", () => {
@@ -19,7 +20,41 @@ describe("characterCreationSteps", () => {
         ).toBe(true);
     });
 
-    it("always allows abilities step to complete", () => {
+    it("requires valid ability scores before abilities step can complete", () => {
+        expect(
+            canCompleteStep(
+                "abilities",
+                {
+                    abilityScoreMethod: "standard-array",
+                    attributes: dndStatConfig.abilities.map((ability) => ({
+                        name: ability.name,
+                        value: 0,
+                    })),
+                },
+                { statConfig: dndStatConfig }
+            )
+        ).toBe(false);
+
+        expect(
+            canCompleteStep(
+                "abilities",
+                {
+                    abilityScoreMethod: "standard-array",
+                    attributes: [
+                        { name: "strength", value: 15 },
+                        { name: "dexterity", value: 14 },
+                        { name: "constitution", value: 13 },
+                        { name: "intelligence", value: 12 },
+                        { name: "wisdom", value: 10 },
+                        { name: "charisma", value: 8 },
+                    ],
+                },
+                { statConfig: dndStatConfig }
+            )
+        ).toBe(true);
+    });
+
+    it("always allows abilities step to complete without stat config", () => {
         expect(canCompleteStep("abilities", {})).toBe(true);
     });
 
@@ -44,6 +79,10 @@ describe("characterCreationSteps", () => {
                 background: "sage",
             })
         ).toBe(4);
+    });
+
+    it("maps level field to class step index", () => {
+        expect(getStepIndexForField("level")).toBe(1);
     });
 
     it("maps validation paths to step indexes", () => {

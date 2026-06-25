@@ -67,7 +67,15 @@ Future HTTP contract for inventory and `StoredCharacter` persistence:
 
 Classes define optional **`featuresByLevel`** in [`*.dnd.ts`](packages/content/src/curation/classGrants.dnd.ts). [`resolveLevelFeatures`](packages/content/src/grant/levelFeatures.ts) accumulates all blocks where `feature.level <= characterLevel`.
 
-Creating a character at **level N** shows **all** pending choices from L1 through N on one screen. Each `choose > 0` grant becomes one or more picker slots.
+### Creation UX (level presets)
+
+On the **Class** step, level is set via **`CharacterLevelSelector`**: **Lv 1**, **Lv 3**, or **Custom** (numeric 1–20). Only `level` is persisted; the preset is inferred when editing.
+
+- Class grants and pickers use `getClassGrantSourcesForLevel(class, level)` for the selected level.
+- The class step shows **fixed proficiencies/resources**, **class choices** (pickers only), and a **starting equipment teaser** linking to the Equipment step (actual picks stay in `StartingEquipmentField`).
+- **Ability scores:** L1 defaults to **Standard Array**; Lv > 1 defaults to **Manual** with a migration hint (valid score = **Total**). Preview hides Base when value is the default (10) and Racial when bonus is 0.
+
+Creating a character at **level N** includes pending choices from L1 through N (scoped by the level preset). Each `choose > 0` grant becomes one or more picker slots.
 
 ### Grant pick keys
 

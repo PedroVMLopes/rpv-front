@@ -1,5 +1,7 @@
 import type { FieldErrors } from "react-hook-form";
 import type { ModifierSource } from "@rpv/domain";
+import type { PresetStatConfig } from "@/presets/types";
+import { validateAbilityScoresForMethod } from "@/lib/character/abilityScoreGeneration";
 
 export type CharacterCreationStepId =
     | "race"
@@ -15,7 +17,7 @@ export type CharacterCreationStep = {
 
 export const CHARACTER_CREATION_STEPS: CharacterCreationStep[] = [
     { id: "race", fieldNames: ["race", "subrace"] },
-    { id: "class", fieldNames: ["level", "characterClass", "subclass"] },
+    { id: "class", fieldNames: ["characterClass", "subclass"] },
     { id: "abilities", fieldNames: [] },
     { id: "background", fieldNames: ["name", "age", "goals", "background"] },
     { id: "equipment", fieldNames: ["gold", "silver", "bronze"] },
@@ -32,9 +34,14 @@ function readNonEmptyString(value: unknown): string | undefined {
     return trimmed.length > 0 ? trimmed : undefined;
 }
 
+export type CanCompleteStepOptions = {
+    statConfig?: PresetStatConfig;
+};
+
 export function canCompleteStep(
     stepId: CharacterCreationStepId,
-    formValues: Record<string, unknown>
+    formValues: Record<string, unknown>,
+    options?: CanCompleteStepOptions
 ): boolean {
     switch (stepId) {
         case "race":
@@ -42,7 +49,14 @@ export function canCompleteStep(
         case "class":
             return readNonEmptyString(formValues.characterClass) !== undefined;
         case "abilities":
-            return true;
+            if (!options?.statConfig) {
+                return true;
+            }
+
+            return (
+                validateAbilityScoresForMethod(formValues, options.statConfig) ===
+                null
+            );
         case "background":
             return readNonEmptyString(formValues.background) !== undefined;
         case "equipment":
@@ -69,6 +83,10 @@ export function computeMaxUnlockedStep(
 }
 
 export function getStepIndexForField(fieldName: string): number {
+    if (fieldName === "level") {
+        return 1;
+    }
+
     if (
         fieldName === "attributes" ||
         fieldName === "abilityScoreMethod" ||
