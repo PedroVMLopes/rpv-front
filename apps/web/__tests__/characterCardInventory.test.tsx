@@ -29,7 +29,7 @@ const baseFormData = {
     name: "Test Hero",
     ac: 12,
     attributes: baseAttributes,
-    characterClass: "fighter",
+    characterClass: "wizard",
     level: 1,
 };
 
@@ -71,19 +71,19 @@ describe("CharacterCardInventory", () => {
         expect(
             screen.getByRole("button", { name: "Remove" })
         ).toBeInTheDocument();
-        expect(screen.getByText("Max HP: 12")).toBeInTheDocument();
+        expect(screen.getByText("Max HP: 8")).toBeInTheDocument();
 
         const neckEquipSelect = screen.getByLabelText("Equip to Neck");
         await user.selectOptions(neckEquipSelect, "amulet-of-vitality");
         await user.click(screen.getByRole("button", { name: "Equip Neck" }));
 
-        expect(screen.getByText("Max HP: 17")).toBeInTheDocument();
+        expect(screen.getByText("Max HP: 13")).toBeInTheDocument();
         expect(screen.getByText("No items in bag.")).toBeInTheDocument();
         expect(screen.getByLabelText("Unequip Neck")).toBeInTheDocument();
 
         await user.click(screen.getByRole("button", { name: "Unequip Neck" }));
 
-        expect(screen.getByText("Max HP: 12")).toBeInTheDocument();
+        expect(screen.getByText("Max HP: 8")).toBeInTheDocument();
         expect(
             screen.getByRole("button", { name: "Remove" })
         ).toBeInTheDocument();

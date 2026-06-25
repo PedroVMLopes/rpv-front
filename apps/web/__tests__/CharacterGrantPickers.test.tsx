@@ -18,7 +18,8 @@ function GrantPickerHarness({
 }) {
     const schema = applyChoiceValidation(
         createDynamicSchema(dndCharacterSchema, "player"),
-        "en"
+        "en",
+        "dnd"
     );
     const form = useForm({
         defaultValues,
@@ -27,7 +28,7 @@ function GrantPickerHarness({
 
     return (
         <NextIntlClientProvider locale="en" messages={messages}>
-            <CharacterGrantPickers form={form} contentLocale="en" />
+            <CharacterGrantPickers form={form} contentLocale="en" system="dnd" />
             <button
                 type="button"
                 onClick={() => void form.trigger()}

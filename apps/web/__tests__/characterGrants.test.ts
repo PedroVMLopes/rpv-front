@@ -13,7 +13,7 @@ describe("deriveCharacterGrants", () => {
     it("derives fixed racial languages for dwarf", () => {
         const grants = deriveCharacterGrants(
             { ...baseSelections, race: "dwarf" },
-            "en"
+            "en", 1, "dnd"
         );
 
         expect(grants).toEqual(
@@ -49,7 +49,7 @@ describe("deriveCharacterGrants", () => {
                     },
                 },
             },
-            "en"
+            "en", 1, "dnd"
         );
 
         expect(grants).toEqual(
@@ -77,7 +77,7 @@ describe("deriveCharacterGrants", () => {
                     equipped: { "main-hand": "scroll-of-fire-bolt" },
                 },
             },
-            "en"
+            "en", 1, "dnd"
         );
 
         expect(grants).toEqual(
@@ -103,7 +103,7 @@ describe("deriveCharacterGrants", () => {
                 race: "elf",
                 characterClass: "fighter",
             },
-            "en"
+            "en", 1, "dnd"
         );
 
         expect(grants).toEqual(
@@ -145,7 +145,7 @@ describe("deriveCharacterGrants", () => {
                     },
                 },
             },
-            "en"
+            "en", 1, "dnd"
         );
 
         expect(grants).toEqual(
@@ -171,7 +171,7 @@ describe("deriveCharacterGrants", () => {
                 characterClass: "fighter",
             },
             "en",
-            1
+            1, "dnd"
         );
         const level2 = deriveCharacterGrants(
             {
@@ -179,7 +179,7 @@ describe("deriveCharacterGrants", () => {
                 characterClass: "fighter",
             },
             "en",
-            2
+            2, "dnd"
         );
 
         expect(level1).not.toEqual(
@@ -205,7 +205,7 @@ describe("deriveCharacterGrants", () => {
                 characterClass: "wizard",
             },
             "en",
-            2
+            2, "dnd"
         );
 
         expect(grants).toEqual(
@@ -238,7 +238,7 @@ describe("deriveCharacterGrants", () => {
                 subclass: "wizard-evocation",
             },
             "en",
-            3
+            3, "dnd"
         );
 
         expect(grants).toEqual(
@@ -260,7 +260,7 @@ describe("deriveCharacterGrants", () => {
                 subclass: "wizard-evocation",
             },
             "en",
-            2
+            2, "dnd"
         );
 
         expect(grants).not.toEqual(
@@ -280,7 +280,7 @@ describe("deriveCharacterGrants", () => {
                 subclass: "wizard-evocation",
             },
             "en",
-            3
+            3, "dnd"
         );
 
         expect(grants).toEqual(
@@ -302,7 +302,7 @@ describe("deriveCharacterGrants", () => {
                 subclass: "fighter-champion",
             },
             "en",
-            2
+            2, "dnd"
         );
         const level3 = deriveCharacterGrants(
             {
@@ -311,7 +311,7 @@ describe("deriveCharacterGrants", () => {
                 subclass: "fighter-champion",
             },
             "en",
-            3
+            3, "dnd"
         );
 
         expect(level2).not.toEqual(
@@ -338,7 +338,7 @@ describe("deriveCharacterGrants", () => {
                 subclass: "fighter-champion",
             },
             "en",
-            3
+            3, "dnd"
         );
 
         expect(grants).not.toEqual(
@@ -357,7 +357,7 @@ describe("deriveCharacterGrants", () => {
                 characterClass: "fighter",
                 subclass: "unknown-subclass",
             },
-            "en"
+            "en", 1, "dnd"
         );
 
         expect(grants).not.toEqual(

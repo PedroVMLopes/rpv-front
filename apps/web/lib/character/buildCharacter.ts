@@ -9,7 +9,7 @@ import { deriveCharacterGrants } from "./characterGrants";
 import { deriveModifiersForCharacter } from "./deriveModifiers";
 import { applyDerivedCombatStats } from "./applyDerivedCombatStats";
 import { sanitizeSelections } from "./grantPickSanitize";
-import { mergeInventoryWithGrants } from "./materializeInventoryGrants";
+import { mergeStartingGrants } from "./materializeInventoryGrants";
 import { syncResourceHpToResolvedMax } from "./hpSync";
 import { readLevelFromForm } from "./level";
 import type { StoredCharacter } from "./storedCharacter";
@@ -44,13 +44,14 @@ export function buildStoredCharacter(input: BuildCharacterInput): StoredCharacte
     const { id, type, system, locale, formData, existing } = input;
     const characterLevel = readLevelFromForm(formData);
 
-    let selections = mergeInventoryWithGrants(
-        buildSelectionsFromForm(formData, existing?.selections),
+    let selections = buildSelectionsFromForm(formData, existing?.selections);
+    selections = sanitizeSelections(
+        selections,
         locale,
         system,
         characterLevel
     );
-    selections = sanitizeSelections(
+    selections = mergeStartingGrants(
         selections,
         locale,
         system,
@@ -59,7 +60,7 @@ export function buildStoredCharacter(input: BuildCharacterInput): StoredCharacte
     const modifiers = deriveModifiersForCharacter(selections, locale, {
         preserve: existing?.modifiers,
     });
-    const grants = deriveCharacterGrants(selections, locale, characterLevel);
+    const grants = deriveCharacterGrants(selections, locale, characterLevel, system);
 
     let processedForm = applyDerivedCombatStats(
         withSanitizedSelectionFields(formData, selections),

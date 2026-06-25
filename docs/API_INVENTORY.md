@@ -63,8 +63,9 @@ shape. After `normalizeStoredCharacter`, `selections.inventory` is always presen
 | `selections` | `CharacterSelections` | Authoritative slugs + inventory state |
 | `selections.inventory` | `CharacterInventory` | **Required** after normalize |
 | `selections.choices` | `{ grantPicks?: Record<string, string> }` | Grant pick answers |
+| `selections.grantedCurrency` | `Record<string, number>` | Currency from class/background grants (rebuilt each save) |
 | `resources` | `Record<string, number>` | HP, spell slots, etc.; `hp` synced on rebuild |
-| `systemData` | `Record<string, unknown>` | Level, AC, free text — preset-specific |
+| `systemData` | `Record<string, unknown>` | Level, AC, manual `gold`/`silver`/`bronze`, free text |
 
 ### Forbidden in `systemData`
 

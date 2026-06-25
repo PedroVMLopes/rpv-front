@@ -1,12 +1,9 @@
 import type { CharacterInventory, Locale } from "@rpv/domain";
-import {
-    extractInventoryItemGrants,
-    getItem,
-    inventoryGrantProvenance,
-} from "@rpv/content";
+import { getItem, resolveInventoryItemGrants } from "@rpv/content";
 import type { SystemKey } from "@/presets";
-import { addToBag } from "./inventory";
+import { addToBag, sanitizeInventory } from "./inventory";
 import { collectGrantSources } from "./characterGrants";
+import { materializeCurrencyGrants, STARTING_EQUIPMENT_SOURCES } from "./materializeCurrencyGrants";
 import type { CharacterSelections } from "./storedCharacter";
 
 export function materializeInventoryGrants(
@@ -16,31 +13,38 @@ export function materializeInventoryGrants(
     characterLevel: number
 ): CharacterInventory["bag"] {
     let inventory = { bag: [] as CharacterInventory["bag"], equipped: {} };
-    const sources = collectGrantSources(selections, locale, characterLevel);
+    const grantPicks = selections.choices.grantPicks ?? {};
 
-    for (const entry of sources) {
-        // v1: background only; class starting equipment comes in a later etapa.
-        if (entry.source.type !== "background") {
+    for (const entry of collectGrantSources(
+        selections,
+        locale,
+        characterLevel
+    )) {
+        if (!STARTING_EQUIPMENT_SOURCES.has(entry.source.type)) {
             continue;
         }
 
-        const grants = extractInventoryItemGrants(entry.grants);
-        for (const grant of grants) {
-            if (!getItem(grant.slug, system)) {
+        const resolved = resolveInventoryItemGrants(
+            entry.grants,
+            grantPicks,
+            {
+                sourceType: entry.source.type,
+                sourceId: entry.source.id,
+                featureLevel: entry.featureLevel,
+                system,
+            }
+        );
+
+        for (const item of resolved) {
+            if (!getItem(item.slug, system) || !item.provenance) {
                 continue;
             }
 
-            const provenance = inventoryGrantProvenance(
-                entry.source.type,
-                entry.source.id,
-                grant.grantIndex
-            );
-
             inventory = addToBag(
                 inventory,
-                grant.slug,
-                grant.quantity,
-                provenance
+                item.slug,
+                item.quantity,
+                item.provenance
             );
         }
     }
@@ -55,30 +59,37 @@ export function resolveInventoryGrantProvenance(
     system: SystemKey,
     characterLevel: number
 ): string | undefined {
-    const sources = collectGrantSources(selections, locale, characterLevel);
+    const grantPicks = selections.choices.grantPicks ?? {};
 
-    for (const entry of sources) {
-        if (entry.source.type !== "background") {
+    for (const entry of collectGrantSources(
+        selections,
+        locale,
+        characterLevel
+    )) {
+        if (!STARTING_EQUIPMENT_SOURCES.has(entry.source.type)) {
             continue;
         }
 
-        for (const grant of extractInventoryItemGrants(entry.grants)) {
-            if (grant.slug !== slug || !getItem(grant.slug, system)) {
-                continue;
+        for (const item of resolveInventoryItemGrants(
+            entry.grants,
+            grantPicks,
+            {
+                sourceType: entry.source.type,
+                sourceId: entry.source.id,
+                featureLevel: entry.featureLevel,
+                system,
             }
-
-            return inventoryGrantProvenance(
-                entry.source.type,
-                entry.source.id,
-                grant.grantIndex
-            );
+        )) {
+            if (item.slug === slug && getItem(item.slug, system)) {
+                return item.provenance;
+            }
         }
     }
 
     return undefined;
 }
 
-export function mergeInventoryWithGrants(
+export function mergeStartingGrants(
     selections: CharacterSelections,
     locale: Locale,
     system: SystemKey,
@@ -93,13 +104,27 @@ export function mergeInventoryWithGrants(
         system,
         characterLevel
     );
+    const grantedCurrency = materializeCurrencyGrants(
+        selections,
+        locale,
+        characterLevel
+    );
 
-    return {
-        ...selections,
-        inventory: {
+    const inventory = sanitizeInventory(
+        {
             ...selections.inventory,
             bag: [...manualBag, ...grantedBag],
             equipped: selections.inventory?.equipped ?? {},
         },
+        system
+    );
+
+    return {
+        ...selections,
+        inventory,
+        grantedCurrency,
     };
 }
+
+/** @deprecated Use mergeStartingGrants */
+export const mergeInventoryWithGrants = mergeStartingGrants;

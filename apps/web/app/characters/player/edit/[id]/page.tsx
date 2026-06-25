@@ -49,7 +49,8 @@ export default function EditPlayer() {
             applyAbilityScoreValidation(
                 applyChoiceValidation(
                     createDynamicSchema(presetData.characters.schema, characterType),
-                    contentLocale
+                    contentLocale,
+                    characterSystem
                 ),
                 presetData.statConfig
             ),
@@ -58,6 +59,7 @@ export default function EditPlayer() {
             presetData.statConfig,
             characterType,
             contentLocale,
+            characterSystem,
         ]
     );
 
@@ -207,7 +209,7 @@ export default function EditPlayer() {
                 system={characterSystem}
             />
             <DynamicForm form={form} fields={fields} onSubmit={handleSave} />
-            <CharacterGrantPickers form={form} contentLocale={contentLocale} />
+            <CharacterGrantPickers form={form} contentLocale={contentLocale} system={characterSystem} />
         </div>
     );
 }

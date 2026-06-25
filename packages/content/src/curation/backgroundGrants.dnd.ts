@@ -39,6 +39,13 @@ export const dndBackgrounds: BackgroundEntry[] = [
                 amount: 1,
                 description: "A scholarly scroll for note-taking.",
             },
+            {
+                grantType: "currency",
+                choose: 0,
+                ref: "gold",
+                amount: 15,
+                description: "Belt pouch (pilot fixture).",
+            },
         ],
     },
 ];

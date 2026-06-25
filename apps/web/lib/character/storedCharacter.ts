@@ -14,6 +14,8 @@ export type CharacterSelections = {
     background?: string;
     inventory: CharacterInventory;
     choices: CharacterChoices;
+    /** Currency materialized from class/background grants (rebuilt each save). */
+    grantedCurrency?: Record<string, number>;
 };
 
 export function emptyCharacterSelections(): CharacterSelections {

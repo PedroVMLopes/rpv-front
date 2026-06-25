@@ -17,7 +17,8 @@ describe("sanitizeGrantPicks", () => {
                     },
                 },
             },
-            "en"
+            "en",
+            "dnd"
         );
 
         expect(selections.choices.grantPicks).toEqual({
@@ -40,7 +41,8 @@ describe("sanitizeGrantPicks", () => {
                     },
                 },
             },
-            "en"
+            "en",
+            "dnd"
         );
 
         expect(selections.choices.grantPicks).toEqual({
@@ -60,7 +62,8 @@ describe("sanitizeGrantPicks", () => {
                     },
                 },
             },
-            "en"
+            "en",
+            "dnd"
         );
 
         expect(selections.choices.grantPicks).toEqual({});
@@ -78,7 +81,8 @@ describe("sanitizeGrantPicks", () => {
                     },
                 },
             },
-            "en"
+            "en",
+            "dnd"
         );
 
         expect(selections.choices.grantPicks).toEqual({

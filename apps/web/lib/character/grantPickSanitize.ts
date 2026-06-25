@@ -77,7 +77,7 @@ export function sanitizeSelections(
         };
     }
 
-    return sanitizeGrantPicks(next, locale, characterLevel);
+    return sanitizeGrantPicks(next, locale, system, characterLevel);
 }
 
 /**
@@ -87,12 +87,14 @@ export function sanitizeSelections(
 export function sanitizeGrantPicks(
     selections: CharacterSelections,
     locale: Locale,
+    system: SystemKey,
     characterLevel = 1
 ): CharacterSelections {
     const pending = collectPendingChoiceGrants(
         selections,
         locale,
-        characterLevel
+        characterLevel,
+        system
     );
     const validKeys = new Set(pending.map((choice) => choice.key));
     const grantPicks = selections.choices.grantPicks ?? {};

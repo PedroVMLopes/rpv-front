@@ -26,10 +26,12 @@ import {
 } from "@/lib/character/choiceValidation";
 import type { CharacterChoices, CharacterSelections } from "@/lib/character/storedCharacter";
 import { readLevelFromForm } from "@/lib/character/level";
+import type { SystemKey } from "@/presets";
 
 type CharacterGrantPickersProps = {
     form: UseFormReturn<Record<string, unknown>>;
     contentLocale: Locale;
+    system: SystemKey;
 };
 
 function readGrantPicks(form: UseFormReturn<Record<string, unknown>>): Record<string, string> {
@@ -83,6 +85,7 @@ function buildOwnedRefsByGrantType(
 export function CharacterGrantPickers({
     form,
     contentLocale,
+    system,
 }: CharacterGrantPickersProps) {
     const t = useTranslations("grants");
     const formValues = form.watch();
@@ -102,9 +105,10 @@ export function CharacterGrantPickers({
             collectPendingChoiceGrants(
                 selections,
                 contentLocale,
-                characterLevel
+                characterLevel,
+                system
             ),
-        [selections, contentLocale, characterLevel]
+        [selections, contentLocale, characterLevel, system]
     );
 
     const ownedRefsByGrantType = useMemo(
@@ -129,9 +133,10 @@ export function CharacterGrantPickers({
             collectLanguageChoiceGrants(
                 selections,
                 contentLocale,
-                characterLevel
+                characterLevel,
+                system
             ),
-        [selections, contentLocale, characterLevel]
+        [selections, contentLocale, characterLevel, system]
     );
 
     const otherChoices = useMemo(
@@ -139,9 +144,10 @@ export function CharacterGrantPickers({
             collectNonLanguageChoiceGrants(
                 selections,
                 contentLocale,
-                characterLevel
+                characterLevel,
+                system
             ),
-        [selections, contentLocale, characterLevel]
+        [selections, contentLocale, characterLevel, system]
     );
 
     const languageBudget = useMemo(
@@ -152,12 +158,12 @@ export function CharacterGrantPickers({
     const grantPicks = readGrantPicks(form);
     const choicesError = form.formState.errors.choices;
     const missingChoices = useMemo(
-        () => findMissingRequiredChoices(formValues, contentLocale),
-        [formValues, contentLocale]
+        () => findMissingRequiredChoices(formValues, contentLocale, system),
+        [formValues, contentLocale, system]
     );
     const invalidPicks = useMemo(
-        () => findInvalidGrantPicks(formValues, contentLocale),
-        [formValues, contentLocale]
+        () => findInvalidGrantPicks(formValues, contentLocale, system),
+        [formValues, contentLocale, system]
     );
     const missingChoiceKeys = useMemo(
         () => new Set(missingChoices.map((choice) => choice.key)),

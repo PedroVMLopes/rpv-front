@@ -1,5 +1,6 @@
 import type { Locale } from "@rpv/domain";
 import type { Grant } from "@rpv/content";
+import type { SystemKey } from "@/presets";
 import { getClassSubclassLevel, getSubclass } from "@rpv/content";
 import type { ZodObject, ZodRawShape } from "zod";
 import { buildSelectionsFromForm } from "./characterAdapter";
@@ -68,14 +69,16 @@ function readGrantPicks(formData: Record<string, unknown>): Record<string, strin
 
 function buildOwnedRefsByGrantType(
     formData: Record<string, unknown>,
-    locale: Locale
+    locale: Locale,
+    system: SystemKey
 ): Map<Grant["grantType"], Set<string>> {
     const selections = buildSelectionsFromForm(formData);
     const characterLevel = readLevelFromForm(formData);
     const pending = collectPendingChoiceGrants(
         selections,
         locale,
-        characterLevel
+        characterLevel,
+        system
     );
     const grantTypes = new Set(pending.map((choice) => choice.grant.grantType));
     const owned = new Map<Grant["grantType"], Set<string>>();
@@ -97,18 +100,24 @@ function buildOwnedRefsByGrantType(
 
 export function findMissingRequiredChoices(
     formData: Record<string, unknown>,
-    locale: Locale
+    locale: Locale,
+    system: SystemKey
 ): PendingChoiceGrant[] {
     const selections = buildSelectionsFromForm(formData);
     const characterLevel = readLevelFromForm(formData);
     const pending = collectPendingChoiceGrants(
         selections,
         locale,
-        characterLevel
+        characterLevel,
+        system
     );
     const grantPicks = readGrantPicks(formData);
 
     return pending.filter((choice) => {
+        if (choice.grant.grantType === "inventory_item") {
+            return false;
+        }
+
         const picked = grantPicks[choice.key];
         return !picked || picked.trim() === "";
     });
@@ -116,17 +125,19 @@ export function findMissingRequiredChoices(
 
 export function findInvalidGrantPicks(
     formData: Record<string, unknown>,
-    locale: Locale
+    locale: Locale,
+    system: SystemKey
 ): string[] {
     const selections = buildSelectionsFromForm(formData);
     const characterLevel = readLevelFromForm(formData);
     const pending = collectPendingChoiceGrants(
         selections,
         locale,
-        characterLevel
+        characterLevel,
+        system
     );
     const grantPicks = readGrantPicks(formData);
-    const ownedRefsByGrantType = buildOwnedRefsByGrantType(formData, locale);
+    const ownedRefsByGrantType = buildOwnedRefsByGrantType(formData, locale, system);
     const errors: string[] = [];
 
     for (const duplicate of findDuplicateGrantPicksInPool(pending, grantPicks)) {
@@ -146,12 +157,13 @@ export function findInvalidGrantPicks(
 
 export function applyChoiceValidation<T extends ZodRawShape>(
     schema: ZodObject<T>,
-    locale: Locale
+    locale: Locale,
+    system: SystemKey
 ) {
     return schema.superRefine((data, ctx) => {
         const formData = data as Record<string, unknown>;
 
-        const missing = findMissingRequiredChoices(formData, locale);
+        const missing = findMissingRequiredChoices(formData, locale, system);
         for (const choice of missing) {
             ctx.addIssue({
                 code: "custom",
@@ -160,7 +172,7 @@ export function applyChoiceValidation<T extends ZodRawShape>(
             });
         }
 
-        for (const errorKey of findInvalidGrantPicks(formData, locale)) {
+        for (const errorKey of findInvalidGrantPicks(formData, locale, system)) {
             ctx.addIssue({
                 code: "custom",
                 path: ["choices"],

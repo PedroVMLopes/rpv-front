@@ -29,7 +29,8 @@ export function deriveResourcesFromForm(
     const grants = deriveCharacterGrants(
         selections,
         locale,
-        characterLevel
+        characterLevel,
+        system
     );
 
     return deriveResourceTotals(grants);

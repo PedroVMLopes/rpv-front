@@ -189,7 +189,9 @@ No engine or UI code changes required if existing grant types suffice.
 ### Starting equipment grants (Etapa 1 — data contract)
 
 Declares starting gear and currency from class/background grants. Materialization
-into `selections.inventory.bag` and `systemData` currency is **Etapa 2** (web).
+into `selections.inventory.bag` and `selections.grantedCurrency` is implemented
+in the web pipeline ([`materializeInventoryGrants.ts`](../../apps/web/lib/character/materializeInventoryGrants.ts),
+[`materializeCurrencyGrants.ts`](../../apps/web/lib/character/materializeCurrencyGrants.ts)).
 
 #### `inventory_item` — fixed loot
 
@@ -296,8 +298,8 @@ only, background source). See [`materializeInventoryGrants.ts`](../../apps/web/l
 
 ### Out of scope (next etapas)
 
-- **Web materialization** — class/background choices + currency → bag / form
-  (Etapa 2); UI pickers (Etapa 3).
+- **Web materialization** — class/background choices + currency → bag /
+  `grantedCurrency` (done); UI pickers (Etapa 3).
 - **SRD item/class/background catalogs** — real content when Supabase is live.
 - **`selectionFilter` item pools** — `itemCategory` / `itemTags` (v2).
 - **Starting gold roll alternative** — mutually exclusive with default equipment.

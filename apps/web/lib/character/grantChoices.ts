@@ -6,6 +6,7 @@ import {
 } from "@rpv/content";
 import type { Locale, ModifierSource } from "@rpv/domain";
 import { catalog } from "@rpv/content";
+import type { SystemKey } from "@/presets";
 import { getRace, getSubrace } from "@/lib/catalog/raceCatalog";
 import { collectGrantSources } from "./characterGrants";
 import type { CharacterSelections } from "./storedCharacter";
@@ -39,7 +40,8 @@ function expandChoiceGrant(
     source: ModifierSource,
     grantIndex: number,
     traitName: string,
-    featureLevel?: number
+    featureLevel?: number,
+    system: SystemKey = "dnd"
 ): PendingChoiceGrant[] {
     if (grant.choose <= 0) {
         return [];
@@ -48,6 +50,7 @@ function expandChoiceGrant(
     const pool = resolveGrantPool(grant, {
         spells: catalog.spells,
         languages: listLanguages(),
+        system,
     });
 
     let options: Array<{ value: string; label: string }> = [];
@@ -62,16 +65,20 @@ function expandChoiceGrant(
             value: spell.slug,
             label: spell.name,
         }));
+    } else if (pool.inventoryOptions) {
+        options = pool.inventoryOptions;
     } else if (pool.options) {
         const skillNames = new Map(
             catalog.skills.map((skill) => [skill.slug, skill.name])
         );
         options = pool.options.map((option) => ({
-            value: option.ref,
+            value: "ref" in option ? option.ref : "",
             label:
                 option.optionType === "skill"
                     ? (skillNames.get(option.ref) ?? option.ref)
-                    : option.ref,
+                    : "ref" in option
+                      ? option.ref
+                      : "",
         }));
     }
 
@@ -104,7 +111,8 @@ function expandChoiceGrant(
 
 function collectFromTraits(
     traits: Array<{ name: string; grants: Grant[] }>,
-    source: ModifierSource
+    source: ModifierSource,
+    system: SystemKey = "dnd"
 ): PendingChoiceGrant[] {
     const pending: PendingChoiceGrant[] = [];
 
@@ -115,7 +123,9 @@ function collectFromTraits(
                     grant,
                     source,
                     grantIndex,
-                    trait.name
+                    trait.name,
+                    undefined,
+                    system
                 )
             );
         });
@@ -127,7 +137,8 @@ function collectFromTraits(
 function collectFromGrants(
     grants: Grant[],
     source: ModifierSource,
-    featureLevel?: number
+    featureLevel?: number,
+    system: SystemKey = "dnd"
 ): PendingChoiceGrant[] {
     const pending: PendingChoiceGrant[] = [];
 
@@ -138,7 +149,8 @@ function collectFromGrants(
                 source,
                 grantIndex,
                 "",
-                featureLevel
+                featureLevel,
+                system
             )
         );
     });
@@ -149,7 +161,8 @@ function collectFromGrants(
 export function collectPendingChoiceGrants(
     selections: CharacterSelections,
     locale: Locale,
-    characterLevel = 1
+    characterLevel = 1,
+    system: SystemKey = "dnd"
 ): PendingChoiceGrant[] {
     const pending: PendingChoiceGrant[] = [];
 
@@ -165,7 +178,9 @@ export function collectPendingChoiceGrants(
         ) {
             const subrace = getSubrace(selections.subrace, locale);
             if (subrace) {
-                pending.push(...collectFromTraits(subrace.traits, entry.source));
+                pending.push(
+                    ...collectFromTraits(subrace.traits, entry.source, system)
+                );
             }
             continue;
         }
@@ -176,11 +191,15 @@ export function collectPendingChoiceGrants(
             entry.source.id === selections.race
         ) {
             const raceLevelGrants = dndRaceLevelGrants[selections.race] ?? [];
-            pending.push(...collectFromGrants(raceLevelGrants, entry.source));
+            pending.push(
+                ...collectFromGrants(raceLevelGrants, entry.source, undefined, system)
+            );
 
             const race = getRace(selections.race, locale);
             if (race) {
-                pending.push(...collectFromTraits(race.traits, entry.source));
+                pending.push(
+                    ...collectFromTraits(race.traits, entry.source, system)
+                );
             }
             continue;
         }
@@ -189,7 +208,8 @@ export function collectPendingChoiceGrants(
             ...collectFromGrants(
                 entry.grants,
                 entry.source,
-                entry.featureLevel
+                entry.featureLevel,
+                system
             )
         );
     }
@@ -200,23 +220,27 @@ export function collectPendingChoiceGrants(
 export function collectLanguageChoiceGrants(
     selections: CharacterSelections,
     locale: Locale,
-    characterLevel = 1
+    characterLevel = 1,
+    system: SystemKey = "dnd"
 ): PendingChoiceGrant[] {
     return collectPendingChoiceGrants(
         selections,
         locale,
-        characterLevel
+        characterLevel,
+        system
     ).filter((choice) => choice.grant.grantType === "language");
 }
 
 export function collectNonLanguageChoiceGrants(
     selections: CharacterSelections,
     locale: Locale,
-    characterLevel = 1
+    characterLevel = 1,
+    system: SystemKey = "dnd"
 ): PendingChoiceGrant[] {
     return collectPendingChoiceGrants(
         selections,
         locale,
-        characterLevel
+        characterLevel,
+        system
     ).filter((choice) => choice.grant.grantType !== "language");
 }

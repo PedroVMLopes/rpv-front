@@ -38,11 +38,12 @@ export default function CreatePlayer() {
             applyAbilityScoreValidation(
                 applyChoiceValidation(
                     createDynamicSchema(presetData.characters.schema, type),
-                    contentLocale
+                    contentLocale,
+                    system
                 ),
                 presetData.statConfig
             ),
-        [presetData.characters.schema, presetData.statConfig, type, contentLocale]
+        [presetData.characters.schema, presetData.statConfig, type, contentLocale, system]
     );
     const baseFields = useMemo(
         () => [
@@ -176,7 +177,7 @@ export default function CreatePlayer() {
                     system={system}
                 />
                 <DynamicForm form={form} fields={fields} onSubmit={handleSave} />
-                <CharacterGrantPickers form={form} contentLocale={contentLocale} />
+                <CharacterGrantPickers form={form} contentLocale={contentLocale} system={system} />
             </div>
         </div>
     );

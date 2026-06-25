@@ -139,6 +139,7 @@ export function normalizeCharacterSelections(
             selections?.background ?? coerceCatalogSlug(systemData.background),
         inventory,
         choices: selections?.choices ?? {},
+        grantedCurrency: selections?.grantedCurrency,
     };
 }
 

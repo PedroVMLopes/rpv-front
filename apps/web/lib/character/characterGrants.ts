@@ -16,6 +16,7 @@ import {
     type Grant,
 } from "@rpv/content";
 import { getRace, getSubrace } from "@/lib/catalog/raceCatalog";
+import type { SystemKey } from "@/presets";
 import type { CharacterSelections } from "./storedCharacter";
 import {
     collectPendingChoiceGrants,
@@ -182,7 +183,8 @@ function resolveChoiceGrant(
 function resolveChoiceGrants(
     selections: CharacterSelections,
     locale: Locale,
-    characterLevel: number
+    characterLevel: number,
+    system: SystemKey
 ): CharacterGrant[] {
     const grantPicks =
         (selections.choices.grantPicks as Record<string, string> | undefined) ??
@@ -190,7 +192,8 @@ function resolveChoiceGrants(
     const pending = collectPendingChoiceGrants(
         selections,
         locale,
-        characterLevel
+        characterLevel,
+        system
     );
     const resolved: CharacterGrant[] = [];
 
@@ -249,7 +252,8 @@ export function getFixedLanguageGrants(
 export function deriveCharacterGrants(
     selections: CharacterSelections,
     locale: Locale,
-    characterLevel = 1
+    characterLevel = 1,
+    system: SystemKey
 ): CharacterGrant[] {
     const sources = collectGrantSources(selections, locale, characterLevel);
     const fixedGrants = sources.flatMap((entry) =>
@@ -277,7 +281,8 @@ export function deriveCharacterGrants(
     const choiceGrants = resolveChoiceGrants(
         selections,
         locale,
-        characterLevel
+        characterLevel,
+        system
     );
 
     return [...fixedGrants, ...choiceGrants];

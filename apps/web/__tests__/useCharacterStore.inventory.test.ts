@@ -15,7 +15,7 @@ const baseFormData = {
     name: "Test Hero",
     ac: 12,
     attributes: baseAttributes,
-    characterClass: "fighter",
+    characterClass: "wizard",
     level: 1,
 };
 
@@ -54,7 +54,7 @@ describe("useCharacterStore inventory", () => {
         });
         expect(
             useCharacterStore.getState().getResolvedStats(updated.id)?.hitPoints
-        ).toBe(17);
+        ).toBe(13);
         expect(
             updated.modifiers.some(
                 (modifier) =>
@@ -81,7 +81,7 @@ describe("useCharacterStore inventory", () => {
         expect(updated.selections.inventory.equipped).toEqual({});
         expect(
             useCharacterStore.getState().getResolvedStats(updated.id)?.hitPoints
-        ).toBe(12);
+        ).toBe(8);
         expect(
             updated.modifiers.some((modifier) => modifier.source.type === "item")
         ).toBe(false);
@@ -105,10 +105,10 @@ describe("useCharacterStore inventory", () => {
             .getState()
             .characters.find((entry) => entry.id === character.id)!;
 
-        expect(updated.resources.hp).toBe(12);
+        expect(updated.resources.hp).toBe(8);
         expect(
             useCharacterStore.getState().getResolvedStats(updated.id)?.hitPoints
-        ).toBe(12);
+        ).toBe(8);
         expect(
             updated.modifiers.some((modifier) => modifier.source.type === "item")
         ).toBe(false);
@@ -190,7 +190,11 @@ describe("useCharacterStore inventory", () => {
     it("does not duplicate sage granted scroll after equip and unequip", () => {
         act(() => {
             useCharacterStore.getState().addCharacter(
-                { ...baseFormData, background: "sage" },
+                {
+                    ...baseFormData,
+                    characterClass: "fighter",
+                    background: "sage",
+                },
                 "player",
                 "dnd"
             );
@@ -216,6 +220,11 @@ describe("useCharacterStore inventory", () => {
                 slug: "scroll-of-fire-bolt",
                 quantity: 1,
                 provenance: "grant:background:sage:2",
+            },
+            {
+                slug: "longsword",
+                quantity: 1,
+                provenance: "grant:class:fighter:4",
             },
         ]);
     });

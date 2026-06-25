@@ -75,6 +75,22 @@ export const dndClasses: ClassEntry[] = [
                     { optionType: "skill", ref: "survival" },
                 ],
             },
+            {
+                grantType: "inventory_item",
+                choose: 0,
+                ref: "longsword",
+                amount: 1,
+                description: "Starting weapon (pilot fixture).",
+            },
+            {
+                grantType: "inventory_item",
+                choose: 1,
+                description: "Starting sidearm (pilot fixture).",
+                options: [
+                    { optionType: "item", ref: "pilot-test-dagger" },
+                    { optionType: "item", ref: "pilot-test-pack-a" },
+                ],
+            },
         ],
         featuresByLevel: [
             {

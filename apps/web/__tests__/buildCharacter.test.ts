@@ -47,7 +47,13 @@ describe("buildStoredCharacter", () => {
             characterClass: "fighter",
             background: "sage",
             inventory: {
-                bag: [],
+                bag: [
+                    {
+                        slug: "longsword",
+                        quantity: 1,
+                        provenance: "grant:class:fighter:4",
+                    },
+                ],
                 equipped: { "main-hand": "scroll-of-fire-bolt" },
             },
         });
@@ -107,7 +113,14 @@ describe("buildStoredCharacter", () => {
         );
 
         expect(character.selections.inventory).toEqual({
-            bag: [{ slug: "scroll-of-fire-bolt", quantity: 1 }],
+            bag: [
+                { slug: "scroll-of-fire-bolt", quantity: 1 },
+                {
+                    slug: "longsword",
+                    quantity: 1,
+                    provenance: "grant:class:fighter:4",
+                },
+            ],
             equipped: {},
         });
         expect(
@@ -136,7 +149,13 @@ describe("buildStoredCharacter", () => {
                 quantity: 1,
                 provenance: "grant:background:sage:2",
             },
+            {
+                slug: "longsword",
+                quantity: 1,
+                provenance: "grant:class:fighter:4",
+            },
         ]);
+        expect(character.selections.grantedCurrency).toEqual({ gold: 15 });
         expect(
             character.grants.some(
                 (grant) =>
@@ -178,6 +197,11 @@ describe("buildStoredCharacter", () => {
                 quantity: 1,
                 provenance: "grant:background:sage:2",
             },
+            {
+                slug: "longsword",
+                quantity: 1,
+                provenance: "grant:class:fighter:4",
+            },
         ]);
     });
 
@@ -208,8 +232,75 @@ describe("buildStoredCharacter", () => {
 
         expect(rebuilt.selections.inventory?.bag).toEqual([
             { slug: "amulet-of-vitality", quantity: 1 },
+            {
+                slug: "longsword",
+                quantity: 1,
+                provenance: "grant:class:fighter:4",
+            },
         ]);
+        expect(rebuilt.selections.grantedCurrency).toEqual({});
         expect(rebuilt.selections.background).toBeUndefined();
+    });
+
+    it("materializes fighter sidearm from grant picks on build", () => {
+        const character = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                choices: {
+                    grantPicks: {
+                        "class:fighter:base:inventory_item:5:0": "0",
+                    },
+                },
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        expect(character.selections.inventory?.bag).toEqual(
+            expect.arrayContaining([
+                {
+                    slug: "longsword",
+                    quantity: 1,
+                    provenance: "grant:class:fighter:4",
+                },
+                {
+                    slug: "pilot-test-dagger",
+                    quantity: 1,
+                    provenance: "grant:class:fighter:5",
+                },
+            ])
+        );
+    });
+
+    it("keeps manual gold separate from granted currency on rebuild", () => {
+        const created = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                background: "sage",
+                gold: 8,
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        expect(created.systemData.gold).toBe(8);
+        expect(created.selections.grantedCurrency).toEqual({ gold: 15 });
+
+        const rebuilt = rebuildStoredCharacter(
+            created,
+            {
+                ...baseFormData,
+                background: "",
+                gold: 8,
+                inventory: created.selections.inventory,
+            },
+            "en"
+        );
+
+        expect(rebuilt.systemData.gold).toBe(8);
+        expect(rebuilt.selections.grantedCurrency).toEqual({});
     });
 
     it("removes invalid bag slugs during build sanitize", () => {
@@ -231,6 +322,11 @@ describe("buildStoredCharacter", () => {
 
         expect(character.selections.inventory.bag).toEqual([
             { slug: "amulet-of-vitality", quantity: 1 },
+            {
+                slug: "longsword",
+                quantity: 1,
+                provenance: "grant:class:fighter:4",
+            },
         ]);
     });
 

@@ -36,6 +36,8 @@ flowchart TD
 | `level` | `systemData.level` | Not in `CharacterSelections`; always read via `readLevelFromForm` |
 | Inventário (possuídos) | `selections.inventory.bag` | `{ slug, quantity }[]`; sanitizado no load/build |
 | Equipamento | `selections.inventory.equipped` | `slotId → slug`; só equipado gera grants/modifiers |
+| Moeda concedida | `selections.grantedCurrency` | `Record<ref, amount>`; materializada de grants class/background |
+| Moeda manual | `systemData.gold` / `silver` / `bronze` | Valores do jogador; não inclui `grantedCurrency` |
 | Race, class, subclass, background | `selections` | Slugs; normalized on load |
 | Grant pick answers | `selections.choices.grantPicks` | Keys include feature level segment (see below) |
 | Resolved abilities, spells, proficiencies | `grants[]` | Traceable via `source` |
@@ -162,8 +164,14 @@ materialized into `selections.inventory.bag` on every
 **Provenance:** granted bag stacks carry `ItemStack.provenance` =
 `grant:{sourceType}:{sourceId}:{grantIndex}` (e.g. `grant:background:sage:2`).
 
-**Etapa 2 (next):** materialize class grants, choice picks, and currency;
-equipment UI on character creation.
+**Etapa 2 (web):** `mergeStartingGrants` materializa class + background
+(`resolveInventoryItemGrants` + `grantPicks`) e `currency` em
+`selections.grantedCurrency`. Manual em `systemData.gold/silver/bronze`.
+Helpers: [`materializeInventoryGrants.ts`](apps/web/lib/character/materializeInventoryGrants.ts),
+[`materializeCurrencyGrants.ts`](apps/web/lib/character/materializeCurrencyGrants.ts).
+
+**Etapa 3 (next):** equipment pickers na criação; validação obrigatória de
+`inventory_item`; exibir total de moeda (`getTotalCurrency`).
 
 **Limitation:** if a granted item is equipped and the background changes, the
 equipped slot is **not** auto-cleared (equipped has no provenance).
@@ -194,8 +202,8 @@ see [`itemGrants.dnd.ts`](packages/content/src/curation/itemGrants.dnd.ts).
 | Etapa | Status | Scope |
 |-------|--------|-------|
 | 1 — Data contract | Done | `@rpv/content`: `inventory_item` choices/bundles, `currency`, resolution helpers |
-| 2 — Web pipeline | Next | `materializeInventoryGrants` + class/background + currency |
-| 3 — Creation UI | Planned | Equipment pickers on character create |
+| 2 — Web pipeline | Done | `mergeStartingGrants`, class/background materialization, `grantedCurrency` |
+| 3 — Creation UI | Next | Equipment pickers on character create |
 | 4 — Content | With Supabase | SRD classes, backgrounds, item catalog |
 
 ---

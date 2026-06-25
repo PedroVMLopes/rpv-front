@@ -30,7 +30,8 @@ describe("findMissingRequiredChoices", () => {
                 race: "dwarf",
                 choices: {},
             },
-            "en"
+            "en",
+            "dnd"
         );
 
         expect(missing.map((choice) => choice.key)).toEqual(
@@ -46,7 +47,8 @@ describe("findMissingRequiredChoices", () => {
                 subrace: "high-elf",
                 choices: {},
             },
-            "en"
+            "en",
+            "dnd"
         );
 
         expect(missing.map((choice) => choice.key)).toEqual(
@@ -65,7 +67,8 @@ describe("findMissingRequiredChoices", () => {
                 characterClass: "fighter",
                 choices: {},
             },
-            "en"
+            "en",
+            "dnd"
         );
 
         expect(missing.map((choice) => choice.key)).toEqual(
@@ -89,7 +92,8 @@ describe("findMissingRequiredChoices", () => {
                     },
                 },
             },
-            "en"
+            "en",
+            "dnd"
         );
 
         expect(missing.map((choice) => choice.key)).toEqual([
@@ -113,7 +117,8 @@ describe("findMissingRequiredChoices", () => {
                     },
                 },
             },
-            "en"
+            "en",
+            "dnd"
         );
 
         expect(missing).toEqual([]);
@@ -132,7 +137,8 @@ describe("findMissingRequiredChoices", () => {
                     },
                 },
             },
-            "en"
+            "en",
+            "dnd"
         );
 
         expect(invalid).toContain("duplicateGrantPick:athletics");
@@ -152,7 +158,8 @@ describe("findMissingRequiredChoices", () => {
                     },
                 },
             },
-            "en"
+            "en",
+            "dnd"
         );
 
         expect(invalid).toContain("alreadyGranted:history");
@@ -204,7 +211,8 @@ describe("findMissingSubclass", () => {
 describe("applyChoiceValidation", () => {
     const schema = applyChoiceValidation(
         createDynamicSchema(dndCharacterSchema, "player"),
-        "en"
+        "en",
+        "dnd"
     );
 
     it("fails validation when required grant picks are missing", () => {

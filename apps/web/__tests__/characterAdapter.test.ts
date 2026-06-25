@@ -286,6 +286,25 @@ describe("characterAdapter system-agnostic mapping", () => {
         expect(normalized.subclass).toBeUndefined();
     });
 
+    it("preserves grantedCurrency on normalize", () => {
+        const normalized = normalizeCharacterSelections(
+            {
+                race: undefined,
+                subrace: undefined,
+                characterClass: "fighter",
+                subclass: undefined,
+                background: "sage",
+                inventory: emptyInventory(),
+                choices: {},
+                grantedCurrency: { gold: 15 },
+            },
+            {},
+            "dnd"
+        );
+
+        expect(normalized.grantedCurrency).toEqual({ gold: 15 });
+    });
+
     it("backfills schemaVersion and inventory on normalize", () => {
         const stored = normalizeStoredCharacter({
             id: "no-version",
