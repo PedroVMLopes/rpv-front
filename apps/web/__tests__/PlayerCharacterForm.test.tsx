@@ -107,7 +107,25 @@ describe("PlayerCharacterForm", () => {
         expect(screen.getByRole("button", { name: /Class/ })).not.toBeDisabled();
     });
 
-    it("shows fighter fixed proficiencies and equipment teaser on class step", async () => {
+    it("hides subclass and class choices when no class is selected", async () => {
+        const user = userEvent.setup();
+
+        render(
+            <PlayerFormHarness
+                defaultValues={{
+                    race: "elf",
+                    level: 1,
+                }}
+            />
+        );
+
+        await user.click(screen.getByRole("button", { name: /Class/ }));
+
+        expect(screen.queryByText("Subclass")).not.toBeInTheDocument();
+        expect(screen.queryByText("Class choices")).not.toBeInTheDocument();
+    });
+
+    it("shows fighter fixed proficiencies on class step", async () => {
         const user = userEvent.setup();
 
         render(

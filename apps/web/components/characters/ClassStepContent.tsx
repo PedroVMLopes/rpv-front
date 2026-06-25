@@ -42,14 +42,16 @@ export function ClassStepContent({
     const classSlug = useWatch({ control, name: "characterClass" });
     const watchedLevel = useWatch({ control, name: "level" });
     const level = readLevelFromForm({ level: watchedLevel });
+    const hasClass =
+        typeof classSlug === "string" && classSlug.trim() !== "";
 
     const partition = useMemo(() => {
-        if (typeof classSlug !== "string" || classSlug.trim() === "") {
+        if (!hasClass) {
             return null;
         }
 
         return partitionClassGrantsForLevel(classSlug, level);
-    }, [classSlug, level]);
+    }, [classSlug, hasClass, level]);
 
     return (
         <div className="flex flex-col gap-4">
@@ -80,17 +82,21 @@ export function ClassStepContent({
                 </section>
             )}
 
-            <section className="flex flex-col gap-2">
-                <h2 className="text-sm font-bold">{t("classStep.choicesTitle")}</h2>
-                <CharacterGrantPickers
-                    form={form}
-                    contentLocale={contentLocale}
-                    system={system}
-                    sourceTypes={getGrantSourceTypesForStep("class")}
-                    sections="choices-only"
-                    displayLevel={level}
-                />
-            </section>
+            {hasClass && (
+                <section className="flex flex-col gap-2">
+                    <h2 className="text-sm font-bold">
+                        {t("classStep.choicesTitle")}
+                    </h2>
+                    <CharacterGrantPickers
+                        form={form}
+                        contentLocale={contentLocale}
+                        system={system}
+                        sourceTypes={getGrantSourceTypesForStep("class")}
+                        sections="choices-only"
+                        displayLevel={level}
+                    />
+                </section>
+            )}
         </div>
     );
 }

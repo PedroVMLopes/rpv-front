@@ -99,15 +99,17 @@ export function getVisiblePlayerFields(
     }
 
     if (stepId === "class") {
-        const subclassLevel = classSlug
+        const hasClass =
+            typeof classSlug === "string" && classSlug.trim() !== "";
+        const subclassLevel = hasClass
             ? getClassSubclassLevel(classSlug)
             : undefined;
         const resolvedLevel =
             typeof level === "number" && !Number.isNaN(level) ? level : 1;
 
         if (
-            subclassLevel !== undefined &&
-            resolvedLevel < subclassLevel
+            !hasClass ||
+            (subclassLevel !== undefined && resolvedLevel < subclassLevel)
         ) {
             visible = visible.filter((field) => field.name !== "subclass");
         }
