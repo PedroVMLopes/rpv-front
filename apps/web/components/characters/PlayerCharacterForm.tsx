@@ -152,9 +152,11 @@ export function PlayerCharacterForm({
         () =>
             getVisiblePlayerFields(hydratedFields, activeStepId, {
                 raceSlug,
+                classSlug,
+                level: readLevelFromForm({ level }),
                 contentLocale,
             }),
-        [hydratedFields, activeStepId, raceSlug, contentLocale]
+        [hydratedFields, activeStepId, raceSlug, classSlug, level, contentLocale]
     );
 
     const grantSourceTypes = getGrantSourceTypesForStep(activeStepId);
@@ -271,9 +273,6 @@ export function PlayerCharacterForm({
                         fields={stepFields}
                         contentLocale={contentLocale}
                         system={system}
-                        equipmentStepIndex={CHARACTER_CREATION_STEP_COUNT - 1}
-                        maxUnlockedStep={maxUnlockedStep}
-                        onNavigateToStep={handleStepSelect}
                     />
                 );
             case "abilities":

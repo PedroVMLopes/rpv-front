@@ -126,8 +126,26 @@ describe("PlayerCharacterForm", () => {
             screen.getByText("Proficiencies & resources (automatic)")
         ).toBeInTheDocument();
         expect(screen.getByText("Strength save")).toBeInTheDocument();
-        expect(screen.getByText("Starting equipment")).toBeInTheDocument();
-        expect(screen.getByText(/Equipment or 50 gp/i)).toBeInTheDocument();
+        expect(screen.queryByText("Starting equipment")).not.toBeInTheDocument();
+        expect(screen.queryByText("Subclass")).not.toBeInTheDocument();
+    });
+
+    it("shows subclass field on class step at level 3", async () => {
+        const user = userEvent.setup();
+
+        render(
+            <PlayerFormHarness
+                defaultValues={{
+                    race: "elf",
+                    characterClass: "fighter",
+                    level: 3,
+                }}
+            />
+        );
+
+        await user.click(screen.getByRole("button", { name: /Class/ }));
+
+        expect(screen.getByText("Subclass")).toBeInTheDocument();
     });
 
     it("unlocks equipment step for a partially built character", () => {

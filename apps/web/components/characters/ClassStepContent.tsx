@@ -8,7 +8,6 @@ import type { SystemKey } from "@/presets";
 import { DynamicForm } from "@/components/forms/DynamicForm";
 import { CharacterLevelSelector } from "@/components/characters/CharacterLevelSelector";
 import { CharacterGrantPickers } from "@/components/characters/CharacterGrantPickers";
-import { Button } from "@/components/ui/button";
 import {
     formatClassStepGrantLabel,
     partitionClassGrantsForLevel,
@@ -27,9 +26,6 @@ type ClassStepContentProps = {
     fields: FieldConfig[];
     contentLocale: Locale;
     system: SystemKey;
-    equipmentStepIndex: number;
-    maxUnlockedStep: number;
-    onNavigateToStep: (stepIndex: number) => void;
 };
 
 export function ClassStepContent({
@@ -37,9 +33,6 @@ export function ClassStepContent({
     fields,
     contentLocale,
     system,
-    equipmentStepIndex,
-    maxUnlockedStep,
-    onNavigateToStep,
 }: ClassStepContentProps) {
     const t = useTranslations("characterCreation");
     const tAbilities = useTranslations("abilities");
@@ -57,23 +50,6 @@ export function ClassStepContent({
 
         return partitionClassGrantsForLevel(classSlug, level);
     }, [classSlug, level]);
-
-    const equipmentUnlocked = maxUnlockedStep >= equipmentStepIndex;
-
-    const equipmentPreview = useMemo(() => {
-        if (!partition?.equipmentSummary) {
-            return null;
-        }
-
-        if (partition.equipmentSummary === "equipment") {
-            return t("classStep.equipmentPreviewEquipment");
-        }
-
-        return partition.equipmentSummary.replace(
-            /\bequipment\b/gi,
-            t("classStep.equipmentPreviewEquipment")
-        );
-    }, [partition?.equipmentSummary, t]);
 
     return (
         <div className="flex flex-col gap-4">
@@ -114,28 +90,6 @@ export function ClassStepContent({
                     sections="choices-only"
                     displayLevel={level}
                 />
-            </section>
-
-            <section className="flex flex-col gap-2 border rounded-lg p-4 bg-muted/30">
-                <h2 className="text-sm font-bold">{t("classStep.equipmentTitle")}</h2>
-                <p className="text-sm text-muted-foreground">{t("classStep.equipmentHint")}</p>
-                {equipmentPreview && (
-                    <p className="text-sm">{equipmentPreview}</p>
-                )}
-                {equipmentUnlocked ? (
-                    <Button
-                        type="button"
-                        variant="link"
-                        className="h-auto p-0 self-start"
-                        onClick={() => onNavigateToStep(equipmentStepIndex)}
-                    >
-                        {t("classStep.equipmentLink")}
-                    </Button>
-                ) : (
-                    <p className="text-xs text-muted-foreground">
-                        {t("classStep.equipmentLinkLocked")}
-                    </p>
-                )}
             </section>
         </div>
     );

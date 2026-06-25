@@ -79,7 +79,15 @@ export function buildPlayerGrantSourceFields(
 export function getVisiblePlayerFields(
     fields: FieldConfig[],
     stepId: CharacterCreationStepId,
-    { raceSlug, contentLocale }: Pick<PlayerGrantSourceFieldOptions, "raceSlug" | "contentLocale">
+    {
+        raceSlug,
+        classSlug,
+        level,
+        contentLocale,
+    }: Pick<
+        PlayerGrantSourceFieldOptions,
+        "raceSlug" | "classSlug" | "level" | "contentLocale"
+    >
 ): FieldConfig[] {
     let visible = filterFieldsForStep(fields, stepId);
 
@@ -87,6 +95,21 @@ export function getVisiblePlayerFields(
         const subraceOptions = listSubraceOptions(raceSlug, contentLocale);
         if (!raceSlug || subraceOptions.length === 0) {
             visible = visible.filter((field) => field.name !== "subrace");
+        }
+    }
+
+    if (stepId === "class") {
+        const subclassLevel = classSlug
+            ? getClassSubclassLevel(classSlug)
+            : undefined;
+        const resolvedLevel =
+            typeof level === "number" && !Number.isNaN(level) ? level : 1;
+
+        if (
+            subclassLevel !== undefined &&
+            resolvedLevel < subclassLevel
+        ) {
+            visible = visible.filter((field) => field.name !== "subclass");
         }
     }
 
