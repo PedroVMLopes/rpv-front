@@ -27,6 +27,8 @@ flowchart TD
 5. **`deriveCharacterGrants`** — resolves grants + `grantPicks` into domain `CharacterGrant[]`.
 6. **`deriveResourceTotals`** — sums `kind: "resource"` grants by `ref` into `stored.resources` (HP stays form-driven).
 
+Starting loot from class/background grants is materialized on every build via `mergeStartingGrants` (see [Starting equipment](#starting-equipment) below).
+
 ---
 
 ## Where data lives
@@ -52,14 +54,7 @@ Item definitions (`grants`, `allowedSlots`) live in `@rpv/content`; inventory **
 - `schemaVersion` on the `StoredCharacter` root enables future migrations.
 - No `startingItem`, `items[]`, or numeric `inventory` in the persisted contract — use `selections.inventory` only.
 
-### API contract (deferred)
-
-Future HTTP contract for inventory and `StoredCharacter` persistence:
-[`docs/API_INVENTORY.md`](docs/API_INVENTORY.md).
-
-- **PATCH** `/characters/:id/inventory` — full-replace `{ bag, equipped }`; server runs `sanitizeInventory` + rebuild.
-- Only **equipped** slugs generate grants/modifiers (same as web).
-- Backend implementation is **out of scope** for the current frontend pilot.
+Future HTTP contract: [`docs/API_INVENTORY.md`](docs/API_INVENTORY.md) (deferred; backend out of scope for the current frontend pilot).
 
 ---
 
@@ -86,6 +81,9 @@ Format: `{sourceType}:{sourceId}:{levelSegment}:{grantType}:{grantIndex}:{slot}`
 
 Stale keys are dropped automatically when race, class, subclass, or level changes.
 
+Exclusive starting-wealth branches use:
+`{sourceType}:{sourceId}:{levelSegment}:exclusive:{exclusiveGroup}` → branch id.
+
 ---
 
 ## Subclass rules
@@ -108,113 +106,51 @@ Resources (spell slots, rage uses, ki points) are **declarative deltas** per lev
 
 Multiple grants with the same `ref` are **summed** at build time. Convention: kebab-case refs (`spell-slots-1`, `rage-uses`, `ki-points`).
 
-### UI (Passo 4)
+### UI
 
-Read-only preview and sheet display share the same pipeline slice:
-
-- **`deriveResourcesFromForm`** — `sanitizeSelections → deriveCharacterGrants → deriveResourceTotals` from live form data (no persist).
-- **`ClassResourcesField`** — form create/edit preview; updates when class, level, or choices change.
-- **`DerivedResourcesDisplay`** — spell slots + class resources with i18n labels; used on the form and in `CharacterCardAbilities`.
+- **`deriveResourcesFromForm`** — live preview from form data (no persist).
+- **`ClassResourcesField`** — create/edit form preview.
+- **`DerivedResourcesDisplay`** — spell slots + class resources on the form and character card.
 - **Labels** — `classResources.refs.{ref}` in [`apps/web/messages/*.json`](apps/web/messages/en.json); unknown refs fall back to a humanized slug.
 
-HP remains form-driven via `HitPointsField`. Combat tracking of rage/ki uses in initiative is **not** implemented yet.
+HP is form-driven via `HitPointsField`. Editable combat tracking of derived resources (rage, ki, spell slots) during play is planned via the player sheet ([`docs/FICHA_JOGADOR.md`](docs/FICHA_JOGADOR.md)).
 
 ---
 
-## Authoring checklist — new class or subclass
+## Starting equipment
 
-1. Add entry to [`classGrants.dnd.ts`](packages/content/src/curation/classGrants.dnd.ts) or [`subclassGrants.dnd.ts`](packages/content/src/curation/subclassGrants.dnd.ts).
-2. Set `subclassLevel` on the class if it has subclasses.
-3. Define `grants` (base proficiencies, fixed abilities) and `featuresByLevel` (level-gated features, resources, spell picks).
-4. Use `choose > 0` + `options` or `selectionFilter` for player choices.
-5. Add pt-BR overlay in [`packages/content/data/translations/pt-BR.json`](packages/content/data/translations/pt-BR.json) under `classes` / `subclasses`.
-6. For new resource refs, add `classResources.refs.{ref}` in [`apps/web/messages/en.json`](apps/web/messages/en.json) and [`pt-BR.json`](apps/web/messages/pt-BR.json).
-7. Run `npm test` (packages) and `npm test -w rpv-front` (web pipeline).
+Class and background grants can declare starting gear and currency via `inventory_item`, `inventory_bundle`, and `currency` grant types. Resolution helpers live in `@rpv/content`; the web pipeline materializes them on every `buildStoredCharacter` / `rebuildStoredCharacter` pass.
 
-No engine or UI code changes required if existing grant types suffice.
+| Grant type | Role |
+|------------|------|
+| `inventory_item` | Fixed or chosen items → `selections.inventory.bag` |
+| `inventory_bundle` | Labeled multi-item option within a choice grant |
+| `currency` | Starting wealth → `selections.grantedCurrency` |
+| `exclusiveGroup` / `exclusiveBranch` | Mutually exclusive branches (e.g. equipment vs gold) |
 
-### Racial ability score increases (`ability_score` grant)
+Grants in an `exclusiveGroup` materialize only when the player picks a branch. Background grants without `exclusiveGroup` always apply.
 
-**Fixed:** `{ grantType: "ability_score", choose: 0, targetStat, amount }` →
-`abilityScoreGrantsToModifiers` in `@rpv/content`.
+**Provenance:** granted bag stacks may carry `ItemStack.provenance` =
+`grant:{sourceType}:{sourceId}:{grantIndex}`.
 
-**Distributable:** `{ choose: N, amount: 1, options: [{ optionType: "stat", ref }] }`.
-Picks live in `choices.grantPicks`; resolved via `resolveAbilityScoreGrants`.
-UI: `CharacterGrantPickers` (racial ASI section) + `AbilityScoresField` (base /
-racial / total columns).
+**Creation UI:** `StartingEquipmentField` — exclusive branch selector, item/currency pickers, materialized bag preview. Validated via `choiceValidation` and `startingEquipmentValidation`.
 
-**Half-elf pilot:** `dndRaceAsiOverrides` in [`raceGrants.dnd.ts`](packages/content/src/curation/raceGrants.dnd.ts)
-(+2 CHA fixed, +1 to two other stats). Variant Human (feat vs ASI) is follow-up.
+**Web helpers:** [`materializeInventoryGrants.ts`](apps/web/lib/character/materializeInventoryGrants.ts), [`materializeCurrencyGrants.ts`](apps/web/lib/character/materializeCurrencyGrants.ts), [`exclusiveGroups.ts`](packages/content/src/grant/exclusiveGroups.ts).
 
-### Independent equipment choices + bundles
+SRD starting gear uses **multiple separate `choose: 1` grants** (armor, weapons, pack), not one multi-pick grant.
 
-SRD starting gear uses **multiple separate `choose: 1` grants** (armor, weapons,
-pack), not one multi-pick grant. Bundle options use `inventory_bundle` with a
-human-readable `label`; `formatInventoryBundleLabel` falls back to item names.
-Fighter pilot: see [`classGrants.dnd.ts`](packages/content/src/curation/classGrants.dnd.ts).
+**Limitation:** if a granted item is equipped and the background changes, the equipped slot is **not** auto-cleared (equipped has no provenance).
 
 ---
 
-## Authoring checklist — new item
+## Content authoring
 
-Full guide (contract, anti-patterns, pilot patterns):
-[`packages/content/AGENTS.md`](packages/content/AGENTS.md) (Item authoring).
+Detailed checklists for new classes, subclasses, items, and grant patterns live in:
 
-1. Add entry to [`itemGrants.dnd.ts`](packages/content/src/curation/itemGrants.dnd.ts) (`system: "dnd"`).
-2. Set `allowedSlots` using IDs from [`equipmentSlots.dnd.ts`](packages/content/src/curation/equipmentSlots.dnd.ts).
-3. Set `stackable` (`false` for unique gear).
-4. Define `grants` with `choose: 0` (`stat_modifier`, `spell`, or `ability`).
-5. Add pt-BR overlay under `items` in [`packages/content/data/translations/pt-BR.json`](packages/content/data/translations/pt-BR.json).
-6. If adding a new equipment slot, update `equipmentSlots.dnd.ts` + pt-BR `equipmentSlots`.
-7. Extend [`packages/content/__tests__/itemGrants.test.ts`](packages/content/__tests__/itemGrants.test.ts) for the new slug.
-8. Run `npm run test:packages` and `npm test -w rpv-front`.
-9. After Etapa 6 UI: smoke-test bag → equip → verify resolved stats/grants.
+- [`packages/content/AGENTS.md`](packages/content/AGENTS.md) — item authoring, starting equipment grants, pilot patterns
+- [`packages/domain/AGENTS.md`](packages/domain/AGENTS.md) — engine boundaries
 
-No engine or UI code changes required if existing grant types suffice.
-
-### Background starting loot (`inventory_item` grant)
-
-**Etapa 1 (content):** data contract for `inventory_item` (fixed + choices +
-bundles) and `currency` grants. Resolution helpers live in `@rpv/content`
-(`resolveInventoryItemGrants`, `extractCurrencyGrants`, …).
-
-**Web today:** class + background starting loot materializes on every
-`buildStoredCharacter` / `rebuildStoredCharacter` pass via `mergeStartingGrants`.
-Grants in an `exclusiveGroup` materialize only when the player picks a branch
-(equipment vs gold). Background grants without `exclusiveGroup` always apply.
-
-| Field | Value |
-|-------|-------|
-| `grantType` | `"inventory_item"` or `"currency"` |
-| `choose` | `0` fixed; `> 0` player picks |
-| `ref` | Item slug (`inventory_item`) or currency unit (`currency`) |
-| `amount` | Quantity (default `1` for items) |
-| `exclusiveGroup` / `exclusiveBranch` | Mutually exclusive starting wealth branches |
-
-**Exclusive pick key:** `{sourceType}:{sourceId}:{levelSegment}:exclusive:{exclusiveGroup}` → branch id.
-
-**Provenance:** granted bag stacks carry `ItemStack.provenance` =
-`grant:{sourceType}:{sourceId}:{grantIndex}` (e.g. `grant:background:sage:2`).
-
-**Etapa 2 (web):** `mergeStartingGrants` materializa class + background
-(`resolveInventoryItemGrants` + `grantPicks`) e `currency` (`resolveCurrencyGrants`)
-em `selections.grantedCurrency`. Manual em `systemData.gold/silver/bronze`.
-Helpers: [`materializeInventoryGrants.ts`](apps/web/lib/character/materializeInventoryGrants.ts),
-[`materializeCurrencyGrants.ts`](apps/web/lib/character/materializeCurrencyGrants.ts),
-[`exclusiveGroups.ts`](packages/content/src/grant/exclusiveGroups.ts).
-
-**Etapa 3 (web):** `StartingEquipmentField` — seletor de branch exclusivo,
-dropdowns de `inventory_item` / `currency` com `choose > 0`, preview da bag
-materializada e breakdown de moeda. Validação em `choiceValidation` +
-`startingEquipmentValidation`.
-
-**Limitation:** if a granted item is equipped and the background changes, the
-equipped slot is **not** auto-cleared (equipped has no provenance).
-
-Pilot: Sage background grants `scroll-of-fire-bolt` + 15 gp; Fighter grants
-equipment **or** 50 gp (avg 5d4×10) — see
-[`backgroundGrants.dnd.ts`](packages/content/src/curation/backgroundGrants.dnd.ts),
-[`classGrants.dnd.ts`](packages/content/src/curation/classGrants.dnd.ts).
+When adding content, run `npm run test:packages` and `npm test -w rpv-front`.
 
 ---
 
@@ -232,16 +168,7 @@ Wizard spell picks (pilot): 3 cantrips + 6 leveled spell choice slots at L5 (red
 **Pilot items** (D&D): 6 pilot gear items + 3 `pilot-test-*` contract fixtures —
 see [`itemGrants.dnd.ts`](packages/content/src/curation/itemGrants.dnd.ts).
 
----
-
-## Starting equipment roadmap
-
-| Etapa | Status | Scope |
-|-------|--------|-------|
-| 1 — Data contract | Done | `@rpv/content`: `inventory_item` choices/bundles, `currency`, `exclusiveGroup`, resolution helpers |
-| 2 — Web pipeline | Done | `mergeStartingGrants`, exclusive branch filter, `grantedCurrency` via `resolveCurrencyGrants` |
-| 3 — Creation UI | Done | `StartingEquipmentField`, exclusive branch selector, equipment/currency validation |
-| 4 — Content | With Supabase | SRD classes, backgrounds, item catalog |
+Full SRD class/background/item catalogs are future work (Supabase-backed content).
 
 ---
 
@@ -249,6 +176,7 @@ see [`itemGrants.dnd.ts`](packages/content/src/curation/itemGrants.dnd.ts).
 
 - **Catalog spells:** pilot catalog includes cantrips plus a wizard L1 subset (8 spells); higher-level pools remain sparse until the catalog expands.
 - **Multiclass, ASI/Feat:** out of scope.
+- **Variant Human** (feat vs ASI): not implemented.
 - **Legacy characters:** `normalizeStoredCharacter` coerces slugs, clears invalid subclass, backfills `schemaVersion` and `selections.inventory`, and strips legacy inventory keys from `systemData`.
 
 ### ContentRepository
@@ -275,6 +203,7 @@ Web tests are the primary integration coverage for the character pipeline.
 
 ## Next steps
 
+- **Ficha de jogador e auxiliar de rolagens** — see [docs/FICHA_JOGADOR.md](docs/FICHA_JOGADOR.md) (player sheet full-page, roll assistant, phased UX roadmap).
 - Extend spell catalog beyond wizard L1 toward full SRD coverage.
 - Extend class progression beyond L5 toward L20.
-- Initiative tracker: editable current uses for derived resources (rage, ki).
+- Initiative tracker: editable current uses for derived resources (rage, ki) — partially addressed by player sheet header (Fases 1–2 in FICHA_JOGADOR.md).
