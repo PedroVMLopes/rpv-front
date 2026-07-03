@@ -8,6 +8,7 @@ import { useCharacterStore } from "@/store/useCharacterStore";
 import {
     ClassSubclassBlock,
     RaceTraitsBlock,
+    UnresolvedChoicesBlock,
 } from "./CharacterCardRaceInfo";
 import { getRaceTraitDisplay } from "@/lib/character/raceDisplay";
 import { useContentLocale } from "@/store/useContentLocale";
@@ -87,7 +88,16 @@ export default function CharacterCardInfoBlocks({
                 </div>
             )}
 
-            {hasTraits && <RaceTraitsBlock stored={stored} />}
+            {unresolvedChoices.length > 0 ? (
+                <div className="mt-2">
+                    <UnresolvedChoicesBlock stored={stored} />
+                </div>
+            ) : null}
+            {traits.length > 0 ? (
+                <div className="mt-2">
+                    <RaceTraitsBlock stored={stored} />
+                </div>
+            ) : null}
 
             {goals && (
                 <div className="flex flex-col gap-2">

@@ -24,25 +24,21 @@ export function IdentitySection({ stored }: IdentitySectionProps) {
             ? String(systemData.goals)
             : null;
 
-    if (!background && !goals) {
-        return <RaceTraitsBlock stored={stored} />;
-    }
-
     return (
-        <section className="flex flex-col gap-2">
+        <section className="flex flex-col gap-4">
             <RaceTraitsBlock stored={stored} />
 
             {background ? (
-                <div className="flex flex-col gap-1 rounded-2xl border bg-popover p-2 px-3 text-popover-foreground">
-                    <p className="text-sm opacity-60">{t("background")}</p>
-                    <p className="font-medium">{background}</p>
+                <div className="flex flex-col gap-1 rounded-2xl border p-3">
+                    <p className="text-sm font-bold">{t("background")}</p>
+                    <p className="text-sm">{background}</p>
                 </div>
             ) : null}
 
             {goals ? (
-                <div className="flex flex-col gap-1 rounded-2xl border bg-popover p-2 px-3 text-popover-foreground">
-                    <p className="text-sm opacity-60">{t("goals")}</p>
-                    <p>{goals}</p>
+                <div className="flex flex-col gap-1 rounded-2xl border p-3">
+                    <p className="text-sm font-bold">{t("goals")}</p>
+                    <p className="text-sm">{goals}</p>
                 </div>
             ) : null}
         </section>

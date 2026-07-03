@@ -1,6 +1,7 @@
 "use client";
 
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
+import { UnresolvedChoicesBlock } from "@/components/characters/CharacterCard/CharacterCardRaceInfo";
 import { PortraitSection } from "../overview/PortraitSection";
 import { AbilitiesSection } from "../overview/AbilitiesSection";
 import { SkillsCard } from "../overview/SkillsCard";
@@ -22,6 +23,7 @@ export function OverviewTab({ stored }: OverviewTabProps) {
             </div>
 
             <div className="flex flex-col gap-4">
+                <UnresolvedChoicesBlock stored={stored} />
                 <SkillsCard stored={stored} />
                 <IdentitySection stored={stored} />
             </div>

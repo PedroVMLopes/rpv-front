@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { FaChevronDown } from "react-icons/fa6";
 import { contentRepo } from "@/lib/content/contentRepository";
 import { useContentLocale } from "@/store/useContentLocale";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
@@ -35,50 +36,68 @@ export function ClassSubclassBlock({ stored }: { stored: StoredCharacter }) {
     );
 }
 
-export function RaceTraitsBlock({ stored }: { stored: StoredCharacter }) {
+export function UnresolvedChoicesBlock({
+    stored,
+}: {
+    stored: StoredCharacter;
+}) {
     const t = useTranslations("character");
     const contentLocale = useContentLocale((state) => state.contentLocale);
-    const { traits, unresolvedChoices } = getRaceTraitDisplay(
+    const { unresolvedChoices } = getRaceTraitDisplay(
         stored.selections,
         contentLocale
     );
 
-    if (traits.length === 0 && unresolvedChoices.length === 0) {
+    if (unresolvedChoices.length === 0) {
         return null;
     }
 
     return (
-        <div className="flex flex-col border rounded-2xl mt-2 p-2 px-3 gap-2 bg-popover text-popover-foreground">
-            {traits.length > 0 && (
-                <>
-                    <p className="text-sm opacity-60">{t("traits")}</p>
-                    <ul className="space-y-2">
-                        {traits.map((trait) => (
-                            <li key={trait.slug}>
-                                <p className="font-semibold">{trait.name}</p>
-                                {trait.description ? (
-                                    <p className="text-sm opacity-80">
-                                        {trait.description}
-                                    </p>
-                                ) : null}
-                            </li>
-                        ))}
-                    </ul>
-                </>
-            )}
+        <section className="flex flex-col gap-2 rounded-2xl border p-3">
+            <h2 className="text-sm font-bold">{t("unresolvedChoices")}</h2>
+            <ul className="list-disc space-y-1 pl-4 text-sm text-muted-foreground">
+                {unresolvedChoices.map((choice, index) => (
+                    <li key={`${choice.traitName}-${index}`}>
+                        {formatUnresolvedChoice(choice)}
+                    </li>
+                ))}
+            </ul>
+        </section>
+    );
+}
 
-            {unresolvedChoices.length > 0 && (
-                <div className="space-y-1">
-                    <p className="text-sm opacity-60">{t("unresolvedChoices")}</p>
-                    <ul className="text-sm opacity-80 list-disc pl-4">
-                        {unresolvedChoices.map((choice, index) => (
-                            <li key={`${choice.traitName}-${index}`}>
-                                {formatUnresolvedChoice(choice)}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            )}
-        </div>
+export function RaceTraitsBlock({ stored }: { stored: StoredCharacter }) {
+    const t = useTranslations("character");
+    const contentLocale = useContentLocale((state) => state.contentLocale);
+    const { traits } = getRaceTraitDisplay(stored.selections, contentLocale);
+
+    if (traits.length === 0) {
+        return null;
+    }
+
+    return (
+        <section className="flex flex-col gap-3 rounded-2xl border p-3">
+            <h2 className="text-sm font-bold">{t("traits")}</h2>
+            <ul className="flex flex-col gap-1.5">
+                {traits.map((trait) => (
+                    <li key={trait.slug}>
+                        <details className="group rounded-xl border bg-popover text-popover-foreground">
+                            <summary className="flex cursor-pointer list-none items-center justify-between gap-2 rounded-xl px-3 py-2 text-sm font-semibold marker:content-none [&::-webkit-details-marker]:hidden">
+                                <span>{trait.name}</span>
+                                <FaChevronDown
+                                    className="size-3 shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
+                                    aria-hidden
+                                />
+                            </summary>
+                            {trait.description ? (
+                                <div className="border-t px-3 py-2 text-sm text-muted-foreground">
+                                    {trait.description}
+                                </div>
+                            ) : null}
+                        </details>
+                    </li>
+                ))}
+            </ul>
+        </section>
     );
 }

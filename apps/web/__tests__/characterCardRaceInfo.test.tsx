@@ -4,7 +4,11 @@
 import type { ReactElement } from "react";
 import { render, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
-import { ClassSubclassBlock, RaceTraitsBlock } from "../components/characters/CharacterCard/CharacterCardRaceInfo";
+import {
+    ClassSubclassBlock,
+    RaceTraitsBlock,
+    UnresolvedChoicesBlock,
+} from "../components/characters/CharacterCard/CharacterCardRaceInfo";
 import { useContentLocale } from "../store/useContentLocale";
 import { emptyInventory } from "@rpv/domain";
 import type { StoredCharacter } from "../lib/character/storedCharacter";
@@ -72,7 +76,12 @@ describe("CharacterCard race info", () => {
     });
 
     it("lists racial traits and unresolved choices", () => {
-        renderWithProviders(<RaceTraitsBlock stored={storedCharacter} />);
+        renderWithProviders(
+            <>
+                <UnresolvedChoicesBlock stored={storedCharacter} />
+                <RaceTraitsBlock stored={storedCharacter} />
+            </>
+        );
 
         expect(screen.getByText("Traits")).toBeInTheDocument();
         expect(screen.getByText("Fey Ancestry")).toBeInTheDocument();
