@@ -1,0 +1,177 @@
+"use client";
+
+import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { FaArrowLeft, FaGear, FaHeart, FaShield } from "react-icons/fa6";
+import { Button } from "@/components/ui/button";
+import { DerivedResourcesDisplay } from "@/components/characters/DerivedResourcesDisplay";
+import { contentRepo } from "@/lib/content/contentRepository";
+import { computeInitiative } from "@/lib/character/derivedStats";
+import { formatModifier } from "@/lib/character/skillModifiers";
+import { getRaceLineFromSelections } from "@/lib/character/raceDisplay";
+import type { StoredCharacter } from "@/lib/character/storedCharacter";
+import { useCharacterStore } from "@/store/useCharacterStore";
+import { useContentLocale } from "@/store/useContentLocale";
+import {
+    PlayerSheetTabBar,
+    type PlayerSheetTabId,
+} from "./PlayerSheetTabBar";
+
+const HP_RESOURCE = "hp";
+
+function formatLevel(level: unknown): number | undefined {
+    if (typeof level === "number" && !Number.isNaN(level)) {
+        return level;
+    }
+    if (typeof level === "string" && level !== "") {
+        const parsed = Number(level);
+        return Number.isNaN(parsed) ? undefined : parsed;
+    }
+    return undefined;
+}
+
+type PlayerSheetHeaderProps = {
+    stored: StoredCharacter;
+    activeTab: PlayerSheetTabId;
+    onTabChange: (tab: PlayerSheetTabId) => void;
+};
+
+export function PlayerSheetHeader({
+    stored,
+    activeTab,
+    onTabChange,
+}: PlayerSheetHeaderProps) {
+    const t = useTranslations("playerSheet");
+    const tCharacter = useTranslations("character");
+    const tCombat = useTranslations("combat");
+    const contentLocale = useContentLocale((state) => state.contentLocale);
+    const getResolvedStats = useCharacterStore((state) => state.getResolvedStats);
+    const resolved = getResolvedStats(stored.id);
+
+    const systemData = stored.systemData;
+    const levelNum = formatLevel(systemData.level);
+    const currentHp = stored.resources[HP_RESOURCE] ?? 0;
+    const maxHp = resolved?.hitPoints ?? 0;
+    const ac = resolved?.armorClass ?? 0;
+    const initiative = resolved
+        ? computeInitiative(stored.system, resolved)
+        : 0;
+
+    const raceLine = getRaceLineFromSelections(
+        stored.selections,
+        contentLocale
+    );
+    const classSlug = stored.selections.characterClass;
+    const className = classSlug
+        ? (contentRepo().getClass(classSlug, contentLocale)?.name ?? classSlug)
+        : "";
+    const subclassSlug = stored.selections.subclass;
+    const subclassName = subclassSlug
+        ? (contentRepo().getSubclass(subclassSlug, contentLocale)?.name ??
+          subclassSlug)
+        : "";
+
+    const identityParts = [raceLine, className].filter(Boolean);
+    let identityLine = identityParts.join(" ");
+    if (subclassName) {
+        identityLine = identityLine
+            ? `${identityLine} (${subclassName})`
+            : subclassName;
+    }
+    const levelLine =
+        levelNum !== undefined
+            ? identityLine
+                ? `${t("levelLine", { level: levelNum })} · ${identityLine}`
+                : t("levelLine", { level: levelNum })
+            : identityLine;
+
+    return (
+        <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+            <div className="flex flex-col gap-3 p-3 sm:p-4">
+                <div className="flex flex-wrap items-start gap-3">
+                    <Button asChild size="icon" variant="ghost" aria-label={t("back")}>
+                        <Link href="/characters/player">
+                            <FaArrowLeft />
+                        </Link>
+                    </Button>
+
+                    <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                            <h1 className="truncate text-2xl font-bold sm:text-3xl">
+                                {stored.name}
+                            </h1>
+                            <Button
+                                asChild
+                                size="icon"
+                                variant="ghost"
+                                aria-label={t("edit")}
+                            >
+                                <Link
+                                    href={`/characters/player/edit/${stored.id}`}
+                                >
+                                    <FaGear />
+                                </Link>
+                            </Button>
+                        </div>
+                        {levelLine ? (
+                            <p className="truncate text-sm font-medium text-muted-foreground">
+                                {levelLine}
+                            </p>
+                        ) : null}
+                    </div>
+
+                    <div className="flex flex-wrap items-stretch gap-2">
+                        <div
+                            className="flex min-w-16 flex-col items-center justify-center rounded-2xl border bg-popover px-3 py-2"
+                            aria-label={`${tCombat("ac")} ${ac}`}
+                        >
+                            <span className="flex items-center gap-1 text-xs font-semibold uppercase text-muted-foreground">
+                                <FaShield className="size-3" aria-hidden />
+                                {tCombat("ac")}
+                            </span>
+                            <span className="text-xl font-bold tabular-nums">
+                                {ac}
+                            </span>
+                        </div>
+                        <div
+                            className="flex min-w-20 flex-col items-center justify-center rounded-2xl border bg-popover px-3 py-2"
+                            aria-label={`${tCombat("hp")} ${currentHp} / ${maxHp}`}
+                        >
+                            <span className="flex items-center gap-1 text-xs font-semibold uppercase text-muted-foreground">
+                                <FaHeart
+                                    className="size-3 text-destructive"
+                                    aria-hidden
+                                />
+                                {tCombat("hp")}
+                            </span>
+                            <span className="text-xl font-bold tabular-nums">
+                                {currentHp}
+                                <span className="text-sm font-semibold opacity-60">
+                                    /{maxHp}
+                                </span>
+                            </span>
+                        </div>
+                        <div className="flex min-w-16 flex-col items-center justify-center rounded-2xl border bg-popover px-3 py-2">
+                            <span className="text-xs font-semibold uppercase text-muted-foreground">
+                                {tCharacter("initiative")}
+                            </span>
+                            <span className="text-xl font-bold tabular-nums">
+                                {formatModifier(initiative)}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <DerivedResourcesDisplay
+                    resources={stored.resources}
+                    compact
+                />
+
+                <PlayerSheetTabBar
+                    activeTab={activeTab}
+                    onTabChange={onTabChange}
+                />
+            </div>
+        </header>
+    );
+}

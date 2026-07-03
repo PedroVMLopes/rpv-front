@@ -1,6 +1,9 @@
 "use client";
 
+import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { CarouselItem } from "@/components/ui/characterCarousel";
+import { Button } from "@/components/ui/button";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import {
     ClassSubclassBlock,
@@ -28,6 +31,7 @@ function BackgroundBlock({ background }: { background?: unknown }) {
 export default function CharacterCardInfoBlocks({
     characterId,
 }: CharacterCardInfoBlocksProps) {
+    const t = useTranslations("playerSheet");
     const stored = useCharacterStore((state) =>
         state.characters.find((c) => c.id === characterId)
     );
@@ -53,10 +57,18 @@ export default function CharacterCardInfoBlocks({
             : null;
 
     const hasTopBlocks = classBlock !== null || backgroundBlock !== null;
+    const openSheetCta = (
+        <Button asChild className="mb-3 w-full font-semibold" size="sm">
+            <Link href={`/characters/player/${characterId}`}>
+                {t("openFullSheet")}
+            </Link>
+        </Button>
+    );
 
     if (!hasTopBlocks && !goals && !hasTraits) {
         return (
             <CarouselItem>
+                {openSheetCta}
                 <div className="text-muted-foreground text-sm p-2">
                     No character details yet.
                 </div>
@@ -66,6 +78,8 @@ export default function CharacterCardInfoBlocks({
 
     return (
         <CarouselItem>
+            {openSheetCta}
+
             {hasTopBlocks && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {classBlock}

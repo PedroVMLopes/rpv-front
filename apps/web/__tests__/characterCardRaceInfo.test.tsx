@@ -74,7 +74,7 @@ describe("CharacterCard race info", () => {
     it("lists racial traits and unresolved choices", () => {
         renderWithProviders(<RaceTraitsBlock stored={storedCharacter} />);
 
-        expect(screen.getByText("Racial Traits")).toBeInTheDocument();
+        expect(screen.getByText("Traits")).toBeInTheDocument();
         expect(screen.getByText("Fey Ancestry")).toBeInTheDocument();
         expect(screen.getByText("Choices to resolve")).toBeInTheDocument();
         expect(
