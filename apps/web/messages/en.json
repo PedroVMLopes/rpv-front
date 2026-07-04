@@ -307,6 +307,22 @@
     "amountLabel": "Amount",
     "speed": "Speed",
     "speedValue": "{speed} ft",
+    "combat": {
+      "attacksActions": "Attacks & Actions",
+      "classResources": "Class Resources",
+      "defenseSaves": "Defense & Saves",
+      "stat": "Stat",
+      "mod": "Mod",
+      "save": "Save",
+      "proficientShort": "Prof",
+      "passiveInsight": "Passive Insight",
+      "conditionsImmunities": "Conditions & Immunities",
+      "features": "Features",
+      "roll": "Roll",
+      "use": "Use",
+      "noActions": "No actions available",
+      "noResources": "No class resources"
+    },
     "tabs": {
       "navLabel": "Character sheet sections",
       "overview": "Overview",

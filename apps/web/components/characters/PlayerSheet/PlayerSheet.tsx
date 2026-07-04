@@ -27,7 +27,9 @@ export function PlayerSheet({ stored }: PlayerSheetProps) {
                 {activeTab === "overview" ? (
                     <OverviewTab stored={stored} />
                 ) : null}
-                {activeTab === "combat" ? <CombatTab /> : null}
+                {activeTab === "combat" ? (
+                    <CombatTab stored={stored} />
+                ) : null}
                 {activeTab === "inventory" ? <InventoryTab /> : null}
                 {activeTab === "notes" ? <NotesTab /> : null}
             </main>

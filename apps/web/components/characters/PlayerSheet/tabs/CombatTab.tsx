@@ -1,7 +1,28 @@
 "use client";
 
-import { ComingSoonTab } from "./ComingSoonTab";
+import type { StoredCharacter } from "@/lib/character/storedCharacter";
+import { ClassResourcesPanel } from "../combat/ClassResourcesPanel";
+import { AttacksActionsPanel } from "../combat/AttacksActionsPanel";
+import { DefenseSavesPanel } from "../combat/DefenseSavesPanel";
+import { PassiveStatsPanel } from "../combat/PassiveStatsPanel";
+import { ConditionsPanel } from "../combat/ConditionsPanel";
 
-export function CombatTab() {
-    return <ComingSoonTab />;
+type CombatTabProps = {
+    stored: StoredCharacter;
+};
+
+export function CombatTab({ stored }: CombatTabProps) {
+    return (
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr] lg:gap-6">
+            <div className="flex flex-col gap-4">
+                <ClassResourcesPanel stored={stored} />
+                <AttacksActionsPanel stored={stored} />
+            </div>
+            <div className="flex flex-col gap-4">
+                <DefenseSavesPanel stored={stored} />
+                <PassiveStatsPanel stored={stored} />
+                <ConditionsPanel />
+            </div>
+        </div>
+    );
 }

@@ -307,6 +307,22 @@
     "amountLabel": "Quantidade",
     "speed": "Deslocamento",
     "speedValue": "{speed} pés",
+    "combat": {
+      "attacksActions": "Ataques e Ações",
+      "classResources": "Recursos de Classe",
+      "defenseSaves": "Defesa e Resistências",
+      "stat": "Atributo",
+      "mod": "Mod",
+      "save": "Resist.",
+      "proficientShort": "Prof",
+      "passiveInsight": "Intuição Passiva",
+      "conditionsImmunities": "Condições e Imunidades",
+      "features": "Características",
+      "roll": "Rolar",
+      "use": "Usar",
+      "noActions": "Nenhuma ação disponível",
+      "noResources": "Nenhum recurso de classe"
+    },
     "tabs": {
       "navLabel": "Seções da ficha",
       "overview": "Visão geral",

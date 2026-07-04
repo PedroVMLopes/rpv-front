@@ -2,31 +2,13 @@
 
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { getItem } from "@rpv/content";
-import { contentRepo } from "@/lib/content/contentRepository";
+import {
+    listEquippedWeaponActions,
+    listSpellActions,
+} from "@/lib/character/combatActions";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useContentLocale } from "@/store/useContentLocale";
 import { cn } from "@/lib/utils";
-
-const WEAPON_SLOTS = ["main-hand", "off-hand"] as const;
-
-type WeaponAction = {
-    id: string;
-    name: string;
-    slotId: (typeof WEAPON_SLOTS)[number];
-    description?: string;
-    toHit?: string;
-    damage?: string;
-};
-
-type SpellAction = {
-    id: string;
-    name: string;
-    levelInt: number | null;
-    description?: string;
-    attackBonus?: string;
-    saveDc?: string;
-};
 
 type ActionEntryProps = {
     title: string;
@@ -80,84 +62,23 @@ export function ActionsSection({ stored }: ActionsSectionProps) {
     const tSlots = useTranslations("equipmentSlots");
     const contentLocale = useContentLocale((state) => state.contentLocale);
 
-    const weapons = useMemo((): WeaponAction[] => {
-        const equipped = stored.selections.inventory?.equipped ?? {};
-        const result: WeaponAction[] = [];
+    const weapons = useMemo(
+        () =>
+            listEquippedWeaponActions(
+                stored.selections,
+                stored.system,
+                contentLocale
+            ),
+        [contentLocale, stored.selections, stored.system]
+    );
 
-        for (const slotId of WEAPON_SLOTS) {
-            const slug = equipped[slotId];
-            if (!slug) {
-                continue;
-            }
+    const { cantrips, spells } = useMemo(
+        () => listSpellActions(stored.grants ?? [], contentLocale),
+        [contentLocale, stored.grants]
+    );
 
-            const item = getItem(slug, stored.system, contentLocale);
-            const entry: WeaponAction = {
-                id: `${slotId}-${slug}`,
-                name: item?.name ?? slug,
-                slotId,
-                description: item?.description,
-            };
-
-            // Optional combat fields when ItemEntry is enriched (Phase 3).
-            const rich = item as
-                | (typeof item & { toHit?: string; damageDice?: string })
-                | undefined;
-            if (rich?.toHit) {
-                entry.toHit = rich.toHit;
-            }
-            if (rich?.damageDice) {
-                entry.damage = rich.damageDice;
-            }
-
-            result.push(entry);
-        }
-
-        return result;
-    }, [contentLocale, stored.selections.inventory?.equipped, stored.system]);
-
-    const { cantrips, spells } = useMemo(() => {
-        const cantripList: SpellAction[] = [];
-        const spellList: SpellAction[] = [];
-
-        for (const grant of stored.grants ?? []) {
-            if (grant.kind !== "spell") {
-                continue;
-            }
-
-            const spell = contentRepo().getSpell(grant.ref, contentLocale);
-            const entry: SpellAction = {
-                id: grant.id,
-                name: grant.name ?? spell?.name ?? grant.ref,
-                levelInt: spell?.levelInt ?? null,
-                description: spell?.description,
-            };
-
-            const rich = spell as
-                | (typeof spell & { attackBonus?: string; saveDc?: string })
-                | undefined;
-            if (rich?.attackBonus) {
-                entry.attackBonus = rich.attackBonus;
-            }
-            if (rich?.saveDc) {
-                entry.saveDc = rich.saveDc;
-            }
-
-            if (entry.levelInt === 0) {
-                cantripList.push(entry);
-            } else {
-                spellList.push(entry);
-            }
-        }
-
-        return { cantrips: cantripList, spells: spellList };
-    }, [contentLocale, stored.grants]);
-
-    const slotLabel = (slotId: (typeof WEAPON_SLOTS)[number]) => {
-        if (slotId === "main-hand") {
-            return tSlots("mainHand");
-        }
-        return tSlots("offHand");
-    };
+    const slotLabel = (slotId: "main-hand" | "off-hand") =>
+        slotId === "main-hand" ? tSlots("mainHand") : tSlots("offHand");
 
     return (
         <section className="flex flex-col gap-4 rounded-2xl border p-3">
