@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { FaArrowLeft, FaGear, FaHeart, FaShield } from "react-icons/fa6";
+import { FaArrowLeft, FaGear, FaShield } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
 import { DerivedResourcesDisplay } from "@/components/characters/DerivedResourcesDisplay";
+import { HitPointsControl } from "@/components/characters/HitPointsControl";
 import { contentRepo } from "@/lib/content/contentRepository";
+import { getCharacterWalkSpeed } from "@/lib/character/characterSpeed";
 import { computeInitiative } from "@/lib/character/derivedStats";
 import { formatModifier } from "@/lib/character/skillModifiers";
 import { getRaceLineFromSelections } from "@/lib/character/raceDisplay";
@@ -16,8 +18,6 @@ import {
     PlayerSheetTabBar,
     type PlayerSheetTabId,
 } from "./PlayerSheetTabBar";
-
-const HP_RESOURCE = "hp";
 
 function formatLevel(level: unknown): number | undefined {
     if (typeof level === "number" && !Number.isNaN(level)) {
@@ -50,12 +50,11 @@ export function PlayerSheetHeader({
 
     const systemData = stored.systemData;
     const levelNum = formatLevel(systemData.level);
-    const currentHp = stored.resources[HP_RESOURCE] ?? 0;
-    const maxHp = resolved?.hitPoints ?? 0;
     const ac = resolved?.armorClass ?? 0;
     const initiative = resolved
         ? computeInitiative(stored.system, resolved)
         : 0;
+    const walkSpeed = getCharacterWalkSpeed(stored.selections, contentLocale);
 
     const raceLine = getRaceLineFromSelections(
         stored.selections,
@@ -133,24 +132,23 @@ export function PlayerSheetHeader({
                                 {ac}
                             </span>
                         </div>
-                        <div
-                            className="flex min-w-20 flex-col items-center justify-center rounded-2xl border bg-popover px-3 py-2"
-                            aria-label={`${tCombat("hp")} ${currentHp} / ${maxHp}`}
-                        >
-                            <span className="flex items-center gap-1 text-xs font-semibold uppercase text-muted-foreground">
-                                <FaHeart
-                                    className="size-3 text-destructive"
-                                    aria-hidden
-                                />
-                                {tCombat("hp")}
-                            </span>
-                            <span className="text-xl font-bold tabular-nums">
-                                {currentHp}
-                                <span className="text-sm font-semibold opacity-60">
-                                    /{maxHp}
+
+                        <HitPointsControl characterId={stored.id} />
+
+                        {walkSpeed !== undefined ? (
+                            <div
+                                className="flex min-w-16 flex-col items-center justify-center rounded-2xl border bg-popover px-3 py-2"
+                                aria-label={`${t("speed")} ${t("speedValue", { speed: walkSpeed })}`}
+                            >
+                                <span className="text-xs font-semibold uppercase text-muted-foreground">
+                                    {t("speed")}
                                 </span>
-                            </span>
-                        </div>
+                                <span className="text-xl font-bold tabular-nums">
+                                    {t("speedValue", { speed: walkSpeed })}
+                                </span>
+                            </div>
+                        ) : null}
+
                         <div className="flex min-w-16 flex-col items-center justify-center rounded-2xl border bg-popover px-3 py-2">
                             <span className="text-xs font-semibold uppercase text-muted-foreground">
                                 {tCharacter("initiative")}

@@ -144,7 +144,9 @@ describe("PlayerSheet", () => {
         ).toBeInTheDocument();
         expect(screen.getByText(/Level 1 ·/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/AC 16/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/HP 10 \/ 12/i)).toBeInTheDocument();
+        expect(
+            screen.getByLabelText(/Hit Points 10 \/ 12/i)
+        ).toBeInTheDocument();
         expect(screen.getByRole("tab", { name: "Overview" })).toHaveAttribute(
             "aria-selected",
             "true"
