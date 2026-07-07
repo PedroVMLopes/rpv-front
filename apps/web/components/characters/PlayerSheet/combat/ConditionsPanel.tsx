@@ -1,16 +1,14 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { OverviewPanel } from "../overview/OverviewPanel";
 
 export function ConditionsPanel() {
     const t = useTranslations("playerSheet");
 
     return (
-        <section className="flex flex-col gap-2 rounded-2xl border p-3">
-            <h2 className="text-sm font-bold">
-                {t("combat.conditionsImmunities")}
-            </h2>
+        <OverviewPanel title={t("combat.conditionsImmunities")}>
             <p className="text-sm text-muted-foreground">{t("noneYet")}</p>
-        </section>
+        </OverviewPanel>
     );
 }

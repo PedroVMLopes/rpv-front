@@ -10,6 +10,7 @@ import {
 } from "@/lib/character/skillModifiers";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useCharacterStore } from "@/store/useCharacterStore";
+import { OverviewPanel } from "../overview/OverviewPanel";
 
 type PassiveStatsPanelProps = {
     stored: StoredCharacter;
@@ -40,23 +41,25 @@ export function PassiveStatsPanel({ stored }: PassiveStatsPanelProps) {
     }, [resolved, stored.grants, stored.system, stored.systemData]);
 
     return (
-        <section className="flex flex-col gap-2 rounded-2xl border p-3">
-            <div className="flex items-center justify-between gap-2 rounded-xl border bg-popover px-3 py-2">
-                <span className="text-sm font-medium">
-                    {tCharacter("passivePerception")}
-                </span>
-                <span className="text-sm font-bold tabular-nums">
-                    {passives.perception}
-                </span>
+        <OverviewPanel>
+            <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between gap-2 rounded-xl border bg-muted px-3 py-2">
+                    <span className="text-sm font-medium">
+                        {tCharacter("passivePerception")}
+                    </span>
+                    <span className="text-sm font-bold tabular-nums">
+                        {passives.perception}
+                    </span>
+                </div>
+                <div className="flex items-center justify-between gap-2 rounded-xl border bg-muted px-3 py-2">
+                    <span className="text-sm font-medium">
+                        {t("combat.passiveInsight")}
+                    </span>
+                    <span className="text-sm font-bold tabular-nums">
+                        {passives.insight}
+                    </span>
+                </div>
             </div>
-            <div className="flex items-center justify-between gap-2 rounded-xl border bg-popover px-3 py-2">
-                <span className="text-sm font-medium">
-                    {t("combat.passiveInsight")}
-                </span>
-                <span className="text-sm font-bold tabular-nums">
-                    {passives.insight}
-                </span>
-            </div>
-        </section>
+        </OverviewPanel>
     );
 }

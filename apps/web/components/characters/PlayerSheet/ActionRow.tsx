@@ -29,7 +29,7 @@ export function ActionRow({
             type="button"
             className={cn(
                 "flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left text-sm",
-                "bg-popover transition-colors hover:bg-accent/40 active:bg-accent/60",
+                "bg-muted transition-colors hover:bg-accent/40 active:bg-accent/60",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 proficient && "border-primary/40",
                 className

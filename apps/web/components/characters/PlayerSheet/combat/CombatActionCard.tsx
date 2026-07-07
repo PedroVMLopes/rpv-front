@@ -24,7 +24,7 @@ export function CombatActionCard({
         actionKind === "roll" ? t("combat.roll") : t("combat.use");
 
     return (
-        <div className="flex flex-col gap-2 rounded-xl border bg-popover p-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-2 rounded-xl border bg-muted p-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0 flex-1 flex flex-col gap-1">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                     <span className="font-semibold">{title}</span>

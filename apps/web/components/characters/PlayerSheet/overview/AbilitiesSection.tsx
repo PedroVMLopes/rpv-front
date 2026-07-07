@@ -15,6 +15,7 @@ import { getResolvedStatDisplay } from "@/lib/character/presetStats";
 import { getSystemRules } from "@/lib/character/systemRules";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useCharacterStore } from "@/store/useCharacterStore";
+import { OverviewPanel } from "./OverviewPanel";
 
 type AbilitiesSectionProps = {
     stored: StoredCharacter;
@@ -55,14 +56,14 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
     );
 
     return (
-        <section className="flex flex-col gap-3 rounded-2xl border p-3">
+        <OverviewPanel>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {display.abilities.map((ability) => {
                     const mod = abilityModifier(ability.resolved);
                     return (
                         <div
                             key={ability.name}
-                            className="flex flex-col items-center rounded-xl border bg-popover p-2"
+                            className="flex flex-col items-center rounded-xl border bg-muted p-2"
                         >
                             <span className="text-xs font-semibold uppercase text-muted-foreground">
                                 {ability.shortLabelKey
@@ -81,19 +82,19 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
             </div>
 
             <div className="grid grid-cols-2 gap-2 text-sm">
-                <div className="rounded-lg border bg-popover p-2">
+                <div className="rounded-lg border bg-muted p-2">
                     <span className="text-muted-foreground">
                         {t("character.proficiencyBonus")}{" "}
                     </span>
                     <span className="font-bold">{formatModifier(profBonus)}</span>
                 </div>
-                <div className="rounded-lg border bg-popover p-2">
+                <div className="rounded-lg border bg-muted p-2">
                     <span className="text-muted-foreground">
                         {t("character.passivePerception")}{" "}
                     </span>
                     <span className="font-bold">{passivePerception}</span>
                 </div>
             </div>
-        </section>
+        </OverviewPanel>
     );
 }

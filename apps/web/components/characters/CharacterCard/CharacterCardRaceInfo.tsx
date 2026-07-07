@@ -10,6 +10,7 @@ import {
     getRaceLineFromSelections,
     getRaceTraitDisplay,
 } from "@/lib/character/raceDisplay";
+import { OverviewPanel } from "@/components/characters/PlayerSheet/overview/OverviewPanel";
 
 export function ClassSubclassBlock({ stored }: { stored: StoredCharacter }) {
     const contentLocale = useContentLocale((state) => state.contentLocale);
@@ -53,8 +54,7 @@ export function UnresolvedChoicesBlock({
     }
 
     return (
-        <section className="flex flex-col gap-2 rounded-2xl border p-3">
-            <h2 className="text-sm font-bold">{t("unresolvedChoices")}</h2>
+        <OverviewPanel title={t("unresolvedChoices")}>
             <ul className="list-disc space-y-1 pl-4 text-sm text-muted-foreground">
                 {unresolvedChoices.map((choice, index) => (
                     <li key={`${choice.traitName}-${index}`}>
@@ -62,7 +62,7 @@ export function UnresolvedChoicesBlock({
                     </li>
                 ))}
             </ul>
-        </section>
+        </OverviewPanel>
     );
 }
 
@@ -76,12 +76,11 @@ export function RaceTraitsBlock({ stored }: { stored: StoredCharacter }) {
     }
 
     return (
-        <section className="flex flex-col gap-3 rounded-2xl border p-3">
-            <h2 className="text-sm font-bold">{t("traits")}</h2>
+        <OverviewPanel title={t("traits")}>
             <ul className="flex flex-col gap-1.5">
                 {traits.map((trait) => (
                     <li key={trait.slug}>
-                        <details className="group rounded-xl border bg-popover text-popover-foreground">
+                        <details className="group rounded-xl border bg-muted text-card-foreground">
                             <summary className="flex cursor-pointer list-none items-center justify-between gap-2 rounded-xl px-3 py-2 text-sm font-semibold marker:content-none [&::-webkit-details-marker]:hidden">
                                 <span>{trait.name}</span>
                                 <FaChevronDown
@@ -98,6 +97,6 @@ export function RaceTraitsBlock({ stored }: { stored: StoredCharacter }) {
                     </li>
                 ))}
             </ul>
-        </section>
+        </OverviewPanel>
     );
 }

@@ -10,6 +10,7 @@ import {
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useContentLocale } from "@/store/useContentLocale";
 import { CombatActionCard } from "./CombatActionCard";
+import { OverviewPanel } from "../overview/OverviewPanel";
 
 type AttacksActionsPanelProps = {
     stored: StoredCharacter;
@@ -48,9 +49,7 @@ export function AttacksActionsPanel({ stored }: AttacksActionsPanelProps) {
         slotId === "main-hand" ? tSlots("mainHand") : tSlots("offHand");
 
     return (
-        <section className="flex flex-col gap-4 rounded-2xl border p-3">
-            <h2 className="text-sm font-bold">{t("combat.attacksActions")}</h2>
-
+        <OverviewPanel title={t("combat.attacksActions")}>
             {!hasAny ? (
                 <p className="text-sm text-muted-foreground">
                     {t("combat.noActions")}
@@ -150,6 +149,6 @@ export function AttacksActionsPanel({ stored }: AttacksActionsPanelProps) {
                     ) : null}
                 </div>
             )}
-        </section>
+        </OverviewPanel>
     );
 }

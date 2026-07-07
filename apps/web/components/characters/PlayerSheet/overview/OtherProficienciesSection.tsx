@@ -31,7 +31,7 @@ function ProficiencyChipList({
                     {items.map((item) => (
                         <li
                             key={item.id}
-                            className="rounded-full border bg-popover px-2.5 py-0.5 text-sm"
+                            className="rounded-full border bg-muted px-2.5 py-0.5 text-sm"
                         >
                             {item.label}
                         </li>

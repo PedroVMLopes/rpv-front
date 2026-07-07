@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { RaceTraitsBlock } from "@/components/characters/CharacterCard/CharacterCardRaceInfo";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
+import { OverviewPanel } from "./OverviewPanel";
 
 type IdentitySectionProps = {
     stored: StoredCharacter;
@@ -29,17 +30,15 @@ export function IdentitySection({ stored }: IdentitySectionProps) {
             <RaceTraitsBlock stored={stored} />
 
             {background ? (
-                <div className="flex flex-col gap-1 rounded-2xl border p-3">
-                    <p className="text-sm font-bold">{t("background")}</p>
+                <OverviewPanel title={t("background")}>
                     <p className="text-sm">{background}</p>
-                </div>
+                </OverviewPanel>
             ) : null}
 
             {goals ? (
-                <div className="flex flex-col gap-1 rounded-2xl border p-3">
-                    <p className="text-sm font-bold">{t("goals")}</p>
+                <OverviewPanel title={t("goals")}>
                     <p className="text-sm">{goals}</p>
-                </div>
+                </OverviewPanel>
             ) : null}
         </section>
     );

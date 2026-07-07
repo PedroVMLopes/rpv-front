@@ -11,6 +11,7 @@ import {
 import { formatResourceRefLabel } from "@/lib/character/resourceLabels";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useCharacterStore } from "@/store/useCharacterStore";
+import { OverviewPanel } from "../overview/OverviewPanel";
 
 type ClassResourcesPanelProps = {
     stored: StoredCharacter;
@@ -47,8 +48,7 @@ export function ClassResourcesPanel({ stored }: ClassResourcesPanelProps) {
     };
 
     return (
-        <section className="flex flex-col gap-3 rounded-2xl border p-3">
-            <h2 className="text-sm font-bold">{t("combat.classResources")}</h2>
+        <OverviewPanel title={t("combat.classResources")}>
             <ul className="flex flex-col gap-2">
                 {entries.map((entry) => {
                     const displayLabel =
@@ -61,7 +61,7 @@ export function ClassResourcesPanel({ stored }: ClassResourcesPanelProps) {
                     return (
                         <li
                             key={entry.ref}
-                            className="flex items-center justify-between gap-2 rounded-xl border bg-popover px-3 py-2"
+                            className="flex items-center justify-between gap-2 rounded-xl border bg-muted px-3 py-2"
                         >
                             <div className="min-w-0">
                                 <p className="truncate text-sm font-semibold">
@@ -103,6 +103,6 @@ export function ClassResourcesPanel({ stored }: ClassResourcesPanelProps) {
                     );
                 })}
             </ul>
-        </section>
+        </OverviewPanel>
     );
 }

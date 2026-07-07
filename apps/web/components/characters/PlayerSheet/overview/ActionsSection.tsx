@@ -9,6 +9,7 @@ import {
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useContentLocale } from "@/store/useContentLocale";
 import { cn } from "@/lib/utils";
+import { OverviewPanel } from "./OverviewPanel";
 
 type ActionEntryProps = {
     title: string;
@@ -24,7 +25,7 @@ function ActionEntry({ title, badge, details, description }: ActionEntryProps) {
         <button
             type="button"
             className={cn(
-                "flex w-full flex-col gap-1 rounded-xl border bg-popover p-3 text-left text-sm",
+                "flex w-full flex-col gap-1 rounded-xl border bg-muted p-3 text-left text-sm",
                 "transition-colors hover:bg-accent/40 active:bg-accent/60",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             )}
@@ -81,39 +82,38 @@ export function ActionsSection({ stored }: ActionsSectionProps) {
         slotId === "main-hand" ? tSlots("mainHand") : tSlots("offHand");
 
     return (
-        <section className="flex flex-col gap-4 rounded-2xl border p-3">
-            <h2 className="text-sm font-bold">{t("actions")}</h2>
+        <OverviewPanel title={t("actions")}>
+            <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
+                    <p className="text-xs font-semibold uppercase text-muted-foreground">
+                        {t("weaponsEquipped")}
+                    </p>
+                    {weapons.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">{t("noWeapons")}</p>
+                    ) : (
+                        <ul className="flex flex-col gap-2">
+                            {weapons.map((weapon) => {
+                                const details = [
+                                    weapon.toHit,
+                                    weapon.damage,
+                                ].filter(Boolean) as string[];
 
-            <div className="flex flex-col gap-2">
-                <p className="text-xs font-semibold uppercase text-muted-foreground">
-                    {t("weaponsEquipped")}
-                </p>
-                {weapons.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">{t("noWeapons")}</p>
-                ) : (
-                    <ul className="flex flex-col gap-2">
-                        {weapons.map((weapon) => {
-                            const details = [
-                                weapon.toHit,
-                                weapon.damage,
-                            ].filter(Boolean) as string[];
+                                return (
+                                    <li key={weapon.id}>
+                                        <ActionEntry
+                                            title={weapon.name}
+                                            badge={slotLabel(weapon.slotId)}
+                                            details={details}
+                                            description={weapon.description}
+                                        />
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    )}
+                </div>
 
-                            return (
-                                <li key={weapon.id}>
-                                    <ActionEntry
-                                        title={weapon.name}
-                                        badge={slotLabel(weapon.slotId)}
-                                        details={details}
-                                        description={weapon.description}
-                                    />
-                                </li>
-                            );
-                        })}
-                    </ul>
-                )}
-            </div>
-
-            <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2">
                 <p className="text-xs font-semibold uppercase text-muted-foreground">
                     {t("cantrips")}
                 </p>
@@ -171,7 +171,8 @@ export function ActionsSection({ stored }: ActionsSectionProps) {
                         })}
                     </ul>
                 )}
+                </div>
             </div>
-        </section>
+        </OverviewPanel>
     );
 }

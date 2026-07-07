@@ -10,6 +10,7 @@ import { computeSavingThrowModifiers } from "@/lib/character/savingThrowModifier
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { ActionRow } from "../ActionRow";
+import { OverviewPanel } from "./OverviewPanel";
 
 type SkillsCardProps = {
     stored: StoredCharacter;
@@ -53,9 +54,7 @@ export function SkillsCard({ stored }: SkillsCardProps) {
         proficientSkills.length === 0 && proficientSaves.length === 0;
 
     return (
-        <section className="flex flex-col gap-3 rounded-2xl border p-3">
-            <h2 className="text-sm font-bold">{t("skillsCardTitle")}</h2>
-
+        <OverviewPanel title={t("skillsCardTitle")}>
             {isEmpty ? (
                 <p className="text-sm text-muted-foreground">{t("noneYet")}</p>
             ) : (
@@ -96,6 +95,6 @@ export function SkillsCard({ stored }: SkillsCardProps) {
                     ) : null}
                 </div>
             )}
-        </section>
+        </OverviewPanel>
     );
 }

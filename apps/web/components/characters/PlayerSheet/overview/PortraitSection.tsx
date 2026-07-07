@@ -5,6 +5,7 @@ import { FaUser } from "react-icons/fa6";
 import { getItem } from "@rpv/content";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useContentLocale } from "@/store/useContentLocale";
+import { Card } from "@/components/ui/card";
 
 function getAvatarUrl(systemData: Record<string, unknown>): string | undefined {
     const avatar = systemData.avatar ?? systemData.image;
@@ -28,8 +29,8 @@ export function PortraitSection({ stored }: PortraitSectionProps) {
         : null;
 
     return (
-        <section className="relative overflow-hidden rounded-2xl border bg-popover">
-            <div className="relative aspect-square w-full bg-muted/40">
+        <Card className="gap-0 overflow-hidden rounded-2xl py-0 shadow-sm">
+            <div className="relative aspect-square w-full bg-muted/60">
                 {avatarUrl ? (
                     <img
                         src={avatarUrl}
@@ -46,12 +47,12 @@ export function PortraitSection({ stored }: PortraitSectionProps) {
                 )}
                 {armorName ? (
                     <div className="absolute inset-x-0 bottom-0 flex justify-center p-2">
-                        <span className="rounded-full border bg-background/90 px-3 py-1 text-xs font-semibold backdrop-blur">
+                        <span className="rounded-full border bg-card/90 px-3 py-1 text-xs font-semibold backdrop-blur">
                             {t("equippedArmor", { name: armorName })}
                         </span>
                     </div>
                 ) : null}
             </div>
-        </section>
+        </Card>
     );
 }
