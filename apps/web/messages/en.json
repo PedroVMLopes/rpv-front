@@ -323,6 +323,28 @@
       "noActions": "No actions available",
       "noResources": "No class resources"
     },
+    "inventory": {
+      "summary": {
+        "encumbrance": "Encumbrance",
+        "currency": "Currency",
+        "miscItems": "Misc items"
+      },
+      "filterNavLabel": "Inventory filters",
+      "filters": {
+        "all": "All",
+        "consumables": "Consumables",
+        "tools": "Tools",
+        "quest": "Quest items",
+        "misc": "Misc / Other",
+        "equipped": "Equipped"
+      },
+      "searchPlaceholder": "Search items…",
+      "addItem": "Add item",
+      "equippedBadge": "Equipped",
+      "quantity": "Qty: {count}",
+      "empty": "No items in inventory.",
+      "emptyFiltered": "No items match this filter."
+    },
     "tabs": {
       "navLabel": "Character sheet sections",
       "overview": "Overview",

@@ -205,7 +205,7 @@ describe("PlayerSheet", () => {
         expect(strCard).toHaveTextContent("+3");
     });
 
-    it("shows combat content and coming soon on remaining tabs", async () => {
+    it("shows combat and inventory content; notes still coming soon", async () => {
         const user = userEvent.setup();
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
@@ -214,7 +214,8 @@ describe("PlayerSheet", () => {
         expect(screen.queryByText("Coming soon")).not.toBeInTheDocument();
 
         await user.click(screen.getByRole("tab", { name: "Bag" }));
-        expect(screen.getByText("Coming soon")).toBeInTheDocument();
+        expect(screen.getByText("Encumbrance")).toBeInTheDocument();
+        expect(screen.queryByText("Coming soon")).not.toBeInTheDocument();
 
         await user.click(screen.getByRole("tab", { name: "Notes" }));
         expect(screen.getByText("Coming soon")).toBeInTheDocument();

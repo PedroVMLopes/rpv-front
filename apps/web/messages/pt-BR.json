@@ -323,6 +323,28 @@
       "noActions": "Nenhuma ação disponível",
       "noResources": "Nenhum recurso de classe"
     },
+    "inventory": {
+      "summary": {
+        "encumbrance": "Peso",
+        "currency": "Moedas",
+        "miscItems": "Itens miscelâneos"
+      },
+      "filterNavLabel": "Filtros do inventário",
+      "filters": {
+        "all": "Tudo",
+        "consumables": "Consumíveis",
+        "tools": "Ferramentas",
+        "quest": "Itens de quest",
+        "misc": "Misc / Outros",
+        "equipped": "Equipados"
+      },
+      "searchPlaceholder": "Buscar itens…",
+      "addItem": "Adicionar item",
+      "equippedBadge": "Equipado",
+      "quantity": "Qtd: {count}",
+      "empty": "Nenhum item no inventário.",
+      "emptyFiltered": "Nenhum item corresponde a este filtro."
+    },
     "tabs": {
       "navLabel": "Seções da ficha",
       "overview": "Visão geral",

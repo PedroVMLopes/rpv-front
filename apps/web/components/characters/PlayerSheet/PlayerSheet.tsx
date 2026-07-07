@@ -30,7 +30,9 @@ export function PlayerSheet({ stored }: PlayerSheetProps) {
                 {activeTab === "combat" ? (
                     <CombatTab stored={stored} />
                 ) : null}
-                {activeTab === "inventory" ? <InventoryTab /> : null}
+                {activeTab === "inventory" ? (
+                    <InventoryTab stored={stored} />
+                ) : null}
                 {activeTab === "notes" ? <NotesTab /> : null}
             </main>
         </div>
