@@ -4,7 +4,9 @@
     "save": "Salvar",
     "cancel": "Cancelar",
     "uiLanguage": "Idioma",
-    "contentLanguage": "Idioma do conteúdo"
+    "contentLanguage": "Idioma do conteúdo",
+    "themeLight": "Alternar para tema claro",
+    "themeDark": "Alternar para tema escuro"
   },
   "nav": {
     "characters": "Personagens",

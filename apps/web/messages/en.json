@@ -4,7 +4,9 @@
     "save": "Save",
     "cancel": "Cancel",
     "uiLanguage": "Language",
-    "contentLanguage": "Content language"
+    "contentLanguage": "Content language",
+    "themeLight": "Switch to light theme",
+    "themeDark": "Switch to dark theme"
   },
   "nav": {
     "characters": "Characters",
