@@ -15,7 +15,8 @@ export default function ThemeSwitcher() {
         setMounted(true);
     }, []);
 
-    const isDark = resolvedTheme === "dark";
+    const isDark = mounted && resolvedTheme === "dark";
+    const ariaLabel = isDark ? t("themeLight") : t("themeDark");
 
     return (
         <Button
@@ -23,8 +24,10 @@ export default function ThemeSwitcher() {
             variant="outline"
             size="icon-sm"
             disabled={!mounted}
-            aria-label={isDark ? t("themeLight") : t("themeDark")}
-            onClick={() => setTheme(isDark ? "light" : "dark")}
+            aria-label={ariaLabel}
+            onClick={() =>
+                setTheme(resolvedTheme === "dark" ? "light" : "dark")
+            }
         >
             {mounted ? (
                 isDark ? (
