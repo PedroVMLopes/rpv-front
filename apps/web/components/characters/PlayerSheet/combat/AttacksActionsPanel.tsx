@@ -36,8 +36,8 @@ export function AttacksActionsPanel({ stored }: AttacksActionsPanelProps) {
     );
 
     const features = useMemo(
-        () => listFeatureActions(stored.grants ?? []),
-        [stored.grants]
+        () => listFeatureActions(stored.grants ?? [], contentLocale),
+        [contentLocale, stored.grants]
     );
 
     const hasSpells = cantrips.length > 0 || spells.length > 0;

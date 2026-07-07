@@ -156,6 +156,9 @@ describe("CombatTab", () => {
         expect(screen.getByText("Fire Bolt")).toBeInTheDocument();
         expect(screen.getByText("Second Wind")).toBeInTheDocument();
         expect(
+            screen.getByText(/regain hit points equal to 1d10/i)
+        ).toBeInTheDocument();
+        expect(
             screen.getAllByRole("button", { name: /Roll:/i }).length
         ).toBeGreaterThanOrEqual(2);
         expect(

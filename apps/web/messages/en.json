@@ -349,7 +349,8 @@
       "navLabel": "Character sheet sections",
       "overview": "Overview",
       "combat": "Combat",
-      "inventory": "Bag",
+      "inventory": "Inventory",
+      "magic": "Magic",
       "notes": "Notes"
     }
   }

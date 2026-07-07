@@ -7,12 +7,14 @@ export type PlayerSheetTabId =
     | "overview"
     | "combat"
     | "inventory"
+    | "magic"
     | "notes";
 
 const TABS: PlayerSheetTabId[] = [
     "overview",
     "combat",
     "inventory",
+    "magic",
     "notes",
 ];
 

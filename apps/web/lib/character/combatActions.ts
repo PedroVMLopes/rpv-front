@@ -1,5 +1,5 @@
 import type { CharacterGrant, Locale } from "@rpv/domain";
-import { getItem } from "@rpv/content";
+import { getAbilityFeatureDescription, getItem } from "@rpv/content";
 import type { SystemKey } from "@/presets";
 import { contentRepo } from "@/lib/content/contentRepository";
 import type { CharacterSelections } from "./storedCharacter";
@@ -109,12 +109,22 @@ export function listSpellActions(
     return { cantrips, spells };
 }
 
-export function listFeatureActions(grants: CharacterGrant[]): FeatureAction[] {
+export function listFeatureActions(
+    grants: CharacterGrant[],
+    locale?: Locale
+): FeatureAction[] {
     return grants
         .filter((grant) => grant.kind === "ability")
-        .map((grant) => ({
-            id: grant.id,
-            name: grant.name ?? grant.ref,
-            description: grant.name !== grant.ref ? undefined : undefined,
-        }));
+        .map((grant) => {
+            const name = grant.name ?? grant.ref;
+            return {
+                id: grant.id,
+                name,
+                description: getAbilityFeatureDescription(
+                    name,
+                    grant.source,
+                    locale
+                ),
+            };
+        });
 }

@@ -349,7 +349,8 @@
       "navLabel": "Seções da ficha",
       "overview": "Visão geral",
       "combat": "Combate",
-      "inventory": "Mochila",
+      "inventory": "Inventário",
+      "magic": "Magia",
       "notes": "Anotações"
     }
   }

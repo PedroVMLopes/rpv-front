@@ -124,7 +124,7 @@ describe("PlayerSheet inventory tab", () => {
         const user = userEvent.setup();
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
-        await user.click(screen.getByRole("tab", { name: "Bag" }));
+        await user.click(screen.getByRole("tab", { name: "Inventory" }));
         expect(screen.getByText("Encumbrance")).toBeInTheDocument();
         expect(screen.queryByText("Coming soon")).not.toBeInTheDocument();
     });

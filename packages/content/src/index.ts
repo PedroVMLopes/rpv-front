@@ -29,6 +29,7 @@ export * from "./curation/itemGrants.dnd";
 export * from "./curation/equipmentSlots.dnd";
 export * from "./curation/classGrants.dnd";
 export * from "./curation/subclassGrants.dnd";
+export * from "./curation/featureDescriptions.dnd";
 
 export {
     getClass,

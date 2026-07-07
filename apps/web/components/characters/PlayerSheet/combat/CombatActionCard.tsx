@@ -40,9 +40,7 @@ export function CombatActionCard({
                     </p>
                 ) : null}
                 {description ? (
-                    <p className="line-clamp-2 text-xs text-muted-foreground">
-                        {description}
-                    </p>
+                    <p className="text-xs text-muted-foreground">{description}</p>
                 ) : null}
             </div>
             <Button

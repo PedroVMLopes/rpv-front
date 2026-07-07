@@ -124,5 +124,58 @@
     "ring": {
       "name": "Anel"
     }
+  },
+  "features": {
+    "action-surge": {
+      "description": "A partir do 2º nível, você pode se esforçar além dos seus limites por um instante. No seu turno, você pode realizar uma ação adicional."
+    },
+    "rage": {
+      "description": "Em batalha, você luta com ferocidade primal. No seu turno, você pode entrar em fúria como uma ação bônus."
+    },
+    "unarmored-defense": {
+      "description": "Enquanto não estiver usando armadura, sua CA é 10 + modificador de Destreza + modificador de Constituição."
+    },
+    "reckless-attack": {
+      "description": "No seu primeiro ataque no turno, você pode atacar de forma imprudente, ganhando vantagem em ataques corpo a corpo com Força neste turno, mas ataques contra você têm vantagem até seu próximo turno."
+    },
+    "danger-sense": {
+      "description": "Você percebe quando algo próximo não está como deveria, ganhando vantagem em testes de resistência de Destreza contra efeitos que você possa ver."
+    },
+    "extra-attack": {
+      "description": "Você pode atacar duas vezes, em vez de uma, sempre que realizar a ação Atacar no seu turno."
+    },
+    "fast-movement": {
+      "description": "Seu deslocamento aumenta em 10 pés enquanto você não estiver usando armadura pesada."
+    },
+    "martial-arts": {
+      "description": "Seu treinamento em artes marciais lhe dá domínio de estilos de combate com ataques desarmados e armas de monge."
+    },
+    "ki": {
+      "description": "Seu treinamento permite canalizar energia mística chamada ki."
+    },
+    "unarmored-movement": {
+      "description": "Seu deslocamento aumenta em 10 pés enquanto você não estiver usando armadura ou empunhando escudo."
+    },
+    "deflect-missiles": {
+      "description": "Você pode usar sua reação para desviar ou interceptar o projétil quando for atingido por um ataque à distância."
+    },
+    "stunning-strike": {
+      "description": "Você pode interferir no fluxo de ki do oponente. Ao acertar uma criatura com um ataque corpo a corpo, você pode gastar 1 ponto de ki para tentar um golpe atordoante."
+    },
+    "improved-critical": {
+      "description": "Seus ataques com armas causam acerto crítico com 19 ou 20."
+    },
+    "sculpt-spells": {
+      "description": "Você pode criar bolsões de relativa segurança dentro dos efeitos das suas magias de evocação."
+    },
+    "frenzy": {
+      "description": "Você pode entrar em frenesi ao usar fúria para causar dano extra corpo a corpo, mas sofre exaustão quando a fúria termina."
+    },
+    "open-hand-technique": {
+      "description": "Você pode manipular o ki do inimigo ao acertá-lo com ataques corpo a corpo."
+    },
+    "second-wind": {
+      "description": "No seu turno, você pode usar uma ação bônus para recuperar pontos de vida iguais a 1d10 + seu nível de guerreiro."
+    }
   }
 }

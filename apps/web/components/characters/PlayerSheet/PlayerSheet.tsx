@@ -7,6 +7,7 @@ import type { PlayerSheetTabId } from "./PlayerSheetTabBar";
 import { OverviewTab } from "./tabs/OverviewTab";
 import { CombatTab } from "./tabs/CombatTab";
 import { InventoryTab } from "./tabs/InventoryTab";
+import { MagicTab } from "./tabs/MagicTab";
 import { NotesTab } from "./tabs/NotesTab";
 
 type PlayerSheetProps = {
@@ -33,6 +34,7 @@ export function PlayerSheet({ stored }: PlayerSheetProps) {
                 {activeTab === "inventory" ? (
                     <InventoryTab stored={stored} />
                 ) : null}
+                {activeTab === "magic" ? <MagicTab /> : null}
                 {activeTab === "notes" ? <NotesTab /> : null}
             </main>
         </div>
