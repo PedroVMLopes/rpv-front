@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
+import { cn } from "@/lib/utils";
 import { PlayerSheetHeader } from "./PlayerSheetHeader";
 import type { PlayerSheetTabId } from "./PlayerSheetTabBar";
+import { sheetSurface } from "./playerSheetSurfaces";
 import { OverviewTab } from "./tabs/OverviewTab";
 import { CombatTab } from "./tabs/CombatTab";
 import { InventoryTab } from "./tabs/InventoryTab";
@@ -24,7 +26,13 @@ export function PlayerSheet({ stored }: PlayerSheetProps) {
                 activeTab={activeTab}
                 onTabChange={setActiveTab}
             />
-            <main className="flex-1 p-3 sm:p-4" role="tabpanel">
+            <main
+                className={cn(
+                    "flex-1 rounded-b-xl border border-t-0 border-border px-3 py-3 sm:px-4 sm:py-4",
+                    sheetSurface
+                )}
+                role="tabpanel"
+            >
                 {activeTab === "overview" ? (
                     <OverviewTab stored={stored} />
                 ) : null}

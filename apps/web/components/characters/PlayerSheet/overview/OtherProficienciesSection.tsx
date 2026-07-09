@@ -5,6 +5,8 @@ import { useTranslations } from "next-intl";
 import { partitionProficiencies } from "@/lib/character/proficiencyDisplay";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { getSystemRules } from "@/lib/character/systemRules";
+import { sheetInset } from "../playerSheetSurfaces";
+import { cn } from "@/lib/utils";
 
 type OtherProficienciesSectionProps = {
     stored: StoredCharacter;
@@ -31,7 +33,10 @@ function ProficiencyChipList({
                     {items.map((item) => (
                         <li
                             key={item.id}
-                            className="rounded-full border bg-muted px-2.5 py-0.5 text-sm"
+                            className={cn(
+                                "rounded-full px-2.5 py-0.5 text-sm",
+                                sheetInset
+                            )}
                         >
                             {item.label}
                         </li>

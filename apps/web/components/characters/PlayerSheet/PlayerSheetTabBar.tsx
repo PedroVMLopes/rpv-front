@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
+import { sheetTabActive, sheetTabInactive } from "./playerSheetSurfaces";
 
 export type PlayerSheetTabId =
     | "overview"
@@ -44,10 +45,10 @@ export function PlayerSheetTabBar({
                         role="tab"
                         aria-selected={isActive}
                         className={cn(
-                            "shrink-0 rounded-t-lg border border-b-0 px-3 py-2 text-sm font-medium transition-colors",
+                            "shrink-0 rounded-t-lg border px-3 py-2 text-sm font-medium transition-colors",
                             isActive
-                                ? "border-border bg-background text-foreground"
-                                : "border-transparent bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
+                                ? cn("border-b-0", sheetTabActive)
+                                : sheetTabInactive
                         )}
                         onClick={() => onTabChange(tab)}
                     >

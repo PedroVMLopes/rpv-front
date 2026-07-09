@@ -223,6 +223,30 @@ describe("PlayerSheet", () => {
         await user.click(screen.getByRole("tab", { name: "Notes" }));
         expect(screen.getByText("Coming soon")).toBeInTheDocument();
     });
+
+    it("uses inverted tab surfaces and a card-colored tab panel", () => {
+        renderWithProviders(<PlayerSheet stored={storedCharacter} />);
+
+        const overviewTab = screen.getByRole("tab", { name: "Overview" });
+        const combatTab = screen.getByRole("tab", { name: "Combat" });
+
+        expect(overviewTab).toHaveClass("bg-card");
+        expect(overviewTab).toHaveClass("border-b-card");
+        expect(combatTab).toHaveClass("bg-muted");
+        expect(combatTab).not.toHaveClass("bg-card");
+
+        const tabPanel = screen.getByRole("tabpanel");
+        expect(tabPanel).toHaveClass("bg-card");
+    });
+
+    it("renders overview panels on the muted nested surface", () => {
+        const { container } = renderWithProviders(
+            <PlayerSheet stored={storedCharacter} />
+        );
+
+        const nestedPanels = container.querySelectorAll('[data-slot="card"].bg-muted');
+        expect(nestedPanels.length).toBeGreaterThan(0);
+    });
 });
 
 describe("PlayerSheetPage", () => {

@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { formatModifier } from "@/lib/character/skillModifiers";
+import { sheetInset } from "@/components/characters/PlayerSheet/playerSheetSurfaces";
 import { cn } from "@/lib/utils";
 
 type ActionRowProps = {
@@ -28,8 +29,9 @@ export function ActionRow({
         <button
             type="button"
             className={cn(
-                "flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left text-sm",
-                "bg-muted transition-colors hover:bg-accent/40 active:bg-accent/60",
+                "flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm",
+                sheetInset,
+                "transition-colors hover:bg-accent/40 active:bg-accent/60",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 proficient && "border-primary/40",
                 className

@@ -16,6 +16,8 @@ import { getSystemRules } from "@/lib/character/systemRules";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { OverviewPanel } from "./OverviewPanel";
+import { sheetInset } from "../playerSheetSurfaces";
+import { cn } from "@/lib/utils";
 
 type AbilitiesSectionProps = {
     stored: StoredCharacter;
@@ -63,7 +65,10 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
                     return (
                         <div
                             key={ability.name}
-                            className="flex flex-col items-center rounded-xl border bg-muted p-2"
+                            className={cn(
+                                "flex flex-col items-center rounded-xl p-2",
+                                sheetInset
+                            )}
                         >
                             <span className="text-xs font-semibold uppercase text-muted-foreground">
                                 {ability.shortLabelKey
@@ -82,13 +87,13 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
             </div>
 
             <div className="grid grid-cols-2 gap-2 text-sm mt-2">
-                <div className="rounded-lg border bg-muted p-2">
+                <div className={cn("rounded-lg p-2", sheetInset)}>
                     <span className="text-muted-foreground">
                         {t("character.proficiencyBonus")}{" "}
                     </span>
                     <span className="font-bold">{formatModifier(profBonus)}</span>
                 </div>
-                <div className="rounded-lg border bg-muted p-2">
+                <div className={cn("rounded-lg p-2", sheetInset)}>
                     <span className="text-muted-foreground">
                         {t("character.passivePerception")}{" "}
                     </span>

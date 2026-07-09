@@ -27,7 +27,7 @@ export function IdentitySection({ stored }: IdentitySectionProps) {
 
     return (
         <section className="flex flex-col gap-4">
-            <RaceTraitsBlock stored={stored} />
+            <RaceTraitsBlock stored={stored} panelVariant="nested" />
 
             {background ? (
                 <OverviewPanel title={t("background")}>

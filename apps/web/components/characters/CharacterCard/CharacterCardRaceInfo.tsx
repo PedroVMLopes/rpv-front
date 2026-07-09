@@ -11,6 +11,8 @@ import {
     getRaceTraitDisplay,
 } from "@/lib/character/raceDisplay";
 import { SheetPanel } from "@/components/characters/SheetPanel";
+import { sheetInset } from "@/components/characters/PlayerSheet/playerSheetSurfaces";
+import { cn } from "@/lib/utils";
 
 export function ClassSubclassBlock({ stored }: { stored: StoredCharacter }) {
     const contentLocale = useContentLocale((state) => state.contentLocale);
@@ -39,8 +41,10 @@ export function ClassSubclassBlock({ stored }: { stored: StoredCharacter }) {
 
 export function UnresolvedChoicesBlock({
     stored,
+    panelVariant = "default",
 }: {
     stored: StoredCharacter;
+    panelVariant?: "default" | "nested";
 }) {
     const t = useTranslations("character");
     const contentLocale = useContentLocale((state) => state.contentLocale);
@@ -54,7 +58,7 @@ export function UnresolvedChoicesBlock({
     }
 
     return (
-        <SheetPanel title={t("unresolvedChoices")}>
+        <SheetPanel title={t("unresolvedChoices")} variant={panelVariant}>
             <ul className="list-disc space-y-1 pl-4 text-sm text-muted-foreground">
                 {unresolvedChoices.map((choice, index) => (
                     <li key={`${choice.traitName}-${index}`}>
@@ -66,7 +70,13 @@ export function UnresolvedChoicesBlock({
     );
 }
 
-export function RaceTraitsBlock({ stored }: { stored: StoredCharacter }) {
+export function RaceTraitsBlock({
+    stored,
+    panelVariant = "default",
+}: {
+    stored: StoredCharacter;
+    panelVariant?: "default" | "nested";
+}) {
     const t = useTranslations("character");
     const contentLocale = useContentLocale((state) => state.contentLocale);
     const { traits } = getRaceTraitDisplay(stored.selections, contentLocale);
@@ -76,11 +86,11 @@ export function RaceTraitsBlock({ stored }: { stored: StoredCharacter }) {
     }
 
     return (
-        <SheetPanel title={t("traits")}>
+        <SheetPanel title={t("traits")} variant={panelVariant}>
             <ul className="flex flex-col gap-1.5">
                 {traits.map((trait) => (
                     <li key={trait.slug}>
-                        <details className="group rounded-xl border bg-muted text-card-foreground">
+                        <details className={cn("group rounded-xl text-card-foreground", sheetInset)}>
                             <summary className="flex cursor-pointer list-none items-center justify-between gap-2 rounded-xl px-3 py-2 text-sm font-semibold marker:content-none [&::-webkit-details-marker]:hidden">
                                 <span>{trait.name}</span>
                                 <FaChevronDown

@@ -23,7 +23,7 @@ export function OverviewTab({ stored }: OverviewTabProps) {
             </div>
 
             <div className="flex flex-col gap-4">
-                <UnresolvedChoicesBlock stored={stored} />
+                <UnresolvedChoicesBlock stored={stored} panelVariant="nested" />
                 <SkillsCard stored={stored} />
                 <IdentitySection stored={stored} />
             </div>

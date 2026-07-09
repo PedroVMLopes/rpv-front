@@ -6,6 +6,8 @@ import { getItem } from "@rpv/content";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useContentLocale } from "@/store/useContentLocale";
 import { Card } from "@/components/ui/card";
+import { sheetPanel } from "@/components/characters/PlayerSheet/playerSheetSurfaces";
+import { cn } from "@/lib/utils";
 
 function getAvatarUrl(systemData: Record<string, unknown>): string | undefined {
     const avatar = systemData.avatar ?? systemData.image;
@@ -29,8 +31,8 @@ export function PortraitSection({ stored }: PortraitSectionProps) {
         : null;
 
     return (
-        <Card className="gap-0 overflow-hidden rounded-2xl py-0 shadow-sm">
-            <div className="relative aspect-square w-full bg-muted/60">
+        <Card className={cn("gap-0 overflow-hidden rounded-2xl py-0 shadow-xs", sheetPanel)}>
+            <div className="relative aspect-square w-full bg-background/60">
                 {avatarUrl ? (
                     <img
                         src={avatarUrl}

@@ -10,6 +10,7 @@ import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useContentLocale } from "@/store/useContentLocale";
 import { cn } from "@/lib/utils";
 import { OverviewPanel } from "./OverviewPanel";
+import { sheetInset } from "../playerSheetSurfaces";
 
 type ActionEntryProps = {
     title: string;
@@ -25,7 +26,8 @@ function ActionEntry({ title, badge, details, description }: ActionEntryProps) {
         <button
             type="button"
             className={cn(
-                "flex w-full flex-col gap-1 rounded-xl border bg-muted p-3 text-left text-sm",
+                "flex w-full flex-col gap-1 rounded-xl p-3 text-left text-sm",
+                sheetInset,
                 "transition-colors hover:bg-accent/40 active:bg-accent/60",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             )}
