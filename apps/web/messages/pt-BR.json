@@ -303,6 +303,14 @@
     "openFullSheet": "Abrir fichário",
     "comingSoon": "Em breve",
     "rollComingSoon": "Auxiliar de rolagens em breve",
+    "roll": {
+      "selectDie": "Selecione o dado desejado",
+      "pickResult": "Selecione o resultado (d{sides})",
+      "cancel": "Cancelar",
+      "randomRoll": "Rolagem aleatória",
+      "openFab": "Abrir rolagem de dados",
+      "toastResult": "d{sides}: {value}"
+    },
     "noneYet": "Nenhum ainda",
     "levelLine": "Nível {level}",
     "noPortrait": "Sem retrato",

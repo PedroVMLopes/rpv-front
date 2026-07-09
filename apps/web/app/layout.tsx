@@ -6,6 +6,7 @@ import "./globals.css";
 import Sidebar from "@/components/layout/Sidebar";
 import MainLayout from "@/components/layout/MainLayout";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 import { SHOW_INITIATIVE_SIDEBAR } from "@/lib/layout/layoutConfig";
 
 const inter = Inter({
@@ -58,6 +59,7 @@ export default async function RootLayout({
             >
               <MainLayout>{children}</MainLayout>
             </div>
+            <Toaster />
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>

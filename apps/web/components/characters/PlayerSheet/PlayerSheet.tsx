@@ -11,6 +11,7 @@ import { CombatTab } from "./tabs/CombatTab";
 import { InventoryTab } from "./tabs/InventoryTab";
 import { MagicTab } from "./tabs/MagicTab";
 import { NotesTab } from "./tabs/NotesTab";
+import { DiceRollAssistant } from "./roll/DiceRollAssistant";
 
 type PlayerSheetProps = {
     stored: StoredCharacter;
@@ -45,6 +46,7 @@ export function PlayerSheet({ stored }: PlayerSheetProps) {
                 {activeTab === "magic" ? <MagicTab /> : null}
                 {activeTab === "notes" ? <NotesTab /> : null}
             </main>
+            <DiceRollAssistant />
         </div>
     );
 }
