@@ -1,6 +1,14 @@
 "use client";
 
+import type { ComponentType } from "react";
 import { useTranslations } from "next-intl";
+import {
+    FaBook,
+    FaKhanda,
+    FaPenToSquare,
+    FaSuitcase,
+    FaWandMagicSparkles,
+} from "react-icons/fa6";
 import { cn } from "@/lib/utils";
 import { sheetTabActive, sheetTabInactive } from "./playerSheetSurfaces";
 
@@ -18,6 +26,17 @@ const TABS: PlayerSheetTabId[] = [
     "magic",
     "notes",
 ];
+
+const TAB_ICONS: Record<
+    PlayerSheetTabId,
+    ComponentType<{ className?: string; "aria-hidden"?: boolean }>
+> = {
+    overview: FaBook,
+    combat: FaKhanda,
+    inventory: FaSuitcase,
+    magic: FaWandMagicSparkles,
+    notes: FaPenToSquare,
+};
 
 type PlayerSheetTabBarProps = {
     activeTab: PlayerSheetTabId;
@@ -37,6 +56,8 @@ export function PlayerSheetTabBar({
         >
             {TABS.map((tab) => {
                 const isActive = tab === activeTab;
+                const Icon = TAB_ICONS[tab];
+                const label = t(tab);
 
                 return (
                     <button
@@ -44,15 +65,18 @@ export function PlayerSheetTabBar({
                         type="button"
                         role="tab"
                         aria-selected={isActive}
+                        aria-label={label}
+                        title={label}
                         className={cn(
-                            "shrink-0 rounded-t-lg border px-3 py-2 text-sm font-medium transition-colors",
+                            "inline-flex shrink-0 items-center justify-center rounded-t-lg border px-3 py-2 text-sm font-medium transition-colors sm:gap-2",
                             isActive
                                 ? cn("border-b-0", sheetTabActive)
                                 : sheetTabInactive
                         )}
                         onClick={() => onTabChange(tab)}
                     >
-                        {t(tab)}
+                        <Icon className="size-4 sm:hidden" aria-hidden />
+                        <span className="hidden sm:inline">{label}</span>
                     </button>
                 );
             })}

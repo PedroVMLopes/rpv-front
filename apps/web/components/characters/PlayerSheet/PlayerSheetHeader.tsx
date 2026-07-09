@@ -119,13 +119,16 @@ export function PlayerSheetHeader({
                         ) : null}
                     </div>
 
-                    <div className="flex shrink-0 items-stretch gap-2">
-                        <HitPointsControl characterId={stored.id} />
+                    <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-stretch">
+                        <HitPointsControl
+                            characterId={stored.id}
+                            className="w-full sm:w-auto"
+                        />
 
-                        <div className="flex flex-col justify-center gap-2">
-                            <div className="flex items-stretch gap-2">
+                        <div className="flex w-full flex-col justify-center gap-2 sm:w-auto">
+                            <div className="flex w-full items-stretch gap-2">
                                 <div
-                                    className="flex min-w-16 flex-row items-center justify-center rounded-2xl border bg-popover px-3 py-2 gap-2"
+                                    className="flex min-w-0 flex-1 flex-row items-center justify-center gap-2 rounded-2xl border bg-popover px-3 py-2 sm:min-w-16 sm:flex-none"
                                     aria-label={`${tCombat("ac")} ${ac}`}
                                 >
                                     <span className="flex items-center gap-1 text-xs font-semibold uppercase text-muted-foreground">
@@ -138,7 +141,7 @@ export function PlayerSheetHeader({
                                 </div>
 
                                 <div
-                                    className="flex min-w-16 flex-row items-center justify-center rounded-2xl border bg-popover px-3 py-2 gap-2"
+                                    className="flex min-w-0 flex-1 flex-row items-center justify-center gap-2 rounded-2xl border bg-popover px-3 py-2 sm:min-w-16 sm:flex-none"
                                     aria-label={`${tCharacter("initiative")} ${formatModifier(initiative)}`}
                                 >
                                     <span className="text-xs font-semibold uppercase text-muted-foreground">
