@@ -10,6 +10,7 @@ import {
     formatModifier,
     getProficientSkillSlugs,
     readCharacterLevel,
+    sortSkillModifiersByAbilityOrder,
 } from "../lib/character/skillModifiers";
 
 describe("dndAbilityModifier", () => {
@@ -144,5 +145,47 @@ describe("computeSkillModifiers", () => {
 
         const athletics = modifiers.find((entry) => entry.slug === "athletics");
         expect(athletics?.modifier).toBe(5);
+    });
+});
+
+describe("sortSkillModifiersByAbilityOrder", () => {
+    it("orders skills by governing ability then catalog order", () => {
+        const sorted = sortSkillModifiersByAbilityOrder("dnd", [
+            {
+                slug: "arcana",
+                name: "Arcana",
+                ability: "intelligence",
+                modifier: 0,
+                proficient: false,
+            },
+            {
+                slug: "athletics",
+                name: "Athletics",
+                ability: "strength",
+                modifier: 2,
+                proficient: true,
+            },
+            {
+                slug: "stealth",
+                name: "Stealth",
+                ability: "dexterity",
+                modifier: 1,
+                proficient: false,
+            },
+            {
+                slug: "acrobatics",
+                name: "Acrobatics",
+                ability: "dexterity",
+                modifier: 2,
+                proficient: false,
+            },
+        ]);
+
+        expect(sorted.map((skill) => skill.slug)).toEqual([
+            "athletics",
+            "acrobatics",
+            "stealth",
+            "arcana",
+        ]);
     });
 });

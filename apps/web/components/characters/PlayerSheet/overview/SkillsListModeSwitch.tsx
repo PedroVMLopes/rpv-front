@@ -1,5 +1,6 @@
 "use client";
 
+import { useLayoutEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { sheetInset } from "../playerSheetSurfaces";
 import { cn } from "@/lib/utils";
@@ -18,11 +19,28 @@ export function SkillsListModeSwitch({
     onChange,
 }: SkillsListModeSwitchProps) {
     const t = useTranslations("playerSheet");
+    const proficientRef = useRef<HTMLButtonElement>(null);
+    const allRef = useRef<HTMLButtonElement>(null);
+    const [thumbRect, setThumbRect] = useState<{ width: number; left: number } | null>(
+        null
+    );
 
-    const labels: Record<SkillsListMode, string> = {
-        proficient: t("showProficientOnly"),
-        all: t("showAllSkills"),
-    };
+    const proficientLabel = t("showProficientOnly");
+    const allLabel = t("showAllSkills");
+
+    useLayoutEffect(() => {
+        const activeButton =
+            value === "proficient" ? proficientRef.current : allRef.current;
+
+        if (!activeButton) {
+            return;
+        }
+
+        setThumbRect({
+            width: activeButton.offsetWidth,
+            left: activeButton.offsetLeft,
+        });
+    }, [value, proficientLabel, allLabel]);
 
     return (
         <div
@@ -30,40 +48,59 @@ export function SkillsListModeSwitch({
             aria-label={t("skillsListModeLabel")}
             className="relative inline-flex rounded-lg border bg-muted p-0.5"
         >
-            <div
-                aria-hidden
+            {thumbRect ? (
+                <div
+                    aria-hidden
+                    className={cn(
+                        "pointer-events-none absolute inset-y-0.5 rounded-md shadow-sm transition-[left,width] duration-200",
+                        sheetInset
+                    )}
+                    style={{
+                        width: thumbRect.width,
+                        left: thumbRect.left,
+                    }}
+                />
+            ) : null}
+
+            <button
+                ref={proficientRef}
+                type="button"
+                role="radio"
+                aria-checked={value === "proficient"}
                 className={cn(
-                    "pointer-events-none absolute inset-y-0.5 left-0.5 w-[calc(50%-2px)] rounded-md shadow-sm transition-transform duration-200",
-                    sheetInset,
-                    value === "all" && "translate-x-full"
+                    "relative z-10 shrink-0 whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
+                    value === "proficient"
+                        ? "font-semibold text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
                 )}
-            />
+                onClick={() => {
+                    if (value !== "proficient") {
+                        onChange("proficient");
+                    }
+                }}
+            >
+                {proficientLabel}
+            </button>
 
-            {MODES.map((mode) => {
-                const selected = value === mode;
-
-                return (
-                    <button
-                        key={mode}
-                        type="button"
-                        role="radio"
-                        aria-checked={selected}
-                        className={cn(
-                            "relative z-10 min-w-0 flex-1 rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
-                            selected
-                                ? "font-semibold text-foreground"
-                                : "text-muted-foreground hover:text-foreground"
-                        )}
-                        onClick={() => {
-                            if (!selected) {
-                                onChange(mode);
-                            }
-                        }}
-                    >
-                        {labels[mode]}
-                    </button>
-                );
-            })}
+            <button
+                ref={allRef}
+                type="button"
+                role="radio"
+                aria-checked={value === "all"}
+                className={cn(
+                    "relative z-10 shrink-0 whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
+                    value === "all"
+                        ? "font-semibold text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                )}
+                onClick={() => {
+                    if (value !== "all") {
+                        onChange("all");
+                    }
+                }}
+            >
+                {allLabel}
+            </button>
         </div>
     );
 }

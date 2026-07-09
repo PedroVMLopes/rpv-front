@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import {
     computeSkillModifiers,
     readCharacterLevel,
+    sortSkillModifiersByAbilityOrder,
 } from "@/lib/character/skillModifiers";
 import { computeSavingThrowModifiers } from "@/lib/character/savingThrowModifiers";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
@@ -50,9 +51,13 @@ export function SkillsCard({ stored }: SkillsCardProps) {
         };
     }, [resolved, stored.grants, stored.system, stored.systemData]);
 
-    const visibleSkills = showAll
-        ? allSkills
-        : allSkills.filter((skill) => skill.proficient);
+    const visibleSkills = useMemo(() => {
+        const skills = showAll
+            ? allSkills
+            : allSkills.filter((skill) => skill.proficient);
+
+        return sortSkillModifiersByAbilityOrder(stored.system, skills);
+    }, [allSkills, showAll, stored.system]);
     const visibleSaves = showAll
         ? allSaves
         : allSaves.filter((save) => save.proficient);

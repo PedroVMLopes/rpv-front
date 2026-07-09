@@ -196,6 +196,13 @@ describe("PlayerSheet", () => {
         expect(screen.getByText("Stealth")).toBeInTheDocument();
         expect(screen.getByText("Arcana")).toBeInTheDocument();
         expect(screen.getByText("Dexterity")).toBeInTheDocument();
+
+        const athleticsRow = screen.getByRole("button", { name: /Athletics/i });
+        const acrobaticsRow = screen.getByRole("button", { name: /Acrobatics/i });
+        expect(
+            athleticsRow.compareDocumentPosition(acrobaticsRow) &
+                Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy();
     });
 
     it("returns to proficient-only skills and saves when the toggle is disabled", async () => {

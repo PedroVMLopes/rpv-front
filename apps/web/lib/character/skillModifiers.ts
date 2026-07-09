@@ -40,6 +40,33 @@ export function formatModifier(value: number): string {
     return String(value);
 }
 
+export function sortSkillModifiersByAbilityOrder(
+    system: SystemKey,
+    skills: SkillModifier[]
+): SkillModifier[] {
+    const rules = getSystemRules(system);
+    const abilityOrder = new Map(
+        rules.savingThrows.map((stat, index) => [stat, index])
+    );
+    const catalogOrder = new Map(
+        rules.skills.map((skill, index) => [skill.slug, index])
+    );
+
+    return [...skills].sort((left, right) => {
+        const abilityDiff =
+            (abilityOrder.get(left.ability) ?? 0) -
+            (abilityOrder.get(right.ability) ?? 0);
+
+        if (abilityDiff !== 0) {
+            return abilityDiff;
+        }
+
+        return (
+            (catalogOrder.get(left.slug) ?? 0) - (catalogOrder.get(right.slug) ?? 0)
+        );
+    });
+}
+
 export function computeSkillModifiers(
     system: SystemKey,
     stats: Stats,
