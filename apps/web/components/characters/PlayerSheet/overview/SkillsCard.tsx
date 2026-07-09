@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
 import {
     computeSkillModifiers,
     readCharacterLevel,
@@ -12,6 +11,7 @@ import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { ActionRow } from "../ActionRow";
 import { OverviewPanel } from "./OverviewPanel";
+import { SkillsListModeSwitch } from "./SkillsListModeSwitch";
 
 type SkillsCardProps = {
     stored: StoredCharacter;
@@ -63,15 +63,10 @@ export function SkillsCard({ stored }: SkillsCardProps) {
         <OverviewPanel
             title={t("skillsCardTitle")}
             headerAction={
-                <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    aria-pressed={showAll}
-                    onClick={() => setShowAll((current) => !current)}
-                >
-                    {showAll ? t("showProficientOnly") : t("showAllSkills")}
-                </Button>
+                <SkillsListModeSwitch
+                    value={showAll ? "all" : "proficient"}
+                    onChange={(mode) => setShowAll(mode === "all")}
+                />
             }
         >
             {isEmpty ? (

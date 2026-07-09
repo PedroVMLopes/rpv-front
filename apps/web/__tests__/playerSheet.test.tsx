@@ -157,8 +157,15 @@ describe("PlayerSheet", () => {
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
         expect(screen.getByText("Skills")).toBeInTheDocument();
-        expect(screen.getByRole("button", { name: "All" })).toHaveAttribute(
-            "aria-pressed",
+        expect(
+            screen.getByRole("radiogroup", { name: "Skills list display" })
+        ).toBeInTheDocument();
+        expect(screen.getByRole("radio", { name: "Proficient" })).toHaveAttribute(
+            "aria-checked",
+            "true"
+        );
+        expect(screen.getByRole("radio", { name: "All" })).toHaveAttribute(
+            "aria-checked",
             "false"
         );
         expect(screen.getByText("Athletics")).toBeInTheDocument();
@@ -176,11 +183,15 @@ describe("PlayerSheet", () => {
         const user = userEvent.setup();
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
-        await user.click(screen.getByRole("button", { name: "All" }));
+        await user.click(screen.getByRole("radio", { name: "All" }));
 
-        expect(screen.getByRole("button", { name: "Proficient" })).toHaveAttribute(
-            "aria-pressed",
+        expect(screen.getByRole("radio", { name: "All" })).toHaveAttribute(
+            "aria-checked",
             "true"
+        );
+        expect(screen.getByRole("radio", { name: "Proficient" })).toHaveAttribute(
+            "aria-checked",
+            "false"
         );
         expect(screen.getByText("Stealth")).toBeInTheDocument();
         expect(screen.getByText("Arcana")).toBeInTheDocument();
@@ -191,13 +202,17 @@ describe("PlayerSheet", () => {
         const user = userEvent.setup();
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
-        await user.click(screen.getByRole("button", { name: "All" }));
+        await user.click(screen.getByRole("radio", { name: "All" }));
         expect(screen.getByText("Stealth")).toBeInTheDocument();
 
-        await user.click(screen.getByRole("button", { name: "Proficient" }));
+        await user.click(screen.getByRole("radio", { name: "Proficient" }));
 
-        expect(screen.getByRole("button", { name: "All" })).toHaveAttribute(
-            "aria-pressed",
+        expect(screen.getByRole("radio", { name: "Proficient" })).toHaveAttribute(
+            "aria-checked",
+            "true"
+        );
+        expect(screen.getByRole("radio", { name: "All" })).toHaveAttribute(
+            "aria-checked",
             "false"
         );
         expect(screen.queryByText("Stealth")).not.toBeInTheDocument();
