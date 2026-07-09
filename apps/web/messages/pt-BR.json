@@ -15,7 +15,14 @@
     "enemies": "Inimigos",
     "npcs": "NPCs",
     "encounters": "Encontros",
-    "community": "Comunidade"
+    "community": "Comunidade",
+    "settings": "Configurações",
+    "user": "Usuário"
+  },
+  "user": {
+    "title": "Usuário",
+    "preferences": "Preferências",
+    "comingSoon": "As configurações da conta estarão disponíveis em breve."
   },
   "forms": {
     "saveCharacter": "Salvar Personagem",

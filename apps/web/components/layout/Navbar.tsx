@@ -1,117 +1,97 @@
-"use client"
+"use client";
 
-import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { FaGear, FaUser } from "react-icons/fa6";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
-import { FaUser, FaHouse, FaUsers, FaMapLocationDot, FaUsersViewfinder } from "react-icons/fa6";
-import { GiAnvilImpact } from "react-icons/gi";
+function isRouteActive(pathname: string, href: string): boolean {
+    if (href === "/") {
+        return pathname === "/";
+    }
 
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
+    return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+function navLinkClassName(active: boolean): string {
+    return cn(
+        "text-sm font-medium transition-colors",
+        active ? "text-primary" : "text-muted-foreground hover:text-foreground"
+    );
+}
 
 export default function Navbar() {
     const pathname = usePathname();
-    const isActive = (path: string) => pathname === path;
     const t = useTranslations("nav");
 
+    const isHomeActive = isRouteActive(pathname, "/");
+    const isCharactersActive = isRouteActive(pathname, "/characters");
+    const isEncountersActive = isRouteActive(pathname, "/encounters");
+    const isUserActive = isRouteActive(pathname, "/user");
+
     return (
-        <div className="w-full flex justify-center">
-            <NavigationMenu viewport={true} className="md:shadow-2xl">
-                <NavigationMenuList className="flex flex-row items-start">
+        <header className="flex w-full items-center justify-between gap-4">
+            <nav
+                className="flex min-w-0 items-center gap-3 sm:gap-4"
+                aria-label="Main"
+            >
+                <Link
+                    href="/"
+                    className={cn(
+                        "font-serif text-lg font-bold tracking-tight transition-colors",
+                        isHomeActive
+                            ? "text-primary"
+                            : "text-foreground hover:text-primary"
+                    )}
+                >
+                    RPV
+                </Link>
 
-                    <NavigationMenuItem>
-                        <NavigationMenuLink 
-                            asChild 
-                            className={`p-0 ${navigationMenuTriggerStyle()} ${isActive("/") ? "bg-popover" : ""}`}
-                        >
-                            <Link href="/"><FaHouse className="p-0 text-amber-100" /></Link>
-                        </NavigationMenuLink>
-                    </NavigationMenuItem>
+                <Separator
+                    orientation="vertical"
+                    className="h-5 bg-border"
+                />
 
-                    <NavigationMenuItem>
-                        <NavigationMenuTrigger className="font-bold">
-                            <FaUsers className="md:hidden text-amber-100" />
-                            <p className="hidden md:inline">{t("characters")}</p>
-                        </NavigationMenuTrigger>
-                        <NavigationMenuContent>
-                            <ul className="grid gap-4 z-10">
-                                <li className="z-10">
-                                    <NavigationMenuLink 
-                                        asChild 
-                                        className={`${navigationMenuTriggerStyle()} hover:bg-secondary ${isActive("/characters") ? "bg-secondary" : "bg-popover"}`}
-                                    >
-                                        <Link href="/characters">{t("allCharacters")}</Link>
-                                    </NavigationMenuLink>
-                                    <div className="h-[1px] w-full bg-muted my-1" />
-                                    <div className="flex flex-col gap-0.5">
-                                        <NavigationMenuLink 
-                                            asChild 
-                                            className={`${navigationMenuTriggerStyle()} hover:bg-chart-1 ${isActive("/characters/player") ? "bg-chart-1" : "bg-popover"}`}
-                                        >
-                                            <Link href="/characters/player">{t("players")}</Link>
-                                        </NavigationMenuLink>
-                                        <NavigationMenuLink 
-                                            asChild 
-                                            className={`${navigationMenuTriggerStyle()} hover:bg-chart-2 ${isActive("/characters/enemy") ? "bg-char-2" : "bg-popover"}`}
-                                        >
-                                            <Link href="/characters/enemy">{t("enemies")}</Link>
-                                        </NavigationMenuLink>
-                                        <NavigationMenuLink 
-                                            asChild 
-                                            className={`${navigationMenuTriggerStyle()} hover:bg-chart-3 hover:text-foreground ${isActive("/characters/npc") ? "bg-char-3" : "bg-popover"}`}
-                                        >
-                                            <Link href="/characters/npc">{t("npcs")}</Link>
-                                        </NavigationMenuLink>
-                                    </div>
-                                </li>
-                            </ul>
-                        </NavigationMenuContent>
-                    </NavigationMenuItem>
+                <Link
+                    href="/characters"
+                    className={navLinkClassName(isCharactersActive)}
+                >
+                    {t("characters")}
+                </Link>
 
-                    <NavigationMenuItem>
-                        <NavigationMenuLink 
-                            asChild 
-                            className={`${navigationMenuTriggerStyle()} ${isActive("/encounters") ? "bg-popover" : ""}`}
-                        >
-                            <Link href="/encounters">
-                                <FaMapLocationDot className="md:hidden text-amber-100" />
-                                <p className="hidden md:inline">{t("encounters")}</p>
-                            </Link>
-                        </NavigationMenuLink>
-                    </NavigationMenuItem>
+                <Link
+                    href="/encounters"
+                    className={navLinkClassName(isEncountersActive)}
+                >
+                    {t("encounters")}
+                </Link>
+            </nav>
 
-                    <NavigationMenuItem>
-                        <NavigationMenuLink 
-                            asChild 
-                            className={`text-orange-300 ${navigationMenuTriggerStyle()} ${isActive("/forge") ? "bg-orange-300 text-black" : ""}`}
-                        >
-                            <Link className="flex flex-row" href="/forge">
-                                {/* <GiAnvilImpact className="text-amber-100" /> */}
-                                <p className="hidden md:inline">{t("community")}</p>
-                            </Link>
-                        </NavigationMenuLink>
-                    </NavigationMenuItem>
-
-                    <NavigationMenuItem>
-                        <NavigationMenuLink 
-                            asChild 
-                            className={`${navigationMenuTriggerStyle()} ${isActive("/") ? "bg-muted" : ""}`}
-                        >
-                            <Link href="/"><FaUser className="size-4 text-amber-100" /></Link>
-                        </NavigationMenuLink>
-                    </NavigationMenuItem>
-
-                </NavigationMenuList>
-            </NavigationMenu>
-        </div>
-    )
+            <div className="flex shrink-0 items-center gap-1">
+                <Button
+                    asChild
+                    variant="ghost"
+                    size="icon"
+                    className={cn(isUserActive && "text-primary")}
+                >
+                    <Link href="/user" aria-label={t("settings")}>
+                        <FaGear className="size-4" />
+                    </Link>
+                </Button>
+                <Button
+                    asChild
+                    variant="ghost"
+                    size="icon"
+                    className={cn(isUserActive && "text-primary")}
+                >
+                    <Link href="/user" aria-label={t("user")}>
+                        <FaUser className="size-4" />
+                    </Link>
+                </Button>
+            </div>
+        </header>
+    );
 }
