@@ -41,7 +41,7 @@ export default function Navbar() {
                 <Link
                     href="/"
                     className={cn(
-                        "font-serif text-lg font-bold tracking-tight transition-colors",
+                        "font-serif text-xl font-bold tracking-tight transition-colors",
                         isHomeActive
                             ? "text-primary"
                             : "text-foreground hover:text-primary"
@@ -52,7 +52,7 @@ export default function Navbar() {
 
                 <Separator
                     orientation="vertical"
-                    className="h-5 bg-border"
+                    className="h-5 w-px bg-foreground/40 data-[orientation=vertical]:h-5"
                 />
 
                 <Link
