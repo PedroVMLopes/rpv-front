@@ -6,6 +6,7 @@ import "./globals.css";
 import Sidebar from "@/components/layout/Sidebar";
 import MainLayout from "@/components/layout/MainLayout";
 import { ThemeProvider } from "@/components/theme-provider";
+import { SHOW_INITIATIVE_SIDEBAR } from "@/lib/layout/layoutConfig";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -33,7 +34,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${robotoSlab.variable} antialiased flex min-h-screen bg-sidebar`}
+        className={`${inter.variable} ${robotoSlab.variable} antialiased min-h-screen bg-background text-foreground${SHOW_INITIATIVE_SIDEBAR ? " flex" : ""}`}
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ThemeProvider
@@ -42,18 +43,21 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {/* Sidebar to the left */}
-            <aside className="hidden md:flex w-xs lg:w-sm p-3 pt-2">
-              <Sidebar />
-            </aside>
+            {SHOW_INITIATIVE_SIDEBAR ? (
+              <aside className="hidden md:flex w-xs lg:w-sm p-3 pt-2">
+                <Sidebar />
+              </aside>
+            ) : null}
 
-            {/* Main Content to the right */}
-            <div className="flex-1 rounded-lg shadow-inner p-3 md:m-2 md:ml-0 ml-0 bg-background">
-              <MainLayout>
-                {children}
-              </MainLayout>
+            <div
+              className={
+                SHOW_INITIATIVE_SIDEBAR
+                  ? "flex-1 min-h-screen p-3 md:p-4"
+                  : "min-h-screen p-3 md:p-4"
+              }
+            >
+              <MainLayout>{children}</MainLayout>
             </div>
-
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>
