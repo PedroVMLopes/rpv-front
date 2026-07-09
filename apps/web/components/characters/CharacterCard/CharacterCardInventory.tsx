@@ -11,14 +11,19 @@ import {
 } from "@rpv/content";
 import type { SystemKey } from "@/presets";
 import { CarouselItem } from "@/components/ui/characterCarousel";
+import { SheetPanel } from "@/components/characters/SheetPanel";
 import { Button } from "@/components/ui/button";
 import { bagStackReactKey } from "@/lib/character/inventory";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { useContentLocale } from "@/store/useContentLocale";
+import { CharacterCardSlide } from "./characterCardUi";
 
 interface CharacterCardInventoryProps {
     characterId: string;
 }
+
+const mutedRowClassName =
+    "rounded-lg border bg-muted px-2 py-1.5 text-sm";
 
 function getBagQuantity(
     bag: CharacterInventory["bag"],
@@ -101,7 +106,7 @@ function SlotRow({
         getBagQuantity(inventory.bag, selectedSlug) > 0;
 
     return (
-        <li className="flex flex-col gap-1 rounded-lg border px-2 py-1.5 bg-popover text-sm">
+        <li className={mutedRowClassName}>
             <div className="flex items-center justify-between gap-2">
                 <span className="font-medium">{slotLabel}</span>
                 {equippedSlug ? (
@@ -121,9 +126,9 @@ function SlotRow({
                     {itemDisplayName(equippedSlug, system, contentLocale)}
                 </span>
             ) : (
-                <div className="flex flex-row gap-1 items-center">
+                <div className="flex flex-row items-center gap-1">
                     <select
-                        className="flex-1 min-w-0 rounded-md border bg-background px-2 py-1 text-sm"
+                        className="min-w-0 flex-1 rounded-md border bg-background px-2 py-1 text-sm"
                         value={selectedSlug}
                         onChange={(event) => setSelectedSlug(event.target.value)}
                         aria-label={tInventory("equipToSlot", { slot: slotLabel })}
@@ -184,9 +189,13 @@ export default function CharacterCardInventory({
     if (!stored) {
         return (
             <CarouselItem>
-                <div className="flex flex-col rounded-2xl p-2 px-3 border my-2 text-muted-foreground text-sm">
-                    {t("character.noneSelected")}
-                </div>
+                <CharacterCardSlide>
+                    <SheetPanel>
+                        <p className="text-sm text-muted-foreground">
+                            {t("character.noneSelected")}
+                        </p>
+                    </SheetPanel>
+                </CharacterCardSlide>
             </CarouselItem>
         );
     }
@@ -197,31 +206,30 @@ export default function CharacterCardInventory({
 
     return (
         <CarouselItem>
-            <div className="flex flex-col rounded-2xl p-2 px-3 border my-2 gap-3">
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div className="border rounded-lg p-2 bg-popover">
-                        <span className="text-muted-foreground">
-                            {tInventory("resolvedMaxHp", {
-                                value: resolved?.hitPoints ?? 0,
-                            })}
-                        </span>
+            <CharacterCardSlide>
+                <SheetPanel>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div className={mutedRowClassName}>
+                            <span className="text-muted-foreground">
+                                {tInventory("resolvedMaxHp", {
+                                    value: resolved?.hitPoints ?? 0,
+                                })}
+                            </span>
+                        </div>
+                        <div className={mutedRowClassName}>
+                            <span className="text-muted-foreground">
+                                {tInventory("resolvedAc", {
+                                    value: resolved?.armorClass ?? 0,
+                                })}
+                            </span>
+                        </div>
                     </div>
-                    <div className="border rounded-lg p-2 bg-popover">
-                        <span className="text-muted-foreground">
-                            {tInventory("resolvedAc", {
-                                value: resolved?.armorClass ?? 0,
-                            })}
-                        </span>
-                    </div>
-                </div>
+                </SheetPanel>
 
-                <section>
-                    <p className="text-xs font-semibold uppercase text-muted-foreground mb-2">
-                        {tInventory("bag")}
-                    </p>
-                    <div className="flex flex-row gap-1 mb-2">
+                <SheetPanel title={tInventory("bag")}>
+                    <div className="mb-2 flex flex-row gap-1">
                         <select
-                            className="flex-1 min-w-0 rounded-md border bg-background px-2 py-1 text-sm"
+                            className="min-w-0 flex-1 rounded-md border bg-background px-2 py-1 text-sm"
                             value={addSlug}
                             onChange={(event) => setAddSlug(event.target.value)}
                             aria-label={tInventory("selectItem")}
@@ -256,7 +264,7 @@ export default function CharacterCardInventory({
                             {inventory.bag.map((stack) => (
                                 <li
                                     key={bagStackReactKey(stack)}
-                                    className="flex items-center justify-between rounded-lg border px-2 py-1 bg-popover"
+                                    className={`${mutedRowClassName} flex items-center justify-between`}
                                 >
                                     <span>
                                         {itemDisplayName(
@@ -288,12 +296,9 @@ export default function CharacterCardInventory({
                             ))}
                         </ul>
                     )}
-                </section>
+                </SheetPanel>
 
-                <section>
-                    <p className="text-xs font-semibold uppercase text-muted-foreground mb-2">
-                        {tInventory("equipment")}
-                    </p>
+                <SheetPanel title={tInventory("equipment")}>
                     <ul className="space-y-2">
                         {slots.map((slot) => (
                             <SlotRow
@@ -307,8 +312,8 @@ export default function CharacterCardInventory({
                             />
                         ))}
                     </ul>
-                </section>
-            </div>
+                </SheetPanel>
+            </CharacterCardSlide>
         </CarouselItem>
     );
 }

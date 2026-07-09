@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { CarouselItem } from "@/components/ui/characterCarousel";
 import { Button } from "@/components/ui/button";
+import { SheetPanel } from "@/components/characters/SheetPanel";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import {
     ClassSubclassBlock,
@@ -12,20 +13,25 @@ import {
 } from "./CharacterCardRaceInfo";
 import { getRaceTraitDisplay } from "@/lib/character/raceDisplay";
 import { useContentLocale } from "@/store/useContentLocale";
+import { CharacterCardSlide } from "./characterCardUi";
 
 interface CharacterCardInfoBlocksProps {
     characterId: string;
 }
 
-function BackgroundBlock({ background }: { background?: unknown }) {
+function BackgroundPanel({ background }: { background?: unknown }) {
+    const t = useTranslations("fields");
+
     if (!background || String(background).trim() === "") {
         return null;
     }
 
     return (
-        <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground">
-            <p className="font-bold">{String(background)}</p>
-        </div>
+        <SheetPanel title={t("background")}>
+            <div className="rounded-xl bg-muted px-3 py-2 text-sm font-semibold">
+                {String(background)}
+            </div>
+        </SheetPanel>
     );
 }
 
@@ -33,6 +39,7 @@ export default function CharacterCardInfoBlocks({
     characterId,
 }: CharacterCardInfoBlocksProps) {
     const t = useTranslations("playerSheet");
+    const tFields = useTranslations("fields");
     const stored = useCharacterStore((state) =>
         state.characters.find((c) => c.id === characterId)
     );
@@ -49,7 +56,9 @@ export default function CharacterCardInfoBlocks({
     );
     const hasTraits = traits.length > 0 || unresolvedChoices.length > 0;
     const classBlock = <ClassSubclassBlock stored={stored} />;
-    const backgroundBlock = <BackgroundBlock background={systemData.background} />;
+    const backgroundBlock = (
+        <BackgroundPanel background={systemData.background} />
+    );
     const goals =
         systemData.goals !== undefined &&
         systemData.goals !== null &&
@@ -69,44 +78,49 @@ export default function CharacterCardInfoBlocks({
     if (!hasTopBlocks && !goals && !hasTraits) {
         return (
             <CarouselItem>
-                {openSheetCta}
-                <div className="text-muted-foreground text-sm p-2">
-                    No character details yet.
-                </div>
+                <CharacterCardSlide>
+                    {openSheetCta}
+                    <div className="p-2 text-sm text-muted-foreground">
+                        No character details yet.
+                    </div>
+                </CharacterCardSlide>
             </CarouselItem>
         );
     }
 
     return (
         <CarouselItem>
-            {openSheetCta}
+            <CharacterCardSlide>
+                {openSheetCta}
 
-            {hasTopBlocks && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {classBlock}
-                    {backgroundBlock}
-                </div>
-            )}
-
-            {unresolvedChoices.length > 0 ? (
-                <div className="mt-2">
-                    <UnresolvedChoicesBlock stored={stored} />
-                </div>
-            ) : null}
-            {traits.length > 0 ? (
-                <div className="mt-2">
-                    <RaceTraitsBlock stored={stored} />
-                </div>
-            ) : null}
-
-            {goals && (
-                <div className="flex flex-col gap-2">
-                    <div className="flex flex-col border rounded-2xl mt-2 p-2 px-3 gap-1 bg-popover text-popover-foreground">
-                        <p className="text-sm opacity-60">Objectives</p>
-                        <p>{goals}</p>
+                {hasTopBlocks && (
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                        {classBlock ? (
+                            <SheetPanel>
+                                <div className="rounded-xl bg-muted p-2 px-3">
+                                    {classBlock}
+                                </div>
+                            </SheetPanel>
+                        ) : null}
+                        {backgroundBlock}
                     </div>
-                </div>
-            )}
+                )}
+
+                {unresolvedChoices.length > 0 ? (
+                    <UnresolvedChoicesBlock stored={stored} />
+                ) : null}
+                {traits.length > 0 ? (
+                    <RaceTraitsBlock stored={stored} />
+                ) : null}
+
+                {goals ? (
+                    <SheetPanel title={tFields("goals")}>
+                        <div className="rounded-xl bg-muted px-3 py-2 text-sm">
+                            {goals}
+                        </div>
+                    </SheetPanel>
+                ) : null}
+            </CharacterCardSlide>
         </CarouselItem>
     );
 }

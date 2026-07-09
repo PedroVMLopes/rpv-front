@@ -10,7 +10,7 @@ import {
     getRaceLineFromSelections,
     getRaceTraitDisplay,
 } from "@/lib/character/raceDisplay";
-import { OverviewPanel } from "@/components/characters/PlayerSheet/overview/OverviewPanel";
+import { SheetPanel } from "@/components/characters/SheetPanel";
 
 export function ClassSubclassBlock({ stored }: { stored: StoredCharacter }) {
     const contentLocale = useContentLocale((state) => state.contentLocale);
@@ -30,7 +30,7 @@ export function ClassSubclassBlock({ stored }: { stored: StoredCharacter }) {
     }
 
     return (
-        <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground">
+        <div className="text-card-foreground">
             {title ? <p className="font-bold">{title}</p> : null}
             {subclassStr ? <p className="text-sm">{subclassStr}</p> : null}
         </div>
@@ -54,7 +54,7 @@ export function UnresolvedChoicesBlock({
     }
 
     return (
-        <OverviewPanel title={t("unresolvedChoices")}>
+        <SheetPanel title={t("unresolvedChoices")}>
             <ul className="list-disc space-y-1 pl-4 text-sm text-muted-foreground">
                 {unresolvedChoices.map((choice, index) => (
                     <li key={`${choice.traitName}-${index}`}>
@@ -62,7 +62,7 @@ export function UnresolvedChoicesBlock({
                     </li>
                 ))}
             </ul>
-        </OverviewPanel>
+        </SheetPanel>
     );
 }
 
@@ -76,7 +76,7 @@ export function RaceTraitsBlock({ stored }: { stored: StoredCharacter }) {
     }
 
     return (
-        <OverviewPanel title={t("traits")}>
+        <SheetPanel title={t("traits")}>
             <ul className="flex flex-col gap-1.5">
                 {traits.map((trait) => (
                     <li key={trait.slug}>
@@ -97,6 +97,6 @@ export function RaceTraitsBlock({ stored }: { stored: StoredCharacter }) {
                     </li>
                 ))}
             </ul>
-        </OverviewPanel>
+        </SheetPanel>
     );
 }

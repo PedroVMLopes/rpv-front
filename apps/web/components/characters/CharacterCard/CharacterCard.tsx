@@ -4,75 +4,21 @@ import * as React from "react";
 import { Button } from "../../ui/button";
 import { Card, CardAction, CardContent, CardFooter, CardHeader, CardTitle } from "../../ui/card";
 
-import { FaHeart, FaBookmark, FaShield, FaExpand, FaGear } from "react-icons/fa6";
-import CharacterCardInfoBlocks from "./CharacterCardInfoBlocks";
-import { Carousel, CarouselApi, CarouselContent, CarouselNext, CarouselPrevious } from "@/components/ui/characterCarousel";
-import CharacterCardGameInfo from "./CharacterCardGameInfo";
-import CharacterCardInventory from "./CharacterCardInventory";
-import CharacterCardAbilities from "./CharacterCardAbilities";
+import { FaHeart, FaBookmark, FaExpand, FaGear } from "react-icons/fa6";
 import { ClassSubclassBlock } from "./CharacterCardRaceInfo";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import CharacterCardExpandedDialog from "./CharacterCardExpandedDialog";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import Link from "next/link";
+import {
+    CharacterTitle,
+    getAvatarUrl,
+    HpAcOverlay,
+} from "./characterCardUi";
 
 const HP_RESOURCE = "hp";
 
 interface CharacterCardProps {
     characterId: string;
-}
-
-function getAvatarUrl(systemData: Record<string, unknown>): string | undefined {
-    const avatar = systemData.avatar ?? systemData.image;
-    if (typeof avatar === "string" && avatar.trim()) {
-        return avatar;
-    }
-    return undefined;
-}
-
-function formatLevel(level: unknown): number | undefined {
-    if (typeof level === "number" && !Number.isNaN(level)) {
-        return level;
-    }
-    if (typeof level === "string" && level !== "") {
-        const parsed = Number(level);
-        return Number.isNaN(parsed) ? undefined : parsed;
-    }
-    return undefined;
-}
-
-function CharacterTitle({ name, level }: { name: string; level?: unknown }) {
-    const levelNum = formatLevel(level);
-    return (
-        <>
-            {name}
-            {levelNum !== undefined && (
-                <span className="text-sm opacity-50 font-semibold"> lv {levelNum}</span>
-            )}
-        </>
-    );
-}
-
-function HpAcOverlay({
-    currentHp,
-    maxHp,
-    ac,
-}: {
-    currentHp: number;
-    maxHp: number;
-    ac: number;
-}) {
-    return (
-        <div className="absolute bottom-1 left-1 flex flex-col gap-0.5">
-            <div className="flex flex-row items-center backdrop-blur bg-black/15 rounded-2xl p-0.5 px-1.5 font-bold">
-                <FaHeart className="mr-1" /> {currentHp}{" "}
-                <span className="opacity-60">/{maxHp}</span>
-            </div>
-            <div className="flex flex-row items-center backdrop-blur-2xl bg-black/15 rounded-2xl p-0.5 px-1.5 font-bold">
-                <FaShield className="mr-1" /> {ac}
-            </div>
-        </div>
-    );
 }
 
 function BackgroundBlock({ background }: { background?: unknown }) {
@@ -81,7 +27,7 @@ function BackgroundBlock({ background }: { background?: unknown }) {
     }
 
     return (
-        <div className="flex flex-col border rounded-2xl p-2 px-3 bg-popover text-popover-foreground">
+        <div className="flex flex-col rounded-2xl border bg-popover p-2 px-3 text-popover-foreground">
             <p className="font-bold">{String(background)}</p>
         </div>
     );
@@ -94,43 +40,10 @@ export default function CharacterCard({ characterId }: CharacterCardProps) {
     const getResolvedStats = useCharacterStore((state) => state.getResolvedStats);
     const resolved = getResolvedStats(characterId);
 
-    const [api, setApi] = React.useState<CarouselApi>();
-    const [current, setCurrent] = React.useState(0);
-    const [pageName, setPageName] = React.useState("");
-
-    React.useEffect(() => {
-        switch (current) {
-            case 1:
-                setPageName("Character Info");
-                break;
-            case 2:
-                setPageName("Skills");
-                break;
-            case 3:
-                setPageName("Actions & Abilities");
-                break;
-            case 4:
-                setPageName("Inventory");
-                break;
-        }
-    }, [current]);
-
-    React.useEffect(() => {
-        if (!api) {
-            return;
-        }
-
-        setCurrent(api.selectedScrollSnap() + 1);
-
-        api.on("select", () => {
-            setCurrent(api.selectedScrollSnap() + 1);
-        });
-    }, [api]);
-
     if (!stored) {
         return (
-            <Card className="p-3 sm:max-w-xs gap-3">
-                <CardContent className="p-4 text-muted-foreground text-sm">
+            <Card className="gap-3 p-3 sm:max-w-xs">
+                <CardContent className="p-4 text-sm text-muted-foreground">
                     Character not found.
                 </CardContent>
             </Card>
@@ -152,74 +65,52 @@ export default function CharacterCard({ characterId }: CharacterCardProps) {
     const hasTopInfoBlocks = classBlock !== null || backgroundBlock !== null;
 
     const imageSection = avatarUrl ? (
-        <div className="flex flex-col items-center overflow-hidden rounded-2xl min-w-full min-h-20 max-h-96 max-w-96 relative">
+        <div className="relative flex min-h-20 max-h-96 min-w-full max-w-96 flex-col items-center overflow-hidden rounded-2xl">
             <img src={avatarUrl} alt={stored.name} className="relative" />
             <HpAcOverlay currentHp={currentHp} maxHp={maxHp} ac={ac} />
         </div>
     ) : null;
 
     return (
-        <Card className="p-3 sm:max-w-xs gap-3">
-            <CardHeader className="p-0 pl-1 flex flex-row items-center justify-between">
-                <CardTitle className="font-bold text-lg">
+        <Card className="gap-3 p-3 sm:max-w-xs">
+            <CardHeader className="flex flex-row items-center justify-between p-0 pl-1">
+                <CardTitle className="text-lg font-bold">
                     <CharacterTitle name={stored.name} level={systemData.level} />
                 </CardTitle>
                 <CardAction className="flex flex-row gap-0">
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Button size={"icon"} variant={"outline"}>
+                    <CharacterCardExpandedDialog
+                        characterId={characterId}
+                        stored={stored}
+                        trigger={
+                            <Button
+                                size={"icon"}
+                                variant={"outline"}
+                                aria-label="Expand character"
+                            >
                                 <FaExpand />
                             </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-sm h-[90%] flex flex-col items-center p-3 sm:p-6">
-                            <DialogHeader>
-                                <DialogTitle className="font-bold text-lg">
-                                    <CharacterTitle
-                                        name={stored.name}
-                                        level={systemData.level}
-                                    />
-                                </DialogTitle>
-                            </DialogHeader>
-
-                            {imageSection}
-
-                            <Carousel className="w-full" setApi={setApi} opts={{ loop: true }}>
-                                <CarouselPrevious />
-                                <CarouselNext />
-                                <div className="text-muted-foreground text-center text-sm mb-3">
-                                    {pageName}
-                                </div>
-
-                                <ScrollArea className="h-80 rounded-2xl">
-                                    <CarouselContent className="">
-                                        <CharacterCardInfoBlocks characterId={characterId} />
-
-                                        <CharacterCardGameInfo characterId={characterId} />
-
-                                        <CharacterCardAbilities characterId={characterId} />
-
-                                        <CharacterCardInventory characterId={characterId} />
-                                    </CarouselContent>
-                                </ScrollArea>
-                            </Carousel>
-                        </DialogContent>
-                    </Dialog>
+                        }
+                    />
                 </CardAction>
             </CardHeader>
 
-            <CardContent className="p-0 flex flex-col items-center">
+            <CardContent className="flex flex-col items-center p-0">
                 {imageSection}
 
                 {hasTopInfoBlocks && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 my-2 w-full">
-                        {classBlock}
+                    <div className="my-2 grid w-full grid-cols-1 gap-2 sm:grid-cols-2">
+                        {classBlock ? (
+                            <div className="rounded-2xl border bg-popover p-2 px-3 text-popover-foreground">
+                                {classBlock}
+                            </div>
+                        ) : null}
                         {backgroundBlock}
                     </div>
                 )}
             </CardContent>
 
             <CardFooter className="px-0">
-                <div className="flex flex-row w-full justify-end gap-1">
+                <div className="flex w-full flex-row justify-end gap-1">
                     {showHpFooter && (
                         <Button variant={"ghost"} className="font-bold">
                             {currentHp}

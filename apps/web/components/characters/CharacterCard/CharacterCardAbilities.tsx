@@ -4,6 +4,7 @@ import { useMemo, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import type { CharacterGrant } from "@rpv/domain";
 import { CarouselItem } from "@/components/ui/characterCarousel";
+import { SheetPanel } from "@/components/characters/SheetPanel";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { useContentLocale } from "@/store/useContentLocale";
 import { getLanguage } from "@/lib/catalog/grantCatalog";
@@ -13,6 +14,7 @@ import {
     listGrantsBySource,
 } from "@/lib/character/grantDisplay";
 import { DerivedResourcesDisplay } from "@/components/characters/DerivedResourcesDisplay";
+import { CharacterCardSlide } from "./characterCardUi";
 
 const SOURCE_LABEL_KEYS: Record<CharacterGrant["source"]["type"], string> = {
     race: "sourceRace",
@@ -60,17 +62,16 @@ function GrantSection({
     const hasItems = items.some(Boolean);
 
     return (
-        <section>
-            <h3 className="text-sm font-bold mb-2">{title}</h3>
+        <SheetPanel title={title}>
             {subtitle ? (
-                <p className="text-xs text-muted-foreground mb-1">{subtitle}</p>
+                <p className="mb-2 text-xs text-muted-foreground">{subtitle}</p>
             ) : null}
             {!hasItems ? (
                 <p className="text-xs text-muted-foreground">{emptyLabel}</p>
             ) : (
-                <ul className="text-sm space-y-1">{items}</ul>
+                <ul className="space-y-1 text-sm">{items}</ul>
             )}
-        </section>
+        </SheetPanel>
     );
 }
 
@@ -124,7 +125,7 @@ export default function CharacterCardAbilities({
 
     return (
         <CarouselItem>
-            <div className="flex flex-col gap-3 p-2">
+            <CharacterCardSlide>
                 <DerivedResourcesDisplay
                     resources={stored.resources}
                     compact
@@ -137,7 +138,10 @@ export default function CharacterCardAbilities({
                         emptyLabel={t("noneYet")}
                     >
                         {classFeatures.map((grant) => (
-                            <li key={grant.id}>
+                            <li
+                                key={grant.id}
+                                className="rounded-lg border bg-muted px-2 py-1"
+                            >
                                 {displayName(grant, contentLocale)}
                             </li>
                         ))}
@@ -151,7 +155,10 @@ export default function CharacterCardAbilities({
                         emptyLabel={t("noneYet")}
                     >
                         {subclassFeatures.map((grant) => (
-                            <li key={grant.id}>
+                            <li
+                                key={grant.id}
+                                className="rounded-lg border bg-muted px-2 py-1"
+                            >
                                 {displayName(grant, contentLocale)}
                             </li>
                         ))}
@@ -164,7 +171,10 @@ export default function CharacterCardAbilities({
                         emptyLabel={t("noneYet")}
                     >
                         {[...classSpells, ...subclassSpells].map((grant) => (
-                            <li key={grant.id}>
+                            <li
+                                key={grant.id}
+                                className="rounded-lg border bg-muted px-2 py-1"
+                            >
                                 {displayName(grant, contentLocale)}
                             </li>
                         ))}
@@ -173,16 +183,16 @@ export default function CharacterCardAbilities({
 
                 <GrantSection title={t("languagesTitle")} emptyLabel={t("noneYet")}>
                     {languages.map((grant) => (
-                        <li key={grant.id}>
+                        <li
+                            key={grant.id}
+                            className="rounded-lg border bg-muted px-2 py-1"
+                        >
                             {displayName(grant, contentLocale)}
                         </li>
                     ))}
                 </GrantSection>
 
-                <section>
-                    <h3 className="text-sm font-bold mb-2">
-                        {t("grantedFeaturesTitle")}
-                    </h3>
+                <SheetPanel title={t("grantedFeaturesTitle")}>
                     {features.length === 0 ? (
                         <p className="text-xs text-muted-foreground">
                             {t("noneYet")}
@@ -207,12 +217,15 @@ export default function CharacterCardAbilities({
 
                                 return (
                                     <div key={sourceKey}>
-                                        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
+                                        <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                                             {sourceLabel}
                                         </p>
-                                        <ul className="text-sm space-y-1">
+                                        <ul className="space-y-1 text-sm">
                                             {featureGrants.map((grant) => (
-                                                <li key={grant.id}>
+                                                <li
+                                                    key={grant.id}
+                                                    className="rounded-lg border bg-muted px-2 py-1"
+                                                >
                                                     {displayName(
                                                         grant,
                                                         contentLocale
@@ -225,8 +238,8 @@ export default function CharacterCardAbilities({
                             })}
                         </div>
                     )}
-                </section>
-            </div>
+                </SheetPanel>
+            </CharacterCardSlide>
         </CarouselItem>
     );
 }

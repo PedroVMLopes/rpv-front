@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { CarouselItem } from "@/components/ui/characterCarousel";
+import { SheetPanel } from "@/components/characters/SheetPanel";
 import { getResolvedStatDisplay } from "@/lib/character/presetStats";
 import {
     computeSkillModifiers,
@@ -16,10 +17,15 @@ import {
     getProficiencyBonus,
 } from "@/lib/character/derivedStats";
 import { useCharacterStore } from "@/store/useCharacterStore";
+import { CharacterCardSlide } from "./characterCardUi";
+import { cn } from "@/lib/utils";
 
 interface CharacterCardGameInfoProps {
     characterId?: string;
 }
+
+const mutedRowClassName =
+    "rounded-lg border bg-muted px-2 py-1";
 
 export default function CharacterCardGameInfo({ characterId }: CharacterCardGameInfoProps) {
     const t = useTranslations();
@@ -61,9 +67,13 @@ export default function CharacterCardGameInfo({ characterId }: CharacterCardGame
     if (!props || !stored || !resolved) {
         return (
             <CarouselItem>
-                <div className="flex flex-col rounded-2xl p-2 px-3 border my-2 text-muted-foreground text-sm">
-                    {t("character.noneSelected")}
-                </div>
+                <CharacterCardSlide>
+                    <SheetPanel>
+                        <p className="text-sm text-muted-foreground">
+                            {t("character.noneSelected")}
+                        </p>
+                    </SheetPanel>
+                </CharacterCardSlide>
             </CarouselItem>
         );
     }
@@ -78,81 +88,84 @@ export default function CharacterCardGameInfo({ characterId }: CharacterCardGame
 
     return (
         <CarouselItem>
-            <div className="flex flex-col rounded-2xl p-2 px-3 border my-2 gap-3">
-                <div>
-                    <p className="text-xs font-semibold uppercase text-muted-foreground mb-2">
-                        {t("character.resolvedAbilities")}
-                    </p>
-                    <div className="grid grid-cols-3 gap-2">
-                        {display.abilities.map((ability) => (
-                            <div
-                                key={ability.name}
-                                className="flex flex-col items-center border rounded-lg p-2 bg-popover"
-                            >
-                                <span className="text-xs text-muted-foreground">
-                                    {ability.shortLabelKey
-                                        ? t(ability.shortLabelKey)
-                                        : ability.shortLabel ?? ability.name}
-                                </span>
-                                <span className="font-bold text-lg">{ability.resolved}</span>
-                                {ability.resolved !== ability.base && (
-                                    <span className="text-xs text-muted-foreground">
-                                        {t("character.base")} {ability.base}
-                                    </span>
-                                )}
+            <CharacterCardSlide>
+                <SheetPanel>
+                    <div className="flex flex-col gap-3">
+                        <div>
+                            <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">
+                                {t("character.resolvedAbilities")}
+                            </p>
+                            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                                {display.abilities.map((ability) => (
+                                    <div
+                                        key={ability.name}
+                                        className="flex flex-col items-center rounded-lg border bg-muted p-2"
+                                    >
+                                        <span className="text-xs text-muted-foreground">
+                                            {ability.shortLabelKey
+                                                ? t(ability.shortLabelKey)
+                                                : ability.shortLabel ?? ability.name}
+                                        </span>
+                                        <span className="text-lg font-bold">{ability.resolved}</span>
+                                        {ability.resolved !== ability.base && (
+                                            <span className="text-xs text-muted-foreground">
+                                                {t("character.base")} {ability.base}
+                                            </span>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                    {display.combat.map((combat) => (
-                        <div key={combat.statKey} className="border rounded-lg p-2 bg-popover">
-                            <span className="text-muted-foreground">{labelOf(combat)} </span>
-                            <span className="font-bold">{combat.resolved}</span>
-                            {combat.resolved !== combat.base && (
-                                <span className="text-xs text-muted-foreground ml-1">
-                                    ({t("character.base")} {combat.base})
-                                </span>
-                            )}
                         </div>
-                    ))}
-                    <div className="border rounded-lg p-2 bg-popover">
-                        <span className="text-muted-foreground">
-                            {t("character.proficiencyBonus")}{" "}
-                        </span>
-                        <span className="font-bold">{formatModifier(profBonus)}</span>
-                    </div>
-                    <div className="border rounded-lg p-2 bg-popover">
-                        <span className="text-muted-foreground">
-                            {t("character.initiative")}{" "}
-                        </span>
-                        <span className="font-bold">{formatModifier(initiative)}</span>
-                    </div>
-                    <div className="border rounded-lg p-2 bg-popover">
-                        <span className="text-muted-foreground">
-                            {t("character.passivePerception")}{" "}
-                        </span>
-                        <span className="font-bold">{passivePerception}</span>
-                    </div>
-                </div>
 
-                <div>
-                    <p className="text-xs font-semibold uppercase text-muted-foreground mb-2">
-                        {t("character.savingThrows")}
-                    </p>
+                        <div className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-3">
+                            {display.combat.map((combat) => (
+                                <div key={combat.statKey} className={mutedRowClassName}>
+                                    <span className="text-muted-foreground">{labelOf(combat)} </span>
+                                    <span className="font-bold">{combat.resolved}</span>
+                                    {combat.resolved !== combat.base && (
+                                        <span className="ml-1 text-xs text-muted-foreground">
+                                            ({t("character.base")} {combat.base})
+                                        </span>
+                                    )}
+                                </div>
+                            ))}
+                            <div className={mutedRowClassName}>
+                                <span className="text-muted-foreground">
+                                    {t("character.proficiencyBonus")}{" "}
+                                </span>
+                                <span className="font-bold">{formatModifier(profBonus)}</span>
+                            </div>
+                            <div className={mutedRowClassName}>
+                                <span className="text-muted-foreground">
+                                    {t("character.initiative")}{" "}
+                                </span>
+                                <span className="font-bold">{formatModifier(initiative)}</span>
+                            </div>
+                            <div className={mutedRowClassName}>
+                                <span className="text-muted-foreground">
+                                    {t("character.passivePerception")}{" "}
+                                </span>
+                                <span className="font-bold">{passivePerception}</span>
+                            </div>
+                        </div>
+                    </div>
+                </SheetPanel>
+
+                <SheetPanel title={t("character.savingThrows")}>
                     <ul className="space-y-1 text-sm">
                         {savingThrowModifiers.map((save) => (
                             <li
                                 key={save.stat}
-                                className={`flex items-center justify-between rounded-lg border px-2 py-1 bg-popover${
-                                    save.proficient ? " border-primary/40" : ""
-                                }`}
+                                className={cn(
+                                    mutedRowClassName,
+                                    "flex items-center justify-between",
+                                    save.proficient && "border-primary/40"
+                                )}
                             >
                                 <span className="flex items-center gap-2">
                                     {save.proficient && (
                                         <span
-                                            className="size-1.5 rounded-full bg-primary shrink-0"
+                                            className="size-1.5 shrink-0 rounded-full bg-primary"
                                             title={t("character.proficient")}
                                             aria-label={t("character.proficient")}
                                         />
@@ -165,24 +178,23 @@ export default function CharacterCardGameInfo({ characterId }: CharacterCardGame
                             </li>
                         ))}
                     </ul>
-                </div>
+                </SheetPanel>
 
-                <div>
-                    <p className="text-xs font-semibold uppercase text-muted-foreground mb-2">
-                        {t("character.skills")}
-                    </p>
+                <SheetPanel title={t("character.skills")}>
                     <ul className="space-y-1 text-sm">
                         {skillModifiers.map((skill) => (
                             <li
                                 key={skill.slug}
-                                className={`flex items-center justify-between rounded-lg border px-2 py-1 bg-popover${
-                                    skill.proficient ? " border-primary/40" : ""
-                                }`}
+                                className={cn(
+                                    mutedRowClassName,
+                                    "flex items-center justify-between",
+                                    skill.proficient && "border-primary/40"
+                                )}
                             >
                                 <span className="flex items-center gap-2">
                                     {skill.proficient && (
                                         <span
-                                            className="size-1.5 rounded-full bg-primary shrink-0"
+                                            className="size-1.5 shrink-0 rounded-full bg-primary"
                                             title={t("character.proficient")}
                                             aria-label={t("character.proficient")}
                                         />
@@ -195,14 +207,14 @@ export default function CharacterCardGameInfo({ characterId }: CharacterCardGame
                             </li>
                         ))}
                     </ul>
-                </div>
+                </SheetPanel>
 
                 {props.modifiers.length > 0 && (
                     <p className="text-xs text-muted-foreground">
                         {t("character.activeModifiers", { count: props.modifiers.length })}
                     </p>
                 )}
-            </div>
+            </CharacterCardSlide>
         </CarouselItem>
     );
 }
