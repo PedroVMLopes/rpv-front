@@ -24,6 +24,22 @@
     "preferences": "Preferências",
     "comingSoon": "As configurações da conta estarão disponíveis em breve."
   },
+  "characterHub": {
+    "player": {
+      "title": "Jogadores",
+      "yourList": "Seus Jogadores"
+    },
+    "enemy": {
+      "title": "Inimigos",
+      "yourList": "Seus Inimigos"
+    },
+    "npc": {
+      "title": "NPCs",
+      "yourList": "Seus NPCs"
+    },
+    "create": "Criar {type}",
+    "exploreCommunity": "Explorar comunidade (em breve)"
+  },
   "forms": {
     "saveCharacter": "Salvar Personagem",
     "noFields": "Nenhum campo para exibir",

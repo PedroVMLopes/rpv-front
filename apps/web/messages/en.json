@@ -24,6 +24,22 @@
     "preferences": "Preferences",
     "comingSoon": "Account settings are coming soon."
   },
+  "characterHub": {
+    "player": {
+      "title": "Players",
+      "yourList": "Your Players"
+    },
+    "enemy": {
+      "title": "Enemies",
+      "yourList": "Your Enemies"
+    },
+    "npc": {
+      "title": "NPCs",
+      "yourList": "Your NPCs"
+    },
+    "create": "Create {type}",
+    "exploreCommunity": "Explore community (coming soon)"
+  },
   "forms": {
     "saveCharacter": "Save Character",
     "noFields": "No fields to render",
