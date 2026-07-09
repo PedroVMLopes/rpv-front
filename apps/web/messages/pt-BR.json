@@ -309,7 +309,9 @@
       "cancel": "Cancelar",
       "randomRoll": "Rolagem aleatória",
       "openFab": "Abrir rolagem de dados",
-      "toastResult": "d{sides}: {value}"
+      "toastResult": "d{sides}: {value}",
+      "d100Tens": "Dezenas",
+      "d100Units": "Unidades"
     },
     "noneYet": "Nenhum ainda",
     "levelLine": "Nível {level}",

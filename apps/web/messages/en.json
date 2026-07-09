@@ -309,7 +309,9 @@
       "cancel": "Cancel",
       "randomRoll": "Random roll",
       "openFab": "Open dice roller",
-      "toastResult": "d{sides}: {value}"
+      "toastResult": "d{sides}: {value}",
+      "d100Tens": "Tens",
+      "d100Units": "Units"
     },
     "noneYet": "None yet",
     "levelLine": "Level {level}",

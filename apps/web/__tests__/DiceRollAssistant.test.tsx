@@ -120,4 +120,31 @@ describe("DiceRollAssistant", () => {
 
         randomSpy.mockRestore();
     });
+
+    it("combines tens and units for d100 manual selection", async () => {
+        const user = userEvent.setup();
+        renderAssistant();
+
+        await user.click(screen.getByRole("button", { name: "Open dice roller" }));
+        await user.click(screen.getByRole("button", { name: "d100" }));
+        await user.click(screen.getByRole("button", { name: "50" }));
+        await user.click(screen.getByRole("button", { name: "7" }));
+
+        expect(toastMock).toHaveBeenCalledWith("d100: 57");
+        expect(
+            screen.getByRole("button", { name: "Open dice roller" })
+        ).toBeInTheDocument();
+    });
+
+    it("treats 00 and 0 as d100 result 100", async () => {
+        const user = userEvent.setup();
+        renderAssistant();
+
+        await user.click(screen.getByRole("button", { name: "Open dice roller" }));
+        await user.click(screen.getByRole("button", { name: "d100" }));
+        await user.click(screen.getByRole("button", { name: "00" }));
+        await user.click(screen.getByRole("button", { name: "0" }));
+
+        expect(toastMock).toHaveBeenCalledWith("d100: 100");
+    });
 });
