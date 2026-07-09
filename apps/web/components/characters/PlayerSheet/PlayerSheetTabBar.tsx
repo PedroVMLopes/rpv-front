@@ -31,7 +31,7 @@ export function PlayerSheetTabBar({
 
     return (
         <nav
-            className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1"
+            className="-mx-1 flex gap-1 overflow-x-auto px-1"
             aria-label={t("navLabel")}
         >
             {TABS.map((tab) => {

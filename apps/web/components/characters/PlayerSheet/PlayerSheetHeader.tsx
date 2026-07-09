@@ -85,8 +85,8 @@ export function PlayerSheetHeader({
             : identityLine;
 
     return (
-        <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-            <div className="flex flex-col gap-3 p-3 sm:p-4">
+        <header className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+            <div className="flex flex-col gap-3">
                 <div className="flex flex-wrap items-start gap-3">
                     <Button asChild size="icon" variant="ghost" aria-label={t("back")}>
                         <Link href="/characters/player">
