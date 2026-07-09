@@ -311,6 +311,8 @@
     "proficienciesCardTitle": "Proficiencies",
     "proficientSkills": "Proficient skills",
     "proficientSaves": "Saving throws",
+    "showAllSkills": "All",
+    "showProficientOnly": "Proficient",
     "weapons": "Weapons",
     "armor": "Armor",
     "tools": "Tools",

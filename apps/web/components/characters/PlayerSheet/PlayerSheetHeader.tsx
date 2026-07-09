@@ -119,43 +119,50 @@ export function PlayerSheetHeader({
                         ) : null}
                     </div>
 
-                    <div className="flex flex-wrap items-stretch gap-2">
-                        <div
-                            className="flex min-w-16 flex-col items-center justify-center rounded-2xl border bg-popover px-3 py-2"
-                            aria-label={`${tCombat("ac")} ${ac}`}
-                        >
-                            <span className="flex items-center gap-1 text-xs font-semibold uppercase text-muted-foreground">
-                                <FaShield className="size-3" aria-hidden />
-                                {tCombat("ac")}
-                            </span>
-                            <span className="text-xl font-bold tabular-nums">
-                                {ac}
-                            </span>
-                        </div>
-
+                    <div className="flex shrink-0 items-stretch gap-2">
                         <HitPointsControl characterId={stored.id} />
 
-                        {walkSpeed !== undefined ? (
-                            <div
-                                className="flex min-w-16 flex-col items-center justify-center rounded-2xl border bg-popover px-3 py-2"
-                                aria-label={`${t("speed")} ${t("speedValue", { speed: walkSpeed })}`}
-                            >
-                                <span className="text-xs font-semibold uppercase text-muted-foreground">
-                                    {t("speed")}
-                                </span>
-                                <span className="text-xl font-bold tabular-nums">
-                                    {t("speedValue", { speed: walkSpeed })}
-                                </span>
-                            </div>
-                        ) : null}
+                        <div className="flex flex-col justify-center gap-2">
+                            <div className="flex items-stretch gap-2">
+                                <div
+                                    className="flex min-w-16 flex-row items-center justify-center rounded-2xl border bg-popover px-3 py-2 gap-2"
+                                    aria-label={`${tCombat("ac")} ${ac}`}
+                                >
+                                    <span className="flex items-center gap-1 text-xs font-semibold uppercase text-muted-foreground">
+                                        <FaShield className="size-3" aria-hidden />
+                                        {tCombat("ac")}
+                                    </span>
+                                    <span className="font-bold tabular-nums">
+                                        {ac}
+                                    </span>
+                                </div>
 
-                        <div className="flex min-w-16 flex-col items-center justify-center rounded-2xl border bg-popover px-3 py-2">
-                            <span className="text-xs font-semibold uppercase text-muted-foreground">
-                                {tCharacter("initiative")}
-                            </span>
-                            <span className="text-xl font-bold tabular-nums">
-                                {formatModifier(initiative)}
-                            </span>
+                                <div
+                                    className="flex min-w-16 flex-row items-center justify-center rounded-2xl border bg-popover px-3 py-2 gap-2"
+                                    aria-label={`${tCharacter("initiative")} ${formatModifier(initiative)}`}
+                                >
+                                    <span className="text-xs font-semibold uppercase text-muted-foreground">
+                                        {tCharacter("initiative")}
+                                    </span>
+                                    <span className="font-bold tabular-nums">
+                                        {formatModifier(initiative)}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {walkSpeed !== undefined ? (
+                                <div
+                                    className="flex w-full flex-row items-center justify-center rounded-2xl border bg-popover px-3 py-2 gap-2"
+                                    aria-label={`${t("speed")} ${t("speedValue", { speed: walkSpeed })}`}
+                                >
+                                    <span className="text-xs font-semibold uppercase text-muted-foreground">
+                                        {t("speed")}
+                                    </span>
+                                    <span className="font-bold tabular-nums">
+                                        {t("speedValue", { speed: walkSpeed })}
+                                    </span>
+                                </div>
+                            ) : null}
                         </div>
                     </div>
                 </div>

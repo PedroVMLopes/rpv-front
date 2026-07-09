@@ -157,6 +157,10 @@ describe("PlayerSheet", () => {
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
         expect(screen.getByText("Skills")).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "All" })).toHaveAttribute(
+            "aria-pressed",
+            "false"
+        );
         expect(screen.getByText("Athletics")).toBeInTheDocument();
         expect(screen.queryByText("Stealth")).not.toBeInTheDocument();
         expect(screen.queryByText("Arcana")).not.toBeInTheDocument();
@@ -165,6 +169,39 @@ describe("PlayerSheet", () => {
             name: /Strength/i,
         });
         expect(strengthButtons.length).toBeGreaterThanOrEqual(1);
+        expect(screen.queryByText("Dexterity")).not.toBeInTheDocument();
+    });
+
+    it("shows all skills and saving throws when the skills toggle is enabled", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(<PlayerSheet stored={storedCharacter} />);
+
+        await user.click(screen.getByRole("button", { name: "All" }));
+
+        expect(screen.getByRole("button", { name: "Proficient" })).toHaveAttribute(
+            "aria-pressed",
+            "true"
+        );
+        expect(screen.getByText("Stealth")).toBeInTheDocument();
+        expect(screen.getByText("Arcana")).toBeInTheDocument();
+        expect(screen.getByText("Dexterity")).toBeInTheDocument();
+    });
+
+    it("returns to proficient-only skills and saves when the toggle is disabled", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(<PlayerSheet stored={storedCharacter} />);
+
+        await user.click(screen.getByRole("button", { name: "All" }));
+        expect(screen.getByText("Stealth")).toBeInTheDocument();
+
+        await user.click(screen.getByRole("button", { name: "Proficient" }));
+
+        expect(screen.getByRole("button", { name: "All" })).toHaveAttribute(
+            "aria-pressed",
+            "false"
+        );
+        expect(screen.queryByText("Stealth")).not.toBeInTheDocument();
+        expect(screen.queryByText("Arcana")).not.toBeInTheDocument();
         expect(screen.queryByText("Dexterity")).not.toBeInTheDocument();
     });
 

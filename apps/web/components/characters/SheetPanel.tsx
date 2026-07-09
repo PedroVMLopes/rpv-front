@@ -7,6 +7,7 @@ type SheetPanelVariant = "default" | "nested";
 
 type SheetPanelProps = {
     title?: string;
+    headerAction?: ReactNode;
     className?: string;
     contentClassName?: string;
     variant?: SheetPanelVariant;
@@ -15,11 +16,14 @@ type SheetPanelProps = {
 
 export function SheetPanel({
     title,
+    headerAction,
     className,
     contentClassName,
     variant = "default",
     children,
 }: SheetPanelProps) {
+    const hasHeader = Boolean(title || headerAction);
+
     return (
         <Card
             className={cn(
@@ -29,15 +33,24 @@ export function SheetPanel({
                 className
             )}
         >
-            {title ? (
+            {hasHeader ? (
                 <CardHeader className="px-3 pt-3 pb-0">
-                    <CardTitle className="text-sm font-bold">{title}</CardTitle>
+                    <div className="flex items-center justify-between gap-2">
+                        {title ? (
+                            <CardTitle className="text-sm font-bold">
+                                {title}
+                            </CardTitle>
+                        ) : (
+                            <span />
+                        )}
+                        {headerAction}
+                    </div>
                 </CardHeader>
             ) : null}
             <CardContent
                 className={cn(
                     "px-3 pb-3",
-                    title ? "pt-2" : "pt-3",
+                    hasHeader ? "pt-2" : "pt-3",
                     contentClassName
                 )}
             >
