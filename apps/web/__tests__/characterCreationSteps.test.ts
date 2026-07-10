@@ -4,23 +4,15 @@ import {
     getFirstErrorStepIndex,
     getStepIndexForField,
     getStepIndexForGrantPickKey,
+    getStepIndexForValidationPath,
+    CHARACTER_CREATION_STEP_COUNT,
 } from "../lib/character/characterCreationSteps";
 import { dndStatConfig } from "../presets/dnd/characterStats";
 
 describe("characterCreationSteps", () => {
-    it("requires race before race step can complete", () => {
-        expect(canCompleteStep("race", {})).toBe(false);
-        expect(canCompleteStep("race", { race: "elf" })).toBe(true);
-    });
-
-    it("requires class before class step can complete", () => {
-        expect(canCompleteStep("class", { race: "elf" })).toBe(false);
-        expect(
-            canCompleteStep("class", { race: "elf", characterClass: "wizard" })
-        ).toBe(true);
-    });
-
-    it("requires valid ability scores before abilities step can complete", () => {
+    it("always allows any step to complete", () => {
+        expect(canCompleteStep("race", {})).toBe(true);
+        expect(canCompleteStep("class", {})).toBe(true);
         expect(
             canCompleteStep(
                 "abilities",
@@ -33,52 +25,16 @@ describe("characterCreationSteps", () => {
                 },
                 { statConfig: dndStatConfig }
             )
-        ).toBe(false);
-
-        expect(
-            canCompleteStep(
-                "abilities",
-                {
-                    abilityScoreMethod: "standard-array",
-                    attributes: [
-                        { name: "strength", value: 15 },
-                        { name: "dexterity", value: 14 },
-                        { name: "constitution", value: 13 },
-                        { name: "intelligence", value: 12 },
-                        { name: "wisdom", value: 10 },
-                        { name: "charisma", value: 8 },
-                    ],
-                },
-                { statConfig: dndStatConfig }
-            )
         ).toBe(true);
+        expect(canCompleteStep("background", {})).toBe(true);
+        expect(canCompleteStep("equipment", {})).toBe(true);
     });
 
-    it("always allows abilities step to complete without stat config", () => {
-        expect(canCompleteStep("abilities", {})).toBe(true);
-    });
-
-    it("requires background before background step can complete", () => {
-        expect(canCompleteStep("background", {})).toBe(false);
-        expect(canCompleteStep("background", { background: "sage" })).toBe(true);
-    });
-
-    it("computes max unlocked step from primary selections", () => {
-        expect(computeMaxUnlockedStep({})).toBe(0);
-        expect(computeMaxUnlockedStep({ race: "elf" })).toBe(1);
-        expect(
-            computeMaxUnlockedStep({
-                race: "elf",
-                characterClass: "wizard",
-            })
-        ).toBe(3);
-        expect(
-            computeMaxUnlockedStep({
-                race: "elf",
-                characterClass: "wizard",
-                background: "sage",
-            })
-        ).toBe(4);
+    it("unlocks all steps immediately", () => {
+        expect(computeMaxUnlockedStep({})).toBe(CHARACTER_CREATION_STEP_COUNT - 1);
+        expect(computeMaxUnlockedStep({ race: "elf" })).toBe(
+            CHARACTER_CREATION_STEP_COUNT - 1
+        );
     });
 
     it("maps level field to class step index", () => {
@@ -106,6 +62,15 @@ describe("characterCreationSteps", () => {
                 "class:fighter:base:exclusive:starting-wealth"
             )
         ).toBe(4);
+    });
+
+    it("routes choice errors with keys to the matching step", () => {
+        expect(
+            getStepIndexForValidationPath([
+                "choices",
+                "class:fighter:base:skill_proficiency:0:0",
+            ])
+        ).toBe(1);
     });
 
     it("finds the earliest step with form errors", () => {

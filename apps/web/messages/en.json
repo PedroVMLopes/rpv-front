@@ -103,6 +103,16 @@
     "activeModifiers": "{count, plural, one {# active modifier} other {# active modifiers}}",
     "traits": "Traits",
     "unresolvedChoices": "Choices to resolve",
+    "pendingDecisionsTitle": "Pending decisions ({count})",
+    "defaultName": "Unnamed Character",
+    "pending": {
+      "selectRace": "Select a race",
+      "selectClass": "Select a class",
+      "selectBackground": "Select a background",
+      "setName": "Set character name",
+      "selectSubclass": "Select a subclass",
+      "completeAbilities": "Complete ability scores"
+    },
     "skills": "Skills",
     "savingThrows": "Saving Throws",
     "proficient": "Proficient",
@@ -157,7 +167,7 @@
     "sourceFeat": "From feat: {id}",
     "sourceCondition": "From condition: {id}",
     "sourceSystem": "From system: {id}",
-    "choicesIncomplete": "Complete all required choices before saving.",
+    "choicesIncomplete": "Fix invalid grant picks before saving.",
     "validation": {
       "duplicatePick": "Cannot pick {ref} more than once in the same choice pool.",
       "alreadyGranted": "{ref} is already granted and cannot be chosen again.",
@@ -175,7 +185,7 @@
     "currencyTotal": "Total currency",
     "selectOption": "Select equipment",
     "provenanceGrant": "Granted ({provenance})",
-    "choicesIncomplete": "Complete all required equipment choices before saving.",
+    "choicesIncomplete": "Fix invalid grant picks before saving.",
     "exclusiveTitle": "Starting wealth",
     "exclusiveSelect": "Choose an option",
     "sourceClass": "From class: {id}",
@@ -274,7 +284,7 @@
       "selectClass": "Select a class before continuing.",
       "selectBackground": "Select a background before continuing.",
       "completeStep": "Complete the required fields before continuing.",
-      "fixErrors": "Fix the highlighted errors before saving."
+      "fixErrors": "Fix invalid grant picks before saving."
     },
     "combatPreviewTitle": "Combat preview",
     "level": {

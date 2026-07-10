@@ -15,8 +15,6 @@ import {
 import { buildGrantChoiceSelectOptions } from "@/lib/character/grantChoiceOptions";
 import {
     findInvalidGrantPicks,
-    findMissingRequiredChoices,
-    isExclusiveChoiceKey,
 } from "@/lib/character/choiceValidation";
 import { bagStackReactKey } from "@/lib/character/inventory";
 import type { CharacterChoices } from "@/lib/character/storedCharacter";
@@ -118,33 +116,9 @@ export function StartingEquipmentField({
 
     const grantPicks = readGrantPicks(form);
     const choicesError = form.formState.errors.choices;
-    const missingChoices = useMemo(
-        () =>
-            findMissingRequiredChoices(formSnapshot, contentLocale, system).filter(
-                (choice) =>
-                    choice.grant.grantType === "inventory_item" ||
-                    choice.grant.grantType === "currency"
-            ),
-        [formSnapshot, contentLocale, system]
-    );
-    const missingExclusiveGroups = useMemo(
-        () =>
-            findMissingRequiredChoices(formSnapshot, contentLocale, system).filter(
-                (choice) => isExclusiveChoiceKey(choice.key)
-            ),
-        [formSnapshot, contentLocale, system]
-    );
     const invalidPicks = useMemo(
         () => findInvalidGrantPicks(formSnapshot, contentLocale, system),
         [formSnapshot, contentLocale, system]
-    );
-    const missingChoiceKeys = useMemo(
-        () => new Set(missingChoices.map((choice) => choice.key)),
-        [missingChoices]
-    );
-    const missingExclusiveGroupKeys = useMemo(
-        () => new Set(missingExclusiveGroups.map((group) => group.key)),
-        [missingExclusiveGroups]
     );
     const invalidInventoryKeys = useMemo(
         () =>
@@ -166,9 +140,7 @@ export function StartingEquipmentField({
             ),
         [invalidPicks]
     );
-    const hasChoiceIssues =
-        missingChoices.length > 0 ||
-        missingExclusiveGroups.length > 0 ||
+    const hasInvalidChoices =
         invalidInventoryKeys.size > 0 ||
         invalidCurrencyKeys.size > 0;
 
@@ -193,7 +165,7 @@ export function StartingEquipmentField({
         <section className="flex flex-col gap-4 rounded-lg border bg-muted/30 p-4">
             <h2 className="text-sm font-bold">{t("title")}</h2>
 
-            {choicesError && hasChoiceIssues ? (
+            {choicesError && hasInvalidChoices ? (
                 <p className="text-sm font-medium text-destructive">
                     {t("choicesIncomplete")}
                 </p>
@@ -201,15 +173,10 @@ export function StartingEquipmentField({
 
             {preview.exclusiveGroups.length > 0 ? (
                 <div className="flex flex-col gap-3">
-                    {preview.exclusiveGroups.map((group) => {
-                        const hasError = missingExclusiveGroupKeys.has(group.key);
-
-                        return (
+                    {preview.exclusiveGroups.map((group) => (
                             <fieldset
                                 key={group.key}
-                                className={`flex flex-col gap-2 rounded border p-3${
-                                    hasError ? " border-destructive" : ""
-                                }`}
+                                className="flex flex-col gap-2 rounded border p-3"
                             >
                                 <legend className="px-1 text-sm font-semibold">
                                     {t("exclusiveTitle")}{" "}
@@ -218,9 +185,7 @@ export function StartingEquipmentField({
                                     </span>
                                 </legend>
                                 <select
-                                    className={`rounded border bg-background px-2 py-1 text-sm${
-                                        hasError ? " border-destructive" : ""
-                                    }`}
+                                    className="rounded border bg-background px-2 py-1 text-sm"
                                     value={grantPicks[group.key] ?? ""}
                                     onChange={(event) =>
                                         setGrantPick(
@@ -241,8 +206,7 @@ export function StartingEquipmentField({
                                     ))}
                                 </select>
                             </fieldset>
-                        );
-                    })}
+                    ))}
                 </div>
             ) : null}
 
@@ -281,9 +245,7 @@ export function StartingEquipmentField({
                             grantPicks,
                             new Set<string>()
                         );
-                        const hasError =
-                            missingChoiceKeys.has(choice.key) ||
-                            invalidInventoryKeys.has(choice.key);
+                        const hasError = invalidInventoryKeys.has(choice.key);
 
                         return (
                             <label
@@ -326,9 +288,7 @@ export function StartingEquipmentField({
                     <h3 className="text-sm font-semibold">{t("choicesTitle")}</h3>
                     {preview.currencyChoiceGrants.map((choice) => {
                         const pending = currencyChoiceToPending(choice);
-                        const hasError =
-                            missingChoiceKeys.has(choice.key) ||
-                            invalidCurrencyKeys.has(choice.key);
+                        const hasError = invalidCurrencyKeys.has(choice.key);
 
                         return (
                             <label

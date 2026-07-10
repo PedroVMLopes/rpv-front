@@ -23,7 +23,6 @@ import {
 import { buildSelectionsFromForm } from "@/lib/character/characterAdapter";
 import {
     findInvalidGrantPicks,
-    findMissingRequiredChoices,
 } from "@/lib/character/choiceValidation";
 import type { CharacterChoices, CharacterSelections } from "@/lib/character/storedCharacter";
 import { readLevelFromForm } from "@/lib/character/level";
@@ -200,13 +199,6 @@ export function CharacterGrantPickers({
 
     const grantPicks = readGrantPicks(form);
     const choicesError = form.formState.errors.choices;
-    const missingChoices = useMemo(
-        () =>
-            findMissingRequiredChoices(formValues, contentLocale, system).filter(
-                (choice) => matchesGrantSourceTypes(choice.source, sourceTypes)
-            ),
-        [formValues, contentLocale, system, sourceTypes]
-    );
     const invalidPicks = useMemo(
         () =>
             findInvalidGrantPicks(formValues, contentLocale, system).filter(
@@ -226,11 +218,16 @@ export function CharacterGrantPickers({
             ),
         [formValues, contentLocale, system, sourceTypes]
     );
-    const missingChoiceKeys = useMemo(
-        () => new Set(missingChoices.map((choice) => choice.key)),
-        [missingChoices]
+    const invalidChoiceKeys = useMemo(
+        () =>
+            new Set(
+                invalidPicks
+                    .map((issue) => issue.key)
+                    .filter((key): key is string => key !== undefined)
+            ),
+        [invalidPicks]
     );
-    const hasChoiceIssues = missingChoices.length > 0 || invalidPicks.length > 0;
+    const hasInvalidChoices = invalidPicks.length > 0;
 
     const ownedLanguageRefs =
         ownedRefsByGrantType.get("language") ??
@@ -281,7 +278,7 @@ export function CharacterGrantPickers({
                 <span className="font-medium">{choice.label}</span>
                 <select
                     className={`bg-background rounded border px-2 py-1${
-                        missingChoiceKeys.has(choice.key)
+                        invalidChoiceKeys.has(choice.key)
                             ? " border-destructive"
                             : ""
                     }`}
@@ -307,7 +304,7 @@ export function CharacterGrantPickers({
 
     return (
         <div className="flex flex-col gap-4 border rounded-lg p-4 bg-muted/30">
-            {choicesError && hasChoiceIssues ? (
+            {choicesError && hasInvalidChoices ? (
                 <p className="text-sm font-medium text-destructive">
                     {t("choicesIncomplete")}
                 </p>
@@ -361,7 +358,7 @@ export function CharacterGrantPickers({
                                 <span className="font-medium">{choice.label}</span>
                                 <select
                                     className={`bg-background rounded border px-2 py-1${
-                                        missingChoiceKeys.has(choice.key)
+                                        invalidChoiceKeys.has(choice.key)
                                             ? " border-destructive"
                                             : ""
                                     }`}

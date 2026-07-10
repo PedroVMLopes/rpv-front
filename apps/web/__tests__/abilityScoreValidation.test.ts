@@ -1,5 +1,5 @@
 import { createDynamicSchema } from "../lib/schema/zodDynamic";
-import { applyAbilityScoreValidation } from "../lib/character/abilityScoreGeneration";
+import { applyAbilityScoreValidation, isAbilityScoresIncomplete } from "../lib/character/abilityScoreGeneration";
 import { dndCharacterSchema } from "../presets/dnd/characterSchema";
 import { dndStatConfig } from "../presets/dnd/characterStats";
 
@@ -63,8 +63,8 @@ describe("applyAbilityScoreValidation", () => {
         }
     });
 
-    it("fails incomplete standard array assignments", () => {
-        const result = schema.safeParse({
+    it("allows incomplete standard array assignments at save time", () => {
+        const formData = {
             name: "Test Hero",
             abilityScoreMethod: "standard-array",
             attributes: [
@@ -75,9 +75,10 @@ describe("applyAbilityScoreValidation", () => {
                 { name: "wisdom", value: 0 },
                 { name: "charisma", value: 0 },
             ],
-        });
+        };
 
-        expect(result.success).toBe(false);
+        expect(schema.safeParse(formData).success).toBe(true);
+        expect(isAbilityScoresIncomplete(formData, dndStatConfig)).toBe(true);
     });
 
     it("passes complete standard array assignments", () => {
@@ -97,8 +98,8 @@ describe("applyAbilityScoreValidation", () => {
         expect(result.success).toBe(true);
     });
 
-    it("fails roll assignments when the pool is not fully assigned", () => {
-        const result = schema.safeParse({
+    it("allows partially assigned roll pools at save time", () => {
+        const formData = {
             name: "Test Hero",
             abilityScoreMethod: "roll",
             abilityScoreRolls: [16, 14, 13, 12, 11, 9],
@@ -110,8 +111,9 @@ describe("applyAbilityScoreValidation", () => {
                 { name: "wisdom", value: 0 },
                 { name: "charisma", value: 0 },
             ],
-        });
+        };
 
-        expect(result.success).toBe(false);
+        expect(schema.safeParse(formData).success).toBe(true);
+        expect(isAbilityScoresIncomplete(formData, dndStatConfig)).toBe(true);
     });
 });

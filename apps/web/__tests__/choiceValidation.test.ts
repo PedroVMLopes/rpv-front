@@ -421,19 +421,14 @@ describe("applyChoiceValidation", () => {
         "dnd"
     );
 
-    it("fails validation when required grant picks are missing", () => {
+    it("passes validation when required grant picks are missing", () => {
         const result = schema.safeParse({
             ...baseFormData,
             race: "dwarf",
             choices: {},
         });
 
-        expect(result.success).toBe(false);
-        if (!result.success) {
-            expect(result.error.issues.some((issue) => issue.path[0] === "choices")).toBe(
-                true
-            );
-        }
+        expect(result.success).toBe(true);
     });
 
     it("passes validation when required grant picks are filled", () => {
@@ -465,7 +460,7 @@ describe("applyChoiceValidation", () => {
         expect(result.success).toBe(false);
     });
 
-    it("fails validation when subclass is required but missing", () => {
+    it("passes validation when subclass is required but missing", () => {
         const result = schema.safeParse({
             ...baseFormData,
             level: 3,
@@ -482,15 +477,10 @@ describe("applyChoiceValidation", () => {
             },
         });
 
-        expect(result.success).toBe(false);
-        if (!result.success) {
-            expect(
-                result.error.issues.some((issue) => issue.path[0] === "subclass")
-            ).toBe(true);
-        }
+        expect(result.success).toBe(true);
     });
 
-    it("fails validation for fighter L1 with exclusive pick but missing inventory choices", () => {
+    it("passes validation for fighter L1 with exclusive pick but missing inventory choices", () => {
         const result = schema.safeParse({
             ...baseFormData,
             characterClass: "fighter",
@@ -499,15 +489,28 @@ describe("applyChoiceValidation", () => {
             },
         });
 
+        expect(result.success).toBe(true);
+    });
+
+    it("fails validation for duplicate grant picks", () => {
+        const result = schema.safeParse({
+            ...baseFormData,
+            race: "elf",
+            characterClass: "fighter",
+            choices: {
+                grantPicks: {
+                    ...fighterEquipmentPicks,
+                    "class:fighter:base:skill_proficiency:3:0": "athletics",
+                    "class:fighter:base:skill_proficiency:3:1": "athletics",
+                },
+            },
+        });
+
         expect(result.success).toBe(false);
         if (!result.success) {
-            const messages = result.error.issues.map((issue) => issue.message);
-            expect(messages.some((message) => message.includes("sidearm"))).toBe(
+            expect(result.error.issues.some((issue) => issue.path[0] === "choices")).toBe(
                 true
             );
-            expect(
-                messages.every((message) => !message.startsWith("invalidInventoryPick:"))
-            ).toBe(true);
         }
     });
 

@@ -103,6 +103,16 @@
     "activeModifiers": "{count, plural, one {# modificador ativo} other {# modificadores ativos}}",
     "traits": "Traços",
     "unresolvedChoices": "Escolhas pendentes",
+    "pendingDecisionsTitle": "Decisões pendentes ({count})",
+    "defaultName": "Sem Nome",
+    "pending": {
+      "selectRace": "Selecione uma raça",
+      "selectClass": "Selecione uma classe",
+      "selectBackground": "Selecione um antecedente",
+      "setName": "Definir nome do personagem",
+      "selectSubclass": "Selecione uma subclasse",
+      "completeAbilities": "Complete os atributos"
+    },
     "skills": "Perícias",
     "savingThrows": "Testes de Resistência",
     "proficient": "Proficiente",
@@ -157,7 +167,7 @@
     "sourceFeat": "Do talento: {id}",
     "sourceCondition": "Da condição: {id}",
     "sourceSystem": "Do sistema: {id}",
-    "choicesIncomplete": "Complete todas as escolhas obrigatórias antes de salvar.",
+    "choicesIncomplete": "Corrija escolhas de concessão inválidas antes de salvar.",
     "validation": {
       "duplicatePick": "Não é possível escolher {ref} mais de uma vez no mesmo grupo.",
       "alreadyGranted": "{ref} já foi concedido e não pode ser escolhido novamente.",
@@ -175,7 +185,7 @@
     "currencyTotal": "Moeda total",
     "selectOption": "Selecione o equipamento",
     "provenanceGrant": "Concedido ({provenance})",
-    "choicesIncomplete": "Complete todas as escolhas de equipamento obrigatórias antes de salvar.",
+    "choicesIncomplete": "Corrija escolhas de equipamento inválidas antes de salvar.",
     "exclusiveTitle": "Riqueza inicial",
     "exclusiveSelect": "Escolha uma opção",
     "sourceClass": "Da classe: {id}",
@@ -274,7 +284,7 @@
       "selectClass": "Selecione uma classe antes de continuar.",
       "selectBackground": "Selecione um antecedente antes de continuar.",
       "completeStep": "Preencha os campos obrigatórios antes de continuar.",
-      "fixErrors": "Corrija os erros destacados antes de salvar."
+      "fixErrors": "Corrija escolhas de concessão inválidas antes de salvar."
     },
     "combatPreviewTitle": "Prévia de combate",
     "level": {

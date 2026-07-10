@@ -11,6 +11,7 @@ import { applyDerivedCombatStats } from "./applyDerivedCombatStats";
 import { sanitizeSelectionsWithStartingMaterialization } from "./grantPickSanitize";
 import { syncResourceHpToResolvedMax } from "./hpSync";
 import { readLevelFromForm } from "./level";
+import { resolveCharacterNameForSave } from "./defaultCharacterName";
 import type { StoredCharacter } from "./storedCharacter";
 import type { CharacterSelections } from "./storedCharacter";
 
@@ -40,7 +41,11 @@ function withSanitizedSelectionFields(
 }
 
 export function buildStoredCharacter(input: BuildCharacterInput): StoredCharacter {
-    const { id, type, system, locale, formData, existing } = input;
+    const { id, type, system, locale, formData: rawFormData, existing } = input;
+    const formData = {
+        ...rawFormData,
+        name: resolveCharacterNameForSave(rawFormData.name, locale),
+    };
     const characterLevel = readLevelFromForm(formData);
 
     let selections = buildSelectionsFromForm(formData, existing?.selections);

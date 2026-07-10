@@ -39,18 +39,21 @@ function PlayerFormHarness({
 }
 
 describe("PlayerCharacterForm", () => {
-    it("locks later steps until race is selected", async () => {
+    it("allows navigating to any step without prerequisites", async () => {
         const user = userEvent.setup();
 
         render(<PlayerFormHarness />);
 
-        expect(screen.getByRole("button", { name: /Race/ })).toBeInTheDocument();
-        expect(screen.getByRole("button", { name: /Class/ })).toBeDisabled();
+        expect(screen.getByRole("button", { name: /Class/ })).not.toBeDisabled();
+        expect(
+            screen.getByRole("button", { name: /Starting Equipment/ })
+        ).not.toBeDisabled();
 
         await user.click(screen.getByRole("button", { name: "Next" }));
+        expect(screen.getByText("Character level")).toBeInTheDocument();
         expect(
-            screen.getByText("Select a race before continuing.")
-        ).toBeInTheDocument();
+            screen.queryByText("Select a race before continuing.")
+        ).not.toBeInTheDocument();
     });
 
     it("hides subrace until race is selected", () => {
@@ -164,6 +167,19 @@ describe("PlayerCharacterForm", () => {
         await user.click(screen.getByRole("button", { name: /Class/ }));
 
         expect(screen.getByText("Subclass")).toBeInTheDocument();
+    });
+
+    it("shows pending decisions on the equipment step", async () => {
+        const user = userEvent.setup();
+
+        render(<PlayerFormHarness />);
+
+        await user.click(
+            screen.getByRole("button", { name: /Starting Equipment/ })
+        );
+
+        expect(screen.getByText(/Pending decisions/i)).toBeInTheDocument();
+        expect(screen.getByText("Select a race")).toBeInTheDocument();
     });
 
     it("unlocks equipment step for a partially built character", () => {

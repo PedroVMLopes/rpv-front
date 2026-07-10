@@ -1,7 +1,6 @@
 import type { FieldErrors } from "react-hook-form";
 import type { ModifierSource } from "@rpv/domain";
 import type { PresetStatConfig } from "@/presets/types";
-import { validateAbilityScoresForMethod } from "@/lib/character/abilityScoreGeneration";
 
 export type CharacterCreationStepId =
     | "race"
@@ -25,61 +24,22 @@ export const CHARACTER_CREATION_STEPS: CharacterCreationStep[] = [
 
 export const CHARACTER_CREATION_STEP_COUNT = CHARACTER_CREATION_STEPS.length;
 
-function readNonEmptyString(value: unknown): string | undefined {
-    if (typeof value !== "string") {
-        return undefined;
-    }
-
-    const trimmed = value.trim();
-    return trimmed.length > 0 ? trimmed : undefined;
-}
-
 export type CanCompleteStepOptions = {
     statConfig?: PresetStatConfig;
 };
 
 export function canCompleteStep(
-    stepId: CharacterCreationStepId,
-    formValues: Record<string, unknown>,
-    options?: CanCompleteStepOptions
+    _stepId: CharacterCreationStepId,
+    _formValues: Record<string, unknown>,
+    _options?: CanCompleteStepOptions
 ): boolean {
-    switch (stepId) {
-        case "race":
-            return readNonEmptyString(formValues.race) !== undefined;
-        case "class":
-            return readNonEmptyString(formValues.characterClass) !== undefined;
-        case "abilities":
-            if (!options?.statConfig) {
-                return true;
-            }
-
-            return (
-                validateAbilityScoresForMethod(formValues, options.statConfig) ===
-                null
-            );
-        case "background":
-            return readNonEmptyString(formValues.background) !== undefined;
-        case "equipment":
-            return true;
-        default:
-            return false;
-    }
+    return true;
 }
 
 export function computeMaxUnlockedStep(
-    formValues: Record<string, unknown>
+    _formValues: Record<string, unknown>
 ): number {
-    let max = 0;
-
-    for (let index = 0; index < CHARACTER_CREATION_STEPS.length - 1; index++) {
-        if (!canCompleteStep(CHARACTER_CREATION_STEPS[index].id, formValues)) {
-            break;
-        }
-
-        max = index + 1;
-    }
-
-    return max;
+    return CHARACTER_CREATION_STEP_COUNT - 1;
 }
 
 export function getStepIndexForField(fieldName: string): number {
@@ -135,6 +95,11 @@ export function getStepIndexForValidationPath(path: string[]): number {
     }
 
     if (root === "choices") {
+        const grantPickKey = path[1];
+        if (typeof grantPickKey === "string" && grantPickKey.length > 0) {
+            return getStepIndexForGrantPickKey(grantPickKey);
+        }
+
         return CHARACTER_CREATION_STEPS.length - 1;
     }
 

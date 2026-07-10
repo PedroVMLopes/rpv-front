@@ -2,7 +2,7 @@
 
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { useContentLocale } from "@/store/useContentLocale";
-import { useParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { createDynamicSchema } from "@/lib/schema/zodDynamic";
@@ -13,11 +13,30 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { PlayerCharacterForm } from "@/components/characters/PlayerCharacterForm";
 import { useMemo, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { CHARACTER_CREATION_STEP_COUNT } from "@/lib/character/characterCreationSteps";
+
+function readInitialStep(searchParams: URLSearchParams): number {
+    const raw = searchParams.get("step");
+    if (!raw) {
+        return 0;
+    }
+
+    const parsed = Number(raw);
+    if (Number.isNaN(parsed)) {
+        return 0;
+    }
+
+    return Math.min(
+        Math.max(Math.trunc(parsed), 0),
+        CHARACTER_CREATION_STEP_COUNT - 1
+    );
+}
 
 export default function EditPlayer() {
     const params = useParams<{ id: string }>();
     const id = params.id;
+    const searchParams = useSearchParams();
+    const initialStep = readInitialStep(searchParams);
 
     const updateCharacter = useCharacterStore((state) => state.updateCharacter);
     const getFormDefaults = useCharacterStore((state) => state.getFormDefaults);
@@ -99,6 +118,7 @@ export default function EditPlayer() {
                 statConfig={presetData.statConfig}
                 contentLocale={contentLocale}
                 onSave={handleSave}
+                initialStep={initialStep}
                 header={
                     <h1 className="mb-2 text-lg font-bold bg-muted p-1 px-2 rounded">
                         Edit {character.name}

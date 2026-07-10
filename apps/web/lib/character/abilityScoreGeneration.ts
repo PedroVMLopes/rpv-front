@@ -5,6 +5,7 @@ import type {
     PresetAbilityAttribute,
     PresetStatConfig,
 } from "@/presets/types";
+import { readLevelFromForm } from "./level";
 
 export const UNASSIGNED_ABILITY_VALUE = 0;
 
@@ -175,7 +176,29 @@ function readAbilityScoreMethod(
         return method;
     }
 
-    return "manual";
+    return defaultAbilityScoreMethodForLevel(readLevelFromForm(formData));
+}
+
+export function isAbilityScoresIncomplete(
+    formData: Record<string, unknown>,
+    statConfig: PresetStatConfig
+): boolean {
+    const generation = statConfig.abilityGeneration;
+    if (!generation) {
+        return false;
+    }
+
+    const method = readAbilityScoreMethod(formData);
+    if (method === "manual") {
+        return false;
+    }
+
+    const values = readAttributeValues(
+        formData.attributes as AttributeEntry[] | undefined,
+        statConfig.abilities
+    );
+
+    return values.some((value) => value === UNASSIGNED_ABILITY_VALUE);
 }
 
 export function validateAbilityScoresForMethod(
@@ -194,6 +217,10 @@ export function validateAbilityScoresForMethod(
     );
 
     if (method === "manual") {
+        return null;
+    }
+
+    if (values.some((value) => value === UNASSIGNED_ABILITY_VALUE)) {
         return null;
     }
 

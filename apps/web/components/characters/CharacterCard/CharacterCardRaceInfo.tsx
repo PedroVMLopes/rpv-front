@@ -1,15 +1,18 @@
 "use client";
 
+import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { FaChevronDown } from "react-icons/fa6";
 import { contentRepo } from "@/lib/content/contentRepository";
 import { useContentLocale } from "@/store/useContentLocale";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import {
-    formatUnresolvedChoice,
     getRaceLineFromSelections,
     getRaceTraitDisplay,
 } from "@/lib/character/raceDisplay";
+import { collectPendingDecisionsFromStored } from "@/lib/character/pendingDecisions";
+import { presets } from "@/presets";
+import { PendingDecisionsPanel } from "@/components/characters/PendingDecisionsPanel";
 import { SheetPanel } from "@/components/characters/SheetPanel";
 import { sheetInset } from "@/components/characters/PlayerSheet/playerSheetSurfaces";
 import { cn } from "@/lib/utils";
@@ -46,27 +49,18 @@ export function UnresolvedChoicesBlock({
     stored: StoredCharacter;
     panelVariant?: "default" | "nested";
 }) {
-    const t = useTranslations("character");
-    const contentLocale = useContentLocale((state) => state.contentLocale);
-    const { unresolvedChoices } = getRaceTraitDisplay(
-        stored.selections,
-        contentLocale
+    const statConfig = presets[stored.system].presetData.statConfig;
+    const decisions = useMemo(
+        () => collectPendingDecisionsFromStored(stored, statConfig),
+        [stored]
     );
 
-    if (unresolvedChoices.length === 0) {
-        return null;
-    }
-
     return (
-        <SheetPanel title={t("unresolvedChoices")} variant={panelVariant}>
-            <ul className="list-disc space-y-1 pl-4 text-sm text-muted-foreground">
-                {unresolvedChoices.map((choice, index) => (
-                    <li key={`${choice.traitName}-${index}`}>
-                        {formatUnresolvedChoice(choice)}
-                    </li>
-                ))}
-            </ul>
-        </SheetPanel>
+        <PendingDecisionsPanel
+            decisions={decisions}
+            editBaseHref={`/characters/player/edit/${stored.id}`}
+            panelVariant={panelVariant}
+        />
     );
 }
 

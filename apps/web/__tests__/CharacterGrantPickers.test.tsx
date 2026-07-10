@@ -213,15 +213,21 @@ describe("CharacterGrantPickers", () => {
         ).toBe(true);
     });
 
-    it("shows incomplete choices error after validation", async () => {
+    it("shows invalid choices error after validation", async () => {
         const user = userEvent.setup();
 
         render(
             <GrantPickerHarness
                 defaultValues={{
                     name: "Test Hero",
-                    race: "dwarf",
-                    choices: {},
+                    race: "elf",
+                    characterClass: "fighter",
+                    choices: {
+                        grantPicks: {
+                            "class:fighter:base:skill_proficiency:3:0": "athletics",
+                            "class:fighter:base:skill_proficiency:3:1": "athletics",
+                        },
+                    },
                 }}
                 withValidation
             />
@@ -230,7 +236,7 @@ describe("CharacterGrantPickers", () => {
         await user.click(screen.getByTestId("validate-choices"));
 
         expect(
-            screen.getByText("Complete all required choices before saving.")
+            screen.getByText("Fix invalid grant picks before saving.")
         ).toBeInTheDocument();
     });
 

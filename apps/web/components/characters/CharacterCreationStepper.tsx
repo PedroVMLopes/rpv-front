@@ -10,7 +10,6 @@ import {
 
 type CharacterCreationStepperProps = {
     activeStep: number;
-    maxUnlockedStep: number;
     stepHint?: string | null;
     isLastStep: boolean;
     onStepSelect: (stepIndex: number) => void;
@@ -22,7 +21,6 @@ type CharacterCreationStepperProps = {
 
 export function CharacterCreationStepper({
     activeStep,
-    maxUnlockedStep,
     stepHint,
     isLastStep,
     onStepSelect,
@@ -39,25 +37,18 @@ export function CharacterCreationStepper({
                 {CHARACTER_CREATION_STEPS.map((step, index) => {
                     const isActive = index === activeStep;
                     const isCompleted = index < activeStep;
-                    const isLocked = index > maxUnlockedStep;
-                    const isClickable = !isLocked;
 
                     return (
                         <li key={step.id} className="min-w-0">
                             <button
                                 type="button"
-                                disabled={!isClickable}
-                                onClick={() => isClickable && onStepSelect(index)}
+                                onClick={() => onStepSelect(index)}
                                 className={cn(
-                                    "flex w-full items-center gap-2 rounded-md border px-2 py-2 text-left text-xs sm:text-sm",
+                                    "flex w-full items-center gap-2 rounded-md border px-2 py-2 text-left text-xs sm:text-sm hover:bg-muted/50",
                                     isActive && "border-primary bg-primary/10",
                                     isCompleted &&
                                         !isActive &&
-                                        "border-muted-foreground/30 bg-muted/40",
-                                    isLocked && "cursor-not-allowed opacity-50",
-                                    !isLocked &&
-                                        !isActive &&
-                                        "hover:bg-muted/50"
+                                        "border-muted-foreground/30 bg-muted/40"
                                 )}
                             >
                                 <span

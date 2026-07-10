@@ -33,13 +33,6 @@ import {
     resolveGrantPickValidationMessage,
     type GrantPickValidationIssue,
 } from "./choiceValidationMessages";
-import enMessages from "@/messages/en.json";
-import ptBRMessages from "@/messages/pt-BR.json";
-
-const validationMessages: Record<Locale, { subclassRequired: string }> = {
-    en: enMessages.validation,
-    "pt-BR": ptBRMessages.validation,
-};
 
 function readSubclass(formData: Record<string, unknown>): string {
     const subclass = formData.subclass;
@@ -299,28 +292,11 @@ export function applyChoiceValidation<T extends ZodRawShape>(
     return schema.superRefine((data, ctx) => {
         const formData = data as Record<string, unknown>;
 
-        const missing = findMissingRequiredChoices(formData, locale, system);
-        for (const choice of missing) {
-            ctx.addIssue({
-                code: "custom",
-                path: ["choices"],
-                message: choice.label,
-            });
-        }
-
         for (const issue of findInvalidGrantPicks(formData, locale, system)) {
             ctx.addIssue({
                 code: "custom",
-                path: ["choices"],
+                path: issue.key ? ["choices", issue.key] : ["choices"],
                 message: resolveGrantPickValidationMessage(issue, locale),
-            });
-        }
-
-        if (findMissingSubclass(formData, locale)) {
-            ctx.addIssue({
-                code: "custom",
-                path: ["subclass"],
-                message: validationMessages[locale].subclassRequired,
             });
         }
     });

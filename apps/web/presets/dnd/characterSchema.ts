@@ -16,7 +16,7 @@ const characterInventorySchema = z.object({
 
 export const dndCharacterSchema = {
   common: z.object({
-    name: z.string().min(1, "Name is required"),
+    name: z.string().optional(),
     type: z.enum(["player", "enemy", "npc"]).optional(),
     system: z.enum(["dnd", "op", "coc"]).optional(),
     hp: z.coerce.number().optional().default(0),

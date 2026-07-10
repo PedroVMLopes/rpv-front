@@ -16,20 +16,20 @@ import { CharacterGrantPickers } from "@/components/characters/CharacterGrantPic
 import { ClassStepContent } from "@/components/characters/ClassStepContent";
 import { StartingEquipmentField } from "@/components/characters/StartingEquipmentField";
 import { CharacterCreationStepper } from "@/components/characters/CharacterCreationStepper";
+import { PendingDecisionsPanel } from "@/components/characters/PendingDecisionsPanel";
 import {
     buildPlayerGrantSourceFields,
     filterPlayerFormFields,
     getVisiblePlayerFields,
 } from "@/lib/character/playerFormFields";
 import {
-    canCompleteStep,
     CHARACTER_CREATION_STEP_COUNT,
     CHARACTER_CREATION_STEPS,
-    computeMaxUnlockedStep,
     getFirstErrorStepIndex,
     getGrantSourceTypesForStep,
-    type CharacterCreationStepId,
 } from "@/lib/character/characterCreationSteps";
+import { resolveCharacterNameForSave } from "@/lib/character/defaultCharacterName";
+import { collectPendingDecisions } from "@/lib/character/pendingDecisions";
 import { useGrantPickSanitizer } from "@/lib/character/useGrantPickSanitizer";
 import { readLevelFromForm } from "@/lib/character/level";
 
@@ -47,7 +47,12 @@ export type PlayerCharacterFormProps = {
     contentLocale: Locale;
     onSave: (data: Record<string, unknown>) => void;
     header?: React.ReactNode;
+    initialStep?: number;
 };
+
+function clampStepIndex(step: number): number {
+    return Math.min(Math.max(step, 0), CHARACTER_CREATION_STEP_COUNT - 1);
+}
 
 export function PlayerCharacterForm({
     mode: _mode,
@@ -58,6 +63,7 @@ export function PlayerCharacterForm({
     contentLocale,
     onSave,
     header,
+    initialStep = 0,
 }: PlayerCharacterFormProps) {
     const t = useTranslations("characterCreation");
     const formValues = form.watch();
@@ -77,22 +83,17 @@ export function PlayerCharacterForm({
         readLevelFromForm(formValues)
     );
 
-    const [activeStep, setActiveStep] = useState(0);
-    const [maxUnlockedStep, setMaxUnlockedStep] = useState(0);
+    const [activeStep, setActiveStep] = useState(() =>
+        clampStepIndex(initialStep)
+    );
     const [stepHint, setStepHint] = useState<string | null>(null);
     const [isSaving, setIsSaving] = useState(false);
-    const initializedRef = useRef(false);
 
     useGrantPickSanitizer(form, contentLocale, system);
 
     useEffect(() => {
-        if (initializedRef.current) {
-            return;
-        }
-
-        initializedRef.current = true;
-        setMaxUnlockedStep(computeMaxUnlockedStep(form.getValues()));
-    }, [form]);
+        setActiveStep(clampStepIndex(initialStep));
+    }, [initialStep]);
 
     useEffect(() => {
         if (
@@ -161,67 +162,43 @@ export function PlayerCharacterForm({
 
     const grantSourceTypes = getGrantSourceTypesForStep(activeStepId);
 
-    const showStepHint = useCallback(
-        (stepId: CharacterCreationStepId) => {
-            switch (stepId) {
-                case "race":
-                    setStepHint(t("hints.selectRace"));
-                    break;
-                case "class":
-                    setStepHint(t("hints.selectClass"));
-                    break;
-                case "background":
-                    setStepHint(t("hints.selectBackground"));
-                    break;
-                default:
-                    setStepHint(t("hints.completeStep"));
-            }
-        },
-        [t]
+    const pendingDecisions = useMemo(
+        () =>
+            collectPendingDecisions(
+                formValues,
+                contentLocale,
+                system,
+                statConfig
+            ),
+        [formValues, contentLocale, system, statConfig]
     );
 
     const handleNext = useCallback(() => {
-        const stepId = CHARACTER_CREATION_STEPS[activeStep]?.id;
-        if (!stepId) {
-            return;
-        }
-
-        if (!canCompleteStep(stepId, form.getValues(), { statConfig })) {
-            showStepHint(stepId);
-            return;
-        }
-
         setStepHint(null);
-        const nextUnlocked = Math.min(
-            activeStep + 1,
-            CHARACTER_CREATION_STEP_COUNT - 1
-        );
-        setMaxUnlockedStep((current) => Math.max(current, nextUnlocked));
         setActiveStep((current) =>
             Math.min(current + 1, CHARACTER_CREATION_STEP_COUNT - 1)
         );
-    }, [activeStep, form, showStepHint, statConfig]);
+    }, []);
 
     const handleBack = useCallback(() => {
         setStepHint(null);
         setActiveStep((current) => Math.max(current - 1, 0));
     }, []);
 
-    const handleStepSelect = useCallback(
-        (stepIndex: number) => {
-            if (stepIndex > maxUnlockedStep) {
-                return;
-            }
-
-            setStepHint(null);
-            setActiveStep(stepIndex);
-        },
-        [maxUnlockedStep]
-    );
+    const handleStepSelect = useCallback((stepIndex: number) => {
+        setStepHint(null);
+        setActiveStep(clampStepIndex(stepIndex));
+    }, []);
 
     const handleSave = useCallback(async () => {
         setIsSaving(true);
         setStepHint(null);
+
+        const resolvedName = resolveCharacterNameForSave(
+            form.getValues("name"),
+            contentLocale
+        );
+        form.setValue("name", resolvedName, { shouldValidate: true });
 
         const valid = await form.trigger(undefined, { shouldFocus: true });
 
@@ -229,7 +206,6 @@ export function PlayerCharacterForm({
             const errorStep = getFirstErrorStepIndex(form.formState.errors);
             if (errorStep !== undefined) {
                 setActiveStep(errorStep);
-                setMaxUnlockedStep((current) => Math.max(current, errorStep));
             }
 
             setStepHint(t("hints.fixErrors"));
@@ -241,12 +217,13 @@ export function PlayerCharacterForm({
         await form.handleSubmit((data) => {
             onSave({
                 ...data,
+                name: resolveCharacterNameForSave(data.name, contentLocale),
                 choices: form.getValues("choices"),
             });
         })();
 
         setIsSaving(false);
-    }, [form, onSave, t]);
+    }, [contentLocale, form, onSave, t]);
 
     const stepContent = (() => {
         switch (activeStepId) {
@@ -303,6 +280,10 @@ export function PlayerCharacterForm({
             case "equipment":
                 return (
                     <div className="flex flex-col gap-4">
+                        <PendingDecisionsPanel
+                            decisions={pendingDecisions}
+                            onNavigateToStep={handleStepSelect}
+                        />
                         <DynamicForm
                             form={form}
                             fields={stepFields}
@@ -346,7 +327,6 @@ export function PlayerCharacterForm({
                 {header}
                 <CharacterCreationStepper
                     activeStep={activeStep}
-                    maxUnlockedStep={maxUnlockedStep}
                     stepHint={stepHint}
                     isLastStep={activeStep === CHARACTER_CREATION_STEP_COUNT - 1}
                     onStepSelect={handleStepSelect}

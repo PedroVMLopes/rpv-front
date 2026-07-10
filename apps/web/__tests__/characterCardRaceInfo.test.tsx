@@ -75,20 +75,31 @@ describe("CharacterCard race info", () => {
         expect(screen.getByText("Evocação")).toBeInTheDocument();
     });
 
-    it("lists racial traits and unresolved choices", () => {
-        renderWithProviders(
-            <>
-                <UnresolvedChoicesBlock stored={storedCharacter} />
-                <RaceTraitsBlock stored={storedCharacter} />
-            </>
-        );
+    it("lists racial traits", () => {
+        renderWithProviders(<RaceTraitsBlock stored={storedCharacter} />);
 
         expect(screen.getByText("Traits")).toBeInTheDocument();
         expect(screen.getByText("Fey Ancestry")).toBeInTheDocument();
-        expect(screen.getByText("Choices to resolve")).toBeInTheDocument();
-        expect(
-            screen.getAllByText(/One cantrip of your choice from the wizard spell list/i)
-                .length
-        ).toBeGreaterThan(0);
+    });
+
+    it("lists pending decisions for incomplete characters", () => {
+        renderWithProviders(
+            <UnresolvedChoicesBlock
+                stored={{
+                    ...storedCharacter,
+                    name: "",
+                    selections: {
+                        ...storedCharacter.selections,
+                        race: undefined,
+                        characterClass: undefined,
+                        subclass: undefined,
+                        background: undefined,
+                    },
+                }}
+            />
+        );
+
+        expect(screen.getByText(/Pending decisions/i)).toBeInTheDocument();
+        expect(screen.getByText("Select a race")).toBeInTheDocument();
     });
 });
