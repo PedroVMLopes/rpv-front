@@ -7,7 +7,11 @@ import userEvent from "@testing-library/user-event";
 import { NextIntlClientProvider } from "next-intl";
 import { DiceRollAssistant } from "../components/characters/PlayerSheet/roll/DiceRollAssistant";
 import { RollAssistantProvider, useRollAssistant } from "../components/characters/PlayerSheet/roll/RollAssistantProvider";
-import type { D20TestRequest } from "../lib/roll/rollRequest.types";
+import type {
+    AttackThenDamageRequest,
+    D20TestRequest,
+    DamageOnlyRequest,
+} from "../lib/roll/rollRequest.types";
 import enMessages from "../messages/en.json";
 
 const toastMock = jest.fn();
@@ -27,7 +31,11 @@ function renderAssistant(children?: ReactNode) {
     );
 }
 
-function ContextRollTrigger({ request }: { request: D20TestRequest }) {
+function ContextRollTrigger({
+    request,
+}: {
+    request: D20TestRequest | AttackThenDamageRequest | DamageOnlyRequest;
+}) {
     const { openRollRequest } = useRollAssistant();
 
     return (
@@ -206,5 +214,64 @@ describe("DiceRollAssistant", () => {
         await user.click(screen.getByRole("button", { name: "14" }));
 
         expect(toastMock).toHaveBeenCalledWith("Athletics: 19");
+    });
+
+    it("completes attack_then_damage in two steps", async () => {
+        const user = userEvent.setup();
+
+        renderAssistant(
+            <ContextRollTrigger
+                request={{
+                    kind: "attack_then_damage",
+                    id: "weapon:longsword",
+                    label: "Longsword",
+                    attack: { die: 20, modifier: 5 },
+                    damage: { sides: 8, flat: 3, damageType: "slashing" },
+                }}
+            />
+        );
+
+        await user.click(screen.getByRole("button", { name: "Open contextual roll" }));
+        expect(
+            screen.getByText("Longsword — attack d20 +5")
+        ).toBeInTheDocument();
+
+        await user.click(screen.getByRole("button", { name: "14" }));
+        expect(
+            screen.getByText("Longsword — damage d8")
+        ).toBeInTheDocument();
+
+        await user.click(screen.getByRole("button", { name: "5" }));
+        expect(toastMock).toHaveBeenCalledWith(
+            "Longsword: attack 19, damage 8"
+        );
+    });
+
+    it("completes damage_only across three d6 steps", async () => {
+        const user = userEvent.setup();
+
+        renderAssistant(
+            <ContextRollTrigger
+                request={{
+                    kind: "damage_only",
+                    id: "spell:burning-hands",
+                    label: "Burning Hands",
+                    saveDc: 13,
+                    saveAbility: "dexterity",
+                    steps: [
+                        { sides: 6, damageType: "fire" },
+                        { sides: 6, damageType: "fire" },
+                        { sides: 6, damageType: "fire" },
+                    ],
+                }}
+            />
+        );
+
+        await user.click(screen.getByRole("button", { name: "Open contextual roll" }));
+        await user.click(screen.getByRole("button", { name: "4" }));
+        await user.click(screen.getByRole("button", { name: "2" }));
+        await user.click(screen.getByRole("button", { name: "6" }));
+
+        expect(toastMock).toHaveBeenCalledWith("Burning Hands: 12 damage");
     });
 });

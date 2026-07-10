@@ -10,6 +10,7 @@ type CombatActionCardProps = {
     details?: string[];
     description?: string;
     actionKind: "roll" | "use";
+    onRoll?: () => void;
 };
 
 export function CombatActionCard({
@@ -18,10 +19,13 @@ export function CombatActionCard({
     details,
     description,
     actionKind,
+    onRoll,
 }: CombatActionCardProps) {
     const t = useTranslations("playerSheet");
+    const tRoll = useTranslations("playerSheet.roll");
     const actionLabel =
         actionKind === "roll" ? t("combat.roll") : t("combat.use");
+    const canRoll = actionKind === "roll" && Boolean(onRoll);
 
     return (
         <div className="flex flex-col gap-2 rounded-xl border bg-muted p-3 sm:flex-row sm:items-start sm:justify-between">
@@ -43,16 +47,29 @@ export function CombatActionCard({
                     <p className="text-xs text-muted-foreground">{description}</p>
                 ) : null}
             </div>
-            <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                className={cn("shrink-0 font-semibold")}
-                title={t("rollComingSoon")}
-                aria-label={`${actionLabel}: ${title}. ${t("rollComingSoon")}`}
-            >
-                {actionLabel}
-            </Button>
+            {canRoll ? (
+                <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    className={cn("shrink-0 font-semibold")}
+                    aria-label={tRoll("rollAction", { label: title })}
+                    onClick={onRoll}
+                >
+                    {actionLabel}
+                </Button>
+            ) : actionKind === "use" ? (
+                <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    className={cn("shrink-0 font-semibold")}
+                    title={t("rollComingSoon")}
+                    aria-label={`${actionLabel}: ${title}. ${t("rollComingSoon")}`}
+                >
+                    {actionLabel}
+                </Button>
+            ) : null}
         </div>
     );
 }

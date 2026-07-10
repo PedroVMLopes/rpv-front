@@ -1,4 +1,4 @@
-import type { Locale } from "@rpv/domain";
+import type { Locale, StatKey } from "@rpv/domain";
 
 export interface SpellCatalogEntry {
     slug: string;
@@ -19,3 +19,12 @@ export interface SpellCatalogEntry {
     spellLists: string[];
     sourceDocument: string;
 }
+
+export type SpellRollProfile =
+    | { mode: "attack"; damageDice: string; damageType: string }
+    | {
+          mode: "save";
+          saveAbility: StatKey;
+          damageDice: string;
+          damageType: string;
+      };

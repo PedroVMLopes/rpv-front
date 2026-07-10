@@ -10,6 +10,7 @@ import { CombatTab } from "../components/characters/PlayerSheet/tabs/CombatTab";
 import { PlayerSheet } from "../components/characters/PlayerSheet/PlayerSheet";
 import { useCharacterStore } from "../store/useCharacterStore";
 import type { StoredCharacter } from "../lib/character/storedCharacter";
+import { RollAssistantProvider } from "../components/characters/PlayerSheet/roll/RollAssistantProvider";
 import enMessages from "../messages/en.json";
 
 jest.mock("../components/ui/HealthSlider", () => ({
@@ -113,7 +114,7 @@ function renderWithProviders(ui: ReactElement) {
 
     return render(
         <NextIntlClientProvider locale="en" messages={enMessages}>
-            {ui}
+            <RollAssistantProvider>{ui}</RollAssistantProvider>
         </NextIntlClientProvider>
     );
 }
@@ -146,7 +147,7 @@ describe("CombatTab", () => {
         expect(screen.getByText("None yet")).toBeInTheDocument();
     });
 
-    it("lists equipped weapons, spells, and features with roll/use stubs", () => {
+    it("lists equipped weapons, spells, and features with roll/use actions", () => {
         renderWithProviders(
             <CombatTabConnected characterId={storedCharacter.id} />
         );
@@ -159,8 +160,11 @@ describe("CombatTab", () => {
             screen.getByText(/regain hit points equal to 1d10/i)
         ).toBeInTheDocument();
         expect(
-            screen.getAllByRole("button", { name: /Roll:/i }).length
-        ).toBeGreaterThanOrEqual(2);
+            screen.getByRole("button", { name: "Roll Longsword" })
+        ).toBeInTheDocument();
+        expect(
+            screen.queryByRole("button", { name: "Roll Fire Bolt" })
+        ).not.toBeInTheDocument();
         expect(
             screen.getByRole("button", { name: /Use: Second Wind/i })
         ).toBeInTheDocument();

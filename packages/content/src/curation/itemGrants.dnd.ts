@@ -1,8 +1,17 @@
-import type { Locale } from "@rpv/domain";
+import type { Locale, StatKey } from "@rpv/domain";
 import type { Grant } from "../grant/grant.types";
 import { localizeCurationEntry } from "./curationLocale";
 
 export type ItemSystem = "dnd";
+
+export type WeaponProperty = "versatile" | "finesse" | "ranged" | "two-handed";
+
+export type WeaponProfile = {
+    damageDice: string;
+    damageType: string;
+    properties?: WeaponProperty[];
+    versatileDamageDice?: string;
+};
 
 export interface ItemEntry {
     slug: string;
@@ -16,6 +25,7 @@ export interface ItemEntry {
     category?: string;
     /** Generic tags for future catalog filters (e.g. martial, ranged). */
     tags?: string[];
+    weaponProfile?: WeaponProfile;
 }
 
 /**
@@ -75,17 +85,18 @@ export const dndItems: ItemEntry[] = [
         slug: "longsword",
         system: "dnd",
         name: "Longsword",
-        description: "A well-balanced blade that lends strength to its wielder.",
+        description: "A well-balanced martial melee weapon.",
+        category: "weapon",
+        tags: ["martial", "melee"],
         allowedSlots: ["main-hand"],
         stackable: false,
-        grants: [
-            {
-                grantType: "stat_modifier",
-                choose: 0,
-                targetStat: "strength",
-                amount: 1,
-            },
-        ],
+        grants: [],
+        weaponProfile: {
+            damageDice: "1d8",
+            damageType: "slashing",
+            properties: ["versatile"],
+            versatileDamageDice: "1d10",
+        },
     },
     {
         slug: "leather-armor",

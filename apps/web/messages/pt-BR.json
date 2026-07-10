@@ -314,7 +314,13 @@
       "d100Units": "Unidades",
       "contextTitle": "{label} — d20 {modifier}",
       "contextToast": "{label}: {total}",
-      "rollAction": "Rolar {label}"
+      "rollAction": "Rolar {label}",
+      "attackStepTitle": "{label} — ataque d20 {modifier}",
+      "damageStepTitle": "{label} — dano d{sides}",
+      "damageOnlyStepTitle": "{label} — dano {index}/{total} (d{sides})",
+      "saveDcLabel": "CD {dc}",
+      "attackDamageToast": "{label}: ataque {attackTotal}, dano {damageTotal}",
+      "damageOnlyToast": "{label}: {total} de dano"
     },
     "noneYet": "Nenhum ainda",
     "levelLine": "Nível {level}",

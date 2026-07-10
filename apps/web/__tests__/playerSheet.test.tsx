@@ -81,20 +81,6 @@ const storedCharacter: StoredCharacter = {
             source: { type: "race", id: "elf" },
             name: "Elvish",
         },
-        {
-            id: "class-wizard-spell-fire-bolt",
-            kind: "spell",
-            ref: "fire-bolt",
-            source: { type: "class", id: "wizard" },
-            name: "Fire Bolt",
-        },
-        {
-            id: "class-wizard-spell-magic-missile",
-            kind: "spell",
-            ref: "magic-missile",
-            source: { type: "class", id: "wizard" },
-            name: "Magic Missile",
-        },
     ],
     selections: {
         race: "human",
@@ -120,14 +106,68 @@ const storedCharacter: StoredCharacter = {
     },
 };
 
-function renderWithProviders(ui: ReactElement) {
-    useCharacterStore.setState({ characters: [storedCharacter] });
+const wizardCombatCharacter: StoredCharacter = {
+    id: "char-wizard-combat",
+    schemaVersion: 1,
+    type: "player",
+    system: "dnd",
+    language: "en",
+    name: "Wizard Hero",
+    baseStats: {
+        strength: 8,
+        dexterity: 14,
+        constitution: 12,
+        intelligence: 16,
+        wisdom: 10,
+        charisma: 10,
+        armorClass: 12,
+        hitPoints: 8,
+    },
+    modifiers: [],
+    grants: [
+        {
+            id: "class-wizard-spell-fire-bolt",
+            kind: "spell",
+            ref: "fire-bolt",
+            source: { type: "class", id: "wizard" },
+            name: "Fire Bolt",
+        },
+        {
+            id: "class-wizard-spell-burning-hands",
+            kind: "spell",
+            ref: "burning-hands",
+            source: { type: "class", id: "wizard" },
+            name: "Burning Hands",
+        },
+    ],
+    selections: {
+        race: "human",
+        characterClass: "wizard",
+        choices: {},
+        inventory: { bag: [], equipped: {} },
+    },
+    resources: { hp: 8 },
+    systemData: {
+        characterClass: "wizard",
+        level: 1,
+    },
+};
+
+function renderWithCharacters(
+    ui: ReactElement,
+    characters: StoredCharacter[]
+) {
+    useCharacterStore.setState({ characters });
 
     return render(
         <NextIntlClientProvider locale="en" messages={enMessages}>
             {ui}
         </NextIntlClientProvider>
     );
+}
+
+function renderWithProviders(ui: ReactElement) {
+    return renderWithCharacters(ui, [storedCharacter]);
 }
 
 describe("PlayerSheet", () => {
@@ -299,15 +339,28 @@ describe("PlayerSheet", () => {
         expect(screen.getByText("Protect the realm")).toBeInTheDocument();
     });
 
-    it("shows equipped weapons and spells in actions", () => {
+    it("shows equipped weapons without spells for fighter actions", () => {
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
         expect(screen.getByText("Actions")).toBeInTheDocument();
         expect(screen.getByText("Longsword")).toBeInTheDocument();
         expect(screen.getByText("Main hand")).toBeInTheDocument();
-        expect(screen.getByText("Fire Bolt")).toBeInTheDocument();
-        expect(screen.getByText("Magic Missile")).toBeInTheDocument();
+        expect(screen.getByText(/1d8\+3 slashing/)).toBeInTheDocument();
         expect(screen.getByText("Equipped: Leather Armor")).toBeInTheDocument();
+        expect(screen.queryByText("Fire Bolt")).not.toBeInTheDocument();
+        expect(screen.queryByText("Magic Missile")).not.toBeInTheDocument();
+    });
+
+    it("opens longsword attack roll from combat tab", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(<PlayerSheet stored={storedCharacter} />);
+
+        await user.click(screen.getByRole("tab", { name: "Combat" }));
+        await user.click(screen.getByRole("button", { name: "Roll Longsword" }));
+
+        expect(
+            screen.getByText("Longsword — attack d20 +5")
+        ).toBeInTheDocument();
     });
 
     it("shows ability scores with modifiers", () => {

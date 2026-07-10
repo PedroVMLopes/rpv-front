@@ -96,15 +96,20 @@ describe("itemGrants.dnd", () => {
         ]);
     });
 
-    it("returns strength modifier grant for longsword", () => {
-        expect(getItemGrants("longsword")).toEqual([
-            {
-                grantType: "stat_modifier",
-                choose: 0,
-                targetStat: "strength",
-                amount: 1,
-            },
-        ]);
+    it("returns weaponProfile for longsword without stat grants", () => {
+        expect(getItemGrants("longsword")).toEqual([]);
+        expect(getItem("longsword")?.weaponProfile).toEqual({
+            damageDice: "1d8",
+            damageType: "slashing",
+            properties: ["versatile"],
+            versatileDamageDice: "1d10",
+        });
+        expect(getItem("longsword")).toEqual(
+            expect.objectContaining({
+                category: "weapon",
+                tags: ["martial", "melee"],
+            })
+        );
     });
 
     it("returns armorClass modifier grants for leather armor and shield", () => {

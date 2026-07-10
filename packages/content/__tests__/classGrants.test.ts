@@ -55,8 +55,10 @@ describe("classGrants.dnd", () => {
                 slug: "wizard",
                 name: "Wizard",
                 hitDie: 6,
+                spellcastingAbility: "intelligence",
             })
         );
+        expect(getClass("fighter")?.spellcastingAbility).toBeUndefined();
     });
 
     it("returns empty grants for unknown class", () => {

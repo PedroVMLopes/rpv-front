@@ -1,28 +1,49 @@
-import type { CharacterGrant, Locale } from "@rpv/domain";
-import { getAbilityFeatureDescription, getItem } from "@rpv/content";
+import type { CharacterGrant, Locale, Stats } from "@rpv/domain";
+import {
+    getAbilityFeatureDescription,
+    getItem,
+    getSpellRollProfile,
+    type SpellRollProfile,
+} from "@rpv/content";
 import type { SystemKey } from "@/presets";
 import { contentRepo } from "@/lib/content/contentRepository";
-import type { CharacterSelections } from "./storedCharacter";
+import type { CharacterSelections, StoredCharacter } from "./storedCharacter";
+import {
+    computeSpellCombatPreview,
+    computeWeaponAttackBonus,
+    computeWeaponDamageFlat,
+    computeWeaponDamagePreview,
+    formatWeaponToHit,
+} from "./combatModifiers";
 
 export const WEAPON_SLOTS = ["main-hand", "off-hand"] as const;
 export type WeaponSlotId = (typeof WEAPON_SLOTS)[number];
 
 export type WeaponAction = {
     id: string;
+    slug: string;
     name: string;
     slotId: WeaponSlotId;
     description?: string;
     toHit?: string;
     damage?: string;
+    attackModifier: number | null;
+    damageDice?: string;
+    damageFlat?: number;
+    damageType?: string;
 };
 
 export type SpellAction = {
     id: string;
+    slug: string;
     name: string;
     levelInt: number | null;
     description?: string;
     attackBonus?: string;
     saveDc?: string;
+    attackModifier: number | null;
+    saveDcValue: number | null;
+    rollProfile?: SpellRollProfile;
 };
 
 export type FeatureAction = {
@@ -31,12 +52,71 @@ export type FeatureAction = {
     description?: string;
 };
 
+type CombatActionContext = {
+    grants: CharacterGrant[];
+    selections: CharacterSelections;
+    system: SystemKey;
+    systemData: Record<string, unknown>;
+    resolved: Stats;
+    locale?: Locale;
+};
+
+function toCombatContext(
+    stored: StoredCharacter,
+    resolved: Stats,
+    locale?: Locale
+): CombatActionContext {
+    return {
+        grants: stored.grants ?? [],
+        selections: stored.selections,
+        system: stored.system,
+        systemData: stored.systemData,
+        resolved,
+        locale,
+    };
+}
+
+export function listEquippedWeaponActions(
+    stored: StoredCharacter,
+    resolved: Stats,
+    locale?: Locale
+): WeaponAction[];
 export function listEquippedWeaponActions(
     selections: CharacterSelections,
     system: SystemKey,
     locale?: Locale
+): WeaponAction[];
+export function listEquippedWeaponActions(
+    storedOrSelections: StoredCharacter | CharacterSelections,
+    resolvedOrSystem: Stats | SystemKey,
+    locale?: Locale
 ): WeaponAction[] {
-    const equipped = selections.inventory?.equipped ?? {};
+    const context =
+        "grants" in storedOrSelections
+            ? toCombatContext(
+                  storedOrSelections,
+                  resolvedOrSystem as Stats,
+                  locale
+              )
+            : {
+                  grants: [] as CharacterGrant[],
+                  selections: storedOrSelections,
+                  system: resolvedOrSystem as SystemKey,
+                  systemData: {},
+                  resolved: {
+                      strength: 10,
+                      dexterity: 10,
+                      constitution: 10,
+                      intelligence: 10,
+                      wisdom: 10,
+                      charisma: 10,
+                      armorClass: 10,
+                      hitPoints: 1,
+                  },
+                  locale,
+              };
+
+    const equipped = context.selections.inventory?.equipped ?? {};
     const result: WeaponAction[] = [];
 
     for (const slotId of WEAPON_SLOTS) {
@@ -45,34 +125,63 @@ export function listEquippedWeaponActions(
             continue;
         }
 
-        const item = getItem(slug, system, locale);
-        const entry: WeaponAction = {
+        const item = getItem(slug, context.system, context.locale);
+        const attackModifier = item
+            ? computeWeaponAttackBonus(
+                  context.grants,
+                  item,
+                  context.resolved,
+                  context.system,
+                  context.systemData
+              )
+            : null;
+        const damagePreview = item
+            ? computeWeaponDamagePreview(item, context.resolved, context.system)
+            : null;
+
+        result.push({
             id: `${slotId}-${slug}`,
+            slug,
             name: item?.name ?? slug,
             slotId,
             description: item?.description,
-        };
-
-        const rich = item as
-            | (typeof item & { toHit?: string; damageDice?: string })
-            | undefined;
-        if (rich?.toHit) {
-            entry.toHit = rich.toHit;
-        }
-        if (rich?.damageDice) {
-            entry.damage = rich.damageDice;
-        }
-
-        result.push(entry);
+            toHit: formatWeaponToHit(attackModifier),
+            damage: damagePreview ?? undefined,
+            attackModifier,
+            damageDice: item?.weaponProfile?.damageDice,
+            damageFlat: item
+                ? computeWeaponDamageFlat(item, context.resolved, context.system)
+                : undefined,
+            damageType: item?.weaponProfile?.damageType,
+        });
     }
 
     return result;
 }
 
 export function listSpellActions(
+    stored: StoredCharacter,
+    resolved: Stats,
+    locale?: Locale
+): { cantrips: SpellAction[]; spells: SpellAction[] };
+export function listSpellActions(
     grants: CharacterGrant[],
     locale?: Locale
+): { cantrips: SpellAction[]; spells: SpellAction[] };
+export function listSpellActions(
+    storedOrGrants: StoredCharacter | CharacterGrant[],
+    resolvedOrLocale?: Stats | Locale,
+    locale?: Locale
 ): { cantrips: SpellAction[]; spells: SpellAction[] } {
+    const isStored = "grants" in storedOrGrants;
+    const grants = isStored ? storedOrGrants.grants ?? [] : storedOrGrants;
+    const resolved = isStored ? (resolvedOrLocale as Stats) : undefined;
+    const contentLocale = isStored
+        ? locale
+        : (resolvedOrLocale as Locale | undefined);
+    const system = isStored ? storedOrGrants.system : "dnd";
+    const systemData = isStored ? storedOrGrants.systemData : {};
+
     const cantrips: SpellAction[] = [];
     const spells: SpellAction[] = [];
 
@@ -81,23 +190,36 @@ export function listSpellActions(
             continue;
         }
 
-        const spell = contentRepo().getSpell(grant.ref, locale);
+        const spell = contentRepo(system).getSpell(grant.ref, contentLocale);
+        const rollProfile = getSpellRollProfile(grant.ref);
+        const combatPreview =
+            resolved && isStored
+                ? computeSpellCombatPreview(
+                      rollProfile,
+                      resolved,
+                      system,
+                      systemData
+                  )
+                : {
+                      attackBonus: undefined,
+                      attackModifier: null,
+                      saveDc: undefined,
+                      saveDcValue: null,
+                      rollProfile,
+                  };
+
         const entry: SpellAction = {
             id: grant.id,
+            slug: grant.ref,
             name: grant.name ?? spell?.name ?? grant.ref,
             levelInt: spell?.levelInt ?? null,
             description: spell?.description,
+            attackBonus: combatPreview.attackBonus,
+            saveDc: combatPreview.saveDc,
+            attackModifier: combatPreview.attackModifier,
+            saveDcValue: combatPreview.saveDcValue,
+            rollProfile: combatPreview.rollProfile,
         };
-
-        const rich = spell as
-            | (typeof spell & { attackBonus?: string; saveDc?: string })
-            | undefined;
-        if (rich?.attackBonus) {
-            entry.attackBonus = rich.attackBonus;
-        }
-        if (rich?.saveDc) {
-            entry.saveDc = rich.saveDc;
-        }
 
         if (entry.levelInt === 0) {
             cantrips.push(entry);

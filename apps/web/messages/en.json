@@ -314,7 +314,13 @@
       "d100Units": "Units",
       "contextTitle": "{label} — d20 {modifier}",
       "contextToast": "{label}: {total}",
-      "rollAction": "Roll {label}"
+      "rollAction": "Roll {label}",
+      "attackStepTitle": "{label} — attack d20 {modifier}",
+      "damageStepTitle": "{label} — damage d{sides}",
+      "damageOnlyStepTitle": "{label} — damage {index}/{total} (d{sides})",
+      "saveDcLabel": "DC {dc}",
+      "attackDamageToast": "{label}: attack {attackTotal}, damage {damageTotal}",
+      "damageOnlyToast": "{label}: {total} damage"
     },
     "noneYet": "None yet",
     "levelLine": "Level {level}",

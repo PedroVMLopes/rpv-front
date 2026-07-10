@@ -1,4 +1,4 @@
-import type { Locale } from "@rpv/domain";
+import type { Locale, StatKey } from "@rpv/domain";
 import type { Grant } from "../grant/grant.types";
 import type { LevelFeature } from "../grant/levelFeature.types";
 import { resolveLevelFeatures } from "../grant/levelFeatures";
@@ -12,6 +12,8 @@ export interface ClassEntry {
     hitDie: number;
     /** Minimum character level before subclass grants apply. */
     subclassLevel?: number;
+    /** Governing ability for spell attack bonus and save DC. */
+    spellcastingAbility?: StatKey;
     grants: Grant[];
     featuresByLevel?: LevelFeature[];
 }
@@ -193,6 +195,7 @@ export const dndClasses: ClassEntry[] = [
             "A scholarly magic-user capable of manipulating the structures of reality.",
         hitDie: 6,
         subclassLevel: 3,
+        spellcastingAbility: "intelligence",
         grants: [
             {
                 grantType: "saving_throw_proficiency",
