@@ -30,7 +30,7 @@ export function ActionRow({
     return (
         <div
             className={cn(
-                "flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm",
+                "flex w-full items-center justify-between gap-2 rounded-lg px-3 py-1 text-sm",
                 sheetInset,
                 proficient && "border-primary/40",
                 className

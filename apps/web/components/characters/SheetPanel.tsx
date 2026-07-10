@@ -27,7 +27,7 @@ export function SheetPanel({
     return (
         <Card
             className={cn(
-                "min-w-0 max-w-full gap-3 rounded-2xl border py-0",
+                "min-w-0 max-w-full gap-1.5 rounded-2xl border py-0",
                 variant === "default" && "bg-card shadow-sm",
                 variant === "nested" && cn(sheetPanel, "shadow-xs"),
                 className
@@ -50,7 +50,7 @@ export function SheetPanel({
             <CardContent
                 className={cn(
                     "px-3 pb-3",
-                    hasHeader ? "pt-2" : "pt-3",
+                    hasHeader ? "pt-0" : "pt-3",
                     contentClassName
                 )}
             >

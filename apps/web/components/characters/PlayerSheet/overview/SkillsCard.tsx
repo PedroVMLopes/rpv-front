@@ -105,7 +105,7 @@ export function SkillsCard({ stored }: SkillsCardProps) {
             {isEmpty ? (
                 <p className="text-sm text-muted-foreground">{t("noneYet")}</p>
             ) : (
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-2">
                     {showAll ? (
                         <SkillsAbilityFilter
                             abilities={abilityOrder}
@@ -114,7 +114,7 @@ export function SkillsCard({ stored }: SkillsCardProps) {
                         />
                     ) : null}
                     {visibleSkills.length > 0 ? (
-                        <ul className="flex flex-col gap-1.5">
+                        <ul className="flex flex-col gap-1">
                             {visibleSkills.map((skill) => (
                                 <li key={skill.slug}>
                                     <ActionRow
