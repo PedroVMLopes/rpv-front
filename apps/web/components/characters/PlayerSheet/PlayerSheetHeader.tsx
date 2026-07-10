@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { FaArrowLeft, FaGear, FaShield } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
-import { DerivedResourcesDisplay } from "@/components/characters/DerivedResourcesDisplay";
 import { HitPointsControl } from "@/components/characters/HitPointsControl";
 import { contentRepo } from "@/lib/content/contentRepository";
 import { getCharacterWalkSpeed } from "@/lib/character/characterSpeed";
@@ -169,11 +168,6 @@ export function PlayerSheetHeader({
                         </div>
                     </div>
                 </div>
-
-                <DerivedResourcesDisplay
-                    resources={stored.resources}
-                    compact
-                />
 
                 <PlayerSheetTabBar
                     activeTab={activeTab}

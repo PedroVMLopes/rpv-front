@@ -19,6 +19,7 @@ import { useCharacterStore } from "@/store/useCharacterStore";
 import { CombatActionCard } from "../combat/CombatActionCard";
 import { useRollAssistant } from "../roll/RollAssistantProvider";
 import { OverviewPanel } from "./OverviewPanel";
+import { SheetDerivedResourcesPanel } from "./SheetDerivedResourcesPanel";
 
 type ActionsSectionProps = {
     stored: StoredCharacter;
@@ -80,6 +81,7 @@ export function ActionsSection({ stored }: ActionsSectionProps) {
     return (
         <OverviewPanel title={t("actions")}>
             <div className="flex flex-col gap-4">
+                <SheetDerivedResourcesPanel stored={stored} />
                 <div className="flex flex-col gap-2">
                     <p className="text-xs font-semibold uppercase text-muted-foreground">
                         {t("weaponsEquipped")}

@@ -46,13 +46,13 @@ export function SkillsListModeSwitch({
         <div
             role="radiogroup"
             aria-label={t("skillsListModeLabel")}
-            className="relative inline-flex rounded-lg border bg-muted p-0.5"
+            className="relative isolate inline-flex rounded-lg border bg-muted p-0.5"
         >
             {thumbRect ? (
                 <div
                     aria-hidden
                     className={cn(
-                        "pointer-events-none absolute inset-y-0.5 rounded-md shadow-sm transition-[left,width] duration-200",
+                        "pointer-events-none absolute inset-y-0.5 z-0 rounded-md shadow-sm transition-[left,width] duration-200",
                         sheetInset
                     )}
                     style={{
@@ -68,7 +68,7 @@ export function SkillsListModeSwitch({
                 role="radio"
                 aria-checked={value === "proficient"}
                 className={cn(
-                    "relative z-10 shrink-0 whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
+                    "relative shrink-0 whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
                     value === "proficient"
                         ? "font-semibold text-foreground"
                         : "text-muted-foreground hover:text-foreground"
@@ -88,7 +88,7 @@ export function SkillsListModeSwitch({
                 role="radio"
                 aria-checked={value === "all"}
                 className={cn(
-                    "relative z-10 shrink-0 whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
+                    "relative shrink-0 whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
                     value === "all"
                         ? "font-semibold text-foreground"
                         : "text-muted-foreground hover:text-foreground"
