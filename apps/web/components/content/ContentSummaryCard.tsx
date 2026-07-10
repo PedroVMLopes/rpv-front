@@ -23,10 +23,10 @@ export function ContentSummaryCard({
     const subtitle = model.badges.map((badge) => badge.label).join(" · ");
 
     return (
-        <div className="flex h-full flex-col gap-2 rounded-xl border bg-muted p-3">
+        <div className="flex h-full flex-col gap-2 rounded-xl border bg-card p-3">
             <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0 flex flex-1 flex-col gap-0.5">
-                    <span className="font-semibold leading-tight">
+                    <span className="font-serif font-semibold leading-tight">
                         {model.title}
                     </span>
                     {subtitle ? (
@@ -37,16 +37,6 @@ export function ContentSummaryCard({
                 </div>
 
                 <div className="flex shrink-0 items-center gap-1">
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="size-8"
-                        aria-label={expandLabel}
-                        onClick={onExpand}
-                    >
-                        <Maximize2 className="size-4" aria-hidden />
-                    </Button>
                     {model.useAction && onUse ? (
                         <Button
                             type="button"
@@ -58,6 +48,16 @@ export function ContentSummaryCard({
                             {model.useAction.label}
                         </Button>
                     ) : null}
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        size="icon"
+                        className="size-8 text-foreground hover:text-foreground"
+                        aria-label={expandLabel}
+                        onClick={onExpand}
+                    >
+                        <Maximize2 className="size-4" aria-hidden />
+                    </Button>
                 </div>
             </div>
         </div>
