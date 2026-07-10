@@ -124,21 +124,56 @@ export function buildSpellAttackRollRequest(
 export function buildSpellDamageRollRequest(
     spell: SpellAction
 ): DamageOnlyRequest | null {
-    if (spell.rollProfile?.mode !== "save") {
+    const profile = spell.rollProfile;
+
+    if (!profile) {
         return null;
     }
 
-    return {
-        kind: "damage_only",
-        id: spell.id,
-        label: spell.name,
-        saveDc: spell.saveDcValue ?? undefined,
-        saveAbility: spell.rollProfile.saveAbility,
-        steps: expandDamageSteps(
-            spell.rollProfile.damageDice,
-            spell.rollProfile.damageType
-        ),
-    };
+    if (profile.mode === "save") {
+        return {
+            kind: "damage_only",
+            id: spell.id,
+            label: spell.name,
+            saveDc: spell.saveDcValue ?? undefined,
+            saveAbility: profile.saveAbility,
+            steps: expandDamageSteps(
+                profile.damageDice,
+                profile.damageType
+            ),
+        };
+    }
+
+    if (profile.mode === "damage_only") {
+        const parsedSteps = expandDamageSteps(
+            profile.damageDice,
+            profile.damageType
+        );
+
+        const steps =
+            profile.flatPerDie !== undefined
+                ? parsedSteps.map((step) => ({
+                      ...step,
+                      flat: profile.flatPerDie,
+                  }))
+                : parsedSteps;
+
+        return {
+            kind: "damage_only",
+            id: spell.id,
+            label: spell.name,
+            steps,
+        };
+    }
+
+    return null;
+}
+
+export function hasSpellRollAction(spell: SpellAction): boolean {
+    return (
+        buildSpellAttackRollRequest(spell) !== null ||
+        buildSpellDamageRollRequest(spell) !== null
+    );
 }
 
 export function resolveD20TestTotal(

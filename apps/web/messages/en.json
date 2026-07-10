@@ -422,5 +422,57 @@
       "magic": "Magic",
       "notes": "Notes"
     }
+  },
+  "contentDetail": {
+    "expand": "Expand {title}",
+    "description": "Description",
+    "higherLevel": "At higher levels",
+    "fields": {
+      "school": "School",
+      "level": "Level",
+      "duration": "Duration",
+      "usage": "Usage",
+      "ability": "Ability",
+      "actionCost": "Casting time",
+      "target": "Target"
+    }
+  },
+  "spells": {
+    "school": {
+      "abjuration": "Abjuration",
+      "conjuration": "Conjuration",
+      "divination": "Divination",
+      "enchantment": "Enchantment",
+      "evocation": "Evocation",
+      "illusion": "Illusion",
+      "necromancy": "Necromancy",
+      "transmutation": "Transmutation"
+    },
+    "target": {
+      "single": "Single target",
+      "multiple": "Multiple targets",
+      "area": "Area",
+      "self": "Self",
+      "touch": "Touch",
+      "none": "None"
+    },
+    "actionCost": {
+      "action": "Action",
+      "bonus_action": "Bonus action",
+      "reaction": "Reaction",
+      "minute": "1 minute",
+      "hour": "1 hour",
+      "special": "Special"
+    },
+    "usage": {
+      "atWill": "At will",
+      "spellSlot": "Uses a level {level} spell slot",
+      "spellSlotGeneric": "Uses a spell slot",
+      "limited": "{max} uses per {period}",
+      "period": {
+        "short_rest": "short rest",
+        "long_rest": "long rest"
+      }
+    }
   }
 }

@@ -33,6 +33,9 @@ export type WeaponAction = {
     damageType?: string;
 };
 
+import type { ModifierSource } from "@rpv/domain";
+import type { SpellRollProfile } from "@rpv/content";
+
 export type SpellAction = {
     id: string;
     slug: string;
@@ -44,6 +47,7 @@ export type SpellAction = {
     attackModifier: number | null;
     saveDcValue: number | null;
     rollProfile?: SpellRollProfile;
+    source?: ModifierSource;
 };
 
 export type FeatureAction = {
@@ -219,6 +223,7 @@ export function listSpellActions(
             attackModifier: combatPreview.attackModifier,
             saveDcValue: combatPreview.saveDcValue,
             rollProfile: combatPreview.rollProfile,
+            source: grant.source,
         };
 
         if (entry.levelInt === 0) {

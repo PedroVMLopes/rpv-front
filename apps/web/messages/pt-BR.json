@@ -422,5 +422,57 @@
       "magic": "Magia",
       "notes": "Anotações"
     }
+  },
+  "contentDetail": {
+    "expand": "Expandir {title}",
+    "description": "Descrição",
+    "higherLevel": "Em níveis superiores",
+    "fields": {
+      "school": "Escola",
+      "level": "Nível",
+      "duration": "Duração",
+      "usage": "Uso",
+      "ability": "Habilidade",
+      "actionCost": "Tempo de conjuração",
+      "target": "Alvo"
+    }
+  },
+  "spells": {
+    "school": {
+      "abjuration": "Abjuração",
+      "conjuration": "Conjuração",
+      "divination": "Adivinhação",
+      "enchantment": "Encantamento",
+      "evocation": "Evocação",
+      "illusion": "Ilusão",
+      "necromancy": "Necromancia",
+      "transmutation": "Transmutação"
+    },
+    "target": {
+      "single": "Alvo único",
+      "multiple": "Múltiplos alvos",
+      "area": "Área",
+      "self": "Self",
+      "touch": "Toque",
+      "none": "Nenhum"
+    },
+    "actionCost": {
+      "action": "Ação",
+      "bonus_action": "Ação bônus",
+      "reaction": "Reação",
+      "minute": "1 minuto",
+      "hour": "1 hora",
+      "special": "Especial"
+    },
+    "usage": {
+      "atWill": "À vontade",
+      "spellSlot": "Usa um espaço de magia de nível {level}",
+      "spellSlotGeneric": "Usa um espaço de magia",
+      "limited": "{max} usos por {period}",
+      "period": {
+        "short_rest": "descanso curto",
+        "long_rest": "descanso longo"
+      }
+    }
   }
 }

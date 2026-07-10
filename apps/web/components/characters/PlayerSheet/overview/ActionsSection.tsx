@@ -2,19 +2,16 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+import { contentRepo } from "@/lib/content/contentRepository";
 import {
     listEquippedWeaponActions,
     listSpellActions,
-    type SpellAction,
     type WeaponAction,
 } from "@/lib/character/combatActions";
 import { parseDerivedResources } from "@/lib/character/deriveResourcesFromForm";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
-import {
-    buildSpellAttackRollRequest,
-    buildSpellDamageRollRequest,
-    buildWeaponAttackRollRequest,
-} from "@/lib/roll/buildRollRequest";
+import { buildWeaponAttackRollRequest } from "@/lib/roll/buildRollRequest";
+import { SpellActionCard } from "@/components/content/spells/SpellActionCard";
 import { useContentLocale } from "@/store/useContentLocale";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { CombatActionCard } from "../combat/CombatActionCard";
@@ -42,24 +39,13 @@ function openWeaponRoll(
     }
 }
 
-function openSpellRoll(
-    spell: SpellAction,
-    openRollRequest: ReturnType<typeof useRollAssistant>["openRollRequest"]
-) {
-    const request =
-        spell.rollProfile?.mode === "attack"
-            ? buildSpellAttackRollRequest(spell)
-            : spell.rollProfile?.mode === "save"
-              ? buildSpellDamageRollRequest(spell)
-              : null;
-
-    if (request) {
-        openRollRequest(request);
-    }
-}
-
-function groupSpellsByLevel(spells: SpellAction[]): Map<number, SpellAction[]> {
-    const byLevel = new Map<number, SpellAction[]>();
+function groupSpellsByLevel(
+    spells: ReturnType<typeof listSpellActions>["spells"]
+): Map<number, ReturnType<typeof listSpellActions>["spells"][number][]> {
+    const byLevel = new Map<
+        number,
+        ReturnType<typeof listSpellActions>["spells"][number][]
+    >();
 
     for (const spell of spells) {
         if (spell.levelInt === null || spell.levelInt <= 0) {
@@ -72,33 +58,6 @@ function groupSpellsByLevel(spells: SpellAction[]): Map<number, SpellAction[]> {
     }
 
     return byLevel;
-}
-
-function SpellActionListItem({
-    spell,
-    openRollRequest,
-}: {
-    spell: SpellAction;
-    openRollRequest: ReturnType<typeof useRollAssistant>["openRollRequest"];
-}) {
-    return (
-        <li>
-            <CombatActionCard
-                title={spell.name}
-                details={
-                    [spell.attackBonus, spell.saveDc].filter(Boolean) as string[]
-                }
-                description={spell.description}
-                actionKind="roll"
-                onRoll={
-                    buildSpellAttackRollRequest(spell) ||
-                    buildSpellDamageRollRequest(spell)
-                        ? () => openSpellRoll(spell, openRollRequest)
-                        : undefined
-                }
-            />
-        </li>
-    );
 }
 
 export function ActionsSection({ stored }: ActionsSectionProps) {
@@ -131,6 +90,14 @@ export function ActionsSection({ stored }: ActionsSectionProps) {
     );
 
     const spellsByLevel = useMemo(() => groupSpellsByLevel(spells), [spells]);
+
+    const classEntry = stored.selections.characterClass
+        ? contentRepo(stored.system).getClass(
+              stored.selections.characterClass,
+              contentLocale
+          )
+        : undefined;
+    const spellcastingAbility = classEntry?.spellcastingAbility ?? null;
 
     const resourceSignature = useMemo(
         () =>
@@ -207,27 +174,11 @@ export function ActionsSection({ stored }: ActionsSectionProps) {
                         <ul className="flex flex-col gap-2">
                             {cantrips.map((spell) => (
                                 <li key={spell.id}>
-                                    <CombatActionCard
-                                        title={spell.name}
-                                        badge={t("cantripBadge")}
-                                        details={
-                                            [
-                                                spell.attackBonus,
-                                                spell.saveDc,
-                                            ].filter(Boolean) as string[]
-                                        }
-                                        description={spell.description}
-                                        actionKind="roll"
-                                        onRoll={
-                                            buildSpellAttackRollRequest(spell) ||
-                                            buildSpellDamageRollRequest(spell)
-                                                ? () =>
-                                                      openSpellRoll(
-                                                          spell,
-                                                          openRollRequest
-                                                      )
-                                                : undefined
-                                        }
+                                    <SpellActionCard
+                                        stored={stored}
+                                        spell={spell}
+                                        spellcastingAbility={spellcastingAbility}
+                                        openRollRequest={openRollRequest}
                                     />
                                 </li>
                             ))}
@@ -267,11 +218,16 @@ export function ActionsSection({ stored }: ActionsSectionProps) {
                             ) : (
                                 <ul className="flex flex-col gap-2">
                                     {levelSpells.map((spell) => (
-                                        <SpellActionListItem
-                                            key={spell.id}
-                                            spell={spell}
-                                            openRollRequest={openRollRequest}
-                                        />
+                                        <li key={spell.id}>
+                                            <SpellActionCard
+                                                stored={stored}
+                                                spell={spell}
+                                                spellcastingAbility={
+                                                    spellcastingAbility
+                                                }
+                                                openRollRequest={openRollRequest}
+                                            />
+                                        </li>
                                     ))}
                                 </ul>
                             )}

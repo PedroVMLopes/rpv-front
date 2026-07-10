@@ -1,0 +1,37 @@
+export type ContentDetailRow = {
+    labelKey: string;
+    value: string;
+};
+
+export type ContentDetailSection = {
+    rows: ContentDetailRow[];
+};
+
+export type ContentUseActionSpec = {
+    label: string;
+    kind: "roll" | "cast";
+    disabled?: boolean;
+};
+
+export type ContentDetailModel = {
+    id: string;
+    kind: "spell" | "item";
+    title: string;
+    sections: ContentDetailSection[];
+    description?: string;
+    higherLevel?: string;
+    useAction?: ContentUseActionSpec;
+};
+
+export type ContentSummaryModel = {
+    id: string;
+    kind: "spell" | "item";
+    title: string;
+    badges: Array<{ label: string; variant?: "default" | "muted" }>;
+    useAction?: ContentUseActionSpec;
+};
+
+export type SpellContentModels = {
+    summary: ContentSummaryModel;
+    detail: ContentDetailModel;
+};

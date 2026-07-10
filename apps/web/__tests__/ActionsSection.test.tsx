@@ -10,6 +10,12 @@ import type { StoredCharacter } from "../lib/character/storedCharacter";
 import { useCharacterStore } from "../store/useCharacterStore";
 import enMessages from "../messages/en.json";
 
+const toastMock = jest.fn();
+
+jest.mock("sonner", () => ({
+    toast: (...args: unknown[]) => toastMock(...args),
+}));
+
 function renderSection(stored: StoredCharacter) {
     useCharacterStore.setState({ characters: [stored] });
 
@@ -54,6 +60,20 @@ const wizardStored: StoredCharacter = {
             ref: "burning-hands",
             source: { type: "class", id: "wizard" },
             name: "Burning Hands",
+        },
+        {
+            id: "class-wizard-spell-detect-magic",
+            kind: "spell",
+            ref: "detect-magic",
+            source: { type: "class", id: "wizard" },
+            name: "Detect Magic",
+        },
+        {
+            id: "class-wizard-spell-mage-hand",
+            kind: "spell",
+            ref: "mage-hand",
+            source: { type: "class", id: "wizard" },
+            name: "Mage Hand",
         },
     ],
     selections: {
@@ -105,6 +125,7 @@ const fighterStored: StoredCharacter = {
 
 describe("ActionsSection", () => {
     beforeEach(() => {
+        toastMock.mockClear();
         useCharacterStore.setState({ characters: [wizardStored] });
     });
 
@@ -140,7 +161,7 @@ describe("ActionsSection", () => {
         ).toHaveLength(4);
     });
 
-    it("keeps cantrips collapsed by default and shows them after expanding", async () => {
+    it("keeps cantrips collapsed by default and shows spell cards after expanding", async () => {
         const user = userEvent.setup();
         renderSection(wizardStored);
 
@@ -152,6 +173,25 @@ describe("ActionsSection", () => {
         await user.click(screen.getByRole("button", { name: "Expand Cantrips" }));
 
         expect(screen.getByText("Fire Bolt")).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: "Expand Fire Bolt" })
+        ).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "1d10" })).toBeInTheDocument();
+        expect(
+            screen.queryByRole("button", { name: "Use", hidden: true })
+        ).not.toBeInTheDocument();
+    });
+
+    it("opens spell detail modal from expand button", async () => {
+        const user = userEvent.setup();
+        renderSection(wizardStored);
+
+        await user.click(screen.getByRole("button", { name: "Expand Cantrips" }));
+        await user.click(screen.getByRole("button", { name: "Expand Fire Bolt" }));
+
+        expect(screen.getByRole("dialog")).toBeInTheDocument();
+        expect(screen.getByText("Evocation")).toBeInTheDocument();
+        expect(screen.getByText("At will")).toBeInTheDocument();
     });
 
     it("groups leveled spells inside the matching level collapsible", async () => {
@@ -163,6 +203,13 @@ describe("ActionsSection", () => {
         await user.click(screen.getByRole("button", { name: "Expand Level 1:" }));
 
         expect(screen.getByText("Burning Hands")).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "3d6" })).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: "Expand Detect Magic" })
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: "Use" })
+        ).toBeInTheDocument();
     });
 
     it("shows empty level message when a slot level has no spells", async () => {
