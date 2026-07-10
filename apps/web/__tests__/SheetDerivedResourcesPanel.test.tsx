@@ -139,12 +139,32 @@ describe("SheetDerivedResourcesPanel", () => {
         expect(screen.getByText("Level 2:")).toBeInTheDocument();
         expect(screen.getAllByRole("button", { pressed: false })).toHaveLength(7);
 
-        const castingClassLabel = screen.getByText("Casting class");
-        expect(castingClassLabel).not.toHaveClass("uppercase");
-        expect(castingClassLabel.closest("div")?.querySelector("dd")).toHaveClass(
-            "font-bold",
-            "uppercase"
-        );
+        const castingStatLabels = [
+            "Casting class",
+            "Casting ability",
+            "Spell save DC",
+            "Spell attack",
+        ];
+
+        for (const label of castingStatLabels) {
+            const labelEl = screen.getByText(label);
+            expect(labelEl).not.toHaveClass("uppercase");
+            expect(labelEl.closest("div")?.querySelector("dd")).toHaveClass(
+                "font-bold",
+                "uppercase"
+            );
+        }
+    });
+
+    it("renders spell save DC and attack from stored prop when character is not in the store", () => {
+        useCharacterStore.setState({ characters: [] });
+
+        renderWithProviders(<SheetDerivedResourcesPanel stored={wizardStored} />);
+
+        expect(screen.getByText("Spell save DC")).toBeInTheDocument();
+        expect(screen.getByText("13")).toBeInTheDocument();
+        expect(screen.getByText("Spell attack")).toBeInTheDocument();
+        expect(screen.getByText("+5")).toBeInTheDocument();
     });
 
     it("consumes the rightmost spell slot first and restores on click", async () => {

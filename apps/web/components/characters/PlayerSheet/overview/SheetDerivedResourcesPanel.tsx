@@ -7,6 +7,10 @@ import {
     computeSpellAttackBonus,
     computeSpellSaveDc,
 } from "@/lib/character/combatModifiers";
+import {
+    getResolvedStatsForCharacter,
+    storedCharacterToProps,
+} from "@/lib/character/characterAdapter";
 import { parseDerivedResources } from "@/lib/character/deriveResourcesFromForm";
 import { formatResourceRefLabel } from "@/lib/character/resourceLabels";
 import { formatModifier } from "@/lib/character/skillModifiers";
@@ -122,22 +126,18 @@ function CastingStatsBlock({
     attackLabel: string;
     classNameValue: string;
     abilityValue: string;
-    saveDcValue: number | null;
-    attackValue: string | null;
+    saveDcValue: number;
+    attackValue: string;
 }) {
     return (
         <dl className={cn("flex flex-col gap-1.5", className)}>
             <CastingStatRow label={classLabel} value={classNameValue} />
             <CastingStatRow label={abilityLabel} value={abilityValue} />
-            {saveDcValue !== null ? (
-                <CastingStatRow
-                    label={saveDcLabel}
-                    value={String(saveDcValue)}
-                />
-            ) : null}
-            {attackValue !== null ? (
-                <CastingStatRow label={attackLabel} value={attackValue} />
-            ) : null}
+            <CastingStatRow
+                label={saveDcLabel}
+                value={String(saveDcValue)}
+            />
+            <CastingStatRow label={attackLabel} value={attackValue} />
         </dl>
     );
 }
@@ -154,7 +154,11 @@ export function SheetDerivedResourcesPanel({
     const tResources = useTranslations("classResources");
     const contentLocale = useContentLocale((state) => state.contentLocale);
     const getResolvedStats = useCharacterStore((state) => state.getResolvedStats);
-    const resolved = getResolvedStats(stored.id);
+    const resolved =
+        getResolvedStats(stored.id) ??
+        getResolvedStatsForCharacter(storedCharacterToProps(stored));
+
+    const classSlug = stored.selections.characterClass;
 
     const { spellSlots, classResources } = useMemo(
         () => parseDerivedResources(stored.resources),
@@ -183,20 +187,26 @@ export function SheetDerivedResourcesPanel({
         return null;
     }
 
-    const classSlug = stored.selections.characterClass;
     const classEntry = classSlug
         ? contentRepo(stored.system).getClass(classSlug, contentLocale)
         : undefined;
     const spellcastingAbility = classEntry?.spellcastingAbility ?? null;
 
-    const spellSaveDc =
-        resolved !== undefined
-            ? computeSpellSaveDc(resolved, stored.system, stored.systemData)
-            : null;
-    const spellAttackBonus =
-        resolved !== undefined
-            ? computeSpellAttackBonus(resolved, stored.system, stored.systemData)
-            : null;
+    const spellcastingSystemData = {
+        ...stored.systemData,
+        characterClass: classSlug ?? stored.systemData.characterClass,
+    };
+
+    const spellSaveDc = computeSpellSaveDc(
+        resolved,
+        stored.system,
+        spellcastingSystemData
+    );
+    const spellAttackBonus = computeSpellAttackBonus(
+        resolved,
+        stored.system,
+        spellcastingSystemData
+    );
 
     const formatLabel = (ref: string) =>
         formatResourceRefLabel(ref, (key) => tResources(key));
@@ -237,12 +247,8 @@ export function SheetDerivedResourcesPanel({
                             attackLabel={t("spellAttackModifier")}
                             classNameValue={classEntry.name}
                             abilityValue={tAbilities(spellcastingAbility)}
-                            saveDcValue={spellSaveDc}
-                            attackValue={
-                                spellAttackBonus !== null
-                                    ? formatModifier(spellAttackBonus)
-                                    : null
-                            }
+                            saveDcValue={spellSaveDc!}
+                            attackValue={formatModifier(spellAttackBonus!)}
                         />
                     ) : null}
 
