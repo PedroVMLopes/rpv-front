@@ -16,8 +16,8 @@ import {
     type PendingChoiceGrant,
 } from "./grantChoices";
 import {
-    findDuplicateGrantPicksInPool,
     findGrantPicksOnOwnedRefs,
+    getOtherPickedRefsForGrantType,
 } from "./grantChoiceOptions";
 import type { CharacterChoices } from "./storedCharacter";
 import { readLevelFromForm } from "./level";
@@ -193,11 +193,26 @@ export function findInvalidGrantPicks(
     const ownedRefsByGrantType = buildOwnedRefsByGrantType(formData, locale, system);
     const errors: GrantPickValidationIssue[] = [];
 
-    for (const duplicate of findDuplicateGrantPicksInPool(pending, grantPicks)) {
-        errors.push({
-            code: "duplicateGrantPick",
-            ref: duplicate.ref,
-        });
+    for (const choice of pending) {
+        const ref = grantPicks[choice.key]?.trim();
+        if (!ref) {
+            continue;
+        }
+
+        const otherPicked = getOtherPickedRefsForGrantType(
+            choice.grant.grantType,
+            pending,
+            grantPicks,
+            choice.key
+        );
+
+        if (otherPicked.has(ref)) {
+            errors.push({
+                code: "duplicateGrantPick",
+                ref,
+                key: choice.key,
+            });
+        }
     }
 
     for (const invalid of findGrantPicksOnOwnedRefs(

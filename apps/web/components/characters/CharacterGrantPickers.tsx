@@ -107,17 +107,23 @@ export function CharacterGrantPickers({
         [formValues]
     );
 
-    const pendingChoices = useMemo(
+    const allPendingChoices = useMemo(
         () =>
             collectPendingChoiceGrants(
                 selections,
                 contentLocale,
                 characterLevel,
                 system
-            ).filter((choice) =>
+            ),
+        [selections, contentLocale, characterLevel, system]
+    );
+
+    const pendingChoices = useMemo(
+        () =>
+            allPendingChoices.filter((choice) =>
                 matchesGrantSourceTypes(choice.source, sourceTypes)
             ),
-        [selections, contentLocale, characterLevel, system, sourceTypes]
+        [allPendingChoices, sourceTypes]
     );
 
     const ownedRefsByGrantType = useMemo(
@@ -139,17 +145,23 @@ export function CharacterGrantPickers({
         [selections, contentLocale, characterLevel, sourceTypes]
     );
 
-    const languageChoices = useMemo(
+    const allLanguageChoices = useMemo(
         () =>
             collectLanguageChoiceGrants(
                 selections,
                 contentLocale,
                 characterLevel,
                 system
-            ).filter((choice) =>
+            ),
+        [selections, contentLocale, characterLevel, system]
+    );
+
+    const languageChoices = useMemo(
+        () =>
+            allLanguageChoices.filter((choice) =>
                 matchesGrantSourceTypes(choice.source, sourceTypes)
             ),
-        [selections, contentLocale, characterLevel, system, sourceTypes]
+        [allLanguageChoices, sourceTypes]
     );
 
     const nonInventoryChoices = useMemo(
@@ -256,7 +268,7 @@ export function CharacterGrantPickers({
             new Set<string>();
         const otherPickedRefs = getOtherPickedRefsForGrantType(
             choice.grant.grantType,
-            pendingChoices,
+            allPendingChoices,
             grantPicks,
             choice.key
         );
@@ -339,7 +351,7 @@ export function CharacterGrantPickers({
                         const selected = grantPicks[choice.key] ?? "";
                         const otherLanguagePicks = getOtherPickedRefsForGrantType(
                             "language",
-                            languageChoices,
+                            allLanguageChoices,
                             grantPicks,
                             choice.key
                         );

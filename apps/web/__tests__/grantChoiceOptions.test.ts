@@ -210,6 +210,59 @@ describe("buildGrantChoiceSelectOptions", () => {
         );
     });
 
+    it("shows a racial cantrip pick as disabled in a class spell slot", () => {
+        const racialCantripChoice: PendingChoiceGrant = {
+            key: "race:high-elf:base:spell:0:0",
+            grant: {
+                grantType: "spell",
+                choose: 1,
+                selectionFilter: { spellLists: ["wizard"], levelInt: 0 },
+            },
+            source: { type: "race", id: "high-elf" },
+            label: "One cantrip of your choice from the wizard spell list.",
+            options: [
+                { value: "acid-splash", label: "Acid Splash" },
+                { value: "fire-bolt", label: "Fire Bolt" },
+            ],
+        };
+
+        const wizardCantripChoice: PendingChoiceGrant = {
+            key: "class:wizard:1:spell:1:0",
+            grant: {
+                grantType: "spell",
+                choose: 1,
+                selectionFilter: { levelInt: 0 },
+            },
+            source: { type: "class", id: "wizard" },
+            label: "Choose cantrips from the wizard spell list. (1/2)",
+            options: [
+                { value: "acid-splash", label: "Acid Splash" },
+                { value: "fire-bolt", label: "Fire Bolt" },
+            ],
+        };
+
+        const otherPicks = getOtherPickedRefsForGrantType(
+            "spell",
+            [racialCantripChoice, wizardCantripChoice],
+            { "race:high-elf:base:spell:0:0": "acid-splash" },
+            wizardCantripChoice.key
+        );
+
+        const options = buildGrantChoiceSelectOptions(
+            wizardCantripChoice,
+            { "race:high-elf:base:spell:0:0": "acid-splash" },
+            new Set(),
+            otherPicks
+        );
+
+        expect(options.find((option) => option.value === "acid-splash")).toEqual(
+            expect.objectContaining({
+                label: "✓ Acid Splash",
+                disabled: true,
+            })
+        );
+    });
+
     it("keeps a selected ref visible even when it is missing from choice.options", () => {
         const options = buildGrantChoiceSelectOptions(
             fighterSkillChoice,

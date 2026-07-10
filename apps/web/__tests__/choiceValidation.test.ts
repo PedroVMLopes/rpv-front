@@ -195,12 +195,44 @@ describe("findMissingRequiredChoices", () => {
             "dnd"
         );
 
-        expect(invalid).toEqual([
-            expect.objectContaining({
-                code: "duplicateGrantPick",
-                ref: "athletics",
-            }),
-        ]);
+        expect(invalid).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    code: "duplicateGrantPick",
+                    ref: "athletics",
+                }),
+            ])
+        );
+        expect(invalid.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it("flags duplicate cantrip picks across race and class", () => {
+        const invalid = findInvalidGrantPicks(
+            {
+                ...baseFormData,
+                race: "elf",
+                subrace: "high-elf",
+                characterClass: "wizard",
+                choices: {
+                    grantPicks: {
+                        "race:high-elf:base:spell:0:0": "acid-splash",
+                        "class:wizard:1:spell:1:0": "acid-splash",
+                    },
+                },
+            },
+            "en",
+            "dnd"
+        );
+
+        expect(invalid).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    code: "duplicateGrantPick",
+                    ref: "acid-splash",
+                    key: "class:wizard:1:spell:1:0",
+                }),
+            ])
+        );
     });
 
     it("flags skill picks that repeat a fixed background proficiency", () => {

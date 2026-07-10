@@ -12,9 +12,11 @@ import messages from "../messages/en.json";
 function GrantPickerHarness({
     defaultValues,
     withValidation = false,
+    sourceTypes,
 }: {
     defaultValues: Record<string, unknown>;
     withValidation?: boolean;
+    sourceTypes?: Array<"race" | "class" | "subclass" | "background" | "item" | "feat" | "spell" | "condition" | "system">;
 }) {
     const schema = applyChoiceValidation(
         createDynamicSchema(dndCharacterSchema, "player"),
@@ -28,7 +30,12 @@ function GrantPickerHarness({
 
     return (
         <NextIntlClientProvider locale="en" messages={messages}>
-            <CharacterGrantPickers form={form} contentLocale="en" system="dnd" />
+            <CharacterGrantPickers
+                form={form}
+                contentLocale="en"
+                system="dnd"
+                sourceTypes={sourceTypes}
+            />
             <button
                 type="button"
                 onClick={() => void form.trigger()}
@@ -272,5 +279,34 @@ describe("CharacterGrantPickers", () => {
         expect(
             screen.getAllByText(/Two other ability scores of your choice/).length
         ).toBe(2);
+    });
+
+    it("disables a racial cantrip already picked when showing class spell choices", () => {
+        render(
+            <GrantPickerHarness
+                sourceTypes={["class", "subclass"]}
+                defaultValues={{
+                    race: "elf",
+                    subrace: "high-elf",
+                    characterClass: "wizard",
+                    choices: {
+                        grantPicks: {
+                            "race:high-elf:base:spell:0:0": "acid-splash",
+                        },
+                    },
+                }}
+            />
+        );
+
+        const cantripSelect = screen.getAllByRole("combobox").find((select) =>
+            Array.from(select.options).some((option) => option.value === "acid-splash")
+        );
+
+        expect(cantripSelect).toBeDefined();
+        const acidSplashOption = Array.from(cantripSelect!.options).find(
+            (option) => option.value === "acid-splash"
+        );
+        expect(acidSplashOption?.textContent).toBe("✓ Acid Splash");
+        expect(acidSplashOption).toBeDisabled();
     });
 });
