@@ -113,6 +113,50 @@ describe("sanitizeGrantPicks", () => {
             "class:fighter:base:skill_proficiency:3:1": "intimidation",
         });
     });
+
+    it("drops class skill picks that conflict with a newly selected sage background", () => {
+        const selections = sanitizeGrantPicks(
+            {
+                ...baseSelections,
+                race: "elf",
+                background: "sage",
+                characterClass: "wizard",
+                choices: {
+                    grantPicks: {
+                        "class:wizard:base:skill_proficiency:2:0": "arcana",
+                        "class:wizard:base:skill_proficiency:2:1": "history",
+                    },
+                },
+            },
+            "en",
+            "dnd"
+        );
+
+        expect(selections.choices.grantPicks).toEqual({});
+    });
+
+    it("drops duplicate class spell pick when racial cantrip already uses the same ref", () => {
+        const selections = sanitizeGrantPicks(
+            {
+                ...baseSelections,
+                race: "elf",
+                subrace: "high-elf",
+                characterClass: "wizard",
+                choices: {
+                    grantPicks: {
+                        "race:high-elf:base:spell:0:0": "acid-splash",
+                        "class:wizard:1:spell:1:0": "acid-splash",
+                    },
+                },
+            },
+            "en",
+            "dnd"
+        );
+
+        expect(selections.choices.grantPicks).toEqual({
+            "race:high-elf:base:spell:0:0": "acid-splash",
+        });
+    });
 });
 
 describe("sanitizeSelections", () => {

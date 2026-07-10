@@ -6,9 +6,11 @@ import ptBRMessages from "@/messages/pt-BR.json";
 import { buildSelectionsFromForm } from "./characterAdapter";
 import { getStepIndexForGrantPickKey } from "./characterCreationSteps";
 import {
+    findInvalidGrantPicks,
     findMissingRequiredChoices,
     findMissingSubclass,
 } from "./choiceValidation";
+import { resolveGrantPickValidationMessage } from "./choiceValidationMessages";
 import { isCharacterNamePending } from "./defaultCharacterName";
 import { isAbilityScoresIncomplete } from "./abilityScoreGeneration";
 import { flattenStoredToForm } from "./presetStats";
@@ -21,7 +23,8 @@ export type PendingDecisionKind =
     | "name"
     | "subclass"
     | "abilities"
-    | "grant_pick";
+    | "grant_pick"
+    | "invalid_grant_pick";
 
 export type PendingDecision = {
     id: string;
@@ -123,6 +126,17 @@ export function collectPendingDecisions(
             kind: "grant_pick",
             label: choice.label,
             stepIndex: getStepIndexForGrantPickKey(choice.key),
+        });
+    }
+
+    for (const issue of findInvalidGrantPicks(formData, locale, system)) {
+        decisions.push({
+            id: `pending:invalid:${issue.key ?? issue.ref ?? issue.code}`,
+            kind: "invalid_grant_pick",
+            label: resolveGrantPickValidationMessage(issue, locale),
+            stepIndex: issue.key
+                ? getStepIndexForGrantPickKey(issue.key)
+                : 1,
         });
     }
 

@@ -223,6 +223,7 @@ export function findInvalidGrantPicks(
         errors.push({
             code: "alreadyGranted",
             ref: invalid.ref,
+            key: invalid.key,
         });
     }
 

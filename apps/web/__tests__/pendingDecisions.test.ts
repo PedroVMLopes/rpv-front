@@ -88,4 +88,49 @@ describe("collectPendingDecisions", () => {
             true
         );
     });
+
+    it("lists invalid duplicate spell picks even when nothing is missing", () => {
+        const pending = collectPendingDecisions(
+            {
+                race: "elf",
+                subrace: "high-elf",
+                characterClass: "wizard",
+                level: 1,
+                background: "sage",
+                name: "Hero",
+                abilityScoreMethod: "manual",
+                attributes: dndStatConfig.abilities.map((ability) => ({
+                    name: ability.name,
+                    value: 10,
+                })),
+                choices: {
+                    grantPicks: {
+                        "race:high-elf:base:language:0:0": "draconic",
+                        "race:high-elf:base:spell:0:0": "acid-splash",
+                        "class:wizard:base:skill_proficiency:2:0": "arcana",
+                        "class:wizard:base:skill_proficiency:2:1": "history",
+                        "class:wizard:1:spell:1:0": "acid-splash",
+                        "class:wizard:1:spell:1:1": "mage-hand",
+                        "class:wizard:1:spell:1:2": "prestidigitation",
+                        "class:wizard:1:spell:2:0": "burning-hands",
+                        "class:wizard:1:spell:2:1": "magic-missile",
+                    },
+                },
+            },
+            "en",
+            "dnd",
+            dndStatConfig
+        );
+
+        expect(
+            pending.some((decision) => decision.kind === "invalid_grant_pick")
+        ).toBe(true);
+        expect(
+            pending.some(
+                (decision) =>
+                    decision.kind === "invalid_grant_pick" &&
+                    decision.stepIndex === 1
+            )
+        ).toBe(true);
+    });
 });

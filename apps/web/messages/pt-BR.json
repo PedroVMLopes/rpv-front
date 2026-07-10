@@ -169,7 +169,7 @@
     "sourceSystem": "Do sistema: {id}",
     "choicesIncomplete": "Corrija escolhas de concessão inválidas antes de salvar.",
     "validation": {
-      "duplicatePick": "Não é possível escolher {ref} mais de uma vez no mesmo grupo.",
+      "duplicatePick": "Não é possível escolher {ref} mais de uma vez entre suas escolhas.",
       "alreadyGranted": "{ref} já foi concedido e não pode ser escolhido novamente.",
       "invalidAbilityScore": "Escolha de atributo inválida: {label}."
     }

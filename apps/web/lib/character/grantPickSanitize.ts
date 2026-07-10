@@ -2,11 +2,122 @@ import type { Locale } from "@rpv/domain";
 import { emptyInventory } from "@rpv/domain";
 import { getClassSubclassLevel, getSubclass } from "@rpv/content";
 import type { SystemKey } from "@/presets";
+import { getStepIndexForGrantPickKey } from "./characterCreationSteps";
+import { getFixedRefsForGrantType } from "./characterGrants";
 import { collectPendingChoiceGrants } from "./grantChoices";
+import {
+    findGrantPicksOnOwnedRefs,
+    getOtherPickedRefsForGrantType,
+} from "./grantChoiceOptions";
 import { sanitizeInventory } from "./inventory";
 import { mergeStartingGrants } from "./materializeInventoryGrants";
 import { collectValidStartingEquipmentPickKeys } from "./startingEquipmentValidation";
 import type { CharacterSelections } from "./storedCharacter";
+
+function pickKeyToPrune(keys: string[]): string {
+    return [...keys].sort((a, b) => {
+        const stepDiff =
+            getStepIndexForGrantPickKey(b) - getStepIndexForGrantPickKey(a);
+        return stepDiff !== 0 ? stepDiff : b.localeCompare(a);
+    })[0];
+}
+
+/**
+ * Drops grant picks that conflict with fixed grants from another source or
+ * duplicate the same ref across choice slots. Prefers keeping earlier-step
+ * picks (race before class before background).
+ */
+export function pruneConflictingGrantPicks(
+    grantPicks: Record<string, string>,
+    selections: CharacterSelections,
+    locale: Locale,
+    system: SystemKey,
+    characterLevel = 1
+): Record<string, string> {
+    const pending = collectPendingChoiceGrants(
+        selections,
+        locale,
+        characterLevel,
+        system
+    ).filter(
+        (choice) =>
+            choice.grant.grantType !== "inventory_item" &&
+            choice.grant.grantType !== "currency"
+    );
+
+    const grantTypes = new Set(pending.map((choice) => choice.grant.grantType));
+    const ownedRefsByGrantType = new Map(
+        [...grantTypes].map((grantType) => [
+            grantType,
+            getFixedRefsForGrantType(
+                selections,
+                locale,
+                grantType,
+                characterLevel
+            ),
+        ])
+    );
+
+    let nextPicks = { ...grantPicks };
+
+    for (;;) {
+        let changed = false;
+
+        for (const invalid of findGrantPicksOnOwnedRefs(
+            pending,
+            nextPicks,
+            ownedRefsByGrantType
+        )) {
+            if (nextPicks[invalid.key]) {
+                delete nextPicks[invalid.key];
+                changed = true;
+            }
+        }
+
+        const duplicateKeys = new Set<string>();
+
+        for (const choice of pending) {
+            const ref = nextPicks[choice.key]?.trim();
+            if (!ref) {
+                continue;
+            }
+
+            const otherPicked = getOtherPickedRefsForGrantType(
+                choice.grant.grantType,
+                pending,
+                nextPicks,
+                choice.key
+            );
+
+            if (!otherPicked.has(ref)) {
+                continue;
+            }
+
+            const conflictingKeys = pending
+                .filter(
+                    (entry) =>
+                        entry.grant.grantType === choice.grant.grantType &&
+                        nextPicks[entry.key]?.trim() === ref
+                )
+                .map((entry) => entry.key);
+
+            if (conflictingKeys.length > 1) {
+                duplicateKeys.add(pickKeyToPrune(conflictingKeys));
+            }
+        }
+
+        for (const key of duplicateKeys) {
+            if (nextPicks[key]) {
+                delete nextPicks[key];
+                changed = true;
+            }
+        }
+
+        if (!changed) {
+            return nextPicks;
+        }
+    }
+}
 
 function isSubclassValidForClass(
     subclassSlug: string | undefined,
@@ -163,23 +274,29 @@ export function sanitizeGrantPicks(
 
     const grantPicks = selections.choices.grantPicks ?? {};
 
-    const sanitizedPicks = Object.fromEntries(
+    const staleFilteredPicks = Object.fromEntries(
         Object.entries(grantPicks).filter(([key]) => validKeys.has(key))
     );
 
-    let next: CharacterSelections = {
+    const sanitizedPicks = pruneConflictingGrantPicks(
+        staleFilteredPicks,
+        selections,
+        locale,
+        system,
+        characterLevel
+    );
+
+    if (
+        JSON.stringify(sanitizedPicks) === JSON.stringify(grantPicks)
+    ) {
+        return selections;
+    }
+
+    return {
         ...selections,
         choices: {
             ...selections.choices,
             grantPicks: sanitizedPicks,
         },
     };
-
-    if (
-        Object.keys(sanitizedPicks).length === Object.keys(grantPicks).length
-    ) {
-        return selections;
-    }
-
-    return next;
 }

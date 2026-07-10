@@ -169,7 +169,7 @@
     "sourceSystem": "From system: {id}",
     "choicesIncomplete": "Fix invalid grant picks before saving.",
     "validation": {
-      "duplicatePick": "Cannot pick {ref} more than once in the same choice pool.",
+      "duplicatePick": "Cannot pick {ref} more than once across your choices.",
       "alreadyGranted": "{ref} is already granted and cannot be chosen again.",
       "invalidAbilityScore": "Invalid ability score choice: {label}."
     }
