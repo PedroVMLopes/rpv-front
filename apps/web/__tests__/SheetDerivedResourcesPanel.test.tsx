@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import type { ReactElement } from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NextIntlClientProvider } from "next-intl";
 import { SheetDerivedResourcesPanel } from "../components/characters/PlayerSheet/overview/SheetDerivedResourcesPanel";
@@ -137,10 +137,52 @@ describe("SheetDerivedResourcesPanel", () => {
         expect(screen.getByText("+5")).toBeInTheDocument();
         expect(screen.getByText("Level 1:")).toBeInTheDocument();
         expect(screen.getByText("Level 2:")).toBeInTheDocument();
-        expect(screen.getAllByRole("img")).toHaveLength(7);
+        expect(screen.getAllByRole("button", { pressed: false })).toHaveLength(7);
+
+        const castingClassLabel = screen.getByText("Casting class");
+        expect(castingClassLabel).not.toHaveClass("uppercase");
+        expect(castingClassLabel.closest("div")?.querySelector("dd")).toHaveClass(
+            "font-bold",
+            "uppercase"
+        );
     });
 
-    it("renders class resources without spellcasting header for barbarian", () => {
+    it("consumes the rightmost spell slot first and restores on click", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(<SheetDerivedResourcesPanel stored={wizardStored} />);
+
+        const level1Row = screen.getByText("Level 1:").closest("div");
+        expect(level1Row).not.toBeNull();
+
+        const level1Buttons = within(level1Row!).getAllByRole("button");
+        expect(level1Buttons).toHaveLength(4);
+
+        await user.click(level1Buttons[0]);
+
+        expect(
+            screen.getByRole("button", {
+                name: "Slot 4 of 4, used",
+                pressed: true,
+            })
+        ).toBeInTheDocument();
+
+        await user.click(
+            screen.getByRole("button", {
+                name: "Slot 4 of 4, used",
+                pressed: true,
+            })
+        );
+
+        expect(
+            screen.getByRole("button", {
+                name: "Slot 4 of 4, available",
+                pressed: false,
+            })
+        ).toBeInTheDocument();
+    });
+
+    it("renders class resources without spellcasting header for barbarian", async () => {
+        const user = userEvent.setup();
         useCharacterStore.setState({ characters: [barbarianStored] });
 
         renderWithProviders(
@@ -149,7 +191,33 @@ describe("SheetDerivedResourcesPanel", () => {
 
         expect(screen.queryByText("Casting class")).not.toBeInTheDocument();
         expect(screen.getByText("Rage Uses:")).toBeInTheDocument();
-        expect(screen.getAllByRole("img")).toHaveLength(3);
+        expect(screen.getAllByRole("button", { pressed: false })).toHaveLength(3);
+
+        const rageRow = screen.getByText("Rage Uses:").closest("div");
+        const rageButtons = within(rageRow!).getAllByRole("button");
+
+        await user.click(rageButtons[0]);
+
+        expect(
+            screen.getByRole("button", {
+                name: "Slot 3 of 3, used",
+                pressed: true,
+            })
+        ).toBeInTheDocument();
+
+        await user.click(
+            screen.getByRole("button", {
+                name: "Slot 3 of 3, used",
+                pressed: true,
+            })
+        );
+
+        expect(
+            screen.getByRole("button", {
+                name: "Slot 3 of 3, available",
+                pressed: false,
+            })
+        ).toBeInTheDocument();
     });
 
     it("returns null when there are no spell slots or derived resources", () => {

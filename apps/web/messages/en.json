@@ -363,6 +363,8 @@
     "spellAttackModifier": "Spell attack",
     "spellSlotLevelLabel": "Level {level}:",
     "resourceSlotAria": "Slot {index} of {total}",
+    "resourceSlotAvailable": "Slot {index} of {total}, available",
+    "resourceSlotUsed": "Slot {index} of {total}, used",
     "hitPoints": "Hit Points",
     "damage": "DMG",
     "heal": "HEAL",

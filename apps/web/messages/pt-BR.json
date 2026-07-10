@@ -363,6 +363,8 @@
     "spellAttackModifier": "Mod. ataque mágico",
     "spellSlotLevelLabel": "Nível {level}:",
     "resourceSlotAria": "Espaço {index} de {total}",
+    "resourceSlotAvailable": "Espaço {index} de {total}, disponível",
+    "resourceSlotUsed": "Espaço {index} de {total}, usado",
     "hitPoints": "Pontos de Vida",
     "damage": "DMG",
     "heal": "CURA",
