@@ -434,7 +434,26 @@
       "usage": "Uso",
       "ability": "Habilidade",
       "actionCost": "Tempo de conjuração",
-      "target": "Alvo"
+      "target": "Alvo",
+      "slot": "Slot",
+      "attackBonus": "Bônus de ataque",
+      "damage": "Dano",
+      "damageType": "Tipo de dano",
+      "properties": "Propriedades",
+      "versatileDamage": "Dano versátil"
+    }
+  },
+  "items": {
+    "properties": {
+      "finesse": "Acuidade",
+      "versatile": "Versátil",
+      "ranged": "À distância",
+      "two-handed": "Duas mãos"
+    },
+    "damageType": {
+      "slashing": "Cortante",
+      "piercing": "Perfurante",
+      "bludgeoning": "Concussivo"
     }
   },
   "spells": {

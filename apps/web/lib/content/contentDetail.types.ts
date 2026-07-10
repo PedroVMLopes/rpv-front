@@ -35,3 +35,8 @@ export type SpellContentModels = {
     summary: ContentSummaryModel;
     detail: ContentDetailModel;
 };
+
+export type WeaponContentModels = {
+    summary: ContentSummaryModel;
+    detail: ContentDetailModel;
+};

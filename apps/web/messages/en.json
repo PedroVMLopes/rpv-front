@@ -434,7 +434,26 @@
       "usage": "Usage",
       "ability": "Ability",
       "actionCost": "Casting time",
-      "target": "Target"
+      "target": "Target",
+      "slot": "Slot",
+      "attackBonus": "Attack bonus",
+      "damage": "Damage",
+      "damageType": "Damage type",
+      "properties": "Properties",
+      "versatileDamage": "Versatile damage"
+    }
+  },
+  "items": {
+    "properties": {
+      "finesse": "Finesse",
+      "versatile": "Versatile",
+      "ranged": "Ranged",
+      "two-handed": "Two-handed"
+    },
+    "damageType": {
+      "slashing": "Slashing",
+      "piercing": "Piercing",
+      "bludgeoning": "Bludgeoning"
     }
   },
   "spells": {

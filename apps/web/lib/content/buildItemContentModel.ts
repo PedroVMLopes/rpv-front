@@ -1,5 +1,7 @@
 /**
- * Future item cards should build roll button labels via `formatRollButtonLabel`:
+ * Consumable item cards will be implemented here in a follow-up phase.
+ * Weapon cards use `buildWeaponContentModel` instead.
+ * Roll button labels should use `formatRollButtonLabel`:
  * - attack_then_damage: `{ primary: "d20", modifier: attackModifier }`
  * - damage-only rolls: `{ primary: damageDice, modifier: damageFlat }`
  */

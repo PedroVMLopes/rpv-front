@@ -6,15 +6,13 @@ import { contentRepo } from "@/lib/content/contentRepository";
 import {
     listEquippedWeaponActions,
     listSpellActions,
-    type WeaponAction,
 } from "@/lib/character/combatActions";
 import { parseDerivedResources } from "@/lib/character/deriveResourcesFromForm";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
-import { buildWeaponAttackRollRequest } from "@/lib/roll/buildRollRequest";
 import { SpellActionCard } from "@/components/content/spells/SpellActionCard";
+import { WeaponActionCard } from "@/components/content/weapons/WeaponActionCard";
 import { useContentLocale } from "@/store/useContentLocale";
 import { useCharacterStore } from "@/store/useCharacterStore";
-import { CombatActionCard } from "../combat/CombatActionCard";
 import { useRollAssistant } from "../roll/RollAssistantProvider";
 import { ActionsCollapsible } from "./ActionsCollapsible";
 import { OverviewPanel } from "./OverviewPanel";
@@ -28,16 +26,6 @@ import {
 type ActionsSectionProps = {
     stored: StoredCharacter;
 };
-
-function openWeaponRoll(
-    weapon: WeaponAction,
-    openRollRequest: ReturnType<typeof useRollAssistant>["openRollRequest"]
-) {
-    const request = buildWeaponAttackRollRequest(weapon);
-    if (request) {
-        openRollRequest(request);
-    }
-}
 
 function groupSpellsByLevel(
     spells: ReturnType<typeof listSpellActions>["spells"]
@@ -62,7 +50,6 @@ function groupSpellsByLevel(
 
 export function ActionsSection({ stored }: ActionsSectionProps) {
     const t = useTranslations("playerSheet");
-    const tSlots = useTranslations("equipmentSlots");
     const contentLocale = useContentLocale((state) => state.contentLocale);
     const getResolvedStats = useCharacterStore((state) => state.getResolvedStats);
     const { openRollRequest } = useRollAssistant();
@@ -114,9 +101,6 @@ export function ActionsSection({ stored }: ActionsSectionProps) {
         setUsedCountByKey({});
     }, [resourceSignature]);
 
-    const slotLabel = (slotId: "main-hand" | "off-hand") =>
-        slotId === "main-hand" ? tSlots("mainHand") : tSlots("offHand");
-
     const slotAria = (index: number, total: number, isUsed: boolean) =>
         isUsed
             ? t("resourceSlotUsed", { index, total })
@@ -141,27 +125,11 @@ export function ActionsSection({ stored }: ActionsSectionProps) {
                     ) : (
                         <ul className="flex flex-col gap-2">
                             {weapons.map((weapon) => (
-                                <li key={weapon.id}>
-                                    <CombatActionCard
-                                        title={weapon.name}
-                                        badge={slotLabel(weapon.slotId)}
-                                        details={
-                                            [
-                                                weapon.toHit,
-                                                weapon.damage,
-                                            ].filter(Boolean) as string[]
-                                        }
-                                        description={weapon.description}
-                                        actionKind="roll"
-                                        onRoll={
-                                            buildWeaponAttackRollRequest(weapon)
-                                                ? () =>
-                                                      openWeaponRoll(
-                                                          weapon,
-                                                          openRollRequest
-                                                      )
-                                                : undefined
-                                        }
+                                <li key={weapon.id} className="min-w-0">
+                                    <WeaponActionCard
+                                        stored={stored}
+                                        weapon={weapon}
+                                        openRollRequest={openRollRequest}
                                     />
                                 </li>
                             ))}

@@ -344,7 +344,7 @@ describe("PlayerSheet", () => {
 
         expect(screen.getByText("Actions")).toBeInTheDocument();
         expect(screen.getByText("Longsword")).toBeInTheDocument();
-        expect(screen.getByText("Main hand")).toBeInTheDocument();
+        expect(screen.getByText(/Main hand/)).toBeInTheDocument();
         expect(screen.getByText(/1d8\+3 slashing/)).toBeInTheDocument();
         expect(screen.getByText("Equipped: Leather Armor")).toBeInTheDocument();
         expect(screen.queryByText("Fire Bolt")).not.toBeInTheDocument();

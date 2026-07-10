@@ -5,6 +5,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NextIntlClientProvider } from "next-intl";
 import { ActionsSection } from "../components/characters/PlayerSheet/overview/ActionsSection";
+import { DiceRollAssistant } from "../components/characters/PlayerSheet/roll/DiceRollAssistant";
 import { RollAssistantProvider } from "../components/characters/PlayerSheet/roll/RollAssistantProvider";
 import type { StoredCharacter } from "../lib/character/storedCharacter";
 import { useCharacterStore } from "../store/useCharacterStore";
@@ -23,6 +24,7 @@ function renderSection(stored: StoredCharacter) {
         <NextIntlClientProvider locale="en" messages={enMessages}>
             <RollAssistantProvider>
                 <ActionsSection stored={stored} />
+                <DiceRollAssistant />
             </RollAssistantProvider>
         </NextIntlClientProvider>
     );
@@ -120,6 +122,27 @@ const fighterStored: StoredCharacter = {
     systemData: {
         characterClass: "fighter",
         level: 1,
+    },
+};
+
+const fighterWithLongswordStored: StoredCharacter = {
+    ...fighterStored,
+    id: "fighter-longsword-actions-section",
+    grants: [
+        {
+            id: "class-fighter-weapon_proficiency-martial-weapons-0",
+            kind: "proficiency",
+            ref: "martial-weapons",
+            source: { type: "class", id: "fighter" },
+        },
+    ],
+    selections: {
+        characterClass: "fighter",
+        choices: {},
+        inventory: {
+            bag: [{ slug: "longsword", quantity: 1 }],
+            equipped: { "main-hand": "longsword" },
+        },
     },
 };
 
@@ -249,6 +272,9 @@ describe("ActionsSection", () => {
         renderSection(fighterStored);
 
         expect(screen.getByText("No weapons equipped")).toBeInTheDocument();
+        expect(
+            screen.queryByRole("button", { name: "Expand Longsword" })
+        ).not.toBeInTheDocument();
         expect(screen.queryByText("Casting class")).not.toBeInTheDocument();
         expect(
             screen.queryByRole("button", { name: "Expand Cantrips" })
@@ -256,5 +282,36 @@ describe("ActionsSection", () => {
         expect(
             screen.queryByRole("button", { name: "Expand Level 1:" })
         ).not.toBeInTheDocument();
+    });
+
+    it("renders equipped weapon cards with roll and detail modal", async () => {
+        const user = userEvent.setup();
+        renderSection(fighterWithLongswordStored);
+
+        expect(screen.getByText("Longsword")).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "d20 +5" })).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: "Expand Longsword" })
+        ).toBeInTheDocument();
+
+        await user.click(screen.getByRole("button", { name: "Expand Longsword" }));
+
+        const dialog = screen.getByRole("dialog");
+        expect(dialog).toBeInTheDocument();
+        expect(
+            within(dialog).getAllByText("A well-balanced martial melee weapon.")
+        ).not.toHaveLength(0);
+        expect(within(dialog).getByText("Versatile")).toBeInTheDocument();
+    });
+
+    it("opens roll assistant when weapon roll button is clicked", async () => {
+        const user = userEvent.setup();
+        renderSection(fighterWithLongswordStored);
+
+        await user.click(screen.getByRole("button", { name: "d20 +5" }));
+
+        expect(
+            screen.getByText("Longsword — attack d20 +5")
+        ).toBeInTheDocument();
     });
 });
