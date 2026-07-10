@@ -15,6 +15,7 @@ import {
     computeWeaponDamagePreview,
     formatWeaponToHit,
 } from "./combatModifiers";
+import { buildSpellcastingSystemData } from "./spellcastingContext";
 
 export const WEAPON_SLOTS = ["main-hand", "off-hand"] as const;
 export type WeaponSlotId = (typeof WEAPON_SLOTS)[number];
@@ -184,7 +185,9 @@ export function listSpellActions(
         ? locale
         : (resolvedOrLocale as Locale | undefined);
     const system = isStored ? storedOrGrants.system : "dnd";
-    const systemData = isStored ? storedOrGrants.systemData : {};
+    const spellcastingSystemData = isStored
+        ? buildSpellcastingSystemData(storedOrGrants)
+        : {};
 
     const cantrips: SpellAction[] = [];
     const spells: SpellAction[] = [];
@@ -202,7 +205,7 @@ export function listSpellActions(
                       rollProfile,
                       resolved,
                       system,
-                      systemData
+                      spellcastingSystemData
                   )
                 : {
                       attackBonus: undefined,

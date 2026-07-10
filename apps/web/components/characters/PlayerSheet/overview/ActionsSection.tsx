@@ -171,9 +171,9 @@ export function ActionsSection({ stored }: ActionsSectionProps) {
 
                 {cantrips.length > 0 ? (
                     <ActionsCollapsible title={t("cantrips")}>
-                        <ul className="flex flex-col gap-2">
+                        <ul className="grid grid-cols-2 gap-2">
                             {cantrips.map((spell) => (
-                                <li key={spell.id}>
+                                <li key={spell.id} className="min-w-0">
                                     <SpellActionCard
                                         stored={stored}
                                         spell={spell}
@@ -216,9 +216,9 @@ export function ActionsSection({ stored }: ActionsSectionProps) {
                                     {t("noSpellsAtLevel", { level: slot.level })}
                                 </p>
                             ) : (
-                                <ul className="flex flex-col gap-2">
+                                <ul className="grid grid-cols-2 gap-2">
                                     {levelSpells.map((spell) => (
-                                        <li key={spell.id}>
+                                        <li key={spell.id} className="min-w-0">
                                             <SpellActionCard
                                                 stored={stored}
                                                 spell={spell}

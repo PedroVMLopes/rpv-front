@@ -176,7 +176,7 @@ describe("ActionsSection", () => {
         expect(
             screen.getByRole("button", { name: "Expand Fire Bolt" })
         ).toBeInTheDocument();
-        expect(screen.getByRole("button", { name: "1d10" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "d20 +5" })).toBeInTheDocument();
         expect(
             screen.queryByRole("button", { name: "Use", hidden: true })
         ).not.toBeInTheDocument();

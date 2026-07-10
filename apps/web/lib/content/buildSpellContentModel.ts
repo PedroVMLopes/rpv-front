@@ -9,6 +9,7 @@ import type { SpellAction } from "@/lib/character/combatActions";
 import {
     hasSpellRollAction,
 } from "@/lib/roll/buildRollRequest";
+import { formatRollButtonLabel } from "./formatRollButtonLabel";
 import type {
     ContentDetailModel,
     ContentSummaryModel,
@@ -126,6 +127,23 @@ function consumesSpellSlot(spell: SpellAction, catalogEntry?: SpellCatalogEntry)
     return levelInt !== null && levelInt > 0;
 }
 
+function resolveSpellRollButtonLabel(
+    spell: SpellAction,
+    profile: SpellRollProfile
+): string {
+    if (profile.mode === "attack") {
+        return formatRollButtonLabel({
+            primary: "d20",
+            modifier: spell.attackModifier,
+        });
+    }
+
+    return formatRollButtonLabel({
+        primary: getSpellRollUseLabel(profile),
+        modifier: null,
+    });
+}
+
 function resolveUseActionSpec(
     spell: SpellAction,
     catalogEntry: SpellCatalogEntry | undefined,
@@ -134,7 +152,7 @@ function resolveUseActionSpec(
     if (hasSpellRollAction(spell) && spell.rollProfile) {
         return {
             kind: "roll",
-            label: getSpellUseLabel(spell.rollProfile),
+            label: resolveSpellRollButtonLabel(spell, spell.rollProfile),
         };
     }
 

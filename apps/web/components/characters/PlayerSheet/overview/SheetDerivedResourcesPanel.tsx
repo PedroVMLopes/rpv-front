@@ -7,6 +7,7 @@ import {
     computeSpellAttackBonus,
     computeSpellSaveDc,
 } from "@/lib/character/combatModifiers";
+import { buildSpellcastingSystemData } from "@/lib/character/spellcastingContext";
 import {
     getResolvedStatsForCharacter,
     storedCharacterToProps,
@@ -120,10 +121,7 @@ export function SheetDerivedResourcesPanel({
         : undefined;
     const spellcastingAbility = classEntry?.spellcastingAbility ?? null;
 
-    const spellcastingSystemData = {
-        ...stored.systemData,
-        characterClass: classSlug ?? stored.systemData.characterClass,
-    };
+    const spellcastingSystemData = buildSpellcastingSystemData(stored);
 
     const spellSaveDc = computeSpellSaveDc(
         resolved,

@@ -66,7 +66,7 @@ describe("buildSpellContentModel", () => {
         );
 
         expect(summary.badges[0]?.label).toBe("Single target");
-        expect(summary.useAction).toEqual({ kind: "roll", label: "1d10" });
+        expect(summary.useAction).toEqual({ kind: "roll", label: "d20 +5" });
         expect(detail.sections[0]?.rows.find((row) => row.labelKey === "usage")?.value).toBe(
             "At will"
         );

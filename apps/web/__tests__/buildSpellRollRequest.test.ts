@@ -124,6 +124,23 @@ describe("buildSpellRollRequest", () => {
         });
     });
 
+    it("resolves attack modifier from selections.characterClass when systemData omits class", () => {
+        const stored: StoredCharacter = {
+            ...wizardStored,
+            systemData: { level: 1 },
+        };
+
+        const { cantrips } = listSpellActions(stored, wizardStats);
+        const fireBolt = cantrips.find((spell) => spell.slug === "fire-bolt");
+
+        expect(fireBolt).toEqual(
+            expect.objectContaining({
+                attackModifier: 5,
+            })
+        );
+        expect(buildSpellAttackRollRequest(fireBolt!)).not.toBeNull();
+    });
+
     it("builds damage_only with three d6 steps for burning-hands", () => {
         const { spells } = listSpellActions(wizardStored, wizardStats);
         const burningHands = spells.find(
