@@ -41,7 +41,7 @@ export function WeaponActionCard({
 
     const formatters = useMemo<WeaponContentFormatters>(
         () => ({
-            tItems: (key) => tItems(key),
+            tItems: (key, values) => tItems(key, values),
             missingValue: "—",
         }),
         [tItems]

@@ -10,7 +10,10 @@ import type {
 } from "./contentDetail.types";
 
 export type WeaponContentFormatters = {
-    tItems: (key: string) => string;
+    tItems: (
+        key: string,
+        values?: Record<string, string>
+    ) => string;
     missingValue: string;
 };
 
@@ -70,19 +73,21 @@ function resolveUseActionSpec(
 
 function buildSummaryBadges(
     weapon: WeaponAction,
-    slotLabel: string
+    slotLabel: string,
+    formatters: WeaponContentFormatters
 ): ContentSummaryModel["badges"] {
-    const badges: ContentSummaryModel["badges"] = [
-        { label: slotLabel, variant: "muted" },
-    ];
-
-    if (weapon.toHit) {
-        badges.push({ label: weapon.toHit, variant: "muted" });
-    }
+    const badges: ContentSummaryModel["badges"] = [];
 
     if (weapon.damage) {
-        badges.push({ label: weapon.damage, variant: "muted" });
+        badges.push({
+            label: formatters.tItems("summary.damage", {
+                damage: weapon.damage,
+            }),
+            variant: "muted",
+        });
     }
+
+    badges.push({ label: slotLabel, variant: "muted" });
 
     return badges;
 }
@@ -126,7 +131,7 @@ export function buildWeaponContentModel(
         id: weapon.id,
         kind: "item",
         title: weapon.name,
-        badges: buildSummaryBadges(weapon, slotLabel),
+        badges: buildSummaryBadges(weapon, slotLabel, formatters),
         useAction,
     };
 

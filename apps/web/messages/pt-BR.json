@@ -444,6 +444,9 @@
     }
   },
   "items": {
+    "summary": {
+      "damage": "Dano: {damage}"
+    },
     "properties": {
       "finesse": "Acuidade",
       "versatile": "Versátil",

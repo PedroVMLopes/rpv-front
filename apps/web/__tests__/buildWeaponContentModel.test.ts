@@ -6,10 +6,11 @@ import {
 } from "@/lib/content/buildWeaponContentModel";
 
 const formatters: WeaponContentFormatters = {
-    tItems: (key) => {
+    tItems: (key, values) => {
         const table: Record<string, string> = {
             "properties.versatile": "Versatile",
             "damageType.slashing": "Slashing",
+            "summary.damage": `Damage: ${values?.damage ?? ""}`,
         };
 
         return table[key] ?? key;
@@ -54,9 +55,8 @@ describe("buildWeaponContentModel", () => {
 
         expect(summary.kind).toBe("item");
         expect(summary.badges.map((badge) => badge.label)).toEqual([
+            "Damage: 1d8+3 slashing",
             "Main hand",
-            "+5",
-            "1d8+3 slashing",
         ]);
         expect(summary.useAction).toEqual({ kind: "roll", label: "d20 +5" });
         expect(
