@@ -197,12 +197,67 @@ describe("PlayerSheet", () => {
         expect(screen.getByText("Arcana")).toBeInTheDocument();
         expect(screen.getByText("Dexterity")).toBeInTheDocument();
 
-        const athleticsRow = screen.getByRole("button", { name: /Athletics/i });
-        const acrobaticsRow = screen.getByRole("button", { name: /Acrobatics/i });
+        const athleticsLabel = screen.getByText("Athletics");
+        const acrobaticsLabel = screen.getByText("Acrobatics");
         expect(
-            athleticsRow.compareDocumentPosition(acrobaticsRow) &
+            athleticsLabel.compareDocumentPosition(acrobaticsLabel) &
                 Node.DOCUMENT_POSITION_FOLLOWING
         ).toBeTruthy();
+    });
+
+    it("shows ability filters only in all-skills mode and toggles them", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(<PlayerSheet stored={storedCharacter} />);
+
+        expect(
+            screen.queryByRole("tablist", { name: "Filter skills by ability" })
+        ).not.toBeInTheDocument();
+
+        await user.click(screen.getByRole("radio", { name: "All" }));
+
+        const filter = screen.getByRole("tablist", {
+            name: "Filter skills by ability",
+        });
+        expect(filter).toBeInTheDocument();
+        expect(screen.getByRole("tab", { name: "STR" })).toHaveAttribute(
+            "aria-selected",
+            "false"
+        );
+
+        await user.click(screen.getByRole("tab", { name: "DEX" }));
+        expect(screen.getByRole("tab", { name: "DEX" })).toHaveAttribute(
+            "aria-selected",
+            "true"
+        );
+        expect(screen.getByText("Stealth")).toBeInTheDocument();
+        expect(screen.getByText("Acrobatics")).toBeInTheDocument();
+        expect(screen.queryByText("Athletics")).not.toBeInTheDocument();
+        expect(screen.queryByText("Arcana")).not.toBeInTheDocument();
+
+        await user.click(screen.getByRole("tab", { name: "DEX" }));
+        expect(screen.getByRole("tab", { name: "DEX" })).toHaveAttribute(
+            "aria-selected",
+            "false"
+        );
+        expect(screen.getByText("Athletics")).toBeInTheDocument();
+        expect(screen.getByText("Arcana")).toBeInTheDocument();
+    });
+
+    it("clears ability filter when returning to proficient-only mode", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(<PlayerSheet stored={storedCharacter} />);
+
+        await user.click(screen.getByRole("radio", { name: "All" }));
+        await user.click(screen.getByRole("tab", { name: "DEX" }));
+        expect(screen.queryByText("Athletics")).not.toBeInTheDocument();
+
+        await user.click(screen.getByRole("radio", { name: "Proficient" }));
+
+        expect(
+            screen.queryByRole("tablist", { name: "Filter skills by ability" })
+        ).not.toBeInTheDocument();
+        expect(screen.getByText("Athletics")).toBeInTheDocument();
+        expect(screen.queryByText("Stealth")).not.toBeInTheDocument();
     });
 
     it("returns to proficient-only skills and saves when the toggle is disabled", async () => {

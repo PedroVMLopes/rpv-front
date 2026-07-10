@@ -311,7 +311,10 @@
       "openFab": "Abrir rolagem de dados",
       "toastResult": "d{sides}: {value}",
       "d100Tens": "Dezenas",
-      "d100Units": "Unidades"
+      "d100Units": "Unidades",
+      "contextTitle": "{label} — d20 {modifier}",
+      "contextToast": "{label}: {total}",
+      "rollAction": "Rolar {label}"
     },
     "noneYet": "Nenhum ainda",
     "levelLine": "Nível {level}",
@@ -324,6 +327,7 @@
     "showAllSkills": "Todas",
     "showProficientOnly": "Proficientes",
     "skillsListModeLabel": "Exibição de perícias",
+    "skillsAbilityFilterLabel": "Filtrar perícias por atributo",
     "weapons": "Armas",
     "armor": "Armaduras",
     "tools": "Ferramentas",

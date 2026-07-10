@@ -311,7 +311,10 @@
       "openFab": "Open dice roller",
       "toastResult": "d{sides}: {value}",
       "d100Tens": "Tens",
-      "d100Units": "Units"
+      "d100Units": "Units",
+      "contextTitle": "{label} — d20 {modifier}",
+      "contextToast": "{label}: {total}",
+      "rollAction": "Roll {label}"
     },
     "noneYet": "None yet",
     "levelLine": "Level {level}",
@@ -324,6 +327,7 @@
     "showAllSkills": "All",
     "showProficientOnly": "Proficient",
     "skillsListModeLabel": "Skills list display",
+    "skillsAbilityFilterLabel": "Filter skills by ability",
     "weapons": "Weapons",
     "armor": "Armor",
     "tools": "Tools",

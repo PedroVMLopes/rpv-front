@@ -1,10 +1,13 @@
 /**
  * @jest-environment jsdom
  */
+import type { ComponentProps, ReactNode } from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NextIntlClientProvider } from "next-intl";
 import { DiceRollAssistant } from "../components/characters/PlayerSheet/roll/DiceRollAssistant";
+import { RollAssistantProvider, useRollAssistant } from "../components/characters/PlayerSheet/roll/RollAssistantProvider";
+import type { D20TestRequest } from "../lib/roll/rollRequest.types";
 import enMessages from "../messages/en.json";
 
 const toastMock = jest.fn();
@@ -13,11 +16,24 @@ jest.mock("sonner", () => ({
     toast: (...args: unknown[]) => toastMock(...args),
 }));
 
-function renderAssistant() {
+function renderAssistant(children?: ReactNode) {
     return render(
         <NextIntlClientProvider locale="en" messages={enMessages}>
-            <DiceRollAssistant />
+            <RollAssistantProvider>
+                {children}
+                <DiceRollAssistant />
+            </RollAssistantProvider>
         </NextIntlClientProvider>
+    );
+}
+
+function ContextRollTrigger({ request }: { request: D20TestRequest }) {
+    const { openRollRequest } = useRollAssistant();
+
+    return (
+        <button type="button" onClick={() => openRollRequest(request)}>
+            Open contextual roll
+        </button>
     );
 }
 
@@ -146,5 +162,49 @@ describe("DiceRollAssistant", () => {
         await user.click(screen.getByRole("button", { name: "0" }));
 
         expect(toastMock).toHaveBeenCalledWith("d100: 100");
+    });
+
+    it("opens directly on d20 for contextual requests", async () => {
+        const user = userEvent.setup();
+
+        renderAssistant(
+            <ContextRollTrigger
+                request={{
+                    kind: "d20_test",
+                    id: "skill:athletics",
+                    label: "Athletics",
+                    die: 20,
+                    modifier: 5,
+                }}
+            />
+        );
+
+        await user.click(screen.getByRole("button", { name: "Open contextual roll" }));
+
+        expect(screen.getByText("Athletics — d20 +5")).toBeInTheDocument();
+        expect(
+            screen.queryByText("Select the die you want to roll")
+        ).not.toBeInTheDocument();
+    });
+
+    it("shows contextual toast with modifier applied", async () => {
+        const user = userEvent.setup();
+
+        renderAssistant(
+            <ContextRollTrigger
+                request={{
+                    kind: "d20_test",
+                    id: "skill:athletics",
+                    label: "Athletics",
+                    die: 20,
+                    modifier: 5,
+                }}
+            />
+        );
+
+        await user.click(screen.getByRole("button", { name: "Open contextual roll" }));
+        await user.click(screen.getByRole("button", { name: "14" }));
+
+        expect(toastMock).toHaveBeenCalledWith("Athletics: 19");
     });
 });
