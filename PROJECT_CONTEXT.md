@@ -62,15 +62,20 @@ Future HTTP contract: [`docs/API_INVENTORY.md`](docs/API_INVENTORY.md) (deferred
 
 Classes define optional **`featuresByLevel`** in [`*.dnd.ts`](packages/content/src/curation/classGrants.dnd.ts). [`resolveLevelFeatures`](packages/content/src/grant/levelFeatures.ts) accumulates all blocks where `feature.level <= characterLevel`.
 
-### Creation UX (level presets)
+### Creation UX
 
-On the **Class** step, level is set via **`CharacterLevelSelector`**: **Lv 1**, **Lv 3**, or **Custom** (numeric 1–20). Only `level` is persisted; the preset is inferred when editing.
+**Current implementation:** flat 5-step wizard (race → class → abilities → background → equipment) with free step navigation and `PendingDecisionsPanel` on the equipment step. Grant picks use `<select>` dropdowns in `CharacterGrantPickers`.
 
+**Target specification:** a dynamic, content-rich wizard (selection cards, spell/item modals, per-level progression, abilities step before finalize) is documented in [`docs/CHARACTER_CREATION.md`](docs/CHARACTER_CREATION.md). New work on character creation should follow that doc unless explicitly changing the plan.
+
+Until the redesign lands:
+
+- On the **Class** step, level is set via **`CharacterLevelSelector`**: **Lv 1**, **Lv 3**, or **Custom** (numeric 1–20). Only `level` is persisted; the preset is inferred when editing.
 - Class grants and pickers use `getClassGrantSourcesForLevel(class, level)` for the selected level.
 - The class step shows **fixed proficiencies/resources**, **class choices** (pickers only), and a **starting equipment teaser** linking to the Equipment step (actual picks stay in `StartingEquipmentField`).
 - **Ability scores:** L1 defaults to **Standard Array**; Lv > 1 defaults to **Manual** with a migration hint (valid score = **Total**). Preview hides Base when value is the default (10) and Racial when bonus is 0.
 
-Creating a character at **level N** includes pending choices from L1 through N (scoped by the level preset). Each `choose > 0` grant becomes one or more picker slots.
+Creating a character at **level N** includes pending choices from L1 through N (scoped by the level preset). Each `choose > 0` grant becomes one or more picker slots. The target UX splits these choices into **dedicated sub-steps per level** rather than grouping them on a single screen — see the spec.
 
 ### Grant pick keys
 
@@ -203,6 +208,7 @@ Web tests are the primary integration coverage for the character pipeline.
 
 ## Next steps
 
+- **Criação de personagem (wizard rico)** — see [docs/CHARACTER_CREATION.md](docs/CHARACTER_CREATION.md) (dynamic steps, spell/item UI, per-level progression, abilities step).
 - **Ficha de jogador e auxiliar de rolagens** — see [docs/FICHA_JOGADOR.md](docs/FICHA_JOGADOR.md) (player sheet full-page, roll assistant, phased UX roadmap).
 - Extend spell catalog beyond wizard L1 toward full SRD coverage.
 - Extend class progression beyond L5 toward L20.
