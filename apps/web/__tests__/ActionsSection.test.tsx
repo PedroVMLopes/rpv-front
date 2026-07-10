@@ -1,0 +1,213 @@
+/**
+ * @jest-environment jsdom
+ */
+import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { NextIntlClientProvider } from "next-intl";
+import { ActionsSection } from "../components/characters/PlayerSheet/overview/ActionsSection";
+import { RollAssistantProvider } from "../components/characters/PlayerSheet/roll/RollAssistantProvider";
+import type { StoredCharacter } from "../lib/character/storedCharacter";
+import { useCharacterStore } from "../store/useCharacterStore";
+import enMessages from "../messages/en.json";
+
+function renderSection(stored: StoredCharacter) {
+    useCharacterStore.setState({ characters: [stored] });
+
+    return render(
+        <NextIntlClientProvider locale="en" messages={enMessages}>
+            <RollAssistantProvider>
+                <ActionsSection stored={stored} />
+            </RollAssistantProvider>
+        </NextIntlClientProvider>
+    );
+}
+
+const wizardStored: StoredCharacter = {
+    id: "wizard-actions-section",
+    schemaVersion: 1,
+    type: "player",
+    system: "dnd",
+    language: "en",
+    name: "Wizard",
+    baseStats: {
+        strength: 8,
+        dexterity: 14,
+        constitution: 12,
+        intelligence: 16,
+        wisdom: 10,
+        charisma: 10,
+        armorClass: 12,
+        hitPoints: 8,
+    },
+    modifiers: [],
+    grants: [
+        {
+            id: "class-wizard-spell-fire-bolt",
+            kind: "spell",
+            ref: "fire-bolt",
+            source: { type: "class", id: "wizard" },
+            name: "Fire Bolt",
+        },
+        {
+            id: "class-wizard-spell-burning-hands",
+            kind: "spell",
+            ref: "burning-hands",
+            source: { type: "class", id: "wizard" },
+            name: "Burning Hands",
+        },
+    ],
+    selections: {
+        characterClass: "wizard",
+        choices: {},
+        inventory: { bag: [], equipped: {} },
+    },
+    resources: {
+        hp: 8,
+        "spell-slots-1": 4,
+        "spell-slots-2": 3,
+    },
+    systemData: {
+        characterClass: "wizard",
+        level: 3,
+    },
+};
+
+const fighterStored: StoredCharacter = {
+    id: "fighter-actions-section",
+    schemaVersion: 1,
+    type: "player",
+    system: "dnd",
+    language: "en",
+    name: "Fighter",
+    baseStats: {
+        strength: 16,
+        dexterity: 14,
+        constitution: 12,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 8,
+        armorClass: 16,
+        hitPoints: 12,
+    },
+    modifiers: [],
+    grants: [],
+    selections: {
+        characterClass: "fighter",
+        choices: {},
+        inventory: { bag: [], equipped: {} },
+    },
+    resources: { hp: 12 },
+    systemData: {
+        characterClass: "fighter",
+        level: 1,
+    },
+};
+
+describe("ActionsSection", () => {
+    beforeEach(() => {
+        useCharacterStore.setState({ characters: [wizardStored] });
+    });
+
+    it("shows casting stats without spell slot rows in the top panel for a wizard", () => {
+        renderSection(wizardStored);
+
+        expect(screen.getByText("Casting class")).toBeInTheDocument();
+
+        const topPanel = screen.getByText("Casting class").closest("div.rounded-xl");
+        expect(topPanel).not.toBeNull();
+        expect(
+            within(topPanel!).queryByRole("button", { name: /Slot/i })
+        ).not.toBeInTheDocument();
+    });
+
+    it("renders spell level collapsibles with slot squares in the header", () => {
+        renderSection(wizardStored);
+
+        expect(
+            screen.getByRole("button", { name: "Expand Level 1:" })
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: "Expand Level 2:" })
+        ).toBeInTheDocument();
+
+        const level1Trigger = screen.getByRole("button", {
+            name: "Expand Level 1:",
+        });
+        const level1Header = level1Trigger.closest("div")?.parentElement;
+        expect(level1Header).not.toBeNull();
+        expect(
+            within(level1Header!).getAllByRole("button", { pressed: false })
+        ).toHaveLength(4);
+    });
+
+    it("keeps cantrips collapsed by default and shows them after expanding", async () => {
+        const user = userEvent.setup();
+        renderSection(wizardStored);
+
+        expect(
+            screen.getByRole("button", { name: "Expand Cantrips" })
+        ).toHaveAttribute("aria-expanded", "false");
+        expect(screen.queryByText("Fire Bolt")).not.toBeInTheDocument();
+
+        await user.click(screen.getByRole("button", { name: "Expand Cantrips" }));
+
+        expect(screen.getByText("Fire Bolt")).toBeInTheDocument();
+    });
+
+    it("groups leveled spells inside the matching level collapsible", async () => {
+        const user = userEvent.setup();
+        renderSection(wizardStored);
+
+        expect(screen.queryByText("Burning Hands")).not.toBeInTheDocument();
+
+        await user.click(screen.getByRole("button", { name: "Expand Level 1:" }));
+
+        expect(screen.getByText("Burning Hands")).toBeInTheDocument();
+    });
+
+    it("shows empty level message when a slot level has no spells", async () => {
+        const user = userEvent.setup();
+        renderSection(wizardStored);
+
+        await user.click(screen.getByRole("button", { name: "Expand Level 2:" }));
+
+        expect(
+            screen.getByText("No spells at this level.")
+        ).toBeInTheDocument();
+    });
+
+    it("consumes spell slots from the right in the level header", async () => {
+        const user = userEvent.setup();
+        renderSection(wizardStored);
+
+        const level1Trigger = screen.getByRole("button", {
+            name: "Expand Level 1:",
+        });
+        const level1Header = level1Trigger.closest("div")?.parentElement;
+        const level1Buttons = within(level1Header!).getAllByRole("button", {
+            pressed: false,
+        });
+
+        await user.click(level1Buttons[0]);
+
+        expect(
+            screen.getByRole("button", {
+                name: "Slot 4 of 4, used",
+                pressed: true,
+            })
+        ).toBeInTheDocument();
+    });
+
+    it("shows weapons empty state and hides spell sections for a non-caster", () => {
+        renderSection(fighterStored);
+
+        expect(screen.getByText("No weapons equipped")).toBeInTheDocument();
+        expect(screen.queryByText("Casting class")).not.toBeInTheDocument();
+        expect(
+            screen.queryByRole("button", { name: "Expand Cantrips" })
+        ).not.toBeInTheDocument();
+        expect(
+            screen.queryByRole("button", { name: "Expand Level 1:" })
+        ).not.toBeInTheDocument();
+    });
+});

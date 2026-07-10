@@ -167,6 +167,18 @@ describe("SheetDerivedResourcesPanel", () => {
         expect(screen.getByText("+5")).toBeInTheDocument();
     });
 
+    it("hides spell slot rows but keeps casting stats when hideSpellSlots is set", () => {
+        renderWithProviders(
+            <SheetDerivedResourcesPanel stored={wizardStored} hideSpellSlots />
+        );
+
+        expect(screen.getByText("Casting class")).toBeInTheDocument();
+        expect(screen.getByText("Spell save DC")).toBeInTheDocument();
+        expect(screen.queryByText("Level 1:")).not.toBeInTheDocument();
+        expect(screen.queryByText("Level 2:")).not.toBeInTheDocument();
+        expect(screen.queryByRole("button", { pressed: false })).not.toBeInTheDocument();
+    });
+
     it("consumes the rightmost spell slot first and restores on click", async () => {
         const user = userEvent.setup();
         renderWithProviders(<SheetDerivedResourcesPanel stored={wizardStored} />);

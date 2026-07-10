@@ -19,85 +19,11 @@ import { useCharacterStore } from "@/store/useCharacterStore";
 import { useContentLocale } from "@/store/useContentLocale";
 import { cn } from "@/lib/utils";
 import { sheetInset } from "../playerSheetSurfaces";
-
-type UsedCountByKey = Record<string, number>;
-
-function isSlotUsed(index: number, total: number, usedCount: number): boolean {
-    return index >= total - usedCount;
-}
-
-function toggleSlotCount(
-    index: number,
-    total: number,
-    usedCount: number
-): number {
-    if (isSlotUsed(index, total, usedCount)) {
-        return Math.max(0, usedCount - 1);
-    }
-
-    return Math.min(total, usedCount + 1);
-}
-
-function ResourceSquareButton({
-    isUsed,
-    ariaLabel,
-    onClick,
-}: {
-    isUsed: boolean;
-    ariaLabel: string;
-    onClick: () => void;
-}) {
-    return (
-        <button
-            type="button"
-            aria-pressed={isUsed}
-            aria-label={ariaLabel}
-            onClick={onClick}
-            className={cn(
-                "size-6 shrink-0 rounded-sm border border-primary bg-primary transition-opacity",
-                isUsed && "opacity-25"
-            )}
-        />
-    );
-}
-
-function ResourceSquareRow({
-    rowKey,
-    label,
-    count,
-    usedCount,
-    onToggle,
-    slotAriaLabel,
-}: {
-    rowKey: string;
-    label: string;
-    count: number;
-    usedCount: number;
-    onToggle: (index: number) => void;
-    slotAriaLabel: (index: number, total: number, isUsed: boolean) => string;
-}) {
-    return (
-        <div className="flex flex-wrap items-center gap-2">
-            <span className="min-w-20 shrink-0 text-xs font-semibold text-muted-foreground">
-                {label}
-            </span>
-            <div className="flex flex-wrap gap-1">
-                {Array.from({ length: count }, (_, index) => {
-                    const isUsed = isSlotUsed(index, count, usedCount);
-
-                    return (
-                        <ResourceSquareButton
-                            key={`${rowKey}:${index}`}
-                            isUsed={isUsed}
-                            ariaLabel={slotAriaLabel(index + 1, count, isUsed)}
-                            onClick={() => onToggle(index)}
-                        />
-                    );
-                })}
-            </div>
-        </div>
-    );
-}
+import {
+    ResourceSquareRow,
+    updateUsedCountByKey,
+    type UsedCountByKey,
+} from "./sheetResourceSquares";
 
 function CastingStatRow({ label, value }: { label: string; value: string }) {
     return (
@@ -144,10 +70,12 @@ function CastingStatsBlock({
 
 type SheetDerivedResourcesPanelProps = {
     stored: StoredCharacter;
+    hideSpellSlots?: boolean;
 };
 
 export function SheetDerivedResourcesPanel({
     stored,
+    hideSpellSlots = false,
 }: SheetDerivedResourcesPanelProps) {
     const t = useTranslations("playerSheet");
     const tAbilities = useTranslations("abilities");
@@ -222,18 +150,12 @@ export function SheetDerivedResourcesPanel({
         spellcastingAbility !== null;
 
     const handleToggle = (rowKey: string, index: number, total: number) => {
-        setUsedCountByKey((current) => {
-            const usedCount = current[rowKey] ?? 0;
-            const nextCount = toggleSlotCount(index, total, usedCount);
-
-            if (nextCount === 0) {
-                const { [rowKey]: _removed, ...rest } = current;
-                return rest;
-            }
-
-            return { ...current, [rowKey]: nextCount };
-        });
+        setUsedCountByKey((current) =>
+            updateUsedCountByKey(current, rowKey, index, total)
+        );
     };
+
+    const showSpellSlotRows = spellSlots.length > 0 && !hideSpellSlots;
 
     return (
         <div className={cn("flex flex-col gap-3 rounded-xl border p-3", sheetInset)}>
@@ -252,23 +174,25 @@ export function SheetDerivedResourcesPanel({
                         />
                     ) : null}
 
-                    <div className="flex flex-col gap-2">
-                        {spellSlots.map((slot) => (
-                            <ResourceSquareRow
-                                key={slot.ref}
-                                rowKey={slot.ref}
-                                label={t("spellSlotLevelLabel", {
-                                    level: slot.level,
-                                })}
-                                count={slot.count}
-                                usedCount={usedCountByKey[slot.ref] ?? 0}
-                                onToggle={(index) =>
-                                    handleToggle(slot.ref, index, slot.count)
-                                }
-                                slotAriaLabel={slotAria}
-                            />
-                        ))}
-                    </div>
+                    {showSpellSlotRows ? (
+                        <div className="flex flex-col gap-2">
+                            {spellSlots.map((slot) => (
+                                <ResourceSquareRow
+                                    key={slot.ref}
+                                    rowKey={slot.ref}
+                                    label={t("spellSlotLevelLabel", {
+                                        level: slot.level,
+                                    })}
+                                    count={slot.count}
+                                    usedCount={usedCountByKey[slot.ref] ?? 0}
+                                    onToggle={(index) =>
+                                        handleToggle(slot.ref, index, slot.count)
+                                    }
+                                    slotAriaLabel={slotAria}
+                                />
+                            ))}
+                        </div>
+                    ) : null}
                 </div>
             ) : null}
 
