@@ -181,6 +181,46 @@ describe("SheetDerivedResourcesPanel", () => {
         ).toBeInTheDocument();
     });
 
+    it("restores spell slots from the left when clicking any used slot", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(<SheetDerivedResourcesPanel stored={wizardStored} />);
+
+        const level1Row = screen.getByText("Level 1:").closest("div");
+        const level1Buttons = within(level1Row!).getAllByRole("button");
+
+        for (let i = 0; i < 4; i++) {
+            await user.click(level1Buttons[0]);
+        }
+
+        expect(
+            within(level1Row!).getAllByRole("button", { pressed: true })
+        ).toHaveLength(4);
+
+        await user.click(level1Buttons[3]);
+
+        expect(
+            screen.getByRole("button", {
+                name: "Slot 1 of 4, available",
+                pressed: false,
+            })
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", {
+                name: "Slot 4 of 4, used",
+                pressed: true,
+            })
+        ).toBeInTheDocument();
+
+        await user.click(level1Buttons[3]);
+
+        expect(
+            screen.getByRole("button", {
+                name: "Slot 2 of 4, available",
+                pressed: false,
+            })
+        ).toBeInTheDocument();
+    });
+
     it("renders class resources without spellcasting header for barbarian", async () => {
         const user = userEvent.setup();
         useCharacterStore.setState({ characters: [barbarianStored] });

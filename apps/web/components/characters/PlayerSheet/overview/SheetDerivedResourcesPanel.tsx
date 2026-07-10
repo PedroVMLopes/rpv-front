@@ -16,26 +16,22 @@ import { useContentLocale } from "@/store/useContentLocale";
 import { cn } from "@/lib/utils";
 import { sheetInset } from "../playerSheetSurfaces";
 
-type UsedSlotsByKey = Record<string, Set<number>>;
+type UsedCountByKey = Record<string, number>;
 
-function toggleSlot(
+function isSlotUsed(index: number, total: number, usedCount: number): boolean {
+    return index >= total - usedCount;
+}
+
+function toggleSlotCount(
     index: number,
     total: number,
-    used: Set<number>
-): Set<number> {
-    if (used.has(index)) {
-        const next = new Set(used);
-        next.delete(index);
-        return next;
+    usedCount: number
+): number {
+    if (isSlotUsed(index, total, usedCount)) {
+        return Math.max(0, usedCount - 1);
     }
 
-    for (let i = total - 1; i >= 0; i--) {
-        if (!used.has(i)) {
-            return new Set([...used, i]);
-        }
-    }
-
-    return used;
+    return Math.min(total, usedCount + 1);
 }
 
 function ResourceSquareButton({
@@ -65,14 +61,14 @@ function ResourceSquareRow({
     rowKey,
     label,
     count,
-    usedIndices,
+    usedCount,
     onToggle,
     slotAriaLabel,
 }: {
     rowKey: string;
     label: string;
     count: number;
-    usedIndices: Set<number>;
+    usedCount: number;
     onToggle: (index: number) => void;
     slotAriaLabel: (index: number, total: number, isUsed: boolean) => string;
 }) {
@@ -83,7 +79,7 @@ function ResourceSquareRow({
             </span>
             <div className="flex flex-wrap gap-1">
                 {Array.from({ length: count }, (_, index) => {
-                    const isUsed = usedIndices.has(index);
+                    const isUsed = isSlotUsed(index, count, usedCount);
 
                     return (
                         <ResourceSquareButton
@@ -175,10 +171,10 @@ export function SheetDerivedResourcesPanel({
         [classResources, spellSlots, stored.id]
     );
 
-    const [usedByKey, setUsedByKey] = useState<UsedSlotsByKey>({});
+    const [usedCountByKey, setUsedCountByKey] = useState<UsedCountByKey>({});
 
     useEffect(() => {
-        setUsedByKey({});
+        setUsedCountByKey({});
     }, [resourceSignature]);
 
     const hasContent = spellSlots.length > 0 || classResources.length > 0;
@@ -216,16 +212,16 @@ export function SheetDerivedResourcesPanel({
         spellcastingAbility !== null;
 
     const handleToggle = (rowKey: string, index: number, total: number) => {
-        setUsedByKey((current) => {
-            const used = current[rowKey] ?? new Set<number>();
-            const nextUsed = toggleSlot(index, total, used);
+        setUsedCountByKey((current) => {
+            const usedCount = current[rowKey] ?? 0;
+            const nextCount = toggleSlotCount(index, total, usedCount);
 
-            if (nextUsed.size === 0) {
+            if (nextCount === 0) {
                 const { [rowKey]: _removed, ...rest } = current;
                 return rest;
             }
 
-            return { ...current, [rowKey]: nextUsed };
+            return { ...current, [rowKey]: nextCount };
         });
     };
 
@@ -259,7 +255,7 @@ export function SheetDerivedResourcesPanel({
                                     level: slot.level,
                                 })}
                                 count={slot.count}
-                                usedIndices={usedByKey[slot.ref] ?? new Set()}
+                                usedCount={usedCountByKey[slot.ref] ?? 0}
                                 onToggle={(index) =>
                                     handleToggle(slot.ref, index, slot.count)
                                 }
@@ -278,7 +274,7 @@ export function SheetDerivedResourcesPanel({
                             rowKey={resource.ref}
                             label={`${formatLabel(resource.ref)}:`}
                             count={resource.count}
-                            usedIndices={usedByKey[resource.ref] ?? new Set()}
+                            usedCount={usedCountByKey[resource.ref] ?? 0}
                             onToggle={(index) =>
                                 handleToggle(resource.ref, index, resource.count)
                             }
