@@ -339,6 +339,25 @@
       "equipmentLink": "Ir para Equipamento Inicial",
       "equipmentLinkLocked": "Complete os passos anteriores para configurar o equipamento inicial.",
       "equipmentPreviewEquipment": "Equipamento"
+    },
+    "selection": {
+      "expandDetails": "Ver detalhes",
+      "deselect": "Limpar seleção",
+      "deferredChoice": "Você escolherá {count} depois em {stepLabel} ({label})",
+      "deferredChoiceGeneric": "Você fará esta escolha em um passo posterior",
+      "goToStep": "Escolher {stepLabel} →"
+    },
+    "reset": {
+      "title": "Alterar {field}?",
+      "body": "Isso limpará escolhas que dependem do seu {field} atual, incluindo subclasse, magias, perícias e outras escolhas de grants.",
+      "confirm": "Alterar mesmo assim",
+      "cancel": "Manter atual"
+    },
+    "spellPick": {
+      "slotLabel": "{label} ({current}/{total})",
+      "selected": "Selecionado",
+      "available": "Disponível",
+      "unavailable": "Indisponível"
     }
   },
   "playerSheet": {
@@ -476,7 +495,12 @@
       "damage": "Dano",
       "damageType": "Tipo de dano",
       "properties": "Propriedades",
-      "versatileDamage": "Dano versátil"
+      "versatileDamage": "Dano versátil",
+      "hitDie": "Dado de vida",
+      "subclassLevel": "Subclasse no nível",
+      "size": "Tamanho",
+      "speed": "Deslocamento",
+      "abilityScores": "Aumento de atributo"
     }
   },
   "items": {

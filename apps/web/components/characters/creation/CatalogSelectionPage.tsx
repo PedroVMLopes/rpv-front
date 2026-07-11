@@ -1,0 +1,169 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import type { UseFormReturn } from "react-hook-form";
+import type { Locale } from "@rpv/domain";
+import type { ModifierSource } from "@rpv/domain";
+import type {
+    CatalogFormField,
+    CatalogSelectionContext,
+    CatalogSelectionEntry,
+    CatalogSelectionKind,
+} from "@/lib/character/creation/catalogSelection.types";
+import { getCatalogSelectionKindForField } from "@/lib/character/creation/catalogSelection.types";
+import { buildCatalogDetailModel } from "@/lib/character/creation/buildCatalogDetailModel";
+import { getCatalogSelectionSource } from "@/lib/character/creation/sources";
+import {
+    mapFormFieldToGuardedField,
+    useSelectionChangeGuard,
+    type PendingSelectionChange,
+} from "@/lib/character/creation/useSelectionChangeGuard";
+import { CatalogSelectionCard } from "@/components/characters/creation/CatalogSelectionCard";
+import { CatalogSelectionGrid } from "@/components/characters/creation/CatalogSelectionGrid";
+import { CatalogDetailModal } from "@/components/characters/creation/CatalogDetailModal";
+import { SelectionChangeConfirmDialog } from "@/components/characters/creation/SelectionChangeConfirmDialog";
+import type { SystemKey } from "@/presets";
+import { readLevelFromForm } from "@/lib/character/level";
+
+type SelectionGuard = {
+    pending: PendingSelectionChange | null;
+    requestChange: ReturnType<
+        typeof useSelectionChangeGuard
+    >["requestChange"];
+    confirm: () => void;
+    cancel: () => void;
+};
+
+type CatalogSelectionPageProps = {
+    formField: CatalogFormField;
+    form: UseFormReturn<Record<string, unknown>>;
+    contentLocale: Locale;
+    system: SystemKey;
+    context?: CatalogSelectionContext;
+    disabled?: boolean;
+    guard?: SelectionGuard;
+};
+
+function buildSourceForField(
+    formField: CatalogFormField,
+    entry: CatalogSelectionEntry
+): ModifierSource {
+    switch (formField) {
+        case "race":
+            return { type: "race", id: entry.slug };
+        case "subrace":
+            return { type: "race", id: entry.slug };
+        case "characterClass":
+            return { type: "class", id: entry.slug };
+        case "subclass":
+            return { type: "subclass", id: entry.slug };
+        case "background":
+            return { type: "background", id: entry.slug };
+    }
+}
+
+export function CatalogSelectionPage({
+    formField,
+    form,
+    contentLocale,
+    system,
+    context = {},
+    disabled = false,
+    guard: externalGuard,
+}: CatalogSelectionPageProps) {
+    const kind: CatalogSelectionKind = getCatalogSelectionKindForField(formField);
+    const catalogSource = getCatalogSelectionSource(system, kind);
+    const internalGuard = useSelectionChangeGuard(form);
+    const { pending, requestChange, confirm, cancel } =
+        externalGuard ?? internalGuard;
+
+    const selectedSlug = form.watch(formField);
+    const resolvedContext: CatalogSelectionContext = {
+        ...context,
+        characterLevel:
+            context.characterLevel ?? readLevelFromForm(form.getValues()),
+    };
+
+    const entries = useMemo(
+        () => catalogSource.list(contentLocale, resolvedContext),
+        [catalogSource, contentLocale, resolvedContext]
+    );
+
+    const [expandedEntry, setExpandedEntry] =
+        useState<CatalogSelectionEntry | null>(null);
+
+    function applySelection(nextSlug: string) {
+        form.setValue(formField, nextSlug, {
+            shouldDirty: true,
+            shouldValidate: true,
+        });
+    }
+
+    function handleToggle(entry: CatalogSelectionEntry) {
+        if (disabled) {
+            return;
+        }
+
+        const current =
+            typeof selectedSlug === "string" ? selectedSlug : "";
+        const nextSlug = current === entry.slug ? "" : entry.slug;
+
+        if (nextSlug === current) {
+            return;
+        }
+
+        const guardedField = mapFormFieldToGuardedField(formField);
+
+        if (!guardedField) {
+            applySelection(nextSlug);
+            return;
+        }
+
+        requestChange(guardedField, () => applySelection(nextSlug));
+    }
+
+    const expandedModel = expandedEntry
+        ? buildCatalogDetailModel(expandedEntry, kind)
+        : null;
+
+    return (
+        <>
+            <CatalogSelectionGrid>
+                {entries.map((entry) => (
+                    <CatalogSelectionCard
+                        key={entry.slug}
+                        entry={entry}
+                        selected={selectedSlug === entry.slug}
+                        contentLocale={contentLocale}
+                        system={system}
+                        source={buildSourceForField(formField, entry)}
+                        onToggle={() => handleToggle(entry)}
+                        onExpand={() => setExpandedEntry(entry)}
+                    />
+                ))}
+            </CatalogSelectionGrid>
+
+            {expandedModel && expandedEntry ? (
+                <CatalogDetailModal
+                    model={expandedModel}
+                    open
+                    onOpenChange={(open) => {
+                        if (!open) {
+                            setExpandedEntry(null);
+                        }
+                    }}
+                    contentLocale={contentLocale}
+                    system={system}
+                    source={buildSourceForField(formField, expandedEntry)}
+                />
+            ) : null}
+
+            <SelectionChangeConfirmDialog
+                field={pending?.field ?? null}
+                open={Boolean(pending) && !externalGuard}
+                onConfirm={confirm}
+                onCancel={cancel}
+            />
+        </>
+    );
+}

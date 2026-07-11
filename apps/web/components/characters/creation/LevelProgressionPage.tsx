@@ -4,32 +4,35 @@ import { useMemo } from "react";
 import { useWatch, type UseFormReturn } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import type { Locale } from "@rpv/domain";
+import type { Grant } from "@rpv/content";
 import {
-    fixedGrantsToCharacterGrants,
     getClassGrantSourcesForLevel,
     getSubclassGrantSourcesForLevel,
 } from "@rpv/content";
 import type { CreationStepSourceFilter } from "@/lib/character/creationSteps/creationStep.types";
-import {
-    formatClassStepGrantLabel,
-} from "@/lib/character/classStepDisplay";
-import { formatResourceRefLabel } from "@/lib/character/resourceLabels";
+import { GrantPreviewList } from "@/components/characters/creation/GrantPreviewList";
+import type { SystemKey } from "@/presets";
 
 type LevelProgressionPageProps = {
     form: UseFormReturn<Record<string, unknown>>;
     contentLocale: Locale;
+    system: SystemKey;
     sourceFilter?: CreationStepSourceFilter;
     title: string;
+    pickStepIds?: string[];
+    onStepSelect?: (stepId: string) => void;
 };
 
 export function LevelProgressionPage({
     form,
     contentLocale,
+    system,
     sourceFilter,
     title,
+    pickStepIds = [],
+    onStepSelect,
 }: LevelProgressionPageProps) {
-    const tAbilities = useTranslations("abilities");
-    const tResources = useTranslations("classResources");
+    const t = useTranslations("characterCreation");
     const { control } = form;
 
     const classSlug = useWatch({ control, name: "characterClass" });
@@ -37,8 +40,12 @@ export function LevelProgressionPage({
     const level = sourceFilter?.level ?? 1;
     const sourceTypes = sourceFilter?.sourceTypes ?? ["class"];
 
-    const displayGrants = useMemo(() => {
-        const grants: ReturnType<typeof fixedGrantsToCharacterGrants> = [];
+    const previewSections = useMemo(() => {
+        const sections: Array<{
+            source: { type: "class" | "subclass"; id: string };
+            grants: Grant[];
+            featureLevel?: number;
+        }> = [];
 
         if (
             sourceTypes.includes("class") &&
@@ -49,28 +56,18 @@ export function LevelProgressionPage({
                 const blockLevel = block.featureLevel;
 
                 if (level === 1) {
-                    if (
-                        blockLevel !== undefined &&
-                        blockLevel !== 1
-                    ) {
+                    if (blockLevel !== undefined && blockLevel !== 1) {
                         continue;
                     }
                 } else if (blockLevel !== level) {
                     continue;
                 }
 
-                const fixed = block.grants.filter((grant) => grant.choose === 0);
-
-                grants.push(
-                    ...fixedGrantsToCharacterGrants(
-                        fixed,
-                        {
-                            type: "class",
-                            id: classSlug,
-                        },
-                        { featureLevel: block.featureLevel }
-                    )
-                );
+                sections.push({
+                    source: { type: "class", id: classSlug },
+                    grants: block.grants,
+                    featureLevel: block.featureLevel,
+                });
             }
         }
 
@@ -87,45 +84,67 @@ export function LevelProgressionPage({
                     continue;
                 }
 
-                const fixed = block.grants.filter((grant) => grant.choose === 0);
-
-                grants.push(
-                    ...fixedGrantsToCharacterGrants(fixed, {
-                        type: "subclass",
-                        id: subclassSlug,
-                    }, { featureLevel: block.featureLevel })
-                );
+                sections.push({
+                    source: { type: "subclass", id: subclassSlug },
+                    grants: block.grants,
+                    featureLevel: block.featureLevel,
+                });
             }
         }
 
-        return grants;
+        return sections;
     }, [classSlug, subclassSlug, level, sourceTypes]);
+
+    const hasGrants = previewSections.some((section) => section.grants.length > 0);
 
     return (
         <div className="flex flex-col gap-4">
             <h2 className="text-lg font-bold">{title}</h2>
 
-            {displayGrants.length === 0 ? (
+            {!hasGrants ? (
                 <p className="text-sm text-muted-foreground">
                     No automatic gains at this level.
                 </p>
             ) : (
-                <ul className="flex flex-col gap-2">
-                    {displayGrants.map((grant) => (
-                        <li
-                            key={grant.id}
-                            className="rounded-md border bg-card px-3 py-2 text-sm"
-                        >
-                            {formatClassStepGrantLabel(
-                                grant,
-                                contentLocale,
-                                (ref) => tAbilities(ref as never),
-                                (ref) => formatResourceRefLabel(ref, tResources)
-                            )}
-                        </li>
+                <div className="flex flex-col gap-4">
+                    {previewSections.map((section, index) => (
+                        <GrantPreviewList
+                            key={`${section.source.type}-${section.source.id}-${section.featureLevel ?? "base"}-${index}`}
+                            grants={section.grants}
+                            contentLocale={contentLocale}
+                            system={system}
+                            source={section.source}
+                            featureLevel={section.featureLevel}
+                        />
                     ))}
-                </ul>
+                </div>
             )}
+
+            {pickStepIds.length > 0 && onStepSelect ? (
+                <ul className="flex flex-col gap-2 border-t pt-4">
+                    {pickStepIds.map((stepId) => {
+                        let stepLabel: string;
+
+                        try {
+                            stepLabel = t(`steps.${stepId}` as never);
+                        } catch {
+                            stepLabel = stepId;
+                        }
+
+                        return (
+                            <li key={stepId}>
+                                <button
+                                    type="button"
+                                    className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+                                    onClick={() => onStepSelect(stepId)}
+                                >
+                                    {t("selection.goToStep", { stepLabel })}
+                                </button>
+                            </li>
+                        );
+                    })}
+                </ul>
+            ) : null}
         </div>
     );
 }

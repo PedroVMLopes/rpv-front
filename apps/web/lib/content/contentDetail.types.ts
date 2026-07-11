@@ -13,14 +13,17 @@ export type ContentUseActionSpec = {
     disabled?: boolean;
 };
 
+import type { Grant } from "@rpv/content";
+
 export type ContentDetailModel = {
     id: string;
-    kind: "spell" | "item";
+    kind: "spell" | "item" | "catalog";
     title: string;
     sections: ContentDetailSection[];
     description?: string;
     higherLevel?: string;
     useAction?: ContentUseActionSpec;
+    catalogGrants?: Grant[];
 };
 
 export type ContentSummaryModel = {

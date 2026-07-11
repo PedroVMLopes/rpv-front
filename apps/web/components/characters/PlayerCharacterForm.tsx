@@ -14,11 +14,12 @@ import { HitPointsField } from "@/components/characters/HitPointsField";
 import { ArmorClassField } from "@/components/characters/ArmorClassField";
 import { ClassResourcesField } from "@/components/characters/ClassResourcesField";
 import { CharacterGrantPickers } from "@/components/characters/CharacterGrantPickers";
-import { CharacterLevelSelector } from "@/components/characters/CharacterLevelSelector";
 import { StartingEquipmentField } from "@/components/characters/StartingEquipmentField";
 import { CharacterCreationSidebar } from "@/components/characters/creation/CharacterCreationSidebar";
 import { CreationStepsDrawer } from "@/components/characters/creation/CreationStepsDrawer";
 import { LevelProgressionPage } from "@/components/characters/creation/LevelProgressionPage";
+import { SelectionStepRouter } from "@/components/characters/creation/SelectionStepRouter";
+import { GrantChoicePage } from "@/components/characters/creation/GrantChoicePage";
 import {
     buildPlayerGrantSourceFields,
     filterPlayerFormFields,
@@ -320,6 +321,20 @@ export function PlayerCharacterForm({
         />
     );
 
+    const relatedPickStepIds = useMemo(() => {
+        if (!activeStep) {
+            return [];
+        }
+
+        return creationGraph.steps
+            .filter(
+                (step) =>
+                    step.parentId === activeStep.id &&
+                    step.kind === "grant_picks"
+            )
+            .map((step) => step.id);
+    }, [activeStep, creationGraph.steps]);
+
     const stepContent = (() => {
         if (!activeStep) {
             return null;
@@ -330,14 +345,13 @@ export function PlayerCharacterForm({
                 return (
                     <div className="flex flex-col gap-4">
                         <h2 className="text-lg font-bold md:sr-only">{stepTitle}</h2>
-                        <DynamicForm
+                        <SelectionStepRouter
+                            step={activeStep}
                             form={form}
-                            fields={stepFields}
-                            hideSubmit
+                            contentLocale={contentLocale}
+                            system={system}
+                            stepFields={stepFields}
                         />
-                        {activeStep.id === "class" ? (
-                            <CharacterLevelSelector form={form} />
-                        ) : null}
                     </div>
                 );
             case "level_summary":
@@ -345,20 +359,22 @@ export function PlayerCharacterForm({
                     <LevelProgressionPage
                         form={form}
                         contentLocale={contentLocale}
+                        system={system}
                         sourceFilter={activeStep.sourceFilter}
                         title={stepTitle}
+                        pickStepIds={relatedPickStepIds}
+                        onStepSelect={handleStepSelect}
                     />
                 );
             case "grant_picks":
                 return (
                     <div className="flex flex-col gap-4">
                         <h2 className="text-lg font-bold">{stepTitle}</h2>
-                        <CharacterGrantPickers
+                        <GrantChoicePage
                             form={form}
                             contentLocale={contentLocale}
                             system={system}
                             stepFilter={activeStep.sourceFilter}
-                            sections="choices-only"
                         />
                     </div>
                 );

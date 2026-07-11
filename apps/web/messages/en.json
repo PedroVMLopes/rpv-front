@@ -339,6 +339,25 @@
       "equipmentLink": "Go to Starting Equipment",
       "equipmentLinkLocked": "Complete earlier steps to configure starting equipment.",
       "equipmentPreviewEquipment": "Equipment"
+    },
+    "selection": {
+      "expandDetails": "View details",
+      "deselect": "Clear selection",
+      "deferredChoice": "You will choose {count} later in {stepLabel} ({label})",
+      "deferredChoiceGeneric": "You will make this choice in a later step",
+      "goToStep": "Choose {stepLabel} →"
+    },
+    "reset": {
+      "title": "Change {field}?",
+      "body": "This will clear choices that depend on your current {field}, including subclass, spells, skills, and other grant picks.",
+      "confirm": "Change anyway",
+      "cancel": "Keep current"
+    },
+    "spellPick": {
+      "slotLabel": "{label} ({current}/{total})",
+      "selected": "Selected",
+      "available": "Available",
+      "unavailable": "Unavailable"
     }
   },
   "playerSheet": {
@@ -476,7 +495,12 @@
       "damage": "Damage",
       "damageType": "Damage type",
       "properties": "Properties",
-      "versatileDamage": "Versatile damage"
+      "versatileDamage": "Versatile damage",
+      "hitDie": "Hit die",
+      "subclassLevel": "Subclass at level",
+      "size": "Size",
+      "speed": "Speed",
+      "abilityScores": "Ability score increase"
     }
   },
   "items": {

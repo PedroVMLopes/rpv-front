@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -20,6 +21,7 @@ type ContentDetailModalProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onUse?: (useAction: ContentUseActionSpec) => void;
+    afterContent?: ReactNode;
 };
 
 export function ContentDetailModal({
@@ -27,6 +29,7 @@ export function ContentDetailModal({
     open,
     onOpenChange,
     onUse,
+    afterContent,
 }: ContentDetailModalProps) {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -38,6 +41,7 @@ export function ContentDetailModal({
                     </DialogDescription>
                 </DialogHeader>
                 <ContentDetailPanel model={model} />
+                {afterContent}
                 {model.useAction && onUse ? (
                     <DialogFooter>
                         <Button

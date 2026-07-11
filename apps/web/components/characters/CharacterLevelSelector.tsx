@@ -9,30 +9,46 @@ import { readLevelFromForm } from "@/lib/character/level";
 
 type CharacterLevelSelectorProps = {
     form: UseFormReturn<Record<string, unknown>>;
+    onBeforeLevelChange?: (nextLevel: number) => void;
 };
 
 const PRESETS: LevelPreset[] = ["lv1", "lv3", "custom"];
 
-export function CharacterLevelSelector({ form }: CharacterLevelSelectorProps) {
+export function CharacterLevelSelector({
+    form,
+    onBeforeLevelChange,
+}: CharacterLevelSelectorProps) {
     const t = useTranslations("characterCreation");
     const { control } = form;
     const watchedLevel = useWatch({ control, name: "level" });
     const level = readLevelFromForm({ level: watchedLevel });
     const preset = inferLevelPreset(level);
 
+    function setLevel(nextLevel: number) {
+        if (onBeforeLevelChange) {
+            onBeforeLevelChange(nextLevel);
+            return;
+        }
+
+        form.setValue("level", nextLevel, {
+            shouldDirty: true,
+            shouldValidate: true,
+        });
+    }
+
     function setPreset(nextPreset: LevelPreset) {
         if (nextPreset === "lv1") {
-            form.setValue("level", 1, { shouldDirty: true, shouldValidate: true });
+            setLevel(1);
             return;
         }
 
         if (nextPreset === "lv3") {
-            form.setValue("level", 3, { shouldDirty: true, shouldValidate: true });
+            setLevel(3);
             return;
         }
 
         if (level === 1 || level === 3) {
-            form.setValue("level", 2, { shouldDirty: true, shouldValidate: true });
+            setLevel(2);
         }
     }
 
@@ -64,10 +80,7 @@ export function CharacterLevelSelector({ form }: CharacterLevelSelectorProps) {
                                 return;
                             }
 
-                            form.setValue("level", Math.min(Math.max(parsed, 1), 20), {
-                                shouldDirty: true,
-                                shouldValidate: true,
-                            });
+                            setLevel(Math.min(Math.max(parsed, 1), 20));
                         }}
                         aria-label={t("level.customInput")}
                     />
