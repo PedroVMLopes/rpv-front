@@ -9,7 +9,9 @@ import {
     hasAnyProficiencyItems,
     type GrantPreviewContext,
 } from "@/lib/character/creation/groupGrantPreviewBuckets";
+import type { ResourcePreviewChip } from "@/lib/character/creation/raceCatalogResourceChips";
 import { GrantPreviewList } from "@/components/characters/creation/GrantPreviewList";
+import { GrantPreviewStaticChips } from "@/components/characters/creation/GrantPreviewStaticChips";
 import type { SystemKey } from "@/presets";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +20,7 @@ type GrantPreviewGroupedPanelProps = {
     contentLocale: Locale;
     system: SystemKey;
     showProficienciesTitle?: boolean;
+    extraResourceChips?: ResourcePreviewChip[];
     className?: string;
 };
 
@@ -31,21 +34,32 @@ function renderSubsections(
     subsections: SubsectionConfig[],
     t: ReturnType<typeof useTranslations>,
     contentLocale: Locale,
-    system: SystemKey
+    system: SystemKey,
+    extraResourceChips: ResourcePreviewChip[] = []
 ) {
     return subsections
-        .filter((subsection) => subsection.contexts.length > 0)
+        .filter(
+            (subsection) =>
+                subsection.contexts.length > 0 ||
+                (subsection.key === "resources" && extraResourceChips.length > 0)
+        )
         .map((subsection) => (
             <section key={subsection.key} className="flex flex-col gap-2">
                 <h5 className="text-sm font-semibold">
                     {t(`selection.preview.${subsection.labelKey}` as never)}
                 </h5>
-                <GrantPreviewList
-                    contexts={subsection.contexts}
-                    contentLocale={contentLocale}
-                    system={system}
-                    mode="fixed-only"
-                />
+                {subsection.key === "resources" &&
+                extraResourceChips.length > 0 ? (
+                    <GrantPreviewStaticChips chips={extraResourceChips} />
+                ) : null}
+                {subsection.contexts.length > 0 ? (
+                    <GrantPreviewList
+                        contexts={subsection.contexts}
+                        contentLocale={contentLocale}
+                        system={system}
+                        mode="fixed-only"
+                    />
+                ) : null}
             </section>
         ));
 }
@@ -55,6 +69,7 @@ export function GrantPreviewGroupedPanel({
     contentLocale,
     system,
     showProficienciesTitle = true,
+    extraResourceChips = [],
     className,
 }: GrantPreviewGroupedPanelProps) {
     const t = useTranslations("characterCreation");
@@ -100,7 +115,8 @@ export function GrantPreviewGroupedPanel({
     ];
 
     const showProficiencies = hasAnyProficiencyItems(buckets);
-    const showActionsResources = hasAnyActionsResourceItems(buckets);
+    const showActionsResources =
+        hasAnyActionsResourceItems(buckets) || extraResourceChips.length > 0;
 
     if (!showProficiencies && !showActionsResources) {
         return null;
@@ -130,7 +146,8 @@ export function GrantPreviewGroupedPanel({
                         actionsResourceSubsections,
                         t,
                         contentLocale,
-                        system
+                        system,
+                        extraResourceChips
                     )}
                 </div>
             ) : null}

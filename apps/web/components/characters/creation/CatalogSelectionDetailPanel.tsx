@@ -8,6 +8,7 @@ import type {
     CatalogSelectionKind,
 } from "@/lib/character/creation/catalogSelection.types";
 import { stripMarkdown } from "@/lib/character/creation/textUtils";
+import { buildRaceResourcePreviewChips } from "@/lib/character/creation/raceCatalogResourceChips";
 import { GrantPreviewGroupedPanel } from "@/components/characters/creation/GrantPreviewGroupedPanel";
 import type { SystemKey } from "@/presets";
 
@@ -40,6 +41,18 @@ export function CatalogSelectionDetailPanel({
     }
 
     const description = stripMarkdown(entry.detailDescription);
+    const raceResourceChips =
+        selectionKind === "race"
+            ? buildRaceResourcePreviewChips(entry.metadata, {
+                  speed: (speed) =>
+                      t("selection.preview.speedValue", { speed }),
+                  darkvision: () => t("selection.preview.darkvision"),
+                  darkvisionWithRange: (range) =>
+                      t("selection.preview.darkvisionValue", { range }),
+              })
+            : [];
+    const showGroupedPreview =
+        entry.grants.length > 0 || raceResourceChips.length > 0;
 
     return (
         <div
@@ -54,11 +67,12 @@ export function CatalogSelectionDetailPanel({
                 </p>
             ) : null}
 
-            {entry.grants.length > 0 ? (
+            {showGroupedPreview ? (
                 <GrantPreviewGroupedPanel
                     contexts={entry.grants.map((grant) => ({ grant, source }))}
                     contentLocale={contentLocale}
                     system={system}
+                    extraResourceChips={raceResourceChips}
                 />
             ) : null}
         </div>

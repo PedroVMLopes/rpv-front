@@ -32,6 +32,7 @@ function listDndRaces(locale: Locale): CatalogSelectionEntry[] {
             ],
             metadata: {
                 speedWalk: race.speedWalk,
+                visionDesc: race.visionDesc,
                 size: race.size,
                 asiDesc: race.asiDesc,
             },

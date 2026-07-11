@@ -12,6 +12,11 @@ const sampleEntry = {
     title: "Dwarf",
     summary: "Short summary",
     detailDescription: "Hardy mountain folk.",
+    metadata: {
+        speedWalk: 25,
+        visionDesc:
+            "**_Darkvision._** You can see in dim light within 60 feet of you as if it were bright light.",
+    },
     grants: [
         {
             grantType: "skill_proficiency" as const,
@@ -60,5 +65,7 @@ describe("CatalogSelectionDetailPanel", () => {
         expect(screen.getByText("Proficiencies")).toBeInTheDocument();
         expect(screen.getByText("Skills")).toBeInTheDocument();
         expect(screen.getByText("Athletics")).toBeInTheDocument();
+        expect(screen.getByText("Speed: 25 ft")).toBeInTheDocument();
+        expect(screen.getByText("Darkvision: 60 ft")).toBeInTheDocument();
     });
 });

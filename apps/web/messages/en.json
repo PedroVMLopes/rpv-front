@@ -359,7 +359,10 @@
         "cantrips": "Cantrips",
         "spells": "Spells",
         "actions": "Actions",
-        "resources": "Resources"
+        "resources": "Resources",
+        "speedValue": "Speed: {speed} ft",
+        "darkvision": "Darkvision",
+        "darkvisionValue": "Darkvision: {range} ft"
       },
       "selectToPreview": {
         "race": "Select a race to see its description and traits.",

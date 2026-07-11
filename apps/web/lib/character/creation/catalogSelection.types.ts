@@ -18,6 +18,7 @@ export type CatalogSelectionMetadata = {
     hitDie?: number;
     subclassLevel?: number;
     speedWalk?: number;
+    visionDesc?: string;
     size?: string;
     asiDesc?: string;
 };

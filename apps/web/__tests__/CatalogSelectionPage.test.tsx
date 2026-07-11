@@ -57,6 +57,8 @@ describe("CatalogSelectionPage", () => {
 
         expect(screen.getByTestId("catalog-detail-panel")).toBeInTheDocument();
         expect(screen.getByText("Proficiencies")).toBeInTheDocument();
+        expect(screen.getByText("Speed: 25 ft")).toBeInTheDocument();
+        expect(screen.getByText("Darkvision: 60 ft")).toBeInTheDocument();
     });
 
     it("deselects race on second click", async () => {
