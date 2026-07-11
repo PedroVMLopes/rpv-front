@@ -1,4 +1,4 @@
-import { getClassSubclassLevel } from "@rpv/content";
+import { getClassSubclassLevel, getSubclassGrantSourcesForLevel } from "@rpv/content";
 import type { Locale } from "@rpv/domain";
 import type { SystemKey } from "@/presets";
 import { listSubraceOptions } from "@/lib/catalog/raceCatalog";
@@ -212,6 +212,27 @@ function appendClassLevelSteps(
     }
 }
 
+function hasSubclassActivityAtLevel(
+    subclassSlug: string,
+    level: number,
+    pending: PendingChoiceGrant[]
+): boolean {
+    const levelChoices = pending.filter(
+        (choice) =>
+            choice.source.type === "subclass" &&
+            choice.source.id === subclassSlug &&
+            matchesFeatureLevel(choice, level)
+    );
+
+    if (levelChoices.length > 0) {
+        return true;
+    }
+
+    return getSubclassGrantSourcesForLevel(subclassSlug, level).some(
+        (block) => block.featureLevel === level && block.grants.length > 0
+    );
+}
+
 function appendSubclassLevelSteps(
     steps: CreationStep[],
     subclassSlug: string,
@@ -219,6 +240,10 @@ function appendSubclassLevelSteps(
     progressionLevel: number
 ): void {
     for (let level = 1; level <= progressionLevel; level += 1) {
+        if (!hasSubclassActivityAtLevel(subclassSlug, level, pending)) {
+            continue;
+        }
+
         const levelStepId = `subclass-level-${level}`;
         const hasSummary = level > 1;
 

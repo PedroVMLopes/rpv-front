@@ -130,4 +130,44 @@ describe("resolveCreationSteps", () => {
 
         expect(level2?.kind).toBe("level_summary");
     });
+
+    it("omits subclass level steps when subclass only has base grants", () => {
+        const graph = resolveCreationSteps({
+            formValues: {
+                race: "human",
+                characterClass: "wizard",
+                subclass: "wizard-evocation",
+                level: 3,
+            },
+            system: "dnd",
+            contentLocale: "en",
+        });
+
+        expect(
+            graph.steps.some((step) => step.id.startsWith("subclass-level-"))
+        ).toBe(false);
+    });
+
+    it("includes subclass level summary only for levels with features", () => {
+        const graph = resolveCreationSteps({
+            formValues: {
+                race: "human",
+                characterClass: "fighter",
+                subclass: "fighter-champion",
+                level: 3,
+            },
+            system: "dnd",
+            contentLocale: "en",
+        });
+
+        expect(
+            graph.steps.some((step) => step.id === "subclass-level-1")
+        ).toBe(false);
+        expect(
+            graph.steps.some((step) => step.id === "subclass-level-2")
+        ).toBe(false);
+        expect(
+            graph.steps.some((step) => step.id === "subclass-level-3")
+        ).toBe(true);
+    });
 });
