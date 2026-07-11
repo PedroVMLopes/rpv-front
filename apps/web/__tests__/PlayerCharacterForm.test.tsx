@@ -90,7 +90,7 @@ describe("PlayerCharacterForm", () => {
         expect(screen.getByText("Character level")).toBeInTheDocument();
     });
 
-    it("shows fighter level 1 summary with fixed proficiencies", async () => {
+    it("omits class level 1 summary; fighter L1 choices attach to class step", async () => {
         render(
             <PlayerFormHarness
                 defaultValues={{
@@ -98,11 +98,18 @@ describe("PlayerCharacterForm", () => {
                     characterClass: "fighter",
                     level: 1,
                 }}
-                initialStepId="class-level-1"
+                initialStepId="class-level-1-choices"
             />
         );
 
-        expect(screen.getByText("Strength save")).toBeInTheDocument();
+        const sidebar = getCreationSidebar();
+
+        expect(
+            sidebar.queryByRole("button", { name: "Level 1" })
+        ).not.toBeInTheDocument();
+        expect(
+            sidebar.getByRole("button", { name: "Level 1 choices" })
+        ).toBeInTheDocument();
     });
 
     it("shows subclass step in sidebar at level 3", () => {

@@ -55,7 +55,7 @@ describe("resolveCreationSteps", () => {
             true
         );
         expect(graph.steps.some((step) => step.id === "class-level-1")).toBe(
-            true
+            false
         );
         expect(
             graph.steps.some((step) => step.id === "class-level-1-cantrips")
@@ -84,7 +84,7 @@ describe("resolveCreationSteps", () => {
         });
 
         expect(graph.steps.some((step) => step.id === "class-level-1")).toBe(
-            true
+            false
         );
         expect(
             graph.steps.some((step) => step.id.includes("cantrips"))

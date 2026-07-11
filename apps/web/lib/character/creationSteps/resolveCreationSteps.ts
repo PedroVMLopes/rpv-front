@@ -176,15 +176,19 @@ function appendClassLevelSteps(
 ): void {
     for (let level = 1; level <= progressionLevel; level += 1) {
         const levelStepId = `class-level-${level}`;
-        steps.push(
-            createStep(levelStepId, "level_summary", "class", {
-                parentId: "class",
-                sourceFilter: {
-                    sourceTypes: ["class"],
-                    level,
-                },
-            })
-        );
+        const hasSummary = level > 1;
+
+        if (hasSummary) {
+            steps.push(
+                createStep(levelStepId, "level_summary", "class", {
+                    parentId: "class",
+                    sourceFilter: {
+                        sourceTypes: ["class"],
+                        level,
+                    },
+                })
+            );
+        }
 
         const levelChoices = pending.filter(
             (choice) =>
@@ -198,7 +202,7 @@ function appendClassLevelSteps(
             steps,
             levelStepId,
             "class",
-            levelStepId,
+            hasSummary ? levelStepId : "class",
             levelChoices,
             {
                 sourceTypes: ["class"],
@@ -216,16 +220,19 @@ function appendSubclassLevelSteps(
 ): void {
     for (let level = 1; level <= progressionLevel; level += 1) {
         const levelStepId = `subclass-level-${level}`;
+        const hasSummary = level > 1;
 
-        steps.push(
-            createStep(levelStepId, "level_summary", "class", {
-                parentId: "subclass",
-                sourceFilter: {
-                    sourceTypes: ["subclass"],
-                    level,
-                },
-            })
-        );
+        if (hasSummary) {
+            steps.push(
+                createStep(levelStepId, "level_summary", "class", {
+                    parentId: "subclass",
+                    sourceFilter: {
+                        sourceTypes: ["subclass"],
+                        level,
+                    },
+                })
+            );
+        }
 
         const levelChoices = pending.filter(
             (choice) =>
@@ -238,7 +245,7 @@ function appendSubclassLevelSteps(
             steps,
             levelStepId,
             "class",
-            levelStepId,
+            hasSummary ? levelStepId : "subclass",
             levelChoices,
             {
                 sourceTypes: ["subclass"],
