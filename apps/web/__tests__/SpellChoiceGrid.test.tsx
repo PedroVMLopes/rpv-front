@@ -76,6 +76,44 @@ describe("SpellChoiceGrid", () => {
         );
     });
 
+    it("disables a racial cantrip already picked in class cantrip slots", async () => {
+        const user = userEvent.setup();
+
+        render(
+            <SpellGridHarness
+                defaultValues={{
+                    race: "elf",
+                    subrace: "high-elf",
+                    characterClass: "wizard",
+                    level: 1,
+                    choices: {
+                        grantPicks: {
+                            "race:high-elf:base:spell:0:0": "acid-splash",
+                        },
+                    },
+                }}
+            />
+        );
+
+        const acidSplashButtons = screen.getAllByRole("button", {
+            name: /Acid Splash/i,
+        });
+
+        expect(acidSplashButtons.length).toBeGreaterThan(0);
+        for (const button of acidSplashButtons) {
+            expect(button).toBeDisabled();
+        }
+
+        await user.click(acidSplashButtons[0]!);
+
+        expect(screen.getByTestId("choices-output")).toHaveTextContent(
+            "race:high-elf:base:spell:0:0"
+        );
+        expect(screen.getByTestId("choices-output")).not.toHaveTextContent(
+            "class:wizard:1:spell:1:0"
+        );
+    });
+
     it("opens detail modal from expand button", async () => {
         const user = userEvent.setup();
 

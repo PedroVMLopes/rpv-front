@@ -6,7 +6,10 @@ import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 import { getSpell } from "@rpv/content";
 import type { Locale } from "@rpv/domain";
-import type { PendingChoiceGrant } from "@/lib/character/grantChoices";
+import {
+    collectPendingChoiceGrants,
+    type PendingChoiceGrant,
+} from "@/lib/character/grantChoices";
 import { getFixedRefsForGrantType } from "@/lib/character/characterGrants";
 import { buildSelectionsFromForm } from "@/lib/character/characterAdapter";
 import { readLevelFromForm } from "@/lib/character/level";
@@ -64,6 +67,17 @@ export function SpellChoiceGrid({
         [selections, contentLocale, characterLevel]
     );
 
+    const allSpellChoices = useMemo(
+        () =>
+            collectPendingChoiceGrants(
+                selections,
+                contentLocale,
+                characterLevel,
+                system
+            ).filter((choice) => choice.grant.grantType === "spell"),
+        [selections, contentLocale, characterLevel, system]
+    );
+
     const [detailModel, setDetailModel] = useState<ContentDetailModel | null>(
         null
     );
@@ -92,7 +106,7 @@ export function SpellChoiceGrid({
                 const selected = grantPicks[choice.key] ?? "";
                 const otherPicked = getOtherPickedRefsForGrantType(
                     "spell",
-                    choices,
+                    allSpellChoices,
                     grantPicks,
                     choice.key
                 );
