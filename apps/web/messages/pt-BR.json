@@ -349,6 +349,18 @@
       "goToStep": "Escolher {stepLabel} →",
       "description": "Descrição",
       "grants": "O que você recebe",
+      "preview": {
+        "proficiencies": "Proficiências",
+        "weapons": "Armas",
+        "armor": "Armadura",
+        "skills": "Perícias",
+        "tools": "Ferramentas",
+        "languages": "Idiomas",
+        "cantrips": "Truques",
+        "spells": "Magias",
+        "actions": "Ações",
+        "resources": "Recursos"
+      },
       "selectToPreview": {
         "race": "Selecione uma raça para ver descrição e traços.",
         "subrace": "Selecione uma sub-raça para ver descrição e traços.",

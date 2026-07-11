@@ -40,7 +40,7 @@ describe("CatalogSelectionDetailPanel", () => {
         );
     });
 
-    it("shows description and grants for selected entry", () => {
+    it("shows description and grouped grants for selected entry", () => {
         render(
             <NextIntlClientProvider locale="en" messages={enMessages}>
                 <CatalogSelectionDetailPanel
@@ -55,6 +55,10 @@ describe("CatalogSelectionDetailPanel", () => {
 
         expect(screen.getByTestId("catalog-detail-panel")).toBeInTheDocument();
         expect(screen.getByText("Hardy mountain folk.")).toBeInTheDocument();
+        expect(screen.queryByText("Description")).not.toBeInTheDocument();
+        expect(screen.queryByText("What you get")).not.toBeInTheDocument();
+        expect(screen.getByText("Proficiencies")).toBeInTheDocument();
+        expect(screen.getByText("Skills")).toBeInTheDocument();
         expect(screen.getByText("Athletics")).toBeInTheDocument();
     });
 });

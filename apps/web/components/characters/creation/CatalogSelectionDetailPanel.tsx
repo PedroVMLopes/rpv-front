@@ -8,7 +8,7 @@ import type {
     CatalogSelectionKind,
 } from "@/lib/character/creation/catalogSelection.types";
 import { stripMarkdown } from "@/lib/character/creation/textUtils";
-import { GrantPreviewList } from "@/components/characters/creation/GrantPreviewList";
+import { GrantPreviewGroupedPanel } from "@/components/characters/creation/GrantPreviewGroupedPanel";
 import type { SystemKey } from "@/presets";
 
 type CatalogSelectionDetailPanelProps = {
@@ -49,28 +49,17 @@ export function CatalogSelectionDetailPanel({
             <h3 className="font-serif text-lg font-semibold">{entry.title}</h3>
 
             {description ? (
-                <section className="flex flex-col gap-2">
-                    <h4 className="text-sm font-bold">
-                        {t("selection.description")}
-                    </h4>
-                    <p className="text-sm leading-relaxed text-muted-foreground">
-                        {description}
-                    </p>
-                </section>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                    {description}
+                </p>
             ) : null}
 
             {entry.grants.length > 0 ? (
-                <section className="flex flex-col gap-2">
-                    <h4 className="text-sm font-bold">
-                        {t("selection.grants")}
-                    </h4>
-                    <GrantPreviewList
-                        grants={entry.grants}
-                        contentLocale={contentLocale}
-                        system={system}
-                        source={source}
-                    />
-                </section>
+                <GrantPreviewGroupedPanel
+                    contexts={entry.grants.map((grant) => ({ grant, source }))}
+                    contentLocale={contentLocale}
+                    system={system}
+                />
             ) : null}
         </div>
     );

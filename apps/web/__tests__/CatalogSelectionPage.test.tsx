@@ -56,8 +56,7 @@ describe("CatalogSelectionPage", () => {
         await user.click(screen.getByTestId("catalog-card-dwarf"));
 
         expect(screen.getByTestId("catalog-detail-panel")).toBeInTheDocument();
-        expect(screen.getByText("Description")).toBeInTheDocument();
-        expect(screen.getByText("What you get")).toBeInTheDocument();
+        expect(screen.getByText("Proficiencies")).toBeInTheDocument();
     });
 
     it("deselects race on second click", async () => {

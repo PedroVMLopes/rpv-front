@@ -6,7 +6,11 @@ import type { Grant } from "@rpv/content";
 import { getSpell } from "@rpv/content";
 import type { Locale, ModifierSource } from "@rpv/domain";
 import { mapGrantPickToStep } from "@/lib/character/creationSteps/mapGrantPickToStep";
-import { buildGrantPreviewItems } from "@/lib/character/creation/grantPreviewLabels";
+import {
+    buildGrantPreviewItems,
+    type GrantPreviewItem,
+} from "@/lib/character/creation/grantPreviewLabels";
+import type { GrantPreviewContext } from "@/lib/character/creation/groupGrantPreviewBuckets";
 import { contentRepo } from "@/lib/content/contentRepository";
 import { buildItemPreviewContentModel } from "@/lib/content/buildItemPreviewContentModel";
 import { buildSpellPickContentModel } from "@/lib/content/buildSpellPickContentModel";
@@ -16,14 +20,35 @@ import type { SystemKey } from "@/presets";
 import { cn } from "@/lib/utils";
 
 type GrantPreviewListProps = {
-    grants: Grant[];
+    grants?: Grant[];
+    contexts?: GrantPreviewContext[];
     contentLocale: Locale;
     system: SystemKey;
-    source: ModifierSource;
+    source?: ModifierSource;
     featureLevel?: number;
-    mode?: "preview" | "pick-indicator";
+    mode?: "preview" | "pick-indicator" | "fixed-only";
     className?: string;
 };
+
+function buildItemsFromContexts(
+    contexts: GrantPreviewContext[],
+    contentLocale: Locale,
+    system: SystemKey,
+    translateAbility: (ref: string) => string,
+    translateResource: (ref: string) => string
+): GrantPreviewItem[] {
+    return contexts.flatMap(({ grant, source, featureLevel }) =>
+        buildGrantPreviewItems(
+            [grant],
+            source,
+            contentLocale,
+            system,
+            translateAbility,
+            translateResource,
+            featureLevel
+        )
+    );
+}
 
 function humanizeStepId(stepId: string): string {
     return stepId
@@ -33,7 +58,8 @@ function humanizeStepId(stepId: string): string {
 }
 
 export function GrantPreviewList({
-    grants,
+    grants = [],
+    contexts,
     contentLocale,
     system,
     source,
@@ -51,19 +77,45 @@ export function GrantPreviewList({
         null
     );
 
-    const items = useMemo(
-        () =>
-            buildGrantPreviewItems(
-                grants,
-                source,
-                contentLocale,
-                system,
-                (ref) => tAbilities(ref as never),
-                (key, values) => tResources(key as never, values as never),
-                featureLevel
-            ),
-        [grants, source, contentLocale, system, featureLevel, tAbilities, tResources]
-    );
+    const items = useMemo(() => {
+        const translateAbility = (ref: string) => tAbilities(ref as never);
+        const translateResource = (key: string, values?: Record<string, unknown>) =>
+            tResources(key as never, values as never);
+
+        const built = contexts
+            ? buildItemsFromContexts(
+                  contexts,
+                  contentLocale,
+                  system,
+                  translateAbility,
+                  translateResource
+              )
+            : buildGrantPreviewItems(
+                  grants,
+                  source!,
+                  contentLocale,
+                  system,
+                  translateAbility,
+                  translateResource,
+                  featureLevel
+              );
+
+        if (mode === "fixed-only") {
+            return built.filter((item) => item.kind === "fixed");
+        }
+
+        return built;
+    }, [
+        contexts,
+        grants,
+        source,
+        contentLocale,
+        system,
+        featureLevel,
+        mode,
+        tAbilities,
+        tResources,
+    ]);
 
     function openSpellDetail(spellRef: string) {
         const catalogEntry = getSpell(spellRef, contentLocale);

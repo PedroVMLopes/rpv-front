@@ -349,6 +349,18 @@
       "goToStep": "Choose {stepLabel} →",
       "description": "Description",
       "grants": "What you get",
+      "preview": {
+        "proficiencies": "Proficiencies",
+        "weapons": "Weapons",
+        "armor": "Armor",
+        "skills": "Skills",
+        "tools": "Tools",
+        "languages": "Languages",
+        "cantrips": "Cantrips",
+        "spells": "Spells",
+        "actions": "Actions",
+        "resources": "Resources"
+      },
       "selectToPreview": {
         "race": "Select a race to see its description and traits.",
         "subrace": "Select a subrace to see its description and traits.",

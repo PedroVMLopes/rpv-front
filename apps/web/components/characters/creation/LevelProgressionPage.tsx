@@ -10,7 +10,12 @@ import {
     getSubclassGrantSourcesForLevel,
 } from "@rpv/content";
 import type { CreationStepSourceFilter } from "@/lib/character/creationSteps/creationStep.types";
-import { GrantPreviewList } from "@/components/characters/creation/GrantPreviewList";
+import { GrantPreviewGroupedPanel } from "@/components/characters/creation/GrantPreviewGroupedPanel";
+import {
+    groupGrantPreviewBuckets,
+    hasAnyBucketItems,
+    type GrantPreviewContext,
+} from "@/lib/character/creation/groupGrantPreviewBuckets";
 import type { SystemKey } from "@/presets";
 
 type LevelProgressionPageProps = {
@@ -95,29 +100,41 @@ export function LevelProgressionPage({
         return sections;
     }, [classSlug, subclassSlug, level, sourceTypes]);
 
-    const hasGrants = previewSections.some((section) => section.grants.length > 0);
+    const previewContexts = useMemo(() => {
+        const contexts: GrantPreviewContext[] = [];
+
+        for (const section of previewSections) {
+            for (const grant of section.grants) {
+                contexts.push({
+                    grant,
+                    source: section.source,
+                    featureLevel: section.featureLevel,
+                });
+            }
+        }
+
+        return contexts;
+    }, [previewSections]);
+
+    const hasFixedGrants = useMemo(
+        () => hasAnyBucketItems(groupGrantPreviewBuckets(previewContexts)),
+        [previewContexts]
+    );
 
     return (
         <div className="flex flex-col gap-4">
             <h2 className="text-lg font-bold">{title}</h2>
 
-            {!hasGrants ? (
+            {!hasFixedGrants ? (
                 <p className="text-sm text-muted-foreground">
                     No automatic gains at this level.
                 </p>
             ) : (
-                <div className="flex flex-col gap-4">
-                    {previewSections.map((section, index) => (
-                        <GrantPreviewList
-                            key={`${section.source.type}-${section.source.id}-${section.featureLevel ?? "base"}-${index}`}
-                            grants={section.grants}
-                            contentLocale={contentLocale}
-                            system={system}
-                            source={section.source}
-                            featureLevel={section.featureLevel}
-                        />
-                    ))}
-                </div>
+                <GrantPreviewGroupedPanel
+                    contexts={previewContexts}
+                    contentLocale={contentLocale}
+                    system={system}
+                />
             )}
 
             {pickStepIds.length > 0 && onStepSelect ? (
