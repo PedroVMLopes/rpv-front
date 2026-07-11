@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { UseFormReturn } from "react-hook-form";
+import { useWatch, type UseFormReturn } from "react-hook-form";
 import type { Locale } from "@rpv/domain";
 import type { ModifierSource } from "@rpv/domain";
 import type {
@@ -20,6 +20,7 @@ import {
 } from "@/lib/character/creation/useSelectionChangeGuard";
 import { CatalogSelectionCard } from "@/components/characters/creation/CatalogSelectionCard";
 import { CatalogSelectionGrid } from "@/components/characters/creation/CatalogSelectionGrid";
+import { CatalogSelectionDetailPanel } from "@/components/characters/creation/CatalogSelectionDetailPanel";
 import { CatalogDetailModal } from "@/components/characters/creation/CatalogDetailModal";
 import { SelectionChangeConfirmDialog } from "@/components/characters/creation/SelectionChangeConfirmDialog";
 import type { SystemKey } from "@/presets";
@@ -77,17 +78,35 @@ export function CatalogSelectionPage({
     const { pending, requestChange, confirm, cancel } =
         externalGuard ?? internalGuard;
 
-    const selectedSlug = form.watch(formField);
-    const resolvedContext: CatalogSelectionContext = {
-        ...context,
-        characterLevel:
-            context.characterLevel ?? readLevelFromForm(form.getValues()),
-    };
+    const { control } = form;
+    const selectedSlug = useWatch({ control, name: formField });
+    const watchedLevel = useWatch({ control, name: "level" });
+    const characterLevel = readLevelFromForm({ level: watchedLevel });
+
+    const resolvedContext: CatalogSelectionContext = useMemo(
+        () => ({
+            ...context,
+            characterLevel: context.characterLevel ?? characterLevel,
+        }),
+        [context, characterLevel]
+    );
 
     const entries = useMemo(
         () => catalogSource.list(contentLocale, resolvedContext),
         [catalogSource, contentLocale, resolvedContext]
     );
+
+    const selectedEntry = useMemo(() => {
+        if (typeof selectedSlug !== "string" || !selectedSlug) {
+            return null;
+        }
+
+        return entries.find((entry) => entry.slug === selectedSlug) ?? null;
+    }, [entries, selectedSlug]);
+
+    const selectedSource = selectedEntry
+        ? buildSourceForField(formField, selectedEntry)
+        : null;
 
     const [expandedEntry, setExpandedEntry] =
         useState<CatalogSelectionEntry | null>(null);
@@ -127,21 +146,26 @@ export function CatalogSelectionPage({
         : null;
 
     return (
-        <>
+        <div className="flex flex-col gap-4">
             <CatalogSelectionGrid>
                 {entries.map((entry) => (
                     <CatalogSelectionCard
                         key={entry.slug}
                         entry={entry}
                         selected={selectedSlug === entry.slug}
-                        contentLocale={contentLocale}
-                        system={system}
-                        source={buildSourceForField(formField, entry)}
                         onToggle={() => handleToggle(entry)}
                         onExpand={() => setExpandedEntry(entry)}
                     />
                 ))}
             </CatalogSelectionGrid>
+
+            <CatalogSelectionDetailPanel
+                entry={selectedEntry}
+                selectionKind={kind}
+                contentLocale={contentLocale}
+                system={system}
+                source={selectedSource}
+            />
 
             {expandedModel && expandedEntry ? (
                 <CatalogDetailModal
@@ -164,6 +188,6 @@ export function CatalogSelectionPage({
                 onConfirm={confirm}
                 onCancel={cancel}
             />
-        </>
+        </div>
     );
 }

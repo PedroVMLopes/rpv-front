@@ -29,7 +29,15 @@ function CatalogHarness({
 }
 
 describe("CatalogSelectionPage", () => {
-    it("selects race with primary styling", async () => {
+    it("shows placeholder when nothing is selected", () => {
+        render(<CatalogHarness />);
+
+        expect(screen.getByTestId("catalog-detail-placeholder")).toHaveTextContent(
+            /Select a race to see/i
+        );
+    });
+
+    it("selects race with primary border styling", async () => {
         const user = userEvent.setup();
         render(<CatalogHarness />);
 
@@ -37,7 +45,19 @@ describe("CatalogSelectionPage", () => {
         await user.click(dwarfCard);
 
         expect(screen.getByTestId("race-value")).toHaveTextContent("dwarf");
-        expect(dwarfCard.className).toMatch(/bg-primary/);
+        expect(dwarfCard.className).toMatch(/border-primary/);
+        expect(dwarfCard.className).not.toMatch(/bg-primary/);
+    });
+
+    it("shows detail panel after selection", async () => {
+        const user = userEvent.setup();
+        render(<CatalogHarness />);
+
+        await user.click(screen.getByTestId("catalog-card-dwarf"));
+
+        expect(screen.getByTestId("catalog-detail-panel")).toBeInTheDocument();
+        expect(screen.getByText("Description")).toBeInTheDocument();
+        expect(screen.getByText("What you get")).toBeInTheDocument();
     });
 
     it("deselects race on second click", async () => {
@@ -48,6 +68,7 @@ describe("CatalogSelectionPage", () => {
         await user.click(dwarfCard);
 
         expect(screen.getByTestId("race-value")).toHaveTextContent("");
+        expect(screen.getByTestId("catalog-detail-placeholder")).toBeInTheDocument();
     });
 
     it("uses responsive grid classes", () => {

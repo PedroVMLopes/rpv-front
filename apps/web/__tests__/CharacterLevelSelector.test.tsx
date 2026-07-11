@@ -36,7 +36,16 @@ describe("CharacterLevelSelector", () => {
         expect(screen.getByTestId("level-output")).toHaveTextContent("1");
     });
 
-    it("shows numeric input for custom preset", async () => {
+    it("sets level to 2 when Lv 2 is selected", async () => {
+        const user = userEvent.setup();
+
+        render(<LevelSelectorHarness defaultValues={{ level: 1 }} />);
+
+        await user.click(screen.getByRole("button", { name: "Lv 2" }));
+        expect(screen.getByTestId("level-output")).toHaveTextContent("2");
+    });
+
+    it("shows numeric input for custom preset with default 5 from preset level", async () => {
         const user = userEvent.setup();
 
         render(<LevelSelectorHarness defaultValues={{ level: 1 }} />);
@@ -49,11 +58,12 @@ describe("CharacterLevelSelector", () => {
 
         const input = screen.getByRole("spinbutton", { name: "Custom level" });
         expect(input).toBeInTheDocument();
-        expect(input).toHaveValue(2);
+        expect(input).toHaveValue(5);
+        expect(screen.getByTestId("level-output")).toHaveTextContent("5");
     });
 
-    it("updates level from custom numeric input", () => {
-        render(<LevelSelectorHarness defaultValues={{ level: 2 }} />);
+    it("updates level from custom numeric input", async () => {
+        render(<LevelSelectorHarness defaultValues={{ level: 5 }} />);
 
         const input = screen.getByRole("spinbutton", { name: "Custom level" });
         fireEvent.change(input, { target: { value: "7" } });

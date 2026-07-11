@@ -4,7 +4,12 @@ import { useWatch, type UseFormReturn } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { inferLevelPreset, type LevelPreset } from "@/lib/character/levelPreset";
+import {
+    CUSTOM_LEVEL_DEFAULT,
+    inferLevelPreset,
+    isPresetLevel,
+    type LevelPreset,
+} from "@/lib/character/levelPreset";
 import { readLevelFromForm } from "@/lib/character/level";
 
 type CharacterLevelSelectorProps = {
@@ -12,7 +17,7 @@ type CharacterLevelSelectorProps = {
     onBeforeLevelChange?: (nextLevel: number) => void;
 };
 
-const PRESETS: LevelPreset[] = ["lv1", "lv3", "custom"];
+const PRESETS: LevelPreset[] = ["lv1", "lv2", "lv3", "custom"];
 
 export function CharacterLevelSelector({
     form,
@@ -42,13 +47,18 @@ export function CharacterLevelSelector({
             return;
         }
 
+        if (nextPreset === "lv2") {
+            setLevel(2);
+            return;
+        }
+
         if (nextPreset === "lv3") {
             setLevel(3);
             return;
         }
 
-        if (level === 1 || level === 3) {
-            setLevel(2);
+        if (isPresetLevel(level)) {
+            setLevel(CUSTOM_LEVEL_DEFAULT);
         }
     }
 

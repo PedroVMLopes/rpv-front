@@ -41,23 +41,23 @@ export function ClassSelectionPage({
                 return;
             }
 
-            requestChange("level", () => applyLevel(nextLevel));
+            guard.requestChange("level", () => applyLevel(nextLevel));
         },
         [applyLevel, form, guard.requestChange]
     );
 
     return (
         <div className="flex flex-col gap-6">
+            <CharacterLevelSelector
+                form={form}
+                onBeforeLevelChange={handleBeforeLevelChange}
+            />
             <CatalogSelectionPage
                 formField="characterClass"
                 form={form}
                 contentLocale={contentLocale}
                 system={system}
                 guard={guard}
-            />
-            <CharacterLevelSelector
-                form={form}
-                onBeforeLevelChange={handleBeforeLevelChange}
             />
             <SelectionChangeConfirmDialog
                 field={guard.pending?.field ?? null}

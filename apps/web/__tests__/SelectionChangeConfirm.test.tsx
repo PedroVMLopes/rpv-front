@@ -60,7 +60,7 @@ describe("SelectionChangeConfirmDialog", () => {
         await user.click(screen.getByRole("button", { name: "Keep current" }));
 
         expect(screen.getByTestId("catalog-card-dwarf").className).toMatch(
-            /bg-primary/
+            /border-primary/
         );
     });
 });

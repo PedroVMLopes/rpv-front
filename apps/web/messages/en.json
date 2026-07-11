@@ -326,6 +326,7 @@
     "level": {
       "label": "Character level",
       "lv1": "Lv 1",
+      "lv2": "Lv 2",
       "lv3": "Lv 3",
       "custom": "Custom",
       "customInput": "Custom level",
@@ -345,7 +346,16 @@
       "deselect": "Clear selection",
       "deferredChoice": "You will choose {count} later in {stepLabel} ({label})",
       "deferredChoiceGeneric": "You will make this choice in a later step",
-      "goToStep": "Choose {stepLabel} →"
+      "goToStep": "Choose {stepLabel} →",
+      "description": "Description",
+      "grants": "What you get",
+      "selectToPreview": {
+        "race": "Select a race to see its description and traits.",
+        "subrace": "Select a subrace to see its description and traits.",
+        "class": "Select a class to see its description and features.",
+        "subclass": "Select a subclass to see its description and features.",
+        "background": "Select a background to see its description and features."
+      }
     },
     "reset": {
       "title": "Change {field}?",

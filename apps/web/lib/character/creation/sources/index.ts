@@ -64,7 +64,12 @@ function listDndSubraces(
     }));
 }
 
-function listDndClasses(locale: Locale): CatalogSelectionEntry[] {
+function listDndClasses(
+    locale: Locale,
+    context: CatalogSelectionContext
+): CatalogSelectionEntry[] {
+    const characterLevel = context.characterLevel ?? 1;
+
     return contentRepo("dnd")
         .listClasses(locale)
         .map((classEntry) => {
@@ -75,7 +80,7 @@ function listDndClasses(locale: Locale): CatalogSelectionEntry[] {
                 title: classEntry.name,
                 summary: truncateSummary(classEntry.description),
                 detailDescription: classEntry.description,
-                grants: extractClassGrants(classEntry, 1),
+                grants: extractClassGrants(classEntry, characterLevel),
                 badges: [
                     {
                         label: `d${classEntry.hitDie}`,
@@ -136,7 +141,7 @@ function listDndBackgrounds(locale: Locale): CatalogSelectionEntry[] {
 const dndSources: Record<CatalogSelectionKind, CatalogSelectionSource> = {
     race: { list: (locale) => listDndRaces(locale) },
     subrace: { list: listDndSubraces },
-    class: { list: (locale) => listDndClasses(locale) },
+    class: { list: listDndClasses },
     subclass: { list: listDndSubclasses },
     background: { list: (locale) => listDndBackgrounds(locale) },
 };

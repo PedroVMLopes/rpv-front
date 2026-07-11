@@ -7,7 +7,6 @@ import type {
 } from "@rpv/content";
 import {
     getClassGrants,
-    getClassSubclassLevel,
     getSubclassGrants,
     type Grant,
 } from "@rpv/content";
@@ -29,11 +28,10 @@ export function extractClassGrants(
 
 export function extractSubclassGrants(
     subclass: SubclassEntry,
-    classSlug: string,
+    _classSlug: string,
     characterLevel = 1
 ): Grant[] {
-    const subclassLevel = getClassSubclassLevel(classSlug) ?? characterLevel;
-    return getSubclassGrants(subclass.slug, Math.max(subclassLevel, 1));
+    return getSubclassGrants(subclass.slug, characterLevel);
 }
 
 export function extractBackgroundGrants(background: BackgroundEntry): Grant[] {

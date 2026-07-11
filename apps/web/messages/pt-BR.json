@@ -326,6 +326,7 @@
     "level": {
       "label": "Nível do personagem",
       "lv1": "Nv 1",
+      "lv2": "Nv 2",
       "lv3": "Nv 3",
       "custom": "Personalizado",
       "customInput": "Nível personalizado",
@@ -345,7 +346,16 @@
       "deselect": "Limpar seleção",
       "deferredChoice": "Você escolherá {count} depois em {stepLabel} ({label})",
       "deferredChoiceGeneric": "Você fará esta escolha em um passo posterior",
-      "goToStep": "Escolher {stepLabel} →"
+      "goToStep": "Escolher {stepLabel} →",
+      "description": "Descrição",
+      "grants": "O que você recebe",
+      "selectToPreview": {
+        "race": "Selecione uma raça para ver descrição e traços.",
+        "subrace": "Selecione uma sub-raça para ver descrição e traços.",
+        "class": "Selecione uma classe para ver descrição e recursos.",
+        "subclass": "Selecione uma subclasse para ver descrição e recursos.",
+        "background": "Selecione um antecedente para ver descrição e recursos."
+      }
     },
     "reset": {
       "title": "Alterar {field}?",
