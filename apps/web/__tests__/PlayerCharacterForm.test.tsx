@@ -57,6 +57,8 @@ describe("PlayerCharacterForm", () => {
 
         const sidebar = getCreationSidebar();
 
+        expect(sidebar.getByRole("button", { name: "Race" })).toBeInTheDocument();
+        expect(sidebar.getAllByRole("button", { name: "Race" })).toHaveLength(1);
         expect(sidebar.getByRole("button", { name: "Subrace" })).toBeInTheDocument();
     });
 
@@ -184,6 +186,31 @@ describe("PlayerCharacterForm", () => {
         );
 
         expect(onSave).toHaveBeenCalled();
+    });
+
+    it("renders macro group titles as plain text when they have sub-steps", () => {
+        render(
+            <PlayerFormHarness
+                defaultValues={{
+                    race: "elf",
+                    characterClass: "fighter",
+                    level: 3,
+                }}
+            />
+        );
+
+        const sidebar = getCreationSidebar();
+
+        expect(sidebar.getByText("Class & Progression")).toBeInTheDocument();
+        expect(
+            sidebar.queryByRole("button", { name: "Class & Progression" })
+        ).not.toBeInTheDocument();
+        expect(
+            sidebar.getByRole("button", { name: "Class & Level" })
+        ).toBeInTheDocument();
+        expect(
+            sidebar.getByRole("button", { name: "Subclass" })
+        ).toBeInTheDocument();
     });
 
     it("can jump to the class step from the sidebar", async () => {

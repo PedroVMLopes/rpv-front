@@ -2,11 +2,6 @@
 
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
-import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { CreationStepGraph } from "@/lib/character/creationSteps";
@@ -77,6 +72,31 @@ export function CharacterCreationSidebar({
 
     const activeMacroId = graph.getMacroGroupForStep(activeStepId);
 
+    function renderStepButton(stepId: string) {
+        const step = graph.getStep(stepId);
+
+        if (!step) {
+            return null;
+        }
+
+        const isActive = stepId === activeStepId;
+
+        return (
+            <button
+                key={stepId}
+                type="button"
+                onClick={() => onStepSelect(stepId)}
+                className={cn(
+                    "rounded-md px-2 py-1.5 text-left text-xs hover:bg-muted/60",
+                    isActive &&
+                        "bg-primary text-primary-foreground hover:bg-primary/90"
+                )}
+            >
+                {labelFor(step.labelKey, stepId)}
+            </button>
+        );
+    }
+
     return (
         <div
             data-testid="character-creation-sidebar"
@@ -86,55 +106,68 @@ export function CharacterCreationSidebar({
                 {graph.macroGroups.map((macro) => {
                     const macroPending = pendingCountByMacro.get(macro.id) ?? 0;
                     const isActiveMacro = macro.id === activeMacroId;
+                    const hasMultipleSteps = macro.stepIds.length > 1;
 
-                    return (
-                        <Collapsible
-                            key={macro.id}
-                            defaultOpen={isActiveMacro || macroPending > 0}
-                        >
-                            <CollapsibleTrigger asChild>
+                    if (macro.stepIds.length === 0) {
+                        return null;
+                    }
+
+                    if (!hasMultipleSteps) {
+                        const stepId = macro.stepIds[0]!;
+                        const step = graph.getStep(stepId);
+
+                        if (!step) {
+                            return null;
+                        }
+
+                        const isActive = stepId === activeStepId;
+
+                        return (
+                            <div
+                                key={macro.id}
+                                className="flex items-center justify-between gap-2"
+                            >
                                 <button
                                     type="button"
+                                    onClick={() => onStepSelect(stepId)}
                                     className={cn(
-                                        "flex w-full items-center justify-between rounded-md px-2 py-2 text-left text-sm font-semibold hover:bg-muted/60",
-                                        isActiveMacro && "bg-primary/10 text-primary"
+                                        "flex-1 rounded-md px-2 py-1.5 text-left text-xs hover:bg-muted/60",
+                                        isActive &&
+                                            "bg-primary text-primary-foreground hover:bg-primary/90"
                                     )}
                                 >
-                                    <span>{labelFor(macro.labelKey, macro.id)}</span>
-                                    {macroPending > 0 ? (
-                                        <span className="rounded-full bg-destructive/15 px-2 py-0.5 text-xs font-semibold text-destructive">
-                                            {macroPending}
-                                        </span>
-                                    ) : null}
+                                    {labelFor(step.labelKey, stepId)}
                                 </button>
-                            </CollapsibleTrigger>
-                            <CollapsibleContent className="flex flex-col gap-0.5 pl-3 pt-1">
-                                {macro.stepIds.map((stepId) => {
-                                    const step = graph.getStep(stepId);
+                                {macroPending > 0 ? (
+                                    <span className="shrink-0 rounded-full bg-destructive/15 px-2 py-0.5 text-xs font-semibold text-destructive">
+                                        {macroPending}
+                                    </span>
+                                ) : null}
+                            </div>
+                        );
+                    }
 
-                                    if (!step) {
-                                        return null;
-                                    }
-
-                                    const isActive = stepId === activeStepId;
-
-                                    return (
-                                        <button
-                                            key={stepId}
-                                            type="button"
-                                            onClick={() => onStepSelect(stepId)}
-                                            className={cn(
-                                                "rounded-md px-2 py-1.5 text-left text-xs hover:bg-muted/60",
-                                                isActive &&
-                                                    "bg-primary text-primary-foreground hover:bg-primary/90"
-                                            )}
-                                        >
-                                            {labelFor(step.labelKey, stepId)}
-                                        </button>
-                                    );
-                                })}
-                            </CollapsibleContent>
-                        </Collapsible>
+                    return (
+                        <div key={macro.id} className="flex flex-col gap-0.5">
+                            <div
+                                className={cn(
+                                    "flex items-center justify-between rounded-md px-2 py-2 text-sm font-semibold",
+                                    isActiveMacro && "text-primary"
+                                )}
+                            >
+                                <span>{labelFor(macro.labelKey, macro.id)}</span>
+                                {macroPending > 0 ? (
+                                    <span className="rounded-full bg-destructive/15 px-2 py-0.5 text-xs font-semibold text-destructive">
+                                        {macroPending}
+                                    </span>
+                                ) : null}
+                            </div>
+                            <div className="flex flex-col gap-0.5 pl-3">
+                                {macro.stepIds.map((stepId) =>
+                                    renderStepButton(stepId)
+                                )}
+                            </div>
+                        </div>
                     );
                 })}
             </nav>
