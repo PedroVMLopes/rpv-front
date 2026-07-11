@@ -7,6 +7,7 @@ import {
 const itemStackSchema = z.object({
     slug: z.string(),
     quantity: z.number().int().min(1),
+    provenance: z.string().optional(),
 });
 
 const characterInventorySchema = z.object({

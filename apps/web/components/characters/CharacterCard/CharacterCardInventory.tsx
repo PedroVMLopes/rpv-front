@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import type { CharacterInventory } from "@rpv/domain";
+import { emptyInventory, type CharacterInventory } from "@rpv/domain";
 import {
     canEquipItem,
     getEquipmentSlots,
@@ -13,7 +13,7 @@ import type { SystemKey } from "@/presets";
 import { CarouselItem } from "@/components/ui/characterCarousel";
 import { SheetPanel } from "@/components/characters/SheetPanel";
 import { Button } from "@/components/ui/button";
-import { bagStackReactKey } from "@/lib/character/inventory";
+import { bagStackReactKey, sanitizeInventory } from "@/lib/character/inventory";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { useContentLocale } from "@/store/useContentLocale";
 import { CharacterCardSlide } from "./characterCardUi";
@@ -200,7 +200,14 @@ export default function CharacterCardInventory({
         );
     }
 
-    const inventory = stored.selections.inventory;
+    const inventory = useMemo(
+        () =>
+            sanitizeInventory(
+                stored.selections.inventory ?? emptyInventory(),
+                stored.system
+            ),
+        [stored.selections.inventory, stored.system]
+    );
     const resolved = getResolvedStats(characterId);
     const slots = getEquipmentSlots(stored.system);
 

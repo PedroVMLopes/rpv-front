@@ -99,6 +99,32 @@ describe("InventoryTab", () => {
         expect(screen.getByText("Equipped")).toBeInTheDocument();
     });
 
+    it("does not duplicate items present in both bag and equipped slots", () => {
+        const overlapping: StoredCharacter = {
+            ...storedCharacter,
+            id: "char-inventory-overlap",
+            selections: {
+                ...storedCharacter.selections,
+                inventory: {
+                    bag: [
+                        { slug: "longsword", quantity: 1 },
+                        { slug: "leather-armor", quantity: 1 },
+                    ],
+                    equipped: {
+                        "main-hand": "longsword",
+                        armor: "leather-armor",
+                    },
+                },
+            },
+        };
+
+        renderWithProviders(<InventoryTab stored={overlapping} />);
+
+        expect(screen.getAllByText("Longsword")).toHaveLength(1);
+        expect(screen.getAllByText("Leather Armor")).toHaveLength(1);
+        expect(screen.getAllByText("Equipped")).toHaveLength(2);
+    });
+
     it("filters items by category tab", async () => {
         const user = userEvent.setup();
         renderWithProviders(<InventoryTab stored={storedCharacter} />);

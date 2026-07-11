@@ -88,4 +88,77 @@ describe("CharacterCardInventory", () => {
             screen.getByRole("button", { name: "Remove" })
         ).toBeInTheDocument();
     });
+
+    it("lists each granted starting item once in the bag after creation", () => {
+        act(() => {
+            useCharacterStore.getState().addCharacter(
+                {
+                    ...baseFormData,
+                    characterClass: "fighter",
+                    background: "sage",
+                    choices: {
+                        grantPicks: {
+                            "class:fighter:base:exclusive:starting-wealth":
+                                "equipment",
+                        },
+                    },
+                },
+                "player",
+                "dnd"
+            );
+        });
+
+        const character = useCharacterStore.getState().characters[0];
+
+        renderWithProviders(
+            <CharacterCardInventory characterId={character.id} />
+        );
+
+        expect(screen.getAllByRole("button", { name: "Remove" })).toHaveLength(2);
+    });
+
+    it("does not duplicate bag items after edit save stripped provenance", () => {
+        act(() => {
+            useCharacterStore.getState().addCharacter(
+                {
+                    ...baseFormData,
+                    characterClass: "fighter",
+                    background: "sage",
+                    choices: {
+                        grantPicks: {
+                            "class:fighter:base:exclusive:starting-wealth":
+                                "equipment",
+                        },
+                    },
+                },
+                "player",
+                "dnd"
+            );
+        });
+
+        const character = useCharacterStore.getState().characters[0];
+        const strippedInventory = {
+            bag: character.selections.inventory.bag.map(({ slug, quantity }) => ({
+                slug,
+                quantity,
+            })),
+            equipped: {},
+        };
+
+        act(() => {
+            useCharacterStore.getState().updateCharacter(character.id, {
+                ...baseFormData,
+                characterClass: "fighter",
+                background: "sage",
+                inventory: strippedInventory,
+                choices: character.selections.choices,
+            });
+        });
+
+        renderWithProviders(
+            <CharacterCardInventory characterId={character.id} />
+        );
+
+        expect(screen.getAllByRole("button", { name: "Remove" })).toHaveLength(2);
+    });
 });

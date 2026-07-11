@@ -212,6 +212,40 @@ describe("buildStoredCharacter", () => {
         ]);
     });
 
+    it("does not duplicate granted bag stacks when form inventory lost provenance on edit save", () => {
+        const created = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                background: "sage",
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        const strippedInventory = {
+            bag: created.selections.inventory!.bag.map(({ slug, quantity }) => ({
+                slug,
+                quantity,
+            })),
+            equipped: {},
+        };
+
+        const rebuilt = rebuildStoredCharacter(
+            created,
+            {
+                ...baseFormData,
+                background: "sage",
+                inventory: strippedInventory,
+            },
+            "en"
+        );
+
+        expect(rebuilt.selections.inventory?.bag).toEqual(
+            created.selections.inventory?.bag
+        );
+    });
+
     it("drops granted background loot when background is cleared but keeps manual bag items", () => {
         const created = buildNewStoredCharacter(
             {

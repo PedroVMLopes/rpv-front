@@ -171,6 +171,42 @@ describe("mergeStartingGrants", () => {
         expect(merged.grantedCurrency).toEqual({ gold: 15 });
     });
 
+    it("drops manual bag copies when the same slug is still granted", () => {
+        const merged = mergeStartingGrants(
+            {
+                ...emptyCharacterSelections(),
+                background: "sage",
+                characterClass: "fighter",
+                choices: {
+                    grantPicks: fighterEquipmentPicks,
+                },
+                inventory: {
+                    bag: [
+                        { slug: "scroll-of-fire-bolt", quantity: 1 },
+                        { slug: "longsword", quantity: 1 },
+                    ],
+                    equipped: {},
+                },
+            },
+            "en",
+            "dnd",
+            1
+        );
+
+        expect(merged.inventory?.bag).toEqual([
+            {
+                slug: "scroll-of-fire-bolt",
+                quantity: 1,
+                provenance: "grant:background:sage:2",
+            },
+            {
+                slug: "longsword",
+                quantity: 1,
+                provenance: "grant:class:fighter:4",
+            },
+        ]);
+    });
+
     it("removes equipped slug from bag after materializing granted stacks", () => {
         const merged = mergeStartingGrants(
             {

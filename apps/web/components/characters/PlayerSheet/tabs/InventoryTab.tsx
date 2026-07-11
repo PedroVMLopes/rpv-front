@@ -1,7 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { emptyInventory } from "@rpv/domain";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
+import { sanitizeInventory } from "@/lib/character/inventory";
 import {
     filterInventoryRows,
     listInventoryRows,
@@ -18,7 +20,14 @@ type InventoryTabProps = {
 export function InventoryTab({ stored }: InventoryTabProps) {
     const [activeFilter, setActiveFilter] = useState<InventoryFilterId>("all");
 
-    const inventory = stored.selections.inventory ?? { bag: [], equipped: {} };
+    const inventory = useMemo(
+        () =>
+            sanitizeInventory(
+                stored.selections.inventory ?? emptyInventory(),
+                stored.system
+            ),
+        [stored.selections.inventory, stored.system]
+    );
 
     const allRows = useMemo(
         () => listInventoryRows(inventory, stored.system),

@@ -129,6 +129,17 @@ export function resolveInventoryGrantProvenance(
     return undefined;
 }
 
+function splitManualBagStacks(
+    previousBag: CharacterInventory["bag"],
+    grantedBag: CharacterInventory["bag"]
+): CharacterInventory["bag"] {
+    const grantedSlugs = new Set(grantedBag.map((stack) => stack.slug));
+
+    return previousBag.filter(
+        (stack) => !stack.provenance && !grantedSlugs.has(stack.slug)
+    );
+}
+
 export function mergeStartingGrants(
     selections: CharacterSelections,
     locale: Locale,
@@ -136,13 +147,13 @@ export function mergeStartingGrants(
     characterLevel: number
 ): CharacterSelections {
     const previousBag = selections.inventory?.bag ?? [];
-    const manualBag = previousBag.filter((stack) => !stack.provenance);
     const grantedBag = materializeInventoryGrants(
         selections,
         locale,
         system,
         characterLevel
     );
+    const manualBag = splitManualBagStacks(previousBag, grantedBag);
     const grantedCurrency = materializeCurrencyGrants(
         selections,
         locale,
