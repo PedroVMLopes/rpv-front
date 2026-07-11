@@ -5,6 +5,9 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NextIntlClientProvider } from "next-intl";
 import type { Grant } from "@rpv/content";
+import {
+    getClassGrantSourcesForLevel,
+} from "@rpv/content";
 import { GrantPreviewList } from "../components/characters/creation/GrantPreviewList";
 import enMessages from "../messages/en.json";
 
@@ -53,5 +56,38 @@ describe("GrantPreviewList", () => {
         expect(
             screen.getByText(/You will choose 2 later in/i)
         ).toBeInTheDocument();
+    });
+
+    it("renders multiple fixed contexts without duplicate React keys", () => {
+        const consoleError = jest
+            .spyOn(console, "error")
+            .mockImplementation(() => {});
+
+        const contexts = getClassGrantSourcesForLevel("fighter", 1).flatMap(
+            (block) =>
+                block.grants.map((grant) => ({
+                    grant,
+                    source: { type: "class" as const, id: "fighter" },
+                    featureLevel: block.featureLevel,
+                }))
+        );
+
+        render(
+            <NextIntlClientProvider locale="en" messages={enMessages}>
+                <GrantPreviewList
+                    contexts={contexts}
+                    contentLocale="en"
+                    system="dnd"
+                    mode="fixed-only"
+                />
+            </NextIntlClientProvider>
+        );
+
+        const duplicateKeyWarnings = consoleError.mock.calls.filter((call) =>
+            String(call[0]).includes("same key")
+        );
+        expect(duplicateKeyWarnings).toHaveLength(0);
+
+        consoleError.mockRestore();
     });
 });

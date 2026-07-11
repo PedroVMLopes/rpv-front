@@ -37,7 +37,7 @@ function buildItemsFromContexts(
     translateAbility: (ref: string) => string,
     translateResource: (ref: string) => string
 ): GrantPreviewItem[] {
-    return contexts.flatMap(({ grant, source, featureLevel }) =>
+    return contexts.flatMap(({ grant, source, featureLevel }, contextIndex) =>
         buildGrantPreviewItems(
             [grant],
             source,
@@ -46,7 +46,10 @@ function buildItemsFromContexts(
             translateAbility,
             translateResource,
             featureLevel
-        )
+        ).map((item) => ({
+            ...item,
+            id: `${source.type}:${source.id}:${featureLevel ?? "base"}:${contextIndex}:${item.id}`,
+        }))
     );
 }
 
