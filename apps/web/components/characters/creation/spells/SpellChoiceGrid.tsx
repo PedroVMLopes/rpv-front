@@ -173,20 +173,6 @@ export function SpellChoiceGrid({
                                                 />
                                             </Button>
                                         </div>
-                                        <span
-                                            className={cn(
-                                                "text-xs",
-                                                isSelected
-                                                    ? "text-primary-foreground/80"
-                                                    : "text-muted-foreground"
-                                            )}
-                                        >
-                                            {isSelected
-                                                ? t("spellPick.selected")
-                                                : option.disabled
-                                                  ? t("spellPick.unavailable")
-                                                  : t("spellPick.available")}
-                                        </span>
                                     </div>
                                 );
                             })}

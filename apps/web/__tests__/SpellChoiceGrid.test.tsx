@@ -60,6 +60,8 @@ describe("SpellChoiceGrid", () => {
 
         const spellButtons = screen.getAllByText(/Fire Bolt|Ray of Frost/i);
         expect(spellButtons.length).toBeGreaterThan(0);
+        expect(screen.queryByText("Selected")).not.toBeInTheDocument();
+        expect(screen.queryByText("Available")).not.toBeInTheDocument();
 
         await user.click(spellButtons[0]!);
 
