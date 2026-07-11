@@ -267,17 +267,53 @@
     "equipToSlot": "Equip to {slot}"
   },
   "characterCreation": {
+    "macro": {
+      "race": "Race",
+      "class": "Class & Progression",
+      "background": "Background",
+      "abilities": "Ability Scores",
+      "finalize": "Finalize"
+    },
     "steps": {
       "race": "Race",
-      "class": "Class",
-      "abilities": "Ability Scores",
+      "subrace": "Subrace",
+      "race-cantrips": "Racial cantrips",
+      "race-spells": "Racial spells",
+      "race-choices": "Racial choices",
+      "class": "Class & Level",
+      "class-level-1": "Level 1",
+      "class-level-1-cantrips": "Level 1 cantrips",
+      "class-level-1-spells": "Level 1 spells",
+      "class-level-1-choices": "Level 1 choices",
+      "class-level-2": "Level 2",
+      "class-level-2-cantrips": "Level 2 cantrips",
+      "class-level-2-spells": "Level 2 spells",
+      "class-level-2-choices": "Level 2 choices",
+      "class-level-3": "Level 3",
+      "class-level-3-cantrips": "Level 3 cantrips",
+      "class-level-3-spells": "Level 3 spells",
+      "class-level-3-choices": "Level 3 choices",
+      "subclass": "Subclass",
+      "subclass-level-1": "Subclass level 1",
+      "subclass-level-2": "Subclass level 2",
+      "subclass-level-3": "Subclass level 3",
       "background": "Background & Details",
+      "background-choices": "Background choices",
+      "abilities": "Ability Scores",
+      "finalize": "Starting Equipment",
       "equipment": "Starting Equipment"
     },
     "navigation": {
       "back": "Back",
       "next": "Next",
-      "save": "Save Character"
+      "save": "Save Character",
+      "openSteps": "Steps",
+      "stepsNav": "Character creation steps",
+      "currentStep": "Current step",
+      "pendingTitle": "Pending ({count})"
+    },
+    "progression": {
+      "deferredLevels": "This character is level {level}. Choices for levels above {cap} can be completed after creation via Level Up or character settings."
     },
     "hints": {
       "selectRace": "Select a race before continuing.",

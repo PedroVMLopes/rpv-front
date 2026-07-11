@@ -7,31 +7,58 @@ import type { Locale } from "@rpv/domain";
 import { getClassSubclassLevel } from "@rpv/content";
 import type { SystemKey } from "@/presets";
 import type { PresetStatConfig } from "@/presets/types";
+import { Button } from "@/components/ui/button";
 import { DynamicForm } from "@/components/forms/DynamicForm";
 import { AbilityScoresField } from "@/components/characters/AbilityScoresField";
 import { HitPointsField } from "@/components/characters/HitPointsField";
 import { ArmorClassField } from "@/components/characters/ArmorClassField";
 import { ClassResourcesField } from "@/components/characters/ClassResourcesField";
 import { CharacterGrantPickers } from "@/components/characters/CharacterGrantPickers";
-import { ClassStepContent } from "@/components/characters/ClassStepContent";
+import { CharacterLevelSelector } from "@/components/characters/CharacterLevelSelector";
 import { StartingEquipmentField } from "@/components/characters/StartingEquipmentField";
-import { CharacterCreationStepper } from "@/components/characters/CharacterCreationStepper";
-import { PendingDecisionsPanel } from "@/components/characters/PendingDecisionsPanel";
+import { CharacterCreationSidebar } from "@/components/characters/creation/CharacterCreationSidebar";
+import { CreationStepsDrawer } from "@/components/characters/creation/CreationStepsDrawer";
+import { LevelProgressionPage } from "@/components/characters/creation/LevelProgressionPage";
 import {
     buildPlayerGrantSourceFields,
     filterPlayerFormFields,
     getVisiblePlayerFields,
 } from "@/lib/character/playerFormFields";
 import {
-    CHARACTER_CREATION_STEP_COUNT,
-    CHARACTER_CREATION_STEPS,
-    getFirstErrorStepIndex,
-    getGrantSourceTypesForStep,
+    getFirstErrorStepId,
+    resolveCreationGraph,
 } from "@/lib/character/characterCreationSteps";
+import {
+    resolveInitialStepId,
+} from "@/lib/character/creationSteps";
 import { resolveCharacterNameForSave } from "@/lib/character/defaultCharacterName";
 import { collectPendingDecisions } from "@/lib/character/pendingDecisions";
 import { useGrantPickSanitizer } from "@/lib/character/useGrantPickSanitizer";
 import { readLevelFromForm } from "@/lib/character/level";
+import { getCreationProgressionLevel } from "@/lib/character/creationSteps/progressionLevel";
+import { cn } from "@/lib/utils";
+
+function useMediaQuery(query: string): boolean {
+    const [matches, setMatches] = useState(() => {
+        if (typeof window === "undefined") {
+            return false;
+        }
+
+        return window.matchMedia(query).matches;
+    });
+
+    useEffect(() => {
+        const media = window.matchMedia(query);
+        const update = () => setMatches(media.matches);
+
+        update();
+        media.addEventListener("change", update);
+
+        return () => media.removeEventListener("change", update);
+    }, [query]);
+
+    return matches;
+}
 
 type FieldConfig = {
     name: string;
@@ -47,11 +74,14 @@ export type PlayerCharacterFormProps = {
     contentLocale: Locale;
     onSave: (data: Record<string, unknown>) => void;
     header?: React.ReactNode;
-    initialStep?: number;
+    initialStepId?: string;
 };
 
-function clampStepIndex(step: number): number {
-    return Math.min(Math.max(step, 0), CHARACTER_CREATION_STEP_COUNT - 1);
+function humanizeStepId(stepId: string): string {
+    return stepId
+        .split("-")
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ");
 }
 
 export function PlayerCharacterForm({
@@ -63,9 +93,10 @@ export function PlayerCharacterForm({
     contentLocale,
     onSave,
     header,
-    initialStep = 0,
+    initialStepId,
 }: PlayerCharacterFormProps) {
     const t = useTranslations("characterCreation");
+    const isDesktopSidebar = useMediaQuery("(min-width: 768px)");
     const formValues = form.watch();
     const raceSlug = form.watch("race");
     const classSlug = form.watch("characterClass");
@@ -83,17 +114,33 @@ export function PlayerCharacterForm({
         readLevelFromForm(formValues)
     );
 
-    const [activeStep, setActiveStep] = useState(() =>
-        clampStepIndex(initialStep)
+    const creationGraph = useMemo(
+        () => resolveCreationGraph(formValues, system, contentLocale),
+        [formValues, system, contentLocale]
     );
+
+    const [activeStepId, setActiveStepId] = useState(() =>
+        resolveInitialStepId(initialStepId, creationGraph)
+    );
+    const [mobileNavOpen, setMobileNavOpen] = useState(false);
     const [stepHint, setStepHint] = useState<string | null>(null);
     const [isSaving, setIsSaving] = useState(false);
 
     useGrantPickSanitizer(form, contentLocale, system);
 
     useEffect(() => {
-        setActiveStep(clampStepIndex(initialStep));
-    }, [initialStep]);
+        if (initialStepId === undefined) {
+            return;
+        }
+
+        setActiveStepId(resolveInitialStepId(initialStepId, creationGraph));
+    }, [initialStepId, creationGraph]);
+
+    useEffect(() => {
+        if (!creationGraph.isValidStepId(activeStepId)) {
+            setActiveStepId(creationGraph.steps[0]?.id ?? "race");
+        }
+    }, [activeStepId, creationGraph]);
 
     useEffect(() => {
         if (
@@ -147,20 +194,27 @@ export function PlayerCharacterForm({
         [baseFields, raceSlug, classSlug, level, contentLocale]
     );
 
-    const activeStepId = CHARACTER_CREATION_STEPS[activeStep]?.id ?? "race";
+    const activeStep = creationGraph.getStep(activeStepId);
+    const stepTitle = useMemo(() => {
+        if (!activeStep) {
+            return "";
+        }
+
+        try {
+            return t(activeStep.labelKey as never);
+        } catch {
+            return humanizeStepId(activeStep.id);
+        }
+    }, [activeStep, t]);
 
     const stepFields = useMemo(
         () =>
-            getVisiblePlayerFields(hydratedFields, activeStepId, {
+            getVisiblePlayerFields(hydratedFields, activeStepId, creationGraph, {
                 raceSlug,
-                classSlug,
-                level: readLevelFromForm({ level }),
                 contentLocale,
             }),
-        [hydratedFields, activeStepId, raceSlug, classSlug, level, contentLocale]
+        [hydratedFields, activeStepId, creationGraph, raceSlug, contentLocale]
     );
-
-    const grantSourceTypes = getGrantSourceTypesForStep(activeStepId);
 
     const pendingDecisions = useMemo(
         () =>
@@ -168,27 +222,41 @@ export function PlayerCharacterForm({
                 formValues,
                 contentLocale,
                 system,
-                statConfig
+                statConfig,
+                "creation"
             ),
         [formValues, contentLocale, system, statConfig]
     );
 
+    const isLastStep =
+        activeStepId === creationGraph.steps.at(-1)?.id;
+
     const handleNext = useCallback(() => {
         setStepHint(null);
-        setActiveStep((current) =>
-            Math.min(current + 1, CHARACTER_CREATION_STEP_COUNT - 1)
-        );
-    }, []);
+        const nextStepId = creationGraph.getNextStepId(activeStepId);
+
+        if (nextStepId) {
+            setActiveStepId(nextStepId);
+        }
+    }, [activeStepId, creationGraph]);
 
     const handleBack = useCallback(() => {
         setStepHint(null);
-        setActiveStep((current) => Math.max(current - 1, 0));
-    }, []);
+        const prevStepId = creationGraph.getPrevStepId(activeStepId);
 
-    const handleStepSelect = useCallback((stepIndex: number) => {
+        if (prevStepId) {
+            setActiveStepId(prevStepId);
+        }
+    }, [activeStepId, creationGraph]);
+
+    const handleStepSelect = useCallback((stepId: string) => {
         setStepHint(null);
-        setActiveStep(clampStepIndex(stepIndex));
-    }, []);
+
+        if (creationGraph.isValidStepId(stepId)) {
+            setActiveStepId(stepId);
+            setMobileNavOpen(false);
+        }
+    }, [creationGraph]);
 
     const handleSave = useCallback(async () => {
         setIsSaving(true);
@@ -203,9 +271,18 @@ export function PlayerCharacterForm({
         const valid = await form.trigger(undefined, { shouldFocus: true });
 
         if (!valid) {
-            const errorStep = getFirstErrorStepIndex(form.formState.errors);
-            if (errorStep !== undefined) {
-                setActiveStep(errorStep);
+            const errorStepId = getFirstErrorStepId(
+                form.formState.errors,
+                creationGraph,
+                {
+                    formData: form.getValues(),
+                    locale: contentLocale,
+                    system,
+                }
+            );
+
+            if (errorStepId) {
+                setActiveStepId(errorStepId);
             }
 
             setStepHint(t("hints.fixErrors"));
@@ -223,67 +300,98 @@ export function PlayerCharacterForm({
         })();
 
         setIsSaving(false);
-    }, [contentLocale, form, onSave, t]);
+    }, [contentLocale, creationGraph, form, onSave, system, t]);
+
+    const showDeferredLevelsBanner =
+        readLevelFromForm(formValues) > getCreationProgressionLevel(formValues);
+
+    const sidebar = (
+        <CharacterCreationSidebar
+            graph={creationGraph}
+            activeStepId={activeStepId}
+            pendingDecisions={pendingDecisions}
+            stepHint={stepHint}
+            isLastStep={Boolean(isLastStep)}
+            isSaving={isSaving}
+            onStepSelect={handleStepSelect}
+            onBack={handleBack}
+            onNext={handleNext}
+            onSave={() => void handleSave()}
+        />
+    );
 
     const stepContent = (() => {
-        switch (activeStepId) {
-            case "race":
+        if (!activeStep) {
+            return null;
+        }
+
+        switch (activeStep.kind) {
+            case "selection":
                 return (
-                    <>
+                    <div className="flex flex-col gap-4">
+                        <h2 className="text-lg font-bold md:sr-only">{stepTitle}</h2>
                         <DynamicForm
                             form={form}
                             fields={stepFields}
                             hideSubmit
                         />
+                        {activeStep.id === "class" ? (
+                            <CharacterLevelSelector form={form} />
+                        ) : null}
+                    </div>
+                );
+            case "level_summary":
+                return (
+                    <LevelProgressionPage
+                        form={form}
+                        contentLocale={contentLocale}
+                        sourceFilter={activeStep.sourceFilter}
+                        title={stepTitle}
+                    />
+                );
+            case "grant_picks":
+                return (
+                    <div className="flex flex-col gap-4">
+                        <h2 className="text-lg font-bold">{stepTitle}</h2>
                         <CharacterGrantPickers
                             form={form}
                             contentLocale={contentLocale}
                             system={system}
-                            sourceTypes={grantSourceTypes}
+                            stepFilter={activeStep.sourceFilter}
+                            sections="choices-only"
                         />
-                    </>
-                );
-            case "class":
-                return (
-                    <ClassStepContent
-                        form={form}
-                        fields={stepFields}
-                        contentLocale={contentLocale}
-                        system={system}
-                    />
+                    </div>
                 );
             case "abilities":
                 return (
-                    <AbilityScoresField
-                        form={form}
-                        abilities={statConfig.abilities}
-                        statConfig={statConfig}
-                        contentLocale={contentLocale}
-                    />
-                );
-            case "background":
-                return (
-                    <>
-                        <DynamicForm
+                    <div className="flex flex-col gap-4">
+                        <AbilityScoresField
                             form={form}
-                            fields={stepFields}
-                            hideSubmit
+                            abilities={statConfig.abilities}
+                            statConfig={statConfig}
+                            contentLocale={contentLocale}
                         />
                         <CharacterGrantPickers
                             form={form}
                             contentLocale={contentLocale}
                             system={system}
-                            sourceTypes={grantSourceTypes}
+                            stepFilter={{ grantTypes: ["ability_score"] }}
+                            sections="choices-only"
                         />
-                    </>
+                    </div>
                 );
-            case "equipment":
+            case "finalize":
                 return (
                     <div className="flex flex-col gap-4">
-                        <PendingDecisionsPanel
-                            decisions={pendingDecisions}
-                            onNavigateToStep={handleStepSelect}
-                        />
+                        <h2 className="text-lg font-bold md:sr-only">{stepTitle}</h2>
+                        {showDeferredLevelsBanner ? (
+                            <p className="rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-900 dark:text-amber-100">
+                                {t("progression.deferredLevels", {
+                                    level: readLevelFromForm(formValues),
+                                    cap: getCreationProgressionLevel(formValues),
+                                })}
+                            </p>
+                        ) : null}
                         <DynamicForm
                             form={form}
                             fields={stepFields}
@@ -294,10 +402,10 @@ export function PlayerCharacterForm({
                             contentLocale={contentLocale}
                             system={system}
                         />
-                        <div className="flex flex-col gap-4 border rounded-lg p-4 bg-muted/30">
-                            <h2 className="text-sm font-bold">
+                        <div className="flex flex-col gap-4 rounded-lg border bg-muted/30 p-4">
+                            <h3 className="text-sm font-bold">
                                 {t("combatPreviewTitle")}
-                            </h2>
+                            </h3>
                             <HitPointsField
                                 form={form}
                                 system={system}
@@ -325,17 +433,41 @@ export function PlayerCharacterForm({
         <FormProvider {...form}>
             <div className="flex flex-col gap-4">
                 {header}
-                <CharacterCreationStepper
-                    activeStep={activeStep}
-                    stepHint={stepHint}
-                    isLastStep={activeStep === CHARACTER_CREATION_STEP_COUNT - 1}
-                    onStepSelect={handleStepSelect}
-                    onBack={handleBack}
-                    onNext={handleNext}
-                    onSave={() => void handleSave()}
-                    isSaving={isSaving}
-                />
-                <div key={activeStepId}>{stepContent}</div>
+
+                <div className="flex items-center justify-between gap-3 md:hidden">
+                    <div className="min-w-0">
+                        <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                            {t("navigation.currentStep")}
+                        </p>
+                        <p className="truncate font-semibold">{stepTitle}</p>
+                    </div>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setMobileNavOpen(true)}
+                    >
+                        {t("navigation.openSteps")}
+                    </Button>
+                </div>
+
+                <div className="flex flex-col gap-4 md:flex-row md:items-start">
+                    {isDesktopSidebar ? (
+                        <div className="md:shrink-0">{sidebar}</div>
+                    ) : (
+                        <CreationStepsDrawer
+                            open={mobileNavOpen}
+                            onOpenChange={setMobileNavOpen}
+                            title={t("navigation.openSteps")}
+                        >
+                            {sidebar}
+                        </CreationStepsDrawer>
+                    )}
+
+                    <div className={cn("min-w-0 flex-1")} key={activeStepId}>
+                        {stepContent}
+                    </div>
+                </div>
             </div>
         </FormProvider>
     );

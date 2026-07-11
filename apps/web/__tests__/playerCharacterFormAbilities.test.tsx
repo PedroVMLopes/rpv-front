@@ -17,8 +17,10 @@ import enMessages from "../messages/en.json";
 
 function PlayerFormHarness({
     defaultValues = {},
+    initialStepId,
 }: {
     defaultValues?: Record<string, unknown>;
+    initialStepId?: string;
 }) {
     const schema = applyAbilityScoreValidation(
         applyChoiceValidation(
@@ -47,29 +49,26 @@ function PlayerFormHarness({
                 statConfig={dndStatConfig}
                 contentLocale="en"
                 onSave={jest.fn()}
+                initialStepId={initialStepId}
             />
         </NextIntlClientProvider>
     );
 }
 
 describe("PlayerCharacterForm abilities step", () => {
-    async function openAbilitiesStepViaNext(
-        user: ReturnType<typeof userEvent.setup>
-    ) {
-        await user.selectOptions(screen.getByRole("combobox", { name: "Race" }), "elf");
-        await user.click(screen.getByRole("button", { name: "Next" }));
-        await user.selectOptions(
-            screen.getByRole("combobox", { name: "Class" }),
-            "fighter"
-        );
-        await user.click(screen.getByRole("button", { name: "Next" }));
-    }
-
     it("updates standard array UI immediately on first visit via stepper navigation", async () => {
         const user = userEvent.setup();
 
-        render(<PlayerFormHarness defaultValues={{ name: "Hero" }} />);
-        await openAbilitiesStepViaNext(user);
+        render(
+            <PlayerFormHarness
+                defaultValues={{
+                    name: "Hero",
+                    race: "elf",
+                    characterClass: "fighter",
+                }}
+                initialStepId="abilities"
+            />
+        );
 
         const methodSelect = screen.getAllByRole("combobox")[0];
         expect(methodSelect).toHaveValue("standard-array");
@@ -83,21 +82,17 @@ describe("PlayerCharacterForm abilities step", () => {
     });
 
     it("uses manual method and migration hint for Lv 3 preset", async () => {
-        const user = userEvent.setup();
-
-        render(<PlayerFormHarness defaultValues={{ name: "Hero" }} />);
-
-        await user.selectOptions(
-            screen.getByRole("combobox", { name: "Race" }),
-            "elf"
+        render(
+            <PlayerFormHarness
+                defaultValues={{
+                    name: "Hero",
+                    race: "elf",
+                    characterClass: "fighter",
+                    level: 3,
+                }}
+                initialStepId="abilities"
+            />
         );
-        await user.click(screen.getByRole("button", { name: "Next" }));
-        await user.click(screen.getByRole("button", { name: "Lv 3" }));
-        await user.selectOptions(
-            screen.getByRole("combobox", { name: "Class" }),
-            "fighter"
-        );
-        await user.click(screen.getByRole("button", { name: "Next" }));
 
         expect(screen.getAllByRole("combobox")[0]).toHaveValue("manual");
         expect(
@@ -117,11 +112,8 @@ describe("PlayerCharacterForm abilities step", () => {
                     race: "elf",
                     characterClass: "fighter",
                 }}
+                initialStepId="abilities"
             />
-        );
-
-        await user.click(
-            screen.getByRole("button", { name: "3 Ability Scores" })
         );
 
         const methodSelect = screen.getAllByRole("combobox")[0];
@@ -137,8 +129,16 @@ describe("PlayerCharacterForm abilities step", () => {
     it("switches generation method UI immediately without tab change", async () => {
         const user = userEvent.setup();
 
-        render(<PlayerFormHarness defaultValues={{ name: "Hero" }} />);
-        await openAbilitiesStepViaNext(user);
+        render(
+            <PlayerFormHarness
+                defaultValues={{
+                    name: "Hero",
+                    race: "elf",
+                    characterClass: "fighter",
+                }}
+                initialStepId="abilities"
+            />
+        );
 
         expect(screen.queryByRole("spinbutton")).not.toBeInTheDocument();
 
@@ -147,4 +147,5 @@ describe("PlayerCharacterForm abilities step", () => {
 
         expect(screen.getAllByRole("spinbutton").length).toBeGreaterThan(0);
     });
+
 });

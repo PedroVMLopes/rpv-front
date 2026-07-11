@@ -267,17 +267,53 @@
     "equipToSlot": "Equipar em {slot}"
   },
   "characterCreation": {
+    "macro": {
+      "race": "Raça",
+      "class": "Classe e Progressão",
+      "background": "Antecedente",
+      "abilities": "Atributos",
+      "finalize": "Finalizar"
+    },
     "steps": {
       "race": "Raça",
-      "class": "Classe",
-      "abilities": "Atributos",
+      "subrace": "Sub-raça",
+      "race-cantrips": "Truques raciais",
+      "race-spells": "Magias raciais",
+      "race-choices": "Escolhas raciais",
+      "class": "Classe e Nível",
+      "class-level-1": "Nível 1",
+      "class-level-1-cantrips": "Truques de nível 1",
+      "class-level-1-spells": "Magias de nível 1",
+      "class-level-1-choices": "Escolhas de nível 1",
+      "class-level-2": "Nível 2",
+      "class-level-2-cantrips": "Truques de nível 2",
+      "class-level-2-spells": "Magias de nível 2",
+      "class-level-2-choices": "Escolhas de nível 2",
+      "class-level-3": "Nível 3",
+      "class-level-3-cantrips": "Truques de nível 3",
+      "class-level-3-spells": "Magias de nível 3",
+      "class-level-3-choices": "Escolhas de nível 3",
+      "subclass": "Subclasse",
+      "subclass-level-1": "Subclasse nível 1",
+      "subclass-level-2": "Subclasse nível 2",
+      "subclass-level-3": "Subclasse nível 3",
       "background": "Antecedente e Detalhes",
+      "background-choices": "Escolhas de antecedente",
+      "abilities": "Atributos",
+      "finalize": "Equipamento Inicial",
       "equipment": "Equipamento Inicial"
     },
     "navigation": {
       "back": "Voltar",
       "next": "Avançar",
-      "save": "Salvar Personagem"
+      "save": "Salvar Personagem",
+      "openSteps": "Passos",
+      "stepsNav": "Passos da criação",
+      "currentStep": "Passo atual",
+      "pendingTitle": "Pendentes ({count})"
+    },
+    "progression": {
+      "deferredLevels": "Este personagem está no nível {level}. Escolhas acima do nível {cap} podem ser concluídas após a criação via Subir de Nível ou configurações da ficha."
     },
     "hints": {
       "selectRace": "Selecione uma raça antes de continuar.",

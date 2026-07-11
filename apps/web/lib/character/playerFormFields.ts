@@ -1,9 +1,7 @@
 import type { Locale } from "@rpv/domain";
 import { getClassSubclassLevel } from "@rpv/content";
-import type { CharacterCreationStepId } from "@/lib/character/characterCreationSteps";
-import {
-    filterFieldsForStep,
-} from "@/lib/character/characterCreationSteps";
+import type { CreationStepGraph } from "@/lib/character/creationSteps";
+import { filterFieldsForStep } from "@/lib/character/characterCreationSteps";
 import {
     listRaceOptions,
     listSubraceOptions,
@@ -78,18 +76,14 @@ export function buildPlayerGrantSourceFields(
 
 export function getVisiblePlayerFields(
     fields: FieldConfig[],
-    stepId: CharacterCreationStepId,
+    stepId: string,
+    graph: CreationStepGraph,
     {
         raceSlug,
-        classSlug,
-        level,
         contentLocale,
-    }: Pick<
-        PlayerGrantSourceFieldOptions,
-        "raceSlug" | "classSlug" | "level" | "contentLocale"
-    >
+    }: Pick<PlayerGrantSourceFieldOptions, "raceSlug" | "contentLocale">
 ): FieldConfig[] {
-    let visible = filterFieldsForStep(fields, stepId);
+    let visible = filterFieldsForStep(fields, stepId, graph);
 
     if (stepId === "race") {
         const subraceOptions = listSubraceOptions(raceSlug, contentLocale);
@@ -98,21 +92,18 @@ export function getVisiblePlayerFields(
         }
     }
 
-    if (stepId === "class") {
-        const hasClass =
-            typeof classSlug === "string" && classSlug.trim() !== "";
-        const subclassLevel = hasClass
-            ? getClassSubclassLevel(classSlug)
-            : undefined;
-        const resolvedLevel =
-            typeof level === "number" && !Number.isNaN(level) ? level : 1;
+    if (stepId === "subrace") {
+        visible = visible.filter((field) => field.name === "subrace");
+    }
 
-        if (
-            !hasClass ||
-            (subclassLevel !== undefined && resolvedLevel < subclassLevel)
-        ) {
-            visible = visible.filter((field) => field.name !== "subclass");
-        }
+    if (stepId === "class") {
+        visible = visible.filter(
+            (field) => field.name === "characterClass" || field.name === "level"
+        );
+    }
+
+    if (stepId === "subclass") {
+        visible = visible.filter((field) => field.name === "subclass");
     }
 
     return visible;

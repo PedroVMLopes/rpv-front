@@ -1,11 +1,12 @@
 /**
  * @jest-environment jsdom
  */
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
 import { NextIntlClientProvider } from "next-intl";
 import { CharacterGrantPickers } from "../components/characters/CharacterGrantPickers";
-import { getGrantSourceTypesForStep } from "../lib/character/characterCreationSteps";
+import { getCreationSidebar } from "./helpers/characterCreationNav";
 import messages from "../messages/en.json";
 
 function ClassStepHarness({ defaultValues }: { defaultValues: Record<string, unknown> }) {
@@ -16,7 +17,11 @@ function ClassStepHarness({ defaultValues }: { defaultValues: Record<string, unk
                 form={form}
                 contentLocale="en"
                 system="dnd"
-                sourceTypes={getGrantSourceTypesForStep("class")}
+                stepFilter={{
+                    sourceTypes: ["class"],
+                    level: 1,
+                    grantTypes: ["skill_proficiency"],
+                }}
                 sections="choices-only"
             />
         </NextIntlClientProvider>

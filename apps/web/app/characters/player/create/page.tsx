@@ -12,12 +12,15 @@ import { useCharacterStore } from "@/store/useCharacterStore";
 import { useContentLocale } from "@/store/useContentLocale";
 import { PlayerCharacterForm } from "@/components/characters/PlayerCharacterForm";
 import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { resolveInitialStepId } from "@/lib/character/creationSteps";
+import { resolveCreationGraph } from "@/lib/character/characterCreationSteps";
 
 export default function CreatePlayer() {
     const addCharacter = useCharacterStore((state) => state.addCharacter);
     const contentLocale = useContentLocale((state) => state.contentLocale);
     const router = useRouter();
+    const searchParams = useSearchParams();
 
     const [system, setSystem] = useState<SystemKey>("dnd");
     const type = "player";
@@ -49,6 +52,18 @@ export default function CreatePlayer() {
         defaultValues: {},
     });
 
+    const initialStepId = useMemo(() => {
+        const raw = searchParams.get("step");
+
+        if (!raw) {
+            return undefined;
+        }
+
+        const graph = resolveCreationGraph(form.getValues(), system, contentLocale);
+
+        return resolveInitialStepId(raw, graph);
+    }, [searchParams, form, system, contentLocale]);
+
     function handleSave(data: Record<string, unknown>) {
         addCharacter(data, type, system);
         router.push("/characters/player");
@@ -68,6 +83,7 @@ export default function CreatePlayer() {
                     statConfig={presetData.statConfig}
                     contentLocale={contentLocale}
                     onSave={handleSave}
+                    initialStepId={initialStepId}
                     header={
                         <>
                             <h1 className="mb-2 text-lg font-bold bg-muted p-1 px-2 rounded">

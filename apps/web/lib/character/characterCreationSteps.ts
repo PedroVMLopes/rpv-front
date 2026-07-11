@@ -1,125 +1,51 @@
 import type { FieldErrors } from "react-hook-form";
-import type { ModifierSource } from "@rpv/domain";
+import type { Locale, ModifierSource } from "@rpv/domain";
+import type { SystemKey } from "@/presets";
 import type { PresetStatConfig } from "@/presets/types";
-
-export type CharacterCreationStepId =
-    | "race"
-    | "class"
-    | "abilities"
-    | "background"
-    | "equipment";
-
-export type CharacterCreationStep = {
-    id: CharacterCreationStepId;
-    fieldNames: string[];
-};
-
-export const CHARACTER_CREATION_STEPS: CharacterCreationStep[] = [
-    { id: "race", fieldNames: ["race", "subrace"] },
-    { id: "class", fieldNames: ["characterClass", "subclass"] },
-    { id: "abilities", fieldNames: [] },
-    { id: "background", fieldNames: ["name", "age", "goals", "background"] },
-    { id: "equipment", fieldNames: ["gold", "silver", "bronze"] },
-];
-
-export const CHARACTER_CREATION_STEP_COUNT = CHARACTER_CREATION_STEPS.length;
+import { findChoiceGrantByKey } from "./grantChoices";
+import {
+    mapFieldToStep,
+    mapGrantPickToStep,
+    resolveCreationSteps,
+    type CreationStepGraph,
+} from "./creationSteps";
+import { isInventoryOrExclusiveKey } from "./creationSteps/grantPickKey";
 
 export type CanCompleteStepOptions = {
     statConfig?: PresetStatConfig;
 };
 
-export function canCompleteStep(
-    _stepId: CharacterCreationStepId,
-    _formValues: Record<string, unknown>,
-    _options?: CanCompleteStepOptions
-): boolean {
-    return true;
-}
+export type GetFirstErrorStepIdOptions = {
+    formData?: Record<string, unknown>;
+    locale?: Locale;
+    system?: SystemKey;
+};
 
-export function computeMaxUnlockedStep(
-    _formValues: Record<string, unknown>
-): number {
-    return CHARACTER_CREATION_STEP_COUNT - 1;
-}
-
-export function getStepIndexForField(fieldName: string): number {
-    if (fieldName === "level") {
-        return 1;
-    }
-
-    if (
-        fieldName === "attributes" ||
-        fieldName === "abilityScoreMethod" ||
-        fieldName === "abilityScoreRolls"
-    ) {
-        return 2;
-    }
-
-    const index = CHARACTER_CREATION_STEPS.findIndex((step) =>
-        step.fieldNames.includes(fieldName)
-    );
-
-    return index >= 0 ? index : CHARACTER_CREATION_STEPS.length - 1;
-}
-
-export function getStepIndexForGrantPickKey(key: string): number {
-    if (
-        key.includes(":inventory_item:") ||
-        key.includes(":currency:") ||
-        key.includes(":exclusive:")
-    ) {
-        return 4;
-    }
-
-    const prefix = key.split(":")[0];
-
-    switch (prefix) {
-        case "race":
-        case "subrace":
-            return 0;
-        case "class":
-        case "subclass":
-            return 1;
-        case "background":
-            return 3;
-        default:
-            return 1;
-    }
-}
-
-export function getStepIndexForValidationPath(path: string[]): number {
-    const root = path[0];
-
-    if (!root) {
-        return CHARACTER_CREATION_STEPS.length - 1;
-    }
-
-    if (root === "choices") {
-        const grantPickKey = path[1];
-        if (typeof grantPickKey === "string" && grantPickKey.length > 0) {
-            return getStepIndexForGrantPickKey(grantPickKey);
-        }
-
-        return CHARACTER_CREATION_STEPS.length - 1;
-    }
-
-    if (root === "inventory") {
-        return 4;
-    }
-
-    return getStepIndexForField(root);
-}
-
-export function getFirstErrorStepIndex(
-    errors: FieldErrors<Record<string, unknown>>
-): number | undefined {
+export function getFirstErrorStepId(
+    errors: FieldErrors<Record<string, unknown>>,
+    graph: CreationStepGraph,
+    options?: GetFirstErrorStepIdOptions
+): string | undefined {
     const paths = collectErrorPaths(errors);
 
     if (paths.length === 0) {
         return undefined;
     }
 
-    return Math.min(...paths.map((path) => getStepIndexForValidationPath(path)));
+    const stepIds = paths.map((path) =>
+        getStepIdForValidationPath(path, graph, options)
+    );
+    const indices = stepIds
+        .map((stepId) => graph.getStepIndex(stepId))
+        .filter((index) => index >= 0);
+
+    if (indices.length === 0) {
+        return graph.steps[0]?.id;
+    }
+
+    const minIndex = Math.min(...indices);
+
+    return graph.steps[minIndex]?.id;
 }
 
 function collectErrorPaths(
@@ -153,41 +79,126 @@ function collectErrorPaths(
     return paths;
 }
 
-export function filterFieldsForStep(
-    fields: Array<{ name: string; [key: string]: unknown }>,
-    stepId: CharacterCreationStepId
-): Array<{ name: string; [key: string]: unknown }> {
-    const step = CHARACTER_CREATION_STEPS.find((entry) => entry.id === stepId);
-    if (!step) {
-        return [];
+function getStepIdForValidationPath(
+    path: string[],
+    graph: CreationStepGraph,
+    options?: GetFirstErrorStepIdOptions
+): string {
+    const root = path[0];
+
+    if (!root) {
+        return graph.steps.at(-1)?.id ?? "finalize";
+    }
+
+    if (root === "choices") {
+        const grantPickKey = path[1];
+
+        if (typeof grantPickKey === "string" && grantPickKey.length > 0) {
+            const grant =
+                options?.formData &&
+                options.locale &&
+                options.system
+                    ? findChoiceGrantByKey(
+                          options.formData,
+                          grantPickKey,
+                          options.locale,
+                          options.system
+                      )?.grant
+                    : undefined;
+            const stepId = mapGrantPickToStep(grantPickKey, grant, graph);
+
+            return graph.isValidStepId(stepId) ? stepId : "finalize";
+        }
+
+        return graph.steps.at(-1)?.id ?? "finalize";
+    }
+
+    if (root === "inventory") {
+        return "finalize";
+    }
+
+    const mapped = mapFieldToStep(root);
+
+    return graph.isValidStepId(mapped) ? mapped : graph.steps[0]?.id ?? "race";
+}
+
+export function resolveCreationGraph(
+    formValues: Record<string, unknown>,
+    system: SystemKey,
+    contentLocale: Locale
+): CreationStepGraph {
+    return resolveCreationSteps({
+        formValues,
+        system,
+        contentLocale,
+    });
+}
+
+export function canCompleteStep(
+    _stepId: string,
+    _formValues: Record<string, unknown>,
+    _options?: CanCompleteStepOptions
+): boolean {
+    return true;
+}
+
+export function filterFieldsForStep<
+    T extends { name: string; [key: string]: unknown },
+>(fields: T[], stepId: string, graph?: CreationStepGraph): T[] {
+    const step = graph?.getStep(stepId);
+
+    if (!step?.fieldNames || step.fieldNames.length === 0) {
+        return fields;
     }
 
     const allowed = new Set(step.fieldNames);
+
     return fields.filter((field) => allowed.has(field.name));
 }
 
-export function matchesGrantSourceTypes(
-    source: ModifierSource,
-    sourceTypes?: Array<ModifierSource["type"]>
-): boolean {
-    if (!sourceTypes || sourceTypes.length === 0) {
-        return true;
+/** @deprecated Numeric step indexes removed — use semantic step IDs */
+export function getStepIndexForGrantPickKey(key: string): number {
+    if (isInventoryOrExclusiveKey(key)) {
+        return 4;
     }
 
-    return sourceTypes.includes(source.type);
-}
+    const prefix = key.split(":")[0];
 
-export function getGrantSourceTypesForStep(
-    stepId: CharacterCreationStepId
-): Array<ModifierSource["type"]> | undefined {
-    switch (stepId) {
+    switch (prefix) {
         case "race":
-            return ["race", "subrace"];
+        case "subrace":
+            return 0;
         case "class":
-            return ["class", "subclass"];
+        case "subclass":
+            return 1;
         case "background":
-            return ["background"];
+            return 3;
         default:
-            return undefined;
+            return 1;
     }
 }
+
+/** @deprecated Use step sourceFilter from resolveCreationSteps instead */
+export function getGrantSourceTypesForStep(
+    stepId: string
+): Array<ModifierSource["type"]> {
+    if (stepId.startsWith("subclass")) {
+        return ["subclass"];
+    }
+
+    if (stepId.startsWith("class")) {
+        return ["class"];
+    }
+
+    if (stepId.startsWith("race") || stepId === "subrace") {
+        return ["race", "subrace"];
+    }
+
+    if (stepId.startsWith("background")) {
+        return ["background"];
+    }
+
+    return ["class"];
+}
+
+export { matchesGrantSourceTypes } from "./creationSteps/stepFilters";

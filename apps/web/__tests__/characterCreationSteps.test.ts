@@ -1,84 +1,66 @@
 import {
-    canCompleteStep,
-    computeMaxUnlockedStep,
-    getFirstErrorStepIndex,
-    getStepIndexForField,
-    getStepIndexForGrantPickKey,
-    getStepIndexForValidationPath,
-    CHARACTER_CREATION_STEP_COUNT,
+    getFirstErrorStepId,
+    resolveCreationGraph,
 } from "../lib/character/characterCreationSteps";
 import { dndStatConfig } from "../presets/dnd/characterStats";
 
-describe("characterCreationSteps", () => {
-    it("always allows any step to complete", () => {
-        expect(canCompleteStep("race", {})).toBe(true);
-        expect(canCompleteStep("class", {})).toBe(true);
-        expect(
-            canCompleteStep(
-                "abilities",
-                {
-                    abilityScoreMethod: "standard-array",
-                    attributes: dndStatConfig.abilities.map((ability) => ({
-                        name: ability.name,
-                        value: 0,
-                    })),
+describe("characterCreationSteps navigation helpers", () => {
+    it("resolves the first validation error to a semantic step id", () => {
+        const graph = resolveCreationGraph(
+            { race: "elf", characterClass: "wizard", level: 1 },
+            "dnd",
+            "en"
+        );
+
+        const stepId = getFirstErrorStepId(
+            {
+                choices: {
+                    "class:wizard:1:spell:1:0": { message: "Invalid" },
                 },
-                { statConfig: dndStatConfig }
-            )
-        ).toBe(true);
-        expect(canCompleteStep("background", {})).toBe(true);
-        expect(canCompleteStep("equipment", {})).toBe(true);
-    });
-
-    it("unlocks all steps immediately", () => {
-        expect(computeMaxUnlockedStep({})).toBe(CHARACTER_CREATION_STEP_COUNT - 1);
-        expect(computeMaxUnlockedStep({ race: "elf" })).toBe(
-            CHARACTER_CREATION_STEP_COUNT - 1
+            },
+            graph,
+            {
+                formData: { race: "elf", characterClass: "wizard", level: 1 },
+                locale: "en",
+                system: "dnd",
+            }
         );
+
+        expect(stepId).toBe("class-level-1-cantrips");
     });
 
-    it("maps level field to class step index", () => {
-        expect(getStepIndexForField("level")).toBe(1);
-    });
+    it("maps background field errors to the background step", () => {
+        const graph = resolveCreationGraph({}, "dnd", "en");
 
-    it("maps validation paths to step indexes", () => {
-        expect(getStepIndexForField("race")).toBe(0);
-        expect(getStepIndexForField("characterClass")).toBe(1);
-        expect(getStepIndexForField("attributes")).toBe(2);
-        expect(getStepIndexForField("background")).toBe(3);
-        expect(getStepIndexForField("gold")).toBe(4);
-    });
-
-    it("maps grant pick keys to step indexes", () => {
-        expect(getStepIndexForGrantPickKey("race:dwarf:base:tool_proficiency:0:0")).toBe(
-            0
+        const stepId = getFirstErrorStepId(
+            {
+                background: { message: "Required" },
+            },
+            graph
         );
-        expect(getStepIndexForGrantPickKey("class:wizard:1:spell:2:0")).toBe(1);
-        expect(getStepIndexForGrantPickKey("background:sage:base:language:0:0")).toBe(
-            3
+
+        expect(stepId).toBe("background");
+    });
+
+    it("builds a dynamic graph for wizard level 3", () => {
+        const graph = resolveCreationGraph(
+            {
+                race: "elf",
+                subrace: "high-elf",
+                characterClass: "wizard",
+                level: 3,
+            },
+            "dnd",
+            "en"
         );
-        expect(
-            getStepIndexForGrantPickKey(
-                "class:fighter:base:exclusive:starting-wealth"
-            )
-        ).toBe(4);
-    });
 
-    it("routes choice errors with keys to the matching step", () => {
-        expect(
-            getStepIndexForValidationPath([
-                "choices",
-                "class:fighter:base:skill_proficiency:0:0",
-            ])
-        ).toBe(1);
+        expect(graph.isValidStepId("class-level-3")).toBe(true);
+        expect(graph.getStep("finalize")?.kind).toBe("finalize");
     });
+});
 
-    it("finds the earliest step with form errors", () => {
-        expect(
-            getFirstErrorStepIndex({
-                name: { message: "Required" },
-                choices: { message: "Incomplete" },
-            })
-        ).toBe(3);
+describe("legacy stat config compatibility", () => {
+    it("still exposes dnd stat config for ability tests", () => {
+        expect(dndStatConfig.abilities.length).toBeGreaterThan(0);
     });
 });

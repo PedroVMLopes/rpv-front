@@ -129,8 +129,58 @@ describe("collectPendingDecisions", () => {
             pending.some(
                 (decision) =>
                     decision.kind === "invalid_grant_pick" &&
-                    decision.stepIndex === 1
+                    decision.stepId === "class-level-1-cantrips"
             )
         ).toBe(true);
+    });
+
+    it("excludes level 4+ missing picks in creation scope for level 5 wizard", () => {
+        const full = collectPendingDecisions(
+            {
+                race: "human",
+                characterClass: "wizard",
+                level: 5,
+                background: "sage",
+                name: "Hero",
+                abilityScoreMethod: "manual",
+                attributes: dndStatConfig.abilities.map((ability) => ({
+                    name: ability.name,
+                    value: 10,
+                })),
+            },
+            "en",
+            "dnd",
+            dndStatConfig,
+            "full"
+        );
+
+        const creation = collectPendingDecisions(
+            {
+                race: "human",
+                characterClass: "wizard",
+                level: 5,
+                background: "sage",
+                name: "Hero",
+                abilityScoreMethod: "manual",
+                attributes: dndStatConfig.abilities.map((ability) => ({
+                    name: ability.name,
+                    value: 10,
+                })),
+            },
+            "en",
+            "dnd",
+            dndStatConfig,
+            "creation"
+        );
+
+        const fullGrantKeys = full
+            .filter((decision) => decision.kind === "grant_pick")
+            .map((decision) => decision.id);
+        const creationGrantKeys = creation
+            .filter((decision) => decision.kind === "grant_pick")
+            .map((decision) => decision.id);
+
+        expect(fullGrantKeys.some((id) => id.includes(":4:"))).toBe(true);
+        expect(creationGrantKeys.some((id) => id.includes(":4:"))).toBe(false);
     });
 });

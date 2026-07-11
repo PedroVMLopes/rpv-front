@@ -21,6 +21,7 @@ import {
 } from "./grantChoiceOptions";
 import type { CharacterChoices } from "./storedCharacter";
 import { readLevelFromForm } from "./level";
+import { isGrantPickAboveProgressionCap } from "./creationSteps/grantPickKey";
 import {
     currencyChoiceToPending,
     deriveStartingEquipmentFromForm,
@@ -129,7 +130,8 @@ function exclusiveGroupToPendingChoice(
 export function findMissingRequiredChoices(
     formData: Record<string, unknown>,
     locale: Locale,
-    system: SystemKey
+    system: SystemKey,
+    options?: { maxProgressionLevel?: number }
 ): PendingChoiceGrant[] {
     const selections = buildSelectionsFromForm(formData);
     const characterLevel = readLevelFromForm(formData);
@@ -144,10 +146,20 @@ export function findMissingRequiredChoices(
             choice.grant.grantType !== "currency"
     );
     const grantPicks = readGrantPicks(formData);
-    const missing = pending.filter((choice) => {
+    let missing = pending.filter((choice) => {
         const picked = grantPicks[choice.key];
         return !picked || picked.trim() === "";
     });
+
+    if (options?.maxProgressionLevel !== undefined) {
+        missing = missing.filter(
+            (choice) =>
+                !isGrantPickAboveProgressionCap(
+                    choice.key,
+                    options.maxProgressionLevel!
+                )
+        );
+    }
 
     const preview = deriveStartingEquipmentFromForm(formData, locale, system);
 

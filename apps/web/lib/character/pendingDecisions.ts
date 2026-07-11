@@ -1,16 +1,25 @@
 import type { Locale } from "@rpv/domain";
+import type { Grant } from "@rpv/content";
 import type { SystemKey } from "@/presets";
 import type { PresetStatConfig } from "@/presets/types";
 import enMessages from "@/messages/en.json";
 import ptBRMessages from "@/messages/pt-BR.json";
 import { buildSelectionsFromForm } from "./characterAdapter";
-import { getStepIndexForGrantPickKey } from "./characterCreationSteps";
 import {
     findInvalidGrantPicks,
     findMissingRequiredChoices,
     findMissingSubclass,
 } from "./choiceValidation";
 import { resolveGrantPickValidationMessage } from "./choiceValidationMessages";
+import { findChoiceGrantByKey } from "./grantChoices";
+import {
+    CREATION_PROGRESSION_CAP,
+    getCreationProgressionLevel,
+    mapGrantPickToStep,
+    resolveCreationSteps,
+    type CreationStepGraph,
+} from "./creationSteps";
+import { isGrantPickAboveProgressionCap } from "./creationSteps/grantPickKey";
 import { isCharacterNamePending } from "./defaultCharacterName";
 import { isAbilityScoresIncomplete } from "./abilityScoreGeneration";
 import { flattenStoredToForm } from "./presetStats";
@@ -26,11 +35,13 @@ export type PendingDecisionKind =
     | "grant_pick"
     | "invalid_grant_pick";
 
+export type PendingDecisionScope = "creation" | "full";
+
 export type PendingDecision = {
     id: string;
     kind: PendingDecisionKind;
     label: string;
-    stepIndex: number;
+    stepId: string;
 };
 
 type PendingCopy = {
@@ -56,31 +67,71 @@ function readNonEmptyString(value: unknown): string | undefined {
     return trimmed.length > 0 ? trimmed : undefined;
 }
 
+function resolveGraph(
+    formData: Record<string, unknown>,
+    system: SystemKey,
+    locale: Locale
+): CreationStepGraph {
+    return resolveCreationSteps({
+        formValues: formData,
+        system,
+        contentLocale: locale,
+    });
+}
+
+function mapChoiceToStepId(
+    key: string,
+    grant: Grant | undefined,
+    graph: CreationStepGraph
+): string {
+    if (grant?.grantType === "ability_score") {
+        return "abilities";
+    }
+
+    return mapGrantPickToStep(key, grant, graph);
+}
+
+function shouldIncludeGrantPickPending(
+    key: string,
+    scope: PendingDecisionScope
+): boolean {
+    if (scope === "full") {
+        return true;
+    }
+
+    return !isGrantPickAboveProgressionCap(key, CREATION_PROGRESSION_CAP);
+}
+
 export function collectPendingDecisions(
     formData: Record<string, unknown>,
     locale: Locale,
     system: SystemKey,
-    statConfig: PresetStatConfig
+    statConfig: PresetStatConfig,
+    scope: PendingDecisionScope = "full"
 ): PendingDecision[] {
     const labels = pendingLabels[locale] ?? pendingLabels.en;
-    const selections = buildSelectionsFromForm(formData);
+    const graph = resolveGraph(formData, system, locale);
+    const progressionLevel =
+        scope === "creation"
+            ? getCreationProgressionLevel(formData)
+            : undefined;
     const decisions: PendingDecision[] = [];
 
-    if (!readNonEmptyString(selections.race)) {
+    if (!readNonEmptyString(buildSelectionsFromForm(formData).race)) {
         decisions.push({
             id: "pending:race",
             kind: "race",
             label: labels.selectRace,
-            stepIndex: 0,
+            stepId: "race",
         });
     }
 
-    if (!readNonEmptyString(selections.characterClass)) {
+    if (!readNonEmptyString(buildSelectionsFromForm(formData).characterClass)) {
         decisions.push({
             id: "pending:class",
             kind: "class",
             label: labels.selectClass,
-            stepIndex: 1,
+            stepId: "class",
         });
     }
 
@@ -89,7 +140,7 @@ export function collectPendingDecisions(
             id: "pending:subclass",
             kind: "subclass",
             label: labels.selectSubclass,
-            stepIndex: 1,
+            stepId: graph.isValidStepId("subclass") ? "subclass" : "class",
         });
     }
 
@@ -98,16 +149,18 @@ export function collectPendingDecisions(
             id: "pending:abilities",
             kind: "abilities",
             label: labels.completeAbilities,
-            stepIndex: 2,
+            stepId: "abilities",
         });
     }
+
+    const selections = buildSelectionsFromForm(formData);
 
     if (!readNonEmptyString(selections.background)) {
         decisions.push({
             id: "pending:background",
             kind: "background",
             label: labels.selectBackground,
-            stepIndex: 3,
+            stepId: "background",
         });
     }
 
@@ -116,27 +169,42 @@ export function collectPendingDecisions(
             id: "pending:name",
             kind: "name",
             label: labels.setName,
-            stepIndex: 3,
+            stepId: "background",
         });
     }
 
-    for (const choice of findMissingRequiredChoices(formData, locale, system)) {
+    for (const choice of findMissingRequiredChoices(formData, locale, system, {
+        maxProgressionLevel: progressionLevel,
+    })) {
+        if (!shouldIncludeGrantPickPending(choice.key, scope)) {
+            continue;
+        }
+
         decisions.push({
             id: `pending:grant:${choice.key}`,
             kind: "grant_pick",
             label: choice.label,
-            stepIndex: getStepIndexForGrantPickKey(choice.key),
+            stepId: mapChoiceToStepId(choice.key, choice.grant, graph),
         });
     }
 
     for (const issue of findInvalidGrantPicks(formData, locale, system)) {
+        if (issue.key && !shouldIncludeGrantPickPending(issue.key, scope)) {
+            continue;
+        }
+
         decisions.push({
             id: `pending:invalid:${issue.key ?? issue.ref ?? issue.code}`,
             kind: "invalid_grant_pick",
             label: resolveGrantPickValidationMessage(issue, locale),
-            stepIndex: issue.key
-                ? getStepIndexForGrantPickKey(issue.key)
-                : 1,
+            stepId: issue.key
+                ? mapChoiceToStepId(
+                      issue.key,
+                      findChoiceGrantByKey(formData, issue.key, locale, system)
+                          ?.grant,
+                      graph
+                  )
+                : "class",
         });
     }
 
@@ -145,13 +213,16 @@ export function collectPendingDecisions(
 
 export function collectPendingDecisionsFromStored(
     stored: StoredCharacter,
-    statConfig: PresetStatConfig
+    statConfig: PresetStatConfig,
+    scope: PendingDecisionScope = "full"
 ): PendingDecision[] {
     const formData = flattenStoredToForm(stored, stored.system);
+
     return collectPendingDecisions(
         formData,
         stored.language,
         stored.system,
-        statConfig
+        statConfig,
+        scope
     );
 }

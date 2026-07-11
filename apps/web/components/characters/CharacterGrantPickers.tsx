@@ -5,7 +5,9 @@ import { UseFormReturn } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import type { Locale, ModifierSource } from "@rpv/domain";
 import type { Grant } from "@rpv/content";
-import { matchesGrantSourceTypes } from "@/lib/character/characterCreationSteps";
+import { matchesGrantSourceTypes } from "@/lib/character/creationSteps/stepFilters";
+import type { CreationStepSourceFilter } from "@/lib/character/creationSteps/creationStep.types";
+import { filterChoicesForStep } from "@/lib/character/creationSteps/stepFilters";
 import {
     getFixedLanguageGrants,
     getFixedRefsForGrantType,
@@ -33,6 +35,7 @@ type CharacterGrantPickersProps = {
     contentLocale: Locale;
     system: SystemKey;
     sourceTypes?: Array<ModifierSource["type"]>;
+    stepFilter?: CreationStepSourceFilter;
     sections?: "all" | "choices-only";
     displayLevel?: number;
 };
@@ -90,6 +93,7 @@ export function CharacterGrantPickers({
     contentLocale,
     system,
     sourceTypes,
+    stepFilter,
     sections = "all",
     displayLevel,
 }: CharacterGrantPickersProps) {
@@ -118,13 +122,13 @@ export function CharacterGrantPickers({
         [selections, contentLocale, characterLevel, system]
     );
 
-    const pendingChoices = useMemo(
-        () =>
-            allPendingChoices.filter((choice) =>
-                matchesGrantSourceTypes(choice.source, sourceTypes)
-            ),
-        [allPendingChoices, sourceTypes]
-    );
+    const pendingChoices = useMemo(() => {
+        const filtered = allPendingChoices.filter((choice) =>
+            matchesGrantSourceTypes(choice.source, sourceTypes)
+        );
+
+        return filterChoicesForStep(filtered, stepFilter);
+    }, [allPendingChoices, sourceTypes, stepFilter]);
 
     const ownedRefsByGrantType = useMemo(
         () =>
@@ -157,27 +161,44 @@ export function CharacterGrantPickers({
     );
 
     const languageChoices = useMemo(
-        () =>
-            allLanguageChoices.filter((choice) =>
+        () => {
+            const filtered = allLanguageChoices.filter((choice) =>
                 matchesGrantSourceTypes(choice.source, sourceTypes)
-            ),
-        [allLanguageChoices, sourceTypes]
+            );
+
+            return filterChoicesForStep(filtered, stepFilter);
+        },
+        [allLanguageChoices, sourceTypes, stepFilter]
     );
 
-    const nonInventoryChoices = useMemo(
-        () =>
-            collectNonLanguageChoiceGrants(
-                selections,
-                contentLocale,
-                characterLevel,
-                system
-            )
-                .filter((choice) => choice.grant.grantType !== "inventory_item")
-                .filter((choice) =>
-                    matchesGrantSourceTypes(choice.source, sourceTypes)
-                ),
-        [selections, contentLocale, characterLevel, system, sourceTypes]
-    );
+    const nonInventoryChoices = useMemo(() => {
+        if (stepFilter) {
+            return pendingChoices.filter(
+                (choice) =>
+                    choice.grant.grantType !== "inventory_item" &&
+                    choice.grant.grantType !== "currency"
+            );
+        }
+
+        return collectNonLanguageChoiceGrants(
+            selections,
+            contentLocale,
+            characterLevel,
+            system
+        )
+            .filter((choice) => choice.grant.grantType !== "inventory_item")
+            .filter((choice) =>
+                matchesGrantSourceTypes(choice.source, sourceTypes)
+            );
+    }, [
+        stepFilter,
+        pendingChoices,
+        selections,
+        contentLocale,
+        characterLevel,
+        system,
+        sourceTypes,
+    ]);
 
     const racialAsiChoices = useMemo(
         () =>
@@ -249,7 +270,9 @@ export function CharacterGrantPickers({
         sections === "all" &&
         (fixedLanguages.length > 0 || languageChoices.length > 0);
     const showRacialAsi =
-        sections === "all" && racialAsiChoices.length > 0;
+        racialAsiChoices.length > 0 &&
+        (sections === "all" ||
+            stepFilter?.grantTypes?.includes("ability_score") === true);
 
     if (
         !showLanguages &&

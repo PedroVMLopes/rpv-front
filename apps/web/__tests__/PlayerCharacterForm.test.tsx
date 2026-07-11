@@ -1,11 +1,12 @@
 /**
  * @jest-environment jsdom
  */
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
 import { NextIntlClientProvider } from "next-intl";
 import { PlayerCharacterForm } from "../components/characters/PlayerCharacterForm";
+import { getCreationSidebar } from "./helpers/characterCreationNav";
 import { dndCharacterFields } from "../presets/dnd/characterFields";
 import { dndStatConfig } from "../presets/dnd/characterStats";
 import enMessages from "../messages/en.json";
@@ -13,9 +14,11 @@ import enMessages from "../messages/en.json";
 function PlayerFormHarness({
     defaultValues = {},
     onSave = jest.fn(),
+    initialStepId,
 }: {
     defaultValues?: Record<string, unknown>;
     onSave?: (data: Record<string, unknown>) => void;
+    initialStepId?: string;
 }) {
     const form = useForm({ defaultValues });
     const baseFields = [
@@ -33,6 +36,7 @@ function PlayerFormHarness({
                 statConfig={dndStatConfig}
                 contentLocale="en"
                 onSave={onSave}
+                initialStepId={initialStepId}
             />
         </NextIntlClientProvider>
     );
@@ -40,97 +44,53 @@ function PlayerFormHarness({
 
 describe("PlayerCharacterForm", () => {
     it("allows navigating to any step without prerequisites", async () => {
-        const user = userEvent.setup();
+        render(<PlayerFormHarness initialStepId="class" />);
 
-        render(<PlayerFormHarness />);
-
-        expect(screen.getByRole("button", { name: /Class/ })).not.toBeDisabled();
-        expect(
-            screen.getByRole("button", { name: /Starting Equipment/ })
-        ).not.toBeDisabled();
-
-        await user.click(screen.getByRole("button", { name: "Next" }));
-        expect(screen.getByText("Character level")).toBeInTheDocument();
+        expect(await screen.findByText("Character level")).toBeInTheDocument();
         expect(
             screen.queryByText("Select a race before continuing.")
         ).not.toBeInTheDocument();
     });
 
-    it("hides subrace until race is selected", () => {
-        render(<PlayerFormHarness />);
-
-        expect(screen.queryByText("Subrace")).not.toBeInTheDocument();
-    });
-
-    it("shows subrace for elf", () => {
+    it("shows subrace step for elf in the sidebar", () => {
         render(<PlayerFormHarness defaultValues={{ race: "elf" }} />);
 
-        expect(screen.getByText("Subrace")).toBeInTheDocument();
+        const sidebar = getCreationSidebar();
+
+        expect(sidebar.getByRole("button", { name: "Subrace" })).toBeInTheDocument();
     });
 
-    it("hides subrace for half-elf", () => {
+    it("hides subrace step for half-elf", () => {
         render(<PlayerFormHarness defaultValues={{ race: "half-elf" }} />);
 
-        expect(screen.queryByText("Subrace")).not.toBeInTheDocument();
+        const sidebar = getCreationSidebar();
+
+        expect(
+            sidebar.queryByRole("button", { name: "Subrace" })
+        ).not.toBeInTheDocument();
     });
 
-    it("shows half-elf racial ASI pickers on race step only", async () => {
-        const user = userEvent.setup();
-
+    it("shows half-elf racial ASI pickers on the abilities step", async () => {
         render(
             <PlayerFormHarness
                 defaultValues={{
                     race: "half-elf",
                     characterClass: "fighter",
                 }}
+                initialStepId="abilities"
             />
         );
 
         expect(screen.getByText("Racial ability increases")).toBeInTheDocument();
-        expect(
-            screen.queryByText(/Starting sidearm/)
-        ).not.toBeInTheDocument();
-
-        await user.click(screen.getByRole("button", { name: /Class/ }));
-
-        expect(
-            screen.queryByText("Racial ability increases")
-        ).not.toBeInTheDocument();
     });
 
-    it("unlocks class step after selecting race", async () => {
-        const user = userEvent.setup();
-
-        render(<PlayerFormHarness defaultValues={{ race: "elf" }} />);
-
-        await user.click(screen.getByRole("button", { name: "Next" }));
+    it("shows class level selector on the class step", async () => {
+        render(<PlayerFormHarness defaultValues={{ race: "elf" }} initialStepId="class" />);
 
         expect(screen.getByText("Character level")).toBeInTheDocument();
-        expect(screen.queryByLabelText("Level")).not.toBeInTheDocument();
-        expect(screen.getByRole("button", { name: /Class/ })).not.toBeDisabled();
     });
 
-    it("hides subclass and class choices when no class is selected", async () => {
-        const user = userEvent.setup();
-
-        render(
-            <PlayerFormHarness
-                defaultValues={{
-                    race: "elf",
-                    level: 1,
-                }}
-            />
-        );
-
-        await user.click(screen.getByRole("button", { name: /Class/ }));
-
-        expect(screen.queryByText("Subclass")).not.toBeInTheDocument();
-        expect(screen.queryByText("Class choices")).not.toBeInTheDocument();
-    });
-
-    it("shows fighter fixed proficiencies on class step", async () => {
-        const user = userEvent.setup();
-
+    it("shows fighter level 1 summary with fixed proficiencies", async () => {
         render(
             <PlayerFormHarness
                 defaultValues={{
@@ -138,22 +98,14 @@ describe("PlayerCharacterForm", () => {
                     characterClass: "fighter",
                     level: 1,
                 }}
+                initialStepId="class-level-1"
             />
         );
 
-        await user.click(screen.getByRole("button", { name: /Class/ }));
-
-        expect(
-            screen.getByText("Proficiencies & resources (automatic)")
-        ).toBeInTheDocument();
         expect(screen.getByText("Strength save")).toBeInTheDocument();
-        expect(screen.queryByText("Starting equipment")).not.toBeInTheDocument();
-        expect(screen.queryByText("Subclass")).not.toBeInTheDocument();
     });
 
-    it("shows subclass field on class step at level 3", async () => {
-        const user = userEvent.setup();
-
+    it("shows subclass step in sidebar at level 3", () => {
         render(
             <PlayerFormHarness
                 defaultValues={{
@@ -164,38 +116,77 @@ describe("PlayerCharacterForm", () => {
             />
         );
 
-        await user.click(screen.getByRole("button", { name: /Class/ }));
+        const sidebar = getCreationSidebar();
 
-        expect(screen.getByText("Subclass")).toBeInTheDocument();
+        expect(sidebar.getByRole("button", { name: "Subclass" })).toBeInTheDocument();
     });
 
-    it("shows pending decisions on the equipment step", async () => {
-        const user = userEvent.setup();
-
+    it("lists pending decisions in the sidebar", async () => {
         render(<PlayerFormHarness />);
 
-        await user.click(
-            screen.getByRole("button", { name: /Starting Equipment/ })
-        );
+        const sidebar = getCreationSidebar();
 
-        expect(screen.getByText(/Pending decisions/i)).toBeInTheDocument();
-        expect(screen.getByText("Select a race")).toBeInTheDocument();
+        expect(sidebar.getByText(/Pending/i)).toBeInTheDocument();
+        expect(sidebar.getByText("Select a race")).toBeInTheDocument();
     });
 
-    it("unlocks equipment step for a partially built character", () => {
+    it("shows deferred level banner on finalize when level is above cap", async () => {
         render(
             <PlayerFormHarness
                 defaultValues={{
-                    race: "elf",
+                    race: "human",
                     characterClass: "wizard",
-                    background: "sage",
-                    name: "Hero",
+                    level: 5,
                 }}
+                initialStepId="finalize"
             />
         );
 
         expect(
-            screen.getByRole("button", { name: /Starting Equipment/ })
-        ).not.toBeDisabled();
+            screen.getByText(/Choices for levels above 3/i)
+        ).toBeInTheDocument();
+    });
+
+    it("can save wizard level 5 without level 4 spell picks filled", async () => {
+        const user = userEvent.setup();
+        const onSave = jest.fn();
+
+        render(
+            <PlayerFormHarness
+                defaultValues={{
+                    race: "human",
+                    characterClass: "wizard",
+                    level: 5,
+                    background: "sage",
+                    name: "Hero",
+                    abilityScoreMethod: "manual",
+                    attributes: dndStatConfig.abilities.map((ability) => ({
+                        name: ability.name,
+                        value: 10,
+                    })),
+                }}
+                onSave={onSave}
+                initialStepId="finalize"
+            />
+        );
+
+        const sidebar = getCreationSidebar();
+
+        await user.click(
+            sidebar.getByRole("button", { name: "Save Character" })
+        );
+
+        expect(onSave).toHaveBeenCalled();
+    });
+
+    it("can jump to the class step from the sidebar", async () => {
+        const user = userEvent.setup();
+
+        render(<PlayerFormHarness defaultValues={{ race: "elf" }} />);
+
+        const sidebar = getCreationSidebar();
+        await user.click(sidebar.getByRole("button", { name: "Class & Level" }));
+
+        expect(await screen.findByText("Character level")).toBeInTheDocument();
     });
 });

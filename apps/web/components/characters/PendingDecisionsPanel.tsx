@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 type PendingDecisionsPanelProps = {
     decisions: PendingDecision[];
-    onNavigateToStep?: (stepIndex: number) => void;
+    onNavigateToStep?: (stepId: string) => void;
     editBaseHref?: string;
     panelVariant?: "default" | "nested";
 };
@@ -41,7 +41,7 @@ export function PendingDecisionsPanel({
                         return (
                             <li key={decision.id}>
                                 <a
-                                    href={`${editBaseHref}?step=${decision.stepIndex}`}
+                                    href={`${editBaseHref}?step=${encodeURIComponent(decision.stepId)}`}
                                     className={cn(className, "block text-muted-foreground")}
                                 >
                                     {decision.label}
@@ -59,9 +59,7 @@ export function PendingDecisionsPanel({
                                         className,
                                         "w-full text-muted-foreground"
                                     )}
-                                    onClick={() =>
-                                        onNavigateToStep(decision.stepIndex)
-                                    }
+                                    onClick={() => onNavigateToStep(decision.stepId)}
                                 >
                                     {decision.label}
                                 </button>

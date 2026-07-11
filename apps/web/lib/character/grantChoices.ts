@@ -10,6 +10,8 @@ import type { SystemKey } from "@/presets";
 import { contentRepo } from "@/lib/content/contentRepository";
 import { getRace, getSubrace } from "@/lib/catalog/raceCatalog";
 import { collectGrantSources } from "./characterGrants";
+import { buildSelectionsFromForm } from "./characterAdapter";
+import { readLevelFromForm } from "./level";
 import type { CharacterSelections } from "./storedCharacter";
 
 export type PendingChoiceGrant = {
@@ -248,6 +250,23 @@ export function collectLanguageChoiceGrants(
         characterLevel,
         system
     ).filter((choice) => choice.grant.grantType === "language");
+}
+
+export function findChoiceGrantByKey(
+    formData: Record<string, unknown>,
+    key: string,
+    locale: Locale,
+    system: SystemKey = "dnd"
+): PendingChoiceGrant | undefined {
+    const selections = buildSelectionsFromForm(formData);
+    const characterLevel = readLevelFromForm(formData);
+
+    return collectPendingChoiceGrants(
+        selections,
+        locale,
+        characterLevel,
+        system
+    ).find((choice) => choice.key === key);
 }
 
 export function collectNonLanguageChoiceGrants(

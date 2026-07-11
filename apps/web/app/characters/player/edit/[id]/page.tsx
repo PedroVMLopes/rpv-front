@@ -13,30 +13,31 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { PlayerCharacterForm } from "@/components/characters/PlayerCharacterForm";
 import { useMemo, useEffect } from "react";
-import { CHARACTER_CREATION_STEP_COUNT } from "@/lib/character/characterCreationSteps";
+import { resolveInitialStepId } from "@/lib/character/creationSteps";
+import { resolveCreationGraph } from "@/lib/character/characterCreationSteps";
+import { flattenStoredToForm } from "@/lib/character/presetStats";
 
-function readInitialStep(searchParams: URLSearchParams): number {
+function readInitialStepId(
+    searchParams: URLSearchParams,
+    formValues: Record<string, unknown>,
+    system: "dnd",
+    contentLocale: "en" | "pt-BR"
+): string {
     const raw = searchParams.get("step");
+
     if (!raw) {
-        return 0;
+        return "race";
     }
 
-    const parsed = Number(raw);
-    if (Number.isNaN(parsed)) {
-        return 0;
-    }
+    const graph = resolveCreationGraph(formValues, system, contentLocale);
 
-    return Math.min(
-        Math.max(Math.trunc(parsed), 0),
-        CHARACTER_CREATION_STEP_COUNT - 1
-    );
+    return resolveInitialStepId(raw, graph);
 }
 
 export default function EditPlayer() {
     const params = useParams<{ id: string }>();
     const id = params.id;
     const searchParams = useSearchParams();
-    const initialStep = readInitialStep(searchParams);
 
     const updateCharacter = useCharacterStore((state) => state.updateCharacter);
     const getFormDefaults = useCharacterStore((state) => state.getFormDefaults);
@@ -86,6 +87,21 @@ export default function EditPlayer() {
         defaultValues: formDefaults ?? {},
     });
 
+    const initialStepId = useMemo(() => {
+        if (!character) {
+            return "race";
+        }
+
+        const formValues = formDefaults ?? flattenStoredToForm(character, character.system);
+
+        return readInitialStepId(
+            searchParams,
+            formValues,
+            characterSystem,
+            contentLocale
+        );
+    }, [character, characterSystem, contentLocale, formDefaults, searchParams]);
+
     useEffect(() => {
         if (formDefaults) {
             form.reset(formDefaults);
@@ -118,7 +134,7 @@ export default function EditPlayer() {
                 statConfig={presetData.statConfig}
                 contentLocale={contentLocale}
                 onSave={handleSave}
-                initialStep={initialStep}
+                initialStepId={initialStepId}
                 header={
                     <h1 className="mb-2 text-lg font-bold bg-muted p-1 px-2 rounded">
                         Edit {character.name}
