@@ -134,12 +134,18 @@ export function PlayerCharacterForm({
             return;
         }
 
-        setActiveStepId(resolveInitialStepId(initialStepId, creationGraph));
-    }, [initialStepId, creationGraph]);
+        const resolved = resolveInitialStepId(initialStepId, creationGraph);
+        setActiveStepId(resolved);
+        // Only re-sync when the step prop changes (e.g. URL ?step=), not when the
+        // dynamic graph rebuilds after form edits during navigation.
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- creationGraph intentionally omitted
+    }, [initialStepId]);
 
     useEffect(() => {
-        if (!creationGraph.isValidStepId(activeStepId)) {
-            setActiveStepId(creationGraph.steps[0]?.id ?? "race");
+        const isValid = creationGraph.isValidStepId(activeStepId);
+        if (!isValid) {
+            const fallback = creationGraph.steps[0]?.id ?? "race";
+            setActiveStepId(fallback);
         }
     }, [activeStepId, creationGraph]);
 

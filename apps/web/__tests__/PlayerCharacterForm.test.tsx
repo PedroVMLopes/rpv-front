@@ -223,4 +223,28 @@ describe("PlayerCharacterForm", () => {
 
         expect(await screen.findByText("Character level")).toBeInTheDocument();
     });
+
+    it("keeps sidebar navigation on edit when initialStepId is race", async () => {
+        const user = userEvent.setup();
+
+        render(
+            <PlayerFormHarness
+                defaultValues={{
+                    race: "elf",
+                    subrace: "high-elf",
+                    characterClass: "wizard",
+                    level: 3,
+                }}
+                initialStepId="race"
+            />
+        );
+
+        const sidebar = getCreationSidebar();
+        await user.click(sidebar.getByRole("button", { name: "Class & Level" }));
+
+        expect(await screen.findByText("Character level")).toBeInTheDocument();
+        expect(
+            sidebar.getByRole("button", { name: "Class & Level" }).className
+        ).toMatch(/bg-primary/);
+    });
 });
