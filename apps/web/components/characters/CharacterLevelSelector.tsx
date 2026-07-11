@@ -14,15 +14,11 @@ import { readLevelFromForm } from "@/lib/character/level";
 
 type CharacterLevelSelectorProps = {
     form: UseFormReturn<Record<string, unknown>>;
-    onBeforeLevelChange?: (nextLevel: number) => void;
 };
 
 const PRESETS: LevelPreset[] = ["lv1", "lv2", "lv3", "custom"];
 
-export function CharacterLevelSelector({
-    form,
-    onBeforeLevelChange,
-}: CharacterLevelSelectorProps) {
+export function CharacterLevelSelector({ form }: CharacterLevelSelectorProps) {
     const t = useTranslations("characterCreation");
     const { control } = form;
     const watchedLevel = useWatch({ control, name: "level" });
@@ -30,11 +26,6 @@ export function CharacterLevelSelector({
     const preset = inferLevelPreset(level);
 
     function setLevel(nextLevel: number) {
-        if (onBeforeLevelChange) {
-            onBeforeLevelChange(nextLevel);
-            return;
-        }
-
         form.setValue("level", nextLevel, {
             shouldDirty: true,
             shouldValidate: true,

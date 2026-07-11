@@ -357,12 +357,6 @@
         "background": "Selecione um antecedente para ver descrição e recursos."
       }
     },
-    "reset": {
-      "title": "Alterar {field}?",
-      "body": "Isso limpará escolhas que dependem do seu {field} atual, incluindo subclasse, magias, perícias e outras escolhas de grants.",
-      "confirm": "Alterar mesmo assim",
-      "cancel": "Manter atual"
-    },
     "spellPick": {
       "slotLabel": "{label} ({current}/{total})",
       "selected": "Selecionado",

@@ -78,4 +78,30 @@ describe("CatalogSelectionPage", () => {
 
         expect(grid?.className).toMatch(/md:grid/);
     });
+
+    it("applies race change immediately when grant picks exist", async () => {
+        const user = userEvent.setup();
+        render(
+            <CatalogHarness
+                defaultValues={{
+                    race: "dwarf",
+                    characterClass: "fighter",
+                    subclass: "fighter-champion",
+                    choices: {
+                        grantPicks: {
+                            "class:fighter:base:skill_proficiency:0:0": "athletics",
+                        },
+                    },
+                }}
+            />
+        );
+
+        await user.click(screen.getByTestId("catalog-card-elf"));
+
+        expect(screen.getByTestId("race-value")).toHaveTextContent("elf");
+        expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+        expect(screen.getByTestId("catalog-card-elf").className).toMatch(
+            /border-primary/
+        );
+    });
 });

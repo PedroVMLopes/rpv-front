@@ -13,27 +13,12 @@ import type {
 import { getCatalogSelectionKindForField } from "@/lib/character/creation/catalogSelection.types";
 import { buildCatalogDetailModel } from "@/lib/character/creation/buildCatalogDetailModel";
 import { getCatalogSelectionSource } from "@/lib/character/creation/sources";
-import {
-    mapFormFieldToGuardedField,
-    useSelectionChangeGuard,
-    type PendingSelectionChange,
-} from "@/lib/character/creation/useSelectionChangeGuard";
 import { CatalogSelectionCard } from "@/components/characters/creation/CatalogSelectionCard";
 import { CatalogSelectionGrid } from "@/components/characters/creation/CatalogSelectionGrid";
 import { CatalogSelectionDetailPanel } from "@/components/characters/creation/CatalogSelectionDetailPanel";
 import { CatalogDetailModal } from "@/components/characters/creation/CatalogDetailModal";
-import { SelectionChangeConfirmDialog } from "@/components/characters/creation/SelectionChangeConfirmDialog";
 import type { SystemKey } from "@/presets";
 import { readLevelFromForm } from "@/lib/character/level";
-
-type SelectionGuard = {
-    pending: PendingSelectionChange | null;
-    requestChange: ReturnType<
-        typeof useSelectionChangeGuard
-    >["requestChange"];
-    confirm: () => void;
-    cancel: () => void;
-};
 
 type CatalogSelectionPageProps = {
     formField: CatalogFormField;
@@ -42,7 +27,6 @@ type CatalogSelectionPageProps = {
     system: SystemKey;
     context?: CatalogSelectionContext;
     disabled?: boolean;
-    guard?: SelectionGuard;
 };
 
 function buildSourceForField(
@@ -70,13 +54,9 @@ export function CatalogSelectionPage({
     system,
     context = {},
     disabled = false,
-    guard: externalGuard,
 }: CatalogSelectionPageProps) {
     const kind: CatalogSelectionKind = getCatalogSelectionKindForField(formField);
     const catalogSource = getCatalogSelectionSource(system, kind);
-    const internalGuard = useSelectionChangeGuard(form);
-    const { pending, requestChange, confirm, cancel } =
-        externalGuard ?? internalGuard;
 
     const { control } = form;
     const selectedSlug = useWatch({ control, name: formField });
@@ -131,14 +111,7 @@ export function CatalogSelectionPage({
             return;
         }
 
-        const guardedField = mapFormFieldToGuardedField(formField);
-
-        if (!guardedField) {
-            applySelection(nextSlug);
-            return;
-        }
-
-        requestChange(guardedField, () => applySelection(nextSlug));
+        applySelection(nextSlug);
     }
 
     const expandedModel = expandedEntry
@@ -181,13 +154,6 @@ export function CatalogSelectionPage({
                     source={buildSourceForField(formField, expandedEntry)}
                 />
             ) : null}
-
-            <SelectionChangeConfirmDialog
-                field={pending?.field ?? null}
-                open={Boolean(pending) && !externalGuard}
-                onConfirm={confirm}
-                onCancel={cancel}
-            />
         </div>
     );
 }

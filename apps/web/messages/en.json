@@ -357,12 +357,6 @@
         "background": "Select a background to see its description and features."
       }
     },
-    "reset": {
-      "title": "Change {field}?",
-      "body": "This will clear choices that depend on your current {field}, including subclass, spells, skills, and other grant picks.",
-      "confirm": "Change anyway",
-      "cancel": "Keep current"
-    },
     "spellPick": {
       "slotLabel": "{label} ({current}/{total})",
       "selected": "Selected",
