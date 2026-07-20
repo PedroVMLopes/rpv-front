@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import {
     computeSkillModifiers,
@@ -15,6 +16,7 @@ import { getResolvedStatDisplay } from "@/lib/character/presetStats";
 import { getSystemRules } from "@/lib/character/systemRules";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useCharacterStore } from "@/store/useCharacterStore";
+import { Button } from "@/components/ui/button";
 import { OverviewPanel } from "./OverviewPanel";
 import { sheetInset } from "../playerSheetSurfaces";
 import { cn } from "@/lib/utils";
@@ -59,6 +61,15 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
 
     return (
         <OverviewPanel>
+            {level < 20 ? (
+                <Button asChild className="mb-2 w-full">
+                    <Link
+                        href={`/characters/player/edit/${stored.id}?step=class`}
+                    >
+                        {t("playerSheet.levelUp")}
+                    </Link>
+                </Button>
+            ) : null}
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {display.abilities.map((ability) => {
                     const mod = abilityModifier(ability.resolved);

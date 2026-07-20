@@ -312,6 +312,7 @@ Helpers relevantes:
 - Header colapsável em mobile
 - Aba Anotações (quando modelo de dados for definido)
 - Condições temporárias no header (Bless, etc.) — extensão futura
+- **Level-up:** CTA na overview (`AbilitiesSection`) aponta para edit `?step=class` (MVP). Wizard filtrado só com escolhas do novo nível = fase futura.
 
 ---
 

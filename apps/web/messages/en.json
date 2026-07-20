@@ -408,6 +408,7 @@
     },
     "noneYet": "None yet",
     "levelLine": "Level {level}",
+    "levelUp": "Level up",
     "noPortrait": "No portrait",
     "equippedArmor": "Equipped: {name}",
     "skillsCardTitle": "Skills",
