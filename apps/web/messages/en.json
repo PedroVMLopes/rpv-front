@@ -354,6 +354,17 @@
       "equipmentLinkLocked": "Complete earlier steps to configure starting equipment.",
       "equipmentPreviewEquipment": "Equipment"
     },
+    "levelSummary": {
+      "subclassAvailable": "Subclass available",
+      "goToSubclass": "Choose subclass →",
+      "hitPoints": "Hit points",
+      "hpChange": "{before} → {after}",
+      "classResources": "Class resources",
+      "subclassResources": "Subclass resources",
+      "spellsGained": "Gain {count} spell(s)",
+      "cantripsGained": "Gain {count} cantrip(s)",
+      "empty": "No automatic gains at this level."
+    },
     "selection": {
       "expandDetails": "View details",
       "deselect": "Clear selection",

@@ -16,7 +16,15 @@ import {
     hasAnyBucketItems,
     type GrantPreviewContext,
 } from "@/lib/character/creation/groupGrantPreviewBuckets";
+import {
+    buildLevelGainSummary,
+    hasLevelGainSummaryContent,
+    type LevelGainSummary,
+} from "@/lib/character/buildLevelGainSummary";
+import { formatResourceRefLabel } from "@/lib/character/resourceLabels";
+import { sheetInset } from "@/components/characters/PlayerSheet/playerSheetSurfaces";
 import type { SystemKey } from "@/presets";
+import { cn } from "@/lib/utils";
 
 type LevelProgressionPageProps = {
     form: UseFormReturn<Record<string, unknown>>;
@@ -27,6 +35,131 @@ type LevelProgressionPageProps = {
     pickStepIds?: string[];
     onStepSelect?: (stepId: string) => void;
 };
+
+function resourceLine(
+    ref: string,
+    amount: number,
+    labelFor: (ref: string) => string
+): string {
+    const sign = amount > 0 ? "+" : "";
+    return `${labelFor(ref)}: ${sign}${amount}`;
+}
+
+function LevelGainSummaryPanel({
+    summary,
+    onStepSelect,
+}: {
+    summary: LevelGainSummary;
+    onStepSelect?: (stepId: string) => void;
+}) {
+    const t = useTranslations("characterCreation.levelSummary");
+    const tResources = useTranslations("classResources");
+
+    const labelFor = (ref: string) =>
+        formatResourceRefLabel(
+            ref,
+            (key) => tResources(key),
+            (key) => tResources.has(key)
+        );
+
+    const hasSpells =
+        summary.spellPicks.spells > 0 || summary.spellPicks.cantrips > 0;
+
+    return (
+        <div className={cn(sheetInset, "flex flex-col gap-3 rounded-md p-3")}>
+            <ul className="flex flex-col gap-2 text-sm">
+                {summary.subclassAvailable ? (
+                    <li className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                        <span className="font-medium text-foreground">
+                            {t("subclassAvailable")}
+                        </span>
+                        {onStepSelect ? (
+                            <button
+                                type="button"
+                                className="font-medium text-primary underline-offset-4 hover:underline"
+                                onClick={() => onStepSelect("subclass")}
+                            >
+                                {t("goToSubclass")}
+                            </button>
+                        ) : null}
+                    </li>
+                ) : null}
+
+                {summary.hp ? (
+                    <li>
+                        <span className="font-medium text-foreground">
+                            {t("hitPoints")}
+                            {": "}
+                        </span>
+                        <span className="text-muted-foreground">
+                            {t("hpChange", {
+                                before: summary.hp.before,
+                                after: summary.hp.after,
+                            })}
+                        </span>
+                    </li>
+                ) : null}
+
+                {summary.classResources.length > 0 ? (
+                    <li className="flex flex-col gap-1">
+                        <span className="font-medium text-foreground">
+                            {t("classResources")}
+                        </span>
+                        <ul className="list-inside list-disc text-muted-foreground">
+                            {summary.classResources.map((entry) => (
+                                <li key={entry.ref}>
+                                    {resourceLine(
+                                        entry.ref,
+                                        entry.amount,
+                                        labelFor
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    </li>
+                ) : null}
+
+                {summary.subclassResources.length > 0 ? (
+                    <li className="flex flex-col gap-1">
+                        <span className="font-medium text-foreground">
+                            {t("subclassResources")}
+                        </span>
+                        <ul className="list-inside list-disc text-muted-foreground">
+                            {summary.subclassResources.map((entry) => (
+                                <li key={entry.ref}>
+                                    {resourceLine(
+                                        entry.ref,
+                                        entry.amount,
+                                        labelFor
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    </li>
+                ) : null}
+
+                {hasSpells ? (
+                    <li className="flex flex-col gap-1">
+                        {summary.spellPicks.cantrips > 0 ? (
+                            <span className="text-muted-foreground">
+                                {t("cantripsGained", {
+                                    count: summary.spellPicks.cantrips,
+                                })}
+                            </span>
+                        ) : null}
+                        {summary.spellPicks.spells > 0 ? (
+                            <span className="text-muted-foreground">
+                                {t("spellsGained", {
+                                    count: summary.spellPicks.spells,
+                                })}
+                            </span>
+                        ) : null}
+                    </li>
+                ) : null}
+            </ul>
+        </div>
+    );
+}
 
 export function LevelProgressionPage({
     form,
@@ -40,10 +173,23 @@ export function LevelProgressionPage({
     const t = useTranslations("characterCreation");
     const { control } = form;
 
+    const watchedValues = useWatch({ control });
     const classSlug = useWatch({ control, name: "characterClass" });
     const subclassSlug = useWatch({ control, name: "subclass" });
     const level = sourceFilter?.level ?? 1;
     const sourceTypes = sourceFilter?.sourceTypes ?? ["class"];
+
+    const summary = useMemo(
+        () =>
+            buildLevelGainSummary({
+                formValues: (watchedValues ?? {}) as Record<string, unknown>,
+                featureLevel: level,
+                system,
+                contentLocale,
+                sourceTypes,
+            }),
+        [watchedValues, level, system, contentLocale, sourceTypes]
+    );
 
     const previewSections = useMemo(() => {
         const sections: Array<{
@@ -105,6 +251,11 @@ export function LevelProgressionPage({
 
         for (const section of previewSections) {
             for (const grant of section.grants) {
+                // Resources are listed in the structured summary — skip duplicate.
+                if (grant.grantType === "resource" && grant.choose === 0) {
+                    continue;
+                }
+
                 contexts.push({
                     grant,
                     source: section.source,
@@ -121,21 +272,33 @@ export function LevelProgressionPage({
         [previewContexts]
     );
 
+    const showSummary = hasLevelGainSummaryContent(summary);
+    const showEmpty = !showSummary && !hasFixedGrants;
+
     return (
         <div className="flex flex-col gap-4">
             <h2 className="text-lg font-bold">{title}</h2>
 
-            {!hasFixedGrants ? (
+            {showSummary ? (
+                <LevelGainSummaryPanel
+                    summary={summary}
+                    onStepSelect={onStepSelect}
+                />
+            ) : null}
+
+            {showEmpty ? (
                 <p className="text-sm text-muted-foreground">
-                    No automatic gains at this level.
+                    {t("levelSummary.empty")}
                 </p>
-            ) : (
+            ) : null}
+
+            {hasFixedGrants ? (
                 <GrantPreviewGroupedPanel
                     contexts={previewContexts}
                     contentLocale={contentLocale}
                     system={system}
                 />
-            )}
+            ) : null}
 
             {pickStepIds.length > 0 && onStepSelect ? (
                 <ul className="flex flex-col gap-2 border-t pt-4">

@@ -30,4 +30,15 @@ describe("formatResourceRefLabel", () => {
             "Spell Slots 1"
         );
     });
+
+    it("skips t() when hasKey reports the message missing", () => {
+        const t = jest.fn(() => {
+            throw new Error("should not call t");
+        });
+
+        expect(
+            formatResourceRefLabel("spell-slots-1", t, () => false)
+        ).toBe("Spell Slots 1");
+        expect(t).not.toHaveBeenCalled();
+    });
 });

@@ -354,6 +354,17 @@
       "equipmentLinkLocked": "Complete os passos anteriores para configurar o equipamento inicial.",
       "equipmentPreviewEquipment": "Equipamento"
     },
+    "levelSummary": {
+      "subclassAvailable": "Especialização disponível",
+      "goToSubclass": "Escolher especialização →",
+      "hitPoints": "Pontos de vida",
+      "hpChange": "{before} → {after}",
+      "classResources": "Recursos de classe",
+      "subclassResources": "Recursos de subclasse",
+      "spellsGained": "Ganha {count} magia(s)",
+      "cantripsGained": "Ganha {count} truque(s)",
+      "empty": "Nenhum ganho automático neste nível."
+    },
     "selection": {
       "expandDetails": "Ver detalhes",
       "deselect": "Limpar seleção",

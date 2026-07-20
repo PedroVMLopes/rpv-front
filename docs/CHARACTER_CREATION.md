@@ -262,7 +262,7 @@ type CreationStep = {
 | kind | Componente |
 |------|------------|
 | `selection` | `RaceSelectionPage`, `SubraceSelectionPage`, `ClassSelectionPage`, `SubclassSelectionPage` |
-| `level_summary` | `LevelProgressionPage` |
+| `level_summary` | `LevelProgressionPage` — structured gain preview (average HP before→after, class/subclass resources, spell/cantrip pick counts, subclass unlock) plus remaining fixed grants |
 | `grant_picks` | `GrantChoicePage` → `SpellChoiceGrid` / `ItemChoiceGrid` / pickers legados |
 | `abilities` | `AbilitiesStepPage` (scores + ASI picks + skill review) |
 | `finalize` | equipamento + pendências |

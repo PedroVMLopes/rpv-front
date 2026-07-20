@@ -9,9 +9,15 @@ function humanizeSlug(ref: string): string {
 
 export function formatResourceRefLabel(
     ref: string,
-    t: (key: string, values?: Record<string, unknown>) => string
+    t: (key: string, values?: Record<string, unknown>) => string,
+    /** Prefer `t.has` from next-intl — avoids MISSING_MESSAGE side effects. */
+    hasKey?: (key: string) => boolean
 ): string {
     const key = `${REF_LABEL_PREFIX}${ref}`;
+
+    if (hasKey && !hasKey(key)) {
+        return humanizeSlug(ref);
+    }
 
     try {
         const translated = t(key);
@@ -19,7 +25,7 @@ export function formatResourceRefLabel(
             return translated;
         }
     } catch {
-        // next-intl throws MISSING_MESSAGE for unknown keys in strict mode.
+        // next-intl may still throw MISSING_MESSAGE for unknown keys in strict mode.
     }
 
     return humanizeSlug(ref);
