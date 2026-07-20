@@ -1,26 +1,26 @@
 import type { ItemEntry } from "@rpv/content";
+import {
+    buildItemPickContentModel,
+    type ItemPickContentFormatters,
+} from "./buildItemPickContentModel";
 import type {
     ContentDetailModel,
     ContentSummaryModel,
 } from "./contentDetail.types";
 
+const defaultFormatters: ItemPickContentFormatters = {
+    tItems: (key) => key,
+    tContentDetail: (key) => key,
+    missingValue: "—",
+};
+
+/**
+ * Preview model for catalog/browse contexts. Prefer
+ * `buildItemPickContentModel` when formatters (i18n) are available.
+ */
 export function buildItemPreviewContentModel(
-    item: ItemEntry
+    item: ItemEntry,
+    formatters: ItemPickContentFormatters = defaultFormatters
 ): { summary: ContentSummaryModel; detail: ContentDetailModel } {
-    const summary: ContentSummaryModel = {
-        id: item.slug,
-        kind: "item",
-        title: item.name,
-        badges: [],
-    };
-
-    const detail: ContentDetailModel = {
-        id: item.slug,
-        kind: "item",
-        title: item.name,
-        sections: [],
-        description: item.description,
-    };
-
-    return { summary, detail };
+    return buildItemPickContentModel(item, formatters);
 }

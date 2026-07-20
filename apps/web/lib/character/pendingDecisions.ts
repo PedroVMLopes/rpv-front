@@ -42,6 +42,8 @@ export type PendingDecision = {
     kind: PendingDecisionKind;
     label: string;
     stepId: string;
+    /** Grant pick key (or exclusive key) to scroll/highlight within the step. */
+    focusKey?: string;
 };
 
 type PendingCopy = {
@@ -185,6 +187,7 @@ export function collectPendingDecisions(
             kind: "grant_pick",
             label: choice.label,
             stepId: mapChoiceToStepId(choice.key, choice.grant, graph),
+            focusKey: choice.key,
         });
     }
 
@@ -205,6 +208,7 @@ export function collectPendingDecisions(
                       graph
                   )
                 : "class",
+            focusKey: issue.key,
         });
     }
 

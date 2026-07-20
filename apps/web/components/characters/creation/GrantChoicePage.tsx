@@ -17,6 +17,7 @@ type GrantChoicePageProps = {
     contentLocale: Locale;
     system: SystemKey;
     stepFilter?: CreationStepSourceFilter;
+    focusKey?: string;
 };
 
 export function GrantChoicePage({
@@ -24,6 +25,7 @@ export function GrantChoicePage({
     contentLocale,
     system,
     stepFilter,
+    focusKey,
 }: GrantChoicePageProps) {
     const formValues = form.watch();
 
@@ -50,6 +52,7 @@ export function GrantChoicePage({
                 contentLocale={contentLocale}
                 system={system}
                 choices={spellChoices}
+                focusKey={focusKey}
             />
         );
     }
@@ -61,6 +64,7 @@ export function GrantChoicePage({
             system={system}
             stepFilter={stepFilter}
             sections="choices-only"
+            focusKey={focusKey}
         />
     );
 }

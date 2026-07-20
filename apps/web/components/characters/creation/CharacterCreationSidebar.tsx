@@ -14,7 +14,7 @@ type CharacterCreationSidebarProps = {
     stepHint?: string | null;
     isLastStep: boolean;
     isSaving?: boolean;
-    onStepSelect: (stepId: string) => void;
+    onStepSelect: (stepId: string, focusKey?: string) => void;
     onBack: () => void;
     onNext: () => void;
     onSave: () => void;
@@ -185,7 +185,12 @@ export function CharacterCreationSidebar({
                                 <button
                                     type="button"
                                     className="w-full rounded-md px-2 py-1 text-left text-xs text-muted-foreground hover:bg-muted/60"
-                                    onClick={() => onStepSelect(decision.stepId)}
+                                    onClick={() =>
+                                        onStepSelect(
+                                            decision.stepId,
+                                            decision.focusKey
+                                        )
+                                    }
                                 >
                                     {decision.label}
                                 </button>

@@ -76,6 +76,7 @@ export type PlayerCharacterFormProps = {
     onSave: (data: Record<string, unknown>) => void;
     header?: React.ReactNode;
     initialStepId?: string;
+    initialFocusKey?: string;
 };
 
 function humanizeStepId(stepId: string): string {
@@ -95,6 +96,7 @@ export function PlayerCharacterForm({
     onSave,
     header,
     initialStepId,
+    initialFocusKey,
 }: PlayerCharacterFormProps) {
     const t = useTranslations("characterCreation");
     const isDesktopSidebar = useMediaQuery("(min-width: 768px)");
@@ -123,6 +125,9 @@ export function PlayerCharacterForm({
     const [activeStepId, setActiveStepId] = useState(() =>
         resolveInitialStepId(initialStepId, creationGraph)
     );
+    const [activeFocusKey, setActiveFocusKey] = useState<string | undefined>(
+        initialFocusKey
+    );
     const [mobileNavOpen, setMobileNavOpen] = useState(false);
     const [stepHint, setStepHint] = useState<string | null>(null);
     const [isSaving, setIsSaving] = useState(false);
@@ -140,6 +145,32 @@ export function PlayerCharacterForm({
         // dynamic graph rebuilds after form edits during navigation.
         // eslint-disable-next-line react-hooks/exhaustive-deps -- creationGraph intentionally omitted
     }, [initialStepId]);
+
+    useEffect(() => {
+        setActiveFocusKey(initialFocusKey);
+    }, [initialFocusKey]);
+
+    useEffect(() => {
+        if (!activeFocusKey) {
+            return;
+        }
+
+        const frame = window.requestAnimationFrame(() => {
+            const escaped =
+                typeof CSS !== "undefined" && typeof CSS.escape === "function"
+                    ? CSS.escape(activeFocusKey)
+                    : activeFocusKey.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+            const target = document.querySelector(
+                `[data-focus-key="${escaped}"]`
+            );
+
+            if (target instanceof HTMLElement) {
+                target.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+        });
+
+        return () => window.cancelAnimationFrame(frame);
+    }, [activeFocusKey, activeStepId]);
 
     useEffect(() => {
         const isValid = creationGraph.isValidStepId(activeStepId);
@@ -240,6 +271,7 @@ export function PlayerCharacterForm({
 
     const handleNext = useCallback(() => {
         setStepHint(null);
+        setActiveFocusKey(undefined);
         const nextStepId = creationGraph.getNextStepId(activeStepId);
 
         if (nextStepId) {
@@ -249,6 +281,7 @@ export function PlayerCharacterForm({
 
     const handleBack = useCallback(() => {
         setStepHint(null);
+        setActiveFocusKey(undefined);
         const prevStepId = creationGraph.getPrevStepId(activeStepId);
 
         if (prevStepId) {
@@ -256,14 +289,18 @@ export function PlayerCharacterForm({
         }
     }, [activeStepId, creationGraph]);
 
-    const handleStepSelect = useCallback((stepId: string) => {
-        setStepHint(null);
+    const handleStepSelect = useCallback(
+        (stepId: string, focusKey?: string) => {
+            setStepHint(null);
 
-        if (creationGraph.isValidStepId(stepId)) {
-            setActiveStepId(stepId);
-            setMobileNavOpen(false);
-        }
-    }, [creationGraph]);
+            if (creationGraph.isValidStepId(stepId)) {
+                setActiveStepId(stepId);
+                setActiveFocusKey(focusKey);
+                setMobileNavOpen(false);
+            }
+        },
+        [creationGraph]
+    );
 
     const handleSave = useCallback(async () => {
         setIsSaving(true);
@@ -381,6 +418,7 @@ export function PlayerCharacterForm({
                             contentLocale={contentLocale}
                             system={system}
                             stepFilter={activeStep.sourceFilter}
+                            focusKey={activeFocusKey}
                         />
                     </div>
                 );
@@ -399,6 +437,7 @@ export function PlayerCharacterForm({
                             system={system}
                             stepFilter={{ grantTypes: ["ability_score"] }}
                             sections="choices-only"
+                            focusKey={activeFocusKey}
                         />
                     </div>
                 );
@@ -423,6 +462,7 @@ export function PlayerCharacterForm({
                             form={form}
                             contentLocale={contentLocale}
                             system={system}
+                            focusKey={activeFocusKey}
                         />
                         <div className="flex flex-col gap-4 rounded-lg border bg-muted/30 p-4">
                             <h3 className="text-sm font-bold">

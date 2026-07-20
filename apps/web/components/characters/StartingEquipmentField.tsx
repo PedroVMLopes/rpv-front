@@ -10,44 +10,25 @@ import {
     currencyChoiceToPending,
     deriveStartingEquipmentFromForm,
     hasStartingEquipmentContent,
-    inventoryChoiceToPending,
 } from "@/lib/character/deriveStartingEquipmentFromForm";
-import { buildGrantChoiceSelectOptions } from "@/lib/character/grantChoiceOptions";
-import {
-    findInvalidGrantPicks,
-} from "@/lib/character/choiceValidation";
+import { buildExclusiveBranchSummaries } from "@/lib/character/buildExclusiveBranchSummaries";
+import { collectGrantSources } from "@/lib/character/characterGrants";
+import { buildSelectionsFromForm } from "@/lib/character/characterAdapter";
+import { findInvalidGrantPicks } from "@/lib/character/choiceValidation";
+import { readGrantPicks, setGrantPick } from "@/lib/character/grantPickForm";
 import { bagStackReactKey } from "@/lib/character/inventory";
-import type { CharacterChoices } from "@/lib/character/storedCharacter";
+import { readLevelFromForm } from "@/lib/character/level";
+import { STARTING_EQUIPMENT_SOURCES } from "@/lib/character/materializeCurrencyGrants";
+import { ExclusiveBranchChoice } from "@/components/characters/creation/items/ExclusiveBranchChoice";
+import { ItemChoiceGrid } from "@/components/characters/creation/items/ItemChoiceGrid";
+import { cn } from "@/lib/utils";
 
 type StartingEquipmentFieldProps = {
     form: UseFormReturn<Record<string, unknown>>;
     contentLocale: Locale;
     system: SystemKey;
+    focusKey?: string;
 };
-
-function readGrantPicks(form: UseFormReturn<Record<string, unknown>>): Record<string, string> {
-    const choices = form.watch("choices") as CharacterChoices | undefined;
-    return choices?.grantPicks ?? {};
-}
-
-function setGrantPick(
-    form: UseFormReturn<Record<string, unknown>>,
-    key: string,
-    value: string
-) {
-    const current = (form.getValues("choices") as CharacterChoices | undefined) ?? {};
-    form.setValue(
-        "choices",
-        {
-            ...current,
-            grantPicks: {
-                ...(current.grantPicks ?? {}),
-                [key]: value,
-            },
-        },
-        { shouldDirty: true, shouldValidate: true }
-    );
-}
 
 function formatSourceLabel(
     source: ModifierSource,
@@ -82,8 +63,10 @@ export function StartingEquipmentField({
     form,
     contentLocale,
     system,
+    focusKey,
 }: StartingEquipmentFieldProps) {
     const t = useTranslations("startingEquipment");
+    const tItems = useTranslations("items");
     const watchedValues = form.watch();
 
     const formSnapshot = useMemo(
@@ -141,8 +124,67 @@ export function StartingEquipmentField({
         [invalidPicks]
     );
     const hasInvalidChoices =
-        invalidInventoryKeys.size > 0 ||
-        invalidCurrencyKeys.size > 0;
+        invalidInventoryKeys.size > 0 || invalidCurrencyKeys.size > 0;
+
+    const branchSummariesByGroupKey = useMemo(() => {
+        const level = readLevelFromForm(formSnapshot);
+        const selections = buildSelectionsFromForm(formSnapshot);
+        const sources = collectGrantSources(selections, contentLocale, level);
+        const result = new Map<
+            string,
+            ReturnType<typeof buildExclusiveBranchSummaries>
+        >();
+
+        for (const group of preview.exclusiveGroups) {
+            const entry = sources.find(
+                (source) =>
+                    STARTING_EQUIPMENT_SOURCES.has(source.source.type) &&
+                    source.source.type === group.source.type &&
+                    source.source.id === group.source.id
+            );
+
+            if (!entry) {
+                result.set(
+                    group.key,
+                    buildExclusiveBranchSummaries(
+                        [],
+                        group.branches,
+                        system,
+                        contentLocale,
+                        {
+                            equipmentPackage: tItems("pick.equipmentPackage"),
+                            choiceCount: (count) =>
+                                tItems("pick.choiceCount", { count }),
+                            fixedItemCount: (count) =>
+                                tItems("pick.fixedItemCount", { count }),
+                            currencyAmount: (amount, ref) => `${amount} ${ref}`,
+                        }
+                    )
+                );
+                continue;
+            }
+
+            result.set(
+                group.key,
+                buildExclusiveBranchSummaries(
+                    entry.grants,
+                    group.branches,
+                    system,
+                    contentLocale,
+                    {
+                        equipmentPackage: tItems("pick.equipmentPackage"),
+                        choiceCount: (count) =>
+                            tItems("pick.choiceCount", { count }),
+                        fixedItemCount: (count) =>
+                            tItems("pick.fixedItemCount", { count }),
+                        currencyAmount: (amount, ref) => `${amount} ${ref}`,
+                    }
+                )
+            );
+        }
+
+        return result;
+    }, [formSnapshot, contentLocale, system, preview.exclusiveGroups, tItems]);
 
     if (!hasStartingEquipmentContent(preview)) {
         return null;
@@ -172,40 +214,28 @@ export function StartingEquipmentField({
             ) : null}
 
             {preview.exclusiveGroups.length > 0 ? (
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-4">
                     {preview.exclusiveGroups.map((group) => (
-                            <fieldset
-                                key={group.key}
-                                className="flex flex-col gap-2 rounded border p-3"
-                            >
-                                <legend className="px-1 text-sm font-semibold">
-                                    {t("exclusiveTitle")}{" "}
-                                    <span className="font-normal text-muted-foreground">
-                                        ({formatSourceLabel(group.source, t)})
-                                    </span>
-                                </legend>
-                                <select
-                                    className="rounded border bg-background px-2 py-1 text-sm"
-                                    value={grantPicks[group.key] ?? ""}
-                                    onChange={(event) =>
-                                        setGrantPick(
-                                            form,
-                                            group.key,
-                                            event.target.value
-                                        )
-                                    }
-                                >
-                                    <option value="">{t("exclusiveSelect")}</option>
-                                    {group.branches.map((branch) => (
-                                        <option
-                                            key={branch.branchId}
-                                            value={branch.branchId}
-                                        >
-                                            {branch.label}
-                                        </option>
-                                    ))}
-                                </select>
-                            </fieldset>
+                        <ExclusiveBranchChoice
+                            key={group.key}
+                            groupKey={group.key}
+                            groupLabel={group.label}
+                            sourceLabel={formatSourceLabel(group.source, t)}
+                            branches={
+                                branchSummariesByGroupKey.get(group.key) ??
+                                group.branches.map((branch) => ({
+                                    branchId: branch.branchId,
+                                    label: branch.label,
+                                    summary: branch.label,
+                                    detailLines: [],
+                                }))
+                            }
+                            selectedBranchId={grantPicks[group.key] ?? ""}
+                            onSelect={(branchId) =>
+                                setGrantPick(form, group.key, branchId)
+                            }
+                            focusKey={focusKey}
+                        />
                     ))}
                 </div>
             ) : null}
@@ -234,52 +264,14 @@ export function StartingEquipmentField({
             {preview.choiceGrants.length > 0 ? (
                 <div className="flex flex-col gap-2">
                     <h3 className="text-sm font-semibold">{t("choicesTitle")}</h3>
-                    {preview.choiceGrants.map((choice) => {
-                        const pending = inventoryChoiceToPending(
-                            choice,
-                            system,
-                            contentLocale
-                        );
-                        const options = buildGrantChoiceSelectOptions(
-                            pending,
-                            grantPicks,
-                            new Set<string>()
-                        );
-                        const hasError = invalidInventoryKeys.has(choice.key);
-
-                        return (
-                            <label
-                                key={choice.key}
-                                className="flex flex-col gap-1 text-sm"
-                            >
-                                <span className="font-medium">{choice.label}</span>
-                                <select
-                                    className={`rounded border bg-background px-2 py-1${
-                                        hasError ? " border-destructive" : ""
-                                    }`}
-                                    value={grantPicks[choice.key] ?? ""}
-                                    onChange={(event) =>
-                                        setGrantPick(
-                                            form,
-                                            choice.key,
-                                            event.target.value
-                                        )
-                                    }
-                                >
-                                    <option value="">{t("selectOption")}</option>
-                                    {options.map((option) => (
-                                        <option
-                                            key={option.value}
-                                            value={option.value}
-                                            disabled={option.disabled}
-                                        >
-                                            {option.label}
-                                        </option>
-                                    ))}
-                                </select>
-                            </label>
-                        );
-                    })}
+                    <ItemChoiceGrid
+                        form={form}
+                        contentLocale={contentLocale}
+                        system={system}
+                        choices={preview.choiceGrants}
+                        invalidKeys={invalidInventoryKeys}
+                        focusKey={focusKey}
+                    />
                 </div>
             ) : null}
 
@@ -289,11 +281,17 @@ export function StartingEquipmentField({
                     {preview.currencyChoiceGrants.map((choice) => {
                         const pending = currencyChoiceToPending(choice);
                         const hasError = invalidCurrencyKeys.has(choice.key);
+                        const isFocused = focusKey === choice.key;
 
                         return (
                             <label
                                 key={choice.key}
-                                className="flex flex-col gap-1 text-sm"
+                                data-focus-key={choice.key}
+                                className={cn(
+                                    "flex flex-col gap-1 rounded-md text-sm",
+                                    isFocused &&
+                                        "ring-2 ring-primary ring-offset-2"
+                                )}
                             >
                                 <span className="font-medium">{choice.label}</span>
                                 <select
@@ -311,7 +309,10 @@ export function StartingEquipmentField({
                                 >
                                     <option value="">{t("selectOption")}</option>
                                     {pending.options.map((option) => (
-                                        <option key={option.value} value={option.value}>
+                                        <option
+                                            key={option.value}
+                                            value={option.value}
+                                        >
                                             {option.label}
                                         </option>
                                     ))}
@@ -330,8 +331,10 @@ export function StartingEquipmentField({
                     <ul className="flex flex-col gap-1 text-sm">
                         {preview.bag.map((stack) => {
                             const itemName =
-                                contentRepo(system).getItem(stack.slug, contentLocale)?.name ??
-                                stack.slug;
+                                contentRepo(system).getItem(
+                                    stack.slug,
+                                    contentLocale
+                                )?.name ?? stack.slug;
                             return (
                                 <li
                                     key={bagStackReactKey(stack)}

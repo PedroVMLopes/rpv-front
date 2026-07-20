@@ -64,18 +64,14 @@ Classes define optional **`featuresByLevel`** in [`*.dnd.ts`](packages/content/s
 
 ### Creation UX
 
-**Current implementation:** flat 5-step wizard (race → class → abilities → background → equipment) with free step navigation and `PendingDecisionsPanel` on the equipment step. Grant picks use `<select>` dropdowns in `CharacterGrantPickers`.
+**Current implementation:** dynamic wizard via [`resolveCreationSteps`](apps/web/lib/character/creationSteps/resolveCreationSteps.ts) — selection cards (race/subrace/class/subclass/background), per-level progression, spell grids, abilities before finalize, and rich starting equipment (`ItemChoiceGrid` + exclusive branch cards). Spec and residual work: [`docs/CHARACTER_CREATION.md`](docs/CHARACTER_CREATION.md).
 
-**Target specification:** a dynamic, content-rich wizard (selection cards, spell/item modals, per-level progression, abilities step before finalize) is documented in [`docs/CHARACTER_CREATION.md`](docs/CHARACTER_CREATION.md). New work on character creation should follow that doc unless explicitly changing the plan.
-
-Until the redesign lands:
-
-- On the **Class** step, level is set via **`CharacterLevelSelector`**: **Lv 1**, **Lv 3**, or **Custom** (numeric 1–20). Only `level` is persisted; the preset is inferred when editing.
+- Free step navigation; save allowed with incomplete picks (invalid picks still block save).
+- Pending decisions deep-link with `?step=` and optional `?focus=` (grant pick key) for scroll/highlight.
+- On the **Class** step, level is set via **`CharacterLevelSelector`**: **Lv 1**, **Lv 2**, **Lv 3**, or **Custom** (numeric 1–20). Only `level` is persisted.
 - Class grants and pickers use `getClassGrantSourcesForLevel(class, level)` for the selected level.
-- The class step shows **fixed proficiencies/resources**, **class choices** (pickers only), and a **starting equipment teaser** linking to the Equipment step (actual picks stay in `StartingEquipmentField`).
-- **Ability scores:** L1 defaults to **Standard Array**; Lv > 1 defaults to **Manual** with a migration hint (valid score = **Total**). Preview hides Base when value is the default (10) and Racial when bonus is 0.
-
-Creating a character at **level N** includes pending choices from L1 through N (scoped by the level preset). Each `choose > 0` grant becomes one or more picker slots. The target UX splits these choices into **dedicated sub-steps per level** rather than grouping them on a single screen — see the spec.
+- **Ability scores:** L1 defaults to **Standard Array**; Lv > 1 defaults to **Manual** with a migration hint (valid score = **Total**). Distributable racial ASI (+2/+1) is picked on the abilities step.
+- Creating at **level N** walks dedicated sub-steps for L1–N (within the creation progression cap); remaining higher-level picks can be completed later.
 
 ### Grant pick keys
 
@@ -138,7 +134,7 @@ Grants in an `exclusiveGroup` materialize only when the player picks a branch. B
 **Provenance:** granted bag stacks may carry `ItemStack.provenance` =
 `grant:{sourceType}:{sourceId}:{grantIndex}`.
 
-**Creation UI:** `StartingEquipmentField` — exclusive branch selector, item/currency pickers, materialized bag preview. Validated via `choiceValidation` and `startingEquipmentValidation`.
+**Creation UI:** `StartingEquipmentField` — exclusive branch cards, `ItemChoiceGrid` for inventory/bundles, currency `<select>` when needed, bag/currency preview. Validated via `choiceValidation` and `startingEquipmentValidation`.
 
 **Web helpers:** [`materializeInventoryGrants.ts`](apps/web/lib/character/materializeInventoryGrants.ts), [`materializeCurrencyGrants.ts`](apps/web/lib/character/materializeCurrencyGrants.ts), [`exclusiveGroups.ts`](packages/content/src/grant/exclusiveGroups.ts).
 
@@ -208,8 +204,8 @@ Web tests are the primary integration coverage for the character pipeline.
 
 ## Next steps
 
-- **Criação de personagem (wizard rico)** — see [docs/CHARACTER_CREATION.md](docs/CHARACTER_CREATION.md) (dynamic steps, spell/item UI, per-level progression, abilities step).
-- **Ficha de jogador e auxiliar de rolagens** — see [docs/FICHA_JOGADOR.md](docs/FICHA_JOGADOR.md) (player sheet full-page, roll assistant, phased UX roadmap).
 - Extend spell catalog beyond wizard L1 toward full SRD coverage.
 - Extend class progression beyond L5 toward L20.
-- Initiative tracker: editable current uses for derived resources (rage, ki) — partially addressed by player sheet header (Fases 1–2 in FICHA_JOGADOR.md).
+- Player sheet polish (Fase 4) — see [docs/FICHA_JOGADOR.md](docs/FICHA_JOGADOR.md).
+- Optional creation polish: rich currency choices; rich UI for skills/languages (see CHARACTER_CREATION residual).
+- Initiative tracker: editable current uses for derived resources — partially addressed by player sheet header.

@@ -7,10 +7,22 @@ import { cn } from "@/lib/utils";
 
 type PendingDecisionsPanelProps = {
     decisions: PendingDecision[];
-    onNavigateToStep?: (stepId: string) => void;
+    onNavigateToStep?: (stepId: string, focusKey?: string) => void;
     editBaseHref?: string;
     panelVariant?: "default" | "nested";
 };
+
+function buildPendingHref(
+    baseHref: string,
+    decision: PendingDecision
+): string {
+    const params = new URLSearchParams();
+    params.set("step", decision.stepId);
+    if (decision.focusKey) {
+        params.set("focus", decision.focusKey);
+    }
+    return `${baseHref}?${params.toString()}`;
+}
 
 export function PendingDecisionsPanel({
     decisions,
@@ -41,7 +53,7 @@ export function PendingDecisionsPanel({
                         return (
                             <li key={decision.id}>
                                 <a
-                                    href={`${editBaseHref}?step=${encodeURIComponent(decision.stepId)}`}
+                                    href={buildPendingHref(editBaseHref, decision)}
                                     className={cn(className, "block text-muted-foreground")}
                                 >
                                     {decision.label}
@@ -59,7 +71,12 @@ export function PendingDecisionsPanel({
                                         className,
                                         "w-full text-muted-foreground"
                                     )}
-                                    onClick={() => onNavigateToStep(decision.stepId)}
+                                    onClick={() =>
+                                        onNavigateToStep(
+                                            decision.stepId,
+                                            decision.focusKey
+                                        )
+                                    }
                                 >
                                     {decision.label}
                                 </button>

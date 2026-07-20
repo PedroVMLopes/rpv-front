@@ -87,13 +87,13 @@ Renders catalogs, character builders, and content. Consumes `@rpv/domain` and
 rules. UI must stay system-agnostic and data-driven for the same reasons.
 
 For the end-to-end character build pipeline (level, subclass gating, grant picks,
-resources), see [`PROJECT_CONTEXT.md`](PROJECT_CONTEXT.md). The **planned**
-character-creation wizard (rich selection UI, per-level steps, abilities before
-finalize) is specified in [`docs/CHARACTER_CREATION.md`](docs/CHARACTER_CREATION.md).
-Derived class resources (spell slots, rage, ki) preview live on the player form
-via `ClassResourcesField` and display on the character sheet via
-`DerivedResourcesDisplay`. Web tests (`npm test -w rpv-front`) are the primary
-integration coverage; package tests run via root `npm run test:packages`.
+resources), see [`PROJECT_CONTEXT.md`](PROJECT_CONTEXT.md). Character creation
+uses a dynamic wizard (selection cards, spell/item grids, per-level steps); see
+[`docs/CHARACTER_CREATION.md`](docs/CHARACTER_CREATION.md). Derived class resources
+(spell slots, rage, ki) preview live on the player form via `ClassResourcesField`
+and display on the character sheet via `DerivedResourcesDisplay`. Web tests
+(`npm test -w rpv-front`) are the primary integration coverage; package tests run
+via root `npm run test:packages`.
 
 ## Adding a new system (the litmus test)
 

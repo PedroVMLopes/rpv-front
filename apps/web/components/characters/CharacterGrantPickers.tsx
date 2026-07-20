@@ -29,6 +29,7 @@ import {
 import type { CharacterChoices, CharacterSelections } from "@/lib/character/storedCharacter";
 import { readLevelFromForm } from "@/lib/character/level";
 import type { SystemKey } from "@/presets";
+import { cn } from "@/lib/utils";
 
 type CharacterGrantPickersProps = {
     form: UseFormReturn<Record<string, unknown>>;
@@ -38,6 +39,7 @@ type CharacterGrantPickersProps = {
     stepFilter?: CreationStepSourceFilter;
     sections?: "all" | "choices-only";
     displayLevel?: number;
+    focusKey?: string;
 };
 
 function readGrantPicks(form: UseFormReturn<Record<string, unknown>>): Record<string, string> {
@@ -96,6 +98,7 @@ export function CharacterGrantPickers({
     stepFilter,
     sections = "all",
     displayLevel,
+    focusKey,
 }: CharacterGrantPickersProps) {
     const t = useTranslations("grants");
     const tAbilities = useTranslations("abilities");
@@ -309,7 +312,15 @@ export function CharacterGrantPickers({
         }));
 
         return (
-            <label key={choice.key} className="flex flex-col gap-1 text-sm">
+            <label
+                key={choice.key}
+                data-focus-key={choice.key}
+                className={cn(
+                    "flex flex-col gap-1 rounded-md text-sm",
+                    focusKey === choice.key &&
+                        "ring-2 ring-primary ring-offset-2"
+                )}
+            >
                 <span className="font-medium">{choice.label}</span>
                 <select
                     className={`bg-background rounded border px-2 py-1${
@@ -388,7 +399,12 @@ export function CharacterGrantPickers({
                         return (
                             <label
                                 key={choice.key}
-                                className="flex flex-col gap-1 text-sm"
+                                data-focus-key={choice.key}
+                                className={cn(
+                                    "flex flex-col gap-1 rounded-md text-sm",
+                                    focusKey === choice.key &&
+                                        "ring-2 ring-primary ring-offset-2"
+                                )}
                             >
                                 <span className="font-medium">{choice.label}</span>
                                 <select

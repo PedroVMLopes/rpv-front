@@ -102,6 +102,11 @@ export default function EditPlayer() {
         );
     }, [character, characterSystem, contentLocale, formDefaults, searchParams]);
 
+    const initialFocusKey = useMemo(() => {
+        const raw = searchParams.get("focus");
+        return raw && raw.trim().length > 0 ? raw : undefined;
+    }, [searchParams]);
+
     useEffect(() => {
         if (formDefaults) {
             form.reset(formDefaults);
@@ -135,6 +140,7 @@ export default function EditPlayer() {
                 contentLocale={contentLocale}
                 onSave={handleSave}
                 initialStepId={initialStepId}
+                initialFocusKey={initialFocusKey}
                 header={
                     <h1 className="mb-2 text-lg font-bold bg-muted p-1 px-2 rounded">
                         Edit {character.name}

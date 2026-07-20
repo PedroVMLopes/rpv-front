@@ -1,13 +1,15 @@
 # Criação de Personagem — Especificação e Roadmap
 
-Este documento descreve a **reformulação planejada** do fluxo de criação/edição de personagens jogadores. É a fonte de verdade para decisões de produto e arquitetura de UI nesta área. O estado **atual** do código ainda segue o wizard de 5 etapas planas descrito em [`PROJECT_CONTEXT.md`](../PROJECT_CONTEXT.md); o que está aqui é o **alvo** a ser implementado em fases.
+Este documento é a fonte de verdade para o fluxo de criação/edição de personagens
+jogadores. As **fases A–H** estão implementadas no código; o residual está em §11.
 
-Referências no código atual:
+Referências no código:
 
 - Formulário: [`apps/web/components/characters/PlayerCharacterForm.tsx`](../apps/web/components/characters/PlayerCharacterForm.tsx)
-- Etapas: [`apps/web/lib/character/characterCreationSteps.ts`](../apps/web/lib/character/characterCreationSteps.ts)
+- Resolução de etapas: [`apps/web/lib/character/creationSteps/`](../apps/web/lib/character/creationSteps/)
 - Escolhas de grants: [`apps/web/lib/character/grantChoices.ts`](../apps/web/lib/character/grantChoices.ts)
-- Pickers atuais: [`apps/web/components/characters/CharacterGrantPickers.tsx`](../apps/web/components/characters/CharacterGrantPickers.tsx)
+- Magias: [`SpellChoiceGrid`](../apps/web/components/characters/creation/spells/SpellChoiceGrid.tsx)
+- Itens / exclusive: [`ItemChoiceGrid`](../apps/web/components/characters/creation/items/ItemChoiceGrid.tsx), [`ExclusiveBranchChoice`](../apps/web/components/characters/creation/items/ExclusiveBranchChoice.tsx)
 - Pipeline de build: [`PROJECT_CONTEXT.md`](../PROJECT_CONTEXT.md)
 - Princípios de engine: [`AGENTS.md`](../AGENTS.md)
 
@@ -295,8 +297,8 @@ Extensões em `@rpv/content` só se um primitive genuinamente novo for necessár
 ## 9. Navegação e edição
 
 - **Navegação livre** entre etapas (comportamento atual).
-- **Deep links:** `?step={creationStepId}` na criação e edição (estender além do índice numérico atual).
-- **`PendingDecisionsPanel`:** cada item linka para `step` + contexto (grant key ou slot).
+- **Deep links:** `?step={creationStepId}` e opcional `?focus={grantPickKey}` na criação e edição.
+- **`PendingDecisionsPanel`:** cada item linka para `step` + `focus` quando aplicável.
 - **Modo edição** usa o **mesmo wizard** que criação.
 
 ---
@@ -309,32 +311,33 @@ Extensões em `@rpv/content` só se um primitive genuinamente novo for necessár
 
 ---
 
-## 11. Fases de implementação sugeridas
+## 11. Fases de implementação
 
-| Fase | Entrega | Dependências |
-|------|---------|--------------|
-| **A** | `resolveCreationSteps` + stepper dinâmico + remapeamento de `stepIndex` / `?step=` | — |
-| **B** | Páginas de seleção: Raça, Sub-raça (condicional), Classe + nível | A |
-| **C** | `SpellChoiceGrid` + `SpellDetailModal` + sub-etapas de truques/magias (raça/classe) | A, B |
-| **D** | Progressão `class-level-{n}` para L1–N | A, B |
-| **E** | Subclasse + `subclass-level-{n}` + truques/magias de subclasse | D |
-| **F** | Antecedente (seleção rica, picks simples) | A |
-| **G** | Etapa Atributos: +2/+1 distribuível + revisão de perícias | A, D |
-| **H** | `ItemChoiceGrid` + `ItemDetailModal` + Final / equipamento | C |
-| **I** | Testes de integração, polish mobile, atualizar `PROJECT_CONTEXT` | todas |
+| Fase | Entrega | Estado |
+|------|---------|--------|
+| **A** | `resolveCreationSteps` + stepper dinâmico + `?step=` | Feito |
+| **B** | Páginas de seleção: Raça, Sub-raça, Classe + nível | Feito |
+| **C** | `SpellChoiceGrid` + modal + sub-etapas de truques/magias | Feito |
+| **D** | Progressão `class-level-{n}` para L1–N | Feito |
+| **E** | Subclasse + `subclass-level-{n}` + magias de subclasse | Feito |
+| **F** | Antecedente (seleção rica, picks simples) | Feito |
+| **G** | Etapa Atributos: +2/+1 distribuível + revisão de perícias | Feito |
+| **H** | `ItemChoiceGrid` + exclusive cards + Final / equipamento | Feito |
+| **I** | Testes de integração, polish mobile, docs | Feito (core) |
 
-Ordem pode ser ajustada; **A** é pré-requisito de tudo. **C** entrega valor visível cedo (magias clicáveis).
+**Residual (pós-H):**
+
+- UI rica para `currency` choices (hoje `<select>`)
+- UI rica para perícias / idiomas / ferramentas
+- Highlight polish adicional em mobile se necessário
 
 ---
 
 ## 12. Testes
 
-- Unit: `resolveCreationSteps` — etapas condicionais (humano sem sub-raça, wizard L3, fighter sem magias)
-- Unit: `mapGrantPickToStep` — cada grant key mapeia para sub-etapa correta
-- Component: `SpellChoiceGrid`, seleção + modal
-- Integração: fluxo High Elf → Wizard (cantrip racial não duplica no wizard)
-- Integração: Half-Elf +2/+1 na etapa de atributos
-- Integração: `PendingDecisionsPanel` deep link para sub-etapa
+- Unit: `resolveCreationSteps`, `mapGrantPickToStep`, `buildItemPickContentModel`
+- Component: `SpellChoiceGrid`, `ItemChoiceGrid`, `StartingEquipmentField`
+- Integração: High Elf → Wizard; Half-Elf ASI; Fighter L3 equipment; pending `?step=&focus=`
 - Regressão: `choiceValidation`, `grantPickSanitize`, pipeline `buildStoredCharacter`
 
 Comando: `npm test -w rpv-front`

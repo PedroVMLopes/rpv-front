@@ -1,12 +1,13 @@
 # Ficha de Jogador e Auxiliar de Rolagens
 
-Este documento descreve a **reestruturação futura** da UI/UX de personagens jogadores e o **container auxiliar de rolagens** para mesa. Nada aqui está implementado ainda — é especificação de produto e guia para os próximos passos de desenvolvimento.
+Este documento descreve a UI/UX da ficha full-page e o auxiliar de rolagens para mesa.
+**Fases 1–3 estão implementadas** no código; a Fase 4 (polish) permanece residual.
 
-Referências no código atual:
+Referências no código:
 
 - Lista de jogadores: [`apps/web/app/characters/player/page.tsx`](../apps/web/app/characters/player/page.tsx)
-- Card compacto + dialog: [`apps/web/components/characters/CharacterCard/CharacterCard.tsx`](../apps/web/components/characters/CharacterCard/CharacterCard.tsx)
-- HP interativo (referência): [`apps/web/components/iniciative/IniciativeCard.tsx`](../apps/web/components/iniciative/IniciativeCard.tsx)
+- Ficha: [`apps/web/components/characters/PlayerSheet/`](../apps/web/components/characters/PlayerSheet/)
+- Auxiliar de rolagens: [`apps/web/components/characters/PlayerSheet/roll/`](../apps/web/components/characters/PlayerSheet/roll/)
 - Pipeline de personagem: [`PROJECT_CONTEXT.md`](../PROJECT_CONTEXT.md)
 
 ---
@@ -286,32 +287,26 @@ Helpers relevantes:
 
 ## 7. Fases de implementação
 
-Roadmap ordenado. **Nada abaixo está implementado.**
+### Fase 1 — Fundação UX — Feito
 
-### Fase 1 — Fundação UX
-
-- Nova rota `/characters/player/[id]`
+- Rota `/characters/player/[id]`
 - Layout fichário: header fixo + abas (Visão geral, Combate, Mochila, Anotações placeholder)
-- Cards na lista viram launcher (preview + "Abrir fichário")
-- Remover `Dialog` e carousel do [`CharacterCard`](../apps/web/components/characters/CharacterCard/CharacterCard.tsx)
-- Migrar conteúdo dos subcomponentes do card para as abas da página
+- Cards na lista como launcher (preview + abrir fichário)
 
-### Fase 2 — Container de rolagens (MVP)
+### Fase 2 — Container de rolagens (MVP) — Feito
 
-- Tipos `RollRecipe` + state machine efêmera
-- Tipos A (d20) e D (vantagem/desvantagem) no container
-- Integração: perícias proficientes, saves, iniciativa na Visão geral
-- HP + recursos de classe editáveis no header (`+`/`-`)
-- Toggle Adv/Dis no header da sessão
+- Tipos de pedido de rolagem + state machine efêmera
+- Integração: perícias, saves, iniciativa
+- HP + recursos de classe editáveis no header
+- Toggle Adv/Dis
 
-### Fase 3 — Combate com dados enriquecidos
+### Fase 3 — Combate com dados enriquecidos — Feito
 
-- Extensão de `ItemEntry` e metadados de spell para ataque e dano
-- Tipos B (ataque → dano) e C (dano direto) no container
-- Reorganizar aba Combate por economia de ação (Action / Bonus / Reaction / Magia)
-- Features com rolagem (ex. Sneak Attack) como add-ons ou receitas encadeadas
+- Metadados de arma/spell para ataque e dano
+- Fluxos ataque→dano e dano direto
+- Aba de ações / magias na ficha
 
-### Fase 4 — Polish
+### Fase 4 — Polish — Residual
 
 - Toggle "ver todas as perícias" na Visão geral
 - Header colapsável em mobile

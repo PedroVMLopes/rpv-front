@@ -76,14 +76,39 @@ describe("StartingEquipmentField", () => {
             />
         );
 
-        const sidearmSelect = screen.getAllByRole("combobox").at(-1);
-        expect(sidearmSelect).toBeDefined();
-        await user.selectOptions(sidearmSelect!, "0");
+        await user.click(screen.getByRole("button", { name: /Light Crossbow/i }));
 
         expect(screen.getAllByText(/Light Crossbow/).length).toBeGreaterThan(0);
         expect(screen.getByTestId("choices-output")).toHaveTextContent(
             "class:fighter:base:inventory_item:8:0"
         );
+    });
+
+    it("selects exclusive gold branch via cards", async () => {
+        const user = userEvent.setup();
+
+        render(
+            <StartingEquipmentHarness
+                defaultValues={{
+                    characterClass: "fighter",
+                    choices: { grantPicks: {} },
+                }}
+            />
+        );
+
+        expect(
+            screen.getByTestId("exclusive-branch-equipment")
+        ).toBeInTheDocument();
+        expect(screen.getByTestId("exclusive-branch-gold")).toBeInTheDocument();
+
+        await user.click(
+            screen.getByRole("button", { name: /Starting gold/i })
+        );
+
+        expect(screen.getByTestId("choices-output")).toHaveTextContent(
+            '"class:fighter:base:exclusive:starting-wealth":"gold"'
+        );
+        expect(screen.queryByText(/Starting sidearm/)).not.toBeInTheDocument();
     });
 
     it("shows localized bag item names for pt-BR content locale", () => {

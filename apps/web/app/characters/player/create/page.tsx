@@ -64,6 +64,11 @@ export default function CreatePlayer() {
         return resolveInitialStepId(raw, graph);
     }, [searchParams, form, system, contentLocale]);
 
+    const initialFocusKey = useMemo(() => {
+        const raw = searchParams.get("focus");
+        return raw && raw.trim().length > 0 ? raw : undefined;
+    }, [searchParams]);
+
     function handleSave(data: Record<string, unknown>) {
         addCharacter(data, type, system);
         router.push("/characters/player");
@@ -84,6 +89,7 @@ export default function CreatePlayer() {
                     contentLocale={contentLocale}
                     onSave={handleSave}
                     initialStepId={initialStepId}
+                    initialFocusKey={initialFocusKey}
                     header={
                         <>
                             <h1 className="mb-2 text-lg font-bold bg-muted p-1 px-2 rounded">

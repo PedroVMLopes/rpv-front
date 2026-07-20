@@ -87,6 +87,41 @@ describe("collectPendingDecisions", () => {
         expect(pending.some((decision) => decision.kind === "grant_pick")).toBe(
             true
         );
+        const abilityPick = pending.find(
+            (decision) =>
+                decision.kind === "grant_pick" &&
+                decision.focusKey?.includes("ability_score")
+        );
+        expect(abilityPick?.stepId).toBe("abilities");
+        expect(abilityPick?.focusKey).toMatch(/ability_score/);
+    });
+
+    it("includes focusKey for inventory and exclusive pending picks", () => {
+        const pending = collectPendingDecisions(
+            {
+                race: "human",
+                characterClass: "fighter",
+                level: 1,
+                background: "sage",
+                name: "Hero",
+                abilityScoreMethod: "manual",
+                attributes: dndStatConfig.abilities.map((ability) => ({
+                    name: ability.name,
+                    value: 10,
+                })),
+            },
+            "en",
+            "dnd",
+            dndStatConfig
+        );
+
+        const exclusive = pending.find((decision) =>
+            decision.focusKey?.includes(":exclusive:")
+        );
+        expect(exclusive?.stepId).toBe("finalize");
+        expect(exclusive?.focusKey).toBe(
+            "class:fighter:base:exclusive:starting-wealth"
+        );
     });
 
     it("lists invalid duplicate spell picks even when nothing is missing", () => {

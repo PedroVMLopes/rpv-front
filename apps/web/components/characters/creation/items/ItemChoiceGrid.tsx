@@ -4,143 +4,180 @@ import { useMemo, useState } from "react";
 import { Maximize2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
-import { getSpell } from "@rpv/content";
+import { getItem } from "@rpv/content";
 import type { Locale } from "@rpv/domain";
-import {
-    collectPendingChoiceGrants,
-    type PendingChoiceGrant,
-} from "@/lib/character/grantChoices";
-import { getFixedRefsForGrantType } from "@/lib/character/characterGrants";
-import { buildSelectionsFromForm } from "@/lib/character/characterAdapter";
-import { readLevelFromForm } from "@/lib/character/level";
-import {
-    buildGrantChoiceSelectOptions,
-    getOtherPickedRefsForGrantType,
-} from "@/lib/character/grantChoiceOptions";
+import type { StartingEquipmentChoiceGrant } from "@/lib/character/deriveStartingEquipmentFromForm";
+import { inventoryChoiceToPending } from "@/lib/character/deriveStartingEquipmentFromForm";
+import { buildGrantChoiceSelectOptions } from "@/lib/character/grantChoiceOptions";
 import { readGrantPicks, setGrantPick } from "@/lib/character/grantPickForm";
-import { buildSpellPickContentModel } from "@/lib/content/buildSpellPickContentModel";
+import {
+    buildBundlePickContentModel,
+    buildItemPickContentModel,
+} from "@/lib/content/buildItemPickContentModel";
 import type { ContentDetailModel } from "@/lib/content/contentDetail.types";
 import { ContentDetailModal } from "@/components/content/ContentDetailModal";
 import { Button } from "@/components/ui/button";
 import type { SystemKey } from "@/presets";
 import { cn } from "@/lib/utils";
 
-type SpellChoiceGridProps = {
+type ItemChoiceGridProps = {
     form: UseFormReturn<Record<string, unknown>>;
     contentLocale: Locale;
     system: SystemKey;
-    choices: PendingChoiceGrant[];
+    choices: StartingEquipmentChoiceGrant[];
+    invalidKeys?: Set<string>;
     focusKey?: string;
 };
 
-export function SpellChoiceGrid({
+export function ItemChoiceGrid({
     form,
     contentLocale,
     system,
     choices,
+    invalidKeys = new Set(),
     focusKey,
-}: SpellChoiceGridProps) {
+}: ItemChoiceGridProps) {
     const t = useTranslations("characterCreation");
-    const tSpells = useTranslations("spells");
-    const tAbilities = useTranslations("abilities");
-    const tContentDetail = useTranslations("contentDetail");
-
-    const formValues = form.watch();
+    const tItems = useTranslations("items");
+    const tSlots = useTranslations("equipmentSlots");
     const grantPicks = readGrantPicks(form);
-
-    const selections = useMemo(
-        () => buildSelectionsFromForm(formValues),
-        [formValues]
-    );
-
-    const characterLevel = useMemo(
-        () => readLevelFromForm(formValues),
-        [formValues]
-    );
-
-    const ownedRefs = useMemo(
-        () =>
-            getFixedRefsForGrantType(
-                selections,
-                contentLocale,
-                "spell",
-                characterLevel
-            ),
-        [selections, contentLocale, characterLevel]
-    );
-
-    const allSpellChoices = useMemo(
-        () =>
-            collectPendingChoiceGrants(
-                selections,
-                contentLocale,
-                characterLevel,
-                system
-            ).filter((choice) => choice.grant.grantType === "spell"),
-        [selections, contentLocale, characterLevel, system]
-    );
-
     const [detailModel, setDetailModel] = useState<ContentDetailModel | null>(
         null
     );
 
-    function openSpellDetail(spellRef: string) {
-        const catalogEntry = getSpell(spellRef, contentLocale);
+    const formatters = useMemo(
+        () => ({
+            tItems: (key: string, values?: Record<string, string | number>) =>
+                tItems(key as never, values as never),
+            tContentDetail: () => "",
+            missingValue: "—",
+            slotLabel: (slotId: string) => {
+                const keyMap: Record<string, string> = {
+                    armor: "armor",
+                    "main-hand": "mainHand",
+                    "off-hand": "offHand",
+                    neck: "neck",
+                    ring: "ring",
+                };
+                const msgKey = keyMap[slotId];
+                return msgKey ? tSlots(msgKey as never) : slotId;
+            },
+        }),
+        [tItems, tSlots]
+    );
 
-        if (!catalogEntry) {
+    function openOptionDetail(
+        choice: StartingEquipmentChoiceGrant,
+        optionIndex: number
+    ) {
+        const option = choice.grant.options?.[optionIndex];
+        if (!option) {
             return;
         }
 
-        const { detail } = buildSpellPickContentModel(catalogEntry, {
-            tSpells: (key, values) => tSpells(key as never, values as never),
-            tAbilities: (key) => tAbilities(key),
-            tContentDetail: (key) => tContentDetail(key as never),
-            tUse: () => tContentDetail("use"),
-            missingValue: "—",
-        });
+        if (option.optionType === "item") {
+            const item = getItem(option.ref, system, contentLocale);
+            if (!item) {
+                return;
+            }
+            setDetailModel(buildItemPickContentModel(item, formatters).detail);
+            return;
+        }
 
-        setDetailModel(detail);
+        if (option.optionType === "inventory_bundle") {
+            setDetailModel(
+                buildBundlePickContentModel(
+                    {
+                        option,
+                        optionIndex,
+                        system,
+                        locale: contentLocale,
+                    },
+                    formatters
+                ).detail
+            );
+        }
+    }
+
+    function optionBadges(
+        choice: StartingEquipmentChoiceGrant,
+        optionIndex: number
+    ): string[] {
+        const option = choice.grant.options?.[optionIndex];
+        if (!option) {
+            return [];
+        }
+
+        if (option.optionType === "item") {
+            const item = getItem(option.ref, system, contentLocale);
+            if (!item) {
+                return [];
+            }
+            return buildItemPickContentModel(item, formatters).summary.badges.map(
+                (badge) => badge.label
+            );
+        }
+
+        if (option.optionType === "inventory_bundle") {
+            return buildBundlePickContentModel(
+                {
+                    option,
+                    optionIndex,
+                    system,
+                    locale: contentLocale,
+                },
+                formatters
+            ).summary.badges.map((badge) => badge.label);
+        }
+
+        return [];
     }
 
     return (
         <div className="flex flex-col gap-6">
             {choices.map((choice) => {
-                const selected = grantPicks[choice.key] ?? "";
-                const otherPicked = getOtherPickedRefsForGrantType(
-                    "spell",
-                    allSpellChoices,
-                    grantPicks,
-                    choice.key
+                const pending = inventoryChoiceToPending(
+                    choice,
+                    system,
+                    contentLocale
                 );
                 const options = buildGrantChoiceSelectOptions(
-                    choice,
+                    pending,
                     grantPicks,
-                    ownedRefs,
-                    otherPicked
+                    new Set<string>()
                 );
+                const selected = grantPicks[choice.key] ?? "";
+                const hasError = invalidKeys.has(choice.key);
+                const isFocused = focusKey === choice.key;
 
                 return (
                     <section
                         key={choice.key}
                         data-focus-key={choice.key}
+                        data-testid={`item-choice-${choice.key}`}
                         className={cn(
                             "flex flex-col gap-3 rounded-lg",
-                            focusKey === choice.key &&
-                                "ring-2 ring-primary ring-offset-2"
+                            hasError && "ring-1 ring-destructive",
+                            isFocused && "ring-2 ring-primary ring-offset-2"
                         )}
                     >
                         <h3 className="text-sm font-bold">{choice.label}</h3>
                         <div className="flex flex-col gap-3 md:grid md:grid-cols-2 md:gap-4 lg:grid-cols-3">
                             {options.map((option) => {
                                 const isSelected = option.value === selected;
+                                const badges = optionBadges(
+                                    choice,
+                                    Number.parseInt(option.value, 10)
+                                );
 
                                 return (
                                     <div
                                         key={`${choice.key}-${option.value}`}
+                                        data-testid={`item-option-${choice.key}-${option.value}`}
                                         className={cn(
                                             "flex flex-col gap-2 rounded-xl border p-3 transition-colors",
                                             isSelected
-                                                ? "border-primary bg-primary text-primary-foreground"
+                                                ? "border-primary"
                                                 : "border-border bg-card",
                                             option.disabled &&
                                                 !isSelected &&
@@ -178,6 +215,11 @@ export function SpellChoiceGrid({
                                                 <span className="font-serif font-semibold leading-tight">
                                                     {option.label}
                                                 </span>
+                                                {badges.length > 0 ? (
+                                                    <span className="mt-1 block text-xs text-muted-foreground">
+                                                        {badges.join(" · ")}
+                                                    </span>
+                                                ) : null}
                                             </button>
                                             <Button
                                                 type="button"
@@ -188,7 +230,13 @@ export function SpellChoiceGrid({
                                                     "selection.expandDetails"
                                                 )}
                                                 onClick={() =>
-                                                    openSpellDetail(option.value)
+                                                    openOptionDetail(
+                                                        choice,
+                                                        Number.parseInt(
+                                                            option.value,
+                                                            10
+                                                        )
+                                                    )
                                                 }
                                             >
                                                 <Maximize2

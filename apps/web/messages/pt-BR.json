@@ -515,6 +515,8 @@
       "damageType": "Tipo de dano",
       "properties": "Propriedades",
       "versatileDamage": "Dano versátil",
+      "grants": "Concessões",
+      "contents": "Conteúdo",
       "hitDie": "Dado de vida",
       "subclassLevel": "Subclasse no nível",
       "size": "Tamanho",
@@ -525,6 +527,14 @@
   "items": {
     "summary": {
       "damage": "Dano: {damage}"
+    },
+    "pick": {
+      "bundleBadge": "Pacote",
+      "bundleItemCount": "{count} itens",
+      "grantFallback": "{type}",
+      "equipmentPackage": "Pacote de equipamento",
+      "choiceCount": "{count} escolhas",
+      "fixedItemCount": "{count} itens inclusos"
     },
     "properties": {
       "finesse": "Acuidade",
