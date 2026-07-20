@@ -1,4 +1,4 @@
-import { getClassSubclassLevel, getSubclassGrantSourcesForLevel } from "@rpv/content";
+import { getClassSubclassLevel } from "@rpv/content";
 import type { Locale } from "@rpv/domain";
 import type { SystemKey } from "@/presets";
 import { listSubraceOptions } from "@/lib/catalog/raceCatalog";
@@ -9,18 +9,13 @@ import {
     type PendingChoiceGrant,
 } from "@/lib/character/grantChoices";
 import { buildCreationStepGraph } from "./buildCreationStepGraph";
-import type {
-    CreationMacroGroupId,
-    CreationStep,
-    CreationStepGraph,
-    CreationStepKind,
-    CreationStepSourceFilter,
-} from "./creationStep.types";
+import type { CreationStep, CreationStepGraph } from "./creationStep.types";
 import {
-    featureLevelFromGrantPickKey,
-    isCantripGrant,
-    isLeveledSpellGrant,
-} from "./grantPickKey";
+    appendClassLevelSteps,
+    appendGrantPickSubSteps,
+    appendSubclassLevelSteps,
+    createStep,
+} from "./levelProgressionSteps";
 import { getCreationProgressionLevel } from "./progressionLevel";
 
 export type ResolveCreationStepsInput = {
@@ -28,101 +23,6 @@ export type ResolveCreationStepsInput = {
     system: SystemKey;
     contentLocale: Locale;
 };
-
-function createStep(
-    id: string,
-    kind: CreationStepKind,
-    macroGroupId: CreationMacroGroupId,
-    options: {
-        parentId?: string;
-        sourceFilter?: CreationStepSourceFilter;
-        fieldNames?: string[];
-    } = {}
-): CreationStep {
-    return {
-        id,
-        kind,
-        labelKey: `steps.${id}`,
-        macroGroupId,
-        parentId: options.parentId,
-        sourceFilter: options.sourceFilter,
-        fieldNames: options.fieldNames,
-    };
-}
-
-function matchesFeatureLevel(choice: PendingChoiceGrant, level: number): boolean {
-    const featureLevel = featureLevelFromGrantPickKey(choice.key);
-
-    if (level === 1) {
-        return featureLevel === 1;
-    }
-
-    return featureLevel === level;
-}
-
-function filterChoicesForLevelSegment(
-    choices: PendingChoiceGrant[],
-    level: number
-): PendingChoiceGrant[] {
-    return choices.filter((choice) => matchesFeatureLevel(choice, level));
-}
-
-function appendGrantPickSubSteps(
-    steps: CreationStep[],
-    stepPrefix: string,
-    macroGroupId: CreationMacroGroupId,
-    parentId: string,
-    choices: PendingChoiceGrant[],
-    sourceFilterBase: CreationStepSourceFilter
-): void {
-    const cantrips = choices.filter((choice) => isCantripGrant(choice.grant));
-    const leveledSpells = choices.filter((choice) =>
-        isLeveledSpellGrant(choice.grant)
-    );
-    const otherChoices = choices.filter(
-        (choice) =>
-            choice.grant.grantType !== "spell" &&
-            choice.grant.grantType !== "ability_score"
-    );
-
-    if (cantrips.length > 0) {
-        steps.push(
-            createStep(`${stepPrefix}-cantrips`, "grant_picks", macroGroupId, {
-                parentId,
-                sourceFilter: {
-                    ...sourceFilterBase,
-                    grantTypes: ["spell"],
-                    spellTier: "cantrip",
-                },
-            })
-        );
-    }
-
-    if (leveledSpells.length > 0) {
-        steps.push(
-            createStep(`${stepPrefix}-spells`, "grant_picks", macroGroupId, {
-                parentId,
-                sourceFilter: {
-                    ...sourceFilterBase,
-                    grantTypes: ["spell"],
-                    spellTier: "leveled",
-                },
-            })
-        );
-    }
-
-    if (otherChoices.length > 0) {
-        steps.push(
-            createStep(`${stepPrefix}-choices`, "grant_picks", macroGroupId, {
-                parentId,
-                sourceFilter: {
-                    ...sourceFilterBase,
-                    grantTypes: otherChoices.map((choice) => choice.grant.grantType),
-                },
-            })
-        );
-    }
-}
 
 function appendRaceGrantSteps(
     steps: CreationStep[],
@@ -166,118 +66,6 @@ function appendBackgroundGrantSteps(
         backgroundChoices,
         { sourceTypes: ["background"] }
     );
-}
-
-function appendClassLevelSteps(
-    steps: CreationStep[],
-    classSlug: string,
-    pending: PendingChoiceGrant[],
-    progressionLevel: number
-): void {
-    for (let level = 1; level <= progressionLevel; level += 1) {
-        const levelStepId = `class-level-${level}`;
-        const hasSummary = level > 1;
-
-        if (hasSummary) {
-            steps.push(
-                createStep(levelStepId, "level_summary", "class", {
-                    parentId: "class",
-                    sourceFilter: {
-                        sourceTypes: ["class"],
-                        level,
-                    },
-                })
-            );
-        }
-
-        const levelChoices = pending.filter(
-            (choice) =>
-                choice.source.type === "class" &&
-                choice.source.id === classSlug &&
-                choice.grant.grantType !== "ability_score" &&
-                matchesFeatureLevel(choice, level)
-        );
-
-        appendGrantPickSubSteps(
-            steps,
-            levelStepId,
-            "class",
-            hasSummary ? levelStepId : "class",
-            levelChoices,
-            {
-                sourceTypes: ["class"],
-                level,
-            }
-        );
-    }
-}
-
-function hasSubclassActivityAtLevel(
-    subclassSlug: string,
-    level: number,
-    pending: PendingChoiceGrant[]
-): boolean {
-    const levelChoices = pending.filter(
-        (choice) =>
-            choice.source.type === "subclass" &&
-            choice.source.id === subclassSlug &&
-            matchesFeatureLevel(choice, level)
-    );
-
-    if (levelChoices.length > 0) {
-        return true;
-    }
-
-    return getSubclassGrantSourcesForLevel(subclassSlug, level).some(
-        (block) => block.featureLevel === level && block.grants.length > 0
-    );
-}
-
-function appendSubclassLevelSteps(
-    steps: CreationStep[],
-    subclassSlug: string,
-    pending: PendingChoiceGrant[],
-    progressionLevel: number
-): void {
-    for (let level = 1; level <= progressionLevel; level += 1) {
-        if (!hasSubclassActivityAtLevel(subclassSlug, level, pending)) {
-            continue;
-        }
-
-        const levelStepId = `subclass-level-${level}`;
-        const hasSummary = level > 1;
-
-        if (hasSummary) {
-            steps.push(
-                createStep(levelStepId, "level_summary", "class", {
-                    parentId: "subclass",
-                    sourceFilter: {
-                        sourceTypes: ["subclass"],
-                        level,
-                    },
-                })
-            );
-        }
-
-        const levelChoices = pending.filter(
-            (choice) =>
-                choice.source.type === "subclass" &&
-                choice.source.id === subclassSlug &&
-                matchesFeatureLevel(choice, level)
-        );
-
-        appendGrantPickSubSteps(
-            steps,
-            levelStepId,
-            "class",
-            hasSummary ? levelStepId : "subclass",
-            levelChoices,
-            {
-                sourceTypes: ["subclass"],
-                level,
-            }
-        );
-    }
 }
 
 export function resolveCreationSteps(
@@ -324,12 +112,10 @@ export function resolveCreationSteps(
     );
 
     if (selections.characterClass) {
-        appendClassLevelSteps(
-            steps,
-            selections.characterClass,
-            pending,
-            progressionLevel
-        );
+        appendClassLevelSteps(steps, selections.characterClass, pending, {
+            fromLevelInclusive: 1,
+            toLevelInclusive: progressionLevel,
+        });
 
         const subclassLevel = getClassSubclassLevel(selections.characterClass);
 
@@ -342,12 +128,10 @@ export function resolveCreationSteps(
             );
 
             if (selections.subclass) {
-                appendSubclassLevelSteps(
-                    steps,
-                    selections.subclass,
-                    pending,
-                    progressionLevel
-                );
+                appendSubclassLevelSteps(steps, selections.subclass, pending, {
+                    fromLevelInclusive: 1,
+                    toLevelInclusive: progressionLevel,
+                });
             }
         }
     }

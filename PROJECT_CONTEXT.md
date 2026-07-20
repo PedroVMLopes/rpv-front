@@ -71,7 +71,7 @@ Classes define optional **`featuresByLevel`** in [`*.dnd.ts`](packages/content/s
 - On the **Class** step, level is set via **`CharacterLevelSelector`**: **Lv 1**, **Lv 2**, **Lv 3**, or **Custom** (numeric 1–20). Only `level` is persisted.
 - Class grants and pickers use `getClassGrantSourcesForLevel(class, level)` for the selected level.
 - **Ability scores:** L1 defaults to **Standard Array**; Lv > 1 defaults to **Manual** with a migration hint (valid score = **Total**). Distributable racial ASI (+2/+1) is picked on the abilities step.
-- Creating at **level N** walks dedicated sub-steps for L1–N (within the creation progression cap); remaining higher-level picks can be completed later.
+- Creating at **level N** walks dedicated sub-steps for L1–N (within the creation progression cap); remaining higher-level picks can be completed later via **level-up** (`?mode=level-up&from=N` → `resolveLevelUpSteps`).
 
 ### Grant pick keys
 

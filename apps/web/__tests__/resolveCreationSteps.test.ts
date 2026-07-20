@@ -11,6 +11,7 @@ describe("resolveCreationSteps", () => {
         expect(graph.steps[0]?.id).toBe("race");
         expect(graph.steps.at(-1)?.id).toBe("finalize");
         expect(graph.macroGroups.map((group) => group.id)).toEqual([
+            "levelUp",
             "race",
             "class",
             "background",

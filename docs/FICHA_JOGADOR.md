@@ -312,7 +312,7 @@ Helpers relevantes:
 - Header colapsável em mobile
 - Aba Anotações (quando modelo de dados for definido)
 - Condições temporárias no header (Bless, etc.) — extensão futura
-- **Level-up:** CTA na overview (`AbilitiesSection`) aponta para edit `?step=class` (MVP). Wizard filtrado só com escolhas do novo nível = fase futura.
+- **Level-up:** CTA na overview (`AbilitiesSection`) abre `/edit/{id}?mode=level-up&from={N}` — wizard delta (`resolveLevelUpSteps`) com progressão do nível N+1, subclass se desbloquear, e passo Confirmar (HP + recursos).
 
 ---
 

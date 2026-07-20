@@ -8,7 +8,8 @@ export type CreationMacroGroupId =
     | "class"
     | "background"
     | "abilities"
-    | "finalize";
+    | "finalize"
+    | "levelUp";
 
 export type CreationStepKind =
     | "selection"

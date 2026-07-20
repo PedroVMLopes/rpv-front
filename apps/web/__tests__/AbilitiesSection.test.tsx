@@ -60,7 +60,7 @@ describe("AbilitiesSection", () => {
         const link = screen.getByRole("link", { name: "Level up" });
         expect(link).toHaveAttribute(
             "href",
-            `/characters/player/edit/${stored.id}?step=class`
+            `/characters/player/edit/${stored.id}?mode=level-up&from=5`
         );
     });
 

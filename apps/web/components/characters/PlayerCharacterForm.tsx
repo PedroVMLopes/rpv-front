@@ -27,7 +27,8 @@ import {
 } from "@/lib/character/playerFormFields";
 import {
     getFirstErrorStepId,
-    resolveCreationGraph,
+    resolvePlayerFormGraph,
+    type PlayerFormMode,
 } from "@/lib/character/characterCreationSteps";
 import {
     resolveInitialStepId,
@@ -67,7 +68,7 @@ type FieldConfig = {
 };
 
 export type PlayerCharacterFormProps = {
-    mode: "create" | "edit";
+    mode: PlayerFormMode;
     system: SystemKey;
     form: UseFormReturn<Record<string, unknown>>;
     baseFields: FieldConfig[];
@@ -77,6 +78,8 @@ export type PlayerCharacterFormProps = {
     header?: React.ReactNode;
     initialStepId?: string;
     initialFocusKey?: string;
+    /** Persisted level before bump when mode is level-up. */
+    levelUpFromLevel?: number;
 };
 
 function humanizeStepId(stepId: string): string {
@@ -87,7 +90,7 @@ function humanizeStepId(stepId: string): string {
 }
 
 export function PlayerCharacterForm({
-    mode: _mode,
+    mode,
     system,
     form,
     baseFields,
@@ -97,6 +100,7 @@ export function PlayerCharacterForm({
     header,
     initialStepId,
     initialFocusKey,
+    levelUpFromLevel,
 }: PlayerCharacterFormProps) {
     const t = useTranslations("characterCreation");
     const isDesktopSidebar = useMediaQuery("(min-width: 768px)");
@@ -104,6 +108,7 @@ export function PlayerCharacterForm({
     const raceSlug = form.watch("race");
     const classSlug = form.watch("characterClass");
     const level = form.watch("level");
+    const isLevelUp = mode === "level-up";
 
     const previousRaceRef = useRef<string | undefined>(
         typeof formValues.race === "string" ? formValues.race : undefined
@@ -118,8 +123,12 @@ export function PlayerCharacterForm({
     );
 
     const creationGraph = useMemo(
-        () => resolveCreationGraph(formValues, system, contentLocale),
-        [formValues, system, contentLocale]
+        () =>
+            resolvePlayerFormGraph(formValues, system, contentLocale, {
+                mode,
+                levelUpFromLevel,
+            }),
+        [formValues, system, contentLocale, mode, levelUpFromLevel]
     );
 
     const [activeStepId, setActiveStepId] = useState(() =>
@@ -261,9 +270,19 @@ export function PlayerCharacterForm({
                 contentLocale,
                 system,
                 statConfig,
-                "creation"
+                isLevelUp ? "level-up" : "creation",
+                isLevelUp
+                    ? { levelUpFromLevel: levelUpFromLevel }
+                    : undefined
             ),
-        [formValues, contentLocale, system, statConfig]
+        [
+            formValues,
+            contentLocale,
+            system,
+            statConfig,
+            isLevelUp,
+            levelUpFromLevel,
+        ]
     );
 
     const isLastStep =
@@ -347,6 +366,7 @@ export function PlayerCharacterForm({
     }, [contentLocale, creationGraph, form, onSave, system, t]);
 
     const showDeferredLevelsBanner =
+        !isLevelUp &&
         readLevelFromForm(formValues) > getCreationProgressionLevel(formValues);
 
     const sidebar = (
@@ -442,6 +462,33 @@ export function PlayerCharacterForm({
                     </div>
                 );
             case "finalize":
+                if (isLevelUp || activeStep.id === "level-up-confirm") {
+                    return (
+                        <div className="flex flex-col gap-4">
+                            <h2 className="text-lg font-bold md:sr-only">
+                                {stepTitle}
+                            </h2>
+                            <div className="flex flex-col gap-4 rounded-lg border bg-muted/30 p-4">
+                                <h3 className="text-sm font-bold">
+                                    {t("progression.levelUpConfirmTitle", {
+                                        level: readLevelFromForm(formValues),
+                                    })}
+                                </h3>
+                                <HitPointsField
+                                    form={form}
+                                    system={system}
+                                    contentLocale={contentLocale}
+                                />
+                                <ClassResourcesField
+                                    form={form}
+                                    contentLocale={contentLocale}
+                                    system={system}
+                                />
+                            </div>
+                        </div>
+                    );
+                }
+
                 return (
                     <div className="flex flex-col gap-4">
                         <h2 className="text-lg font-bold md:sr-only">{stepTitle}</h2>

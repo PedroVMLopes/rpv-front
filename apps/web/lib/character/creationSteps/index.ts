@@ -16,12 +16,7 @@ export {
     isLeveledSpellGrant,
     parseGrantPickKey,
 } from "./grantPickKey";
-export {
-    mapFieldToStep,
-    mapGrantPickToStep,
-    resolveLevelUpSteps,
-    type ResolveLevelUpStepsInput,
-} from "./mapGrantPickToStep";
+export { mapFieldToStep, mapGrantPickToStep } from "./mapGrantPickToStep";
 export {
     getCreationProgressionLevel,
     isAboveCreationProgressionCap,
@@ -31,3 +26,7 @@ export {
     resolveInitialStepId,
     type ResolveCreationStepsInput,
 } from "./resolveCreationSteps";
+export {
+    resolveLevelUpSteps,
+    type ResolveLevelUpStepsInput,
+} from "./resolveLevelUpSteps";

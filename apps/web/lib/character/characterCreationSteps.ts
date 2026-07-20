@@ -7,9 +7,19 @@ import {
     mapFieldToStep,
     mapGrantPickToStep,
     resolveCreationSteps,
+    resolveLevelUpSteps,
     type CreationStepGraph,
 } from "./creationSteps";
 import { isInventoryOrExclusiveKey } from "./creationSteps/grantPickKey";
+import { readLevelFromForm } from "./level";
+
+export type PlayerFormMode = "create" | "edit" | "level-up";
+
+export type ResolvePlayerFormGraphOptions = {
+    mode?: PlayerFormMode;
+    /** Persisted level before bump (required when mode is level-up). */
+    levelUpFromLevel?: number;
+};
 
 export type CanCompleteStepOptions = {
     statConfig?: PresetStatConfig;
@@ -132,6 +142,29 @@ export function resolveCreationGraph(
         system,
         contentLocale,
     });
+}
+
+export function resolvePlayerFormGraph(
+    formValues: Record<string, unknown>,
+    system: SystemKey,
+    contentLocale: Locale,
+    options: ResolvePlayerFormGraphOptions = {}
+): CreationStepGraph {
+    if (options.mode === "level-up") {
+        const targetLevel = readLevelFromForm(formValues);
+        const fromLevel =
+            options.levelUpFromLevel ?? Math.max(1, targetLevel - 1);
+
+        return resolveLevelUpSteps({
+            formValues,
+            fromLevel,
+            targetLevel,
+            system,
+            contentLocale,
+        });
+    }
+
+    return resolveCreationGraph(formValues, system, contentLocale);
 }
 
 export function canCompleteStep(

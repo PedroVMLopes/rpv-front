@@ -6,6 +6,7 @@ import type {
 } from "./creationStep.types";
 
 const MACRO_ORDER: CreationMacroGroupId[] = [
+    "levelUp",
     "race",
     "class",
     "background",

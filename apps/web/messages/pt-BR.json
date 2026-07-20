@@ -268,6 +268,7 @@
   },
   "characterCreation": {
     "macro": {
+      "levelUp": "Subir de nível",
       "race": "Raça",
       "class": "Classe e Progressão",
       "background": "Antecedente",
@@ -293,15 +294,26 @@
       "class-level-3-cantrips": "Truques de nível 3",
       "class-level-3-spells": "Magias de nível 3",
       "class-level-3-choices": "Escolhas de nível 3",
+      "class-level-4": "Nível 4",
+      "class-level-4-cantrips": "Truques de nível 4",
+      "class-level-4-spells": "Magias de nível 4",
+      "class-level-4-choices": "Escolhas de nível 4",
+      "class-level-5": "Nível 5",
+      "class-level-5-cantrips": "Truques de nível 5",
+      "class-level-5-spells": "Magias de nível 5",
+      "class-level-5-choices": "Escolhas de nível 5",
       "subclass": "Subclasse",
       "subclass-level-1": "Subclasse nível 1",
       "subclass-level-2": "Subclasse nível 2",
       "subclass-level-3": "Subclasse nível 3",
+      "subclass-level-4": "Subclasse nível 4",
+      "subclass-level-5": "Subclasse nível 5",
       "background": "Antecedente e Detalhes",
       "background-choices": "Escolhas de antecedente",
       "abilities": "Atributos",
       "finalize": "Equipamento Inicial",
-      "equipment": "Equipamento Inicial"
+      "equipment": "Equipamento Inicial",
+      "level-up-confirm": "Confirmar"
     },
     "navigation": {
       "back": "Voltar",
@@ -313,7 +325,8 @@
       "pendingTitle": "Pendentes ({count})"
     },
     "progression": {
-      "deferredLevels": "Este personagem está no nível {level}. Escolhas acima do nível {cap} podem ser concluídas após a criação via Subir de Nível ou configurações da ficha."
+      "deferredLevels": "Este personagem está no nível {level}. Escolhas acima do nível {cap} podem ser concluídas após a criação via Subir de Nível ou configurações da ficha.",
+      "levelUpConfirmTitle": "Confirmar nível {level}"
     },
     "hints": {
       "selectRace": "Selecione uma raça antes de continuar.",

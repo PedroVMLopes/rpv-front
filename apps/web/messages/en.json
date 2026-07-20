@@ -268,6 +268,7 @@
   },
   "characterCreation": {
     "macro": {
+      "levelUp": "Level up",
       "race": "Race",
       "class": "Class & Progression",
       "background": "Background",
@@ -293,15 +294,26 @@
       "class-level-3-cantrips": "Level 3 cantrips",
       "class-level-3-spells": "Level 3 spells",
       "class-level-3-choices": "Level 3 choices",
+      "class-level-4": "Level 4",
+      "class-level-4-cantrips": "Level 4 cantrips",
+      "class-level-4-spells": "Level 4 spells",
+      "class-level-4-choices": "Level 4 choices",
+      "class-level-5": "Level 5",
+      "class-level-5-cantrips": "Level 5 cantrips",
+      "class-level-5-spells": "Level 5 spells",
+      "class-level-5-choices": "Level 5 choices",
       "subclass": "Subclass",
       "subclass-level-1": "Subclass level 1",
       "subclass-level-2": "Subclass level 2",
       "subclass-level-3": "Subclass level 3",
+      "subclass-level-4": "Subclass level 4",
+      "subclass-level-5": "Subclass level 5",
       "background": "Background & Details",
       "background-choices": "Background choices",
       "abilities": "Ability Scores",
       "finalize": "Starting Equipment",
-      "equipment": "Starting Equipment"
+      "equipment": "Starting Equipment",
+      "level-up-confirm": "Confirm"
     },
     "navigation": {
       "back": "Back",
@@ -313,7 +325,8 @@
       "pendingTitle": "Pending ({count})"
     },
     "progression": {
-      "deferredLevels": "This character is level {level}. Choices for levels above {cap} can be completed after creation via Level Up or character settings."
+      "deferredLevels": "This character is level {level}. Choices for levels above {cap} can be completed after creation via Level Up or character settings.",
+      "levelUpConfirmTitle": "Confirm level {level}"
     },
     "hints": {
       "selectRace": "Select a race before continuing.",

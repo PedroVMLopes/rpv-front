@@ -64,7 +64,7 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
             {level < 20 ? (
                 <Button asChild className="mb-2 w-full">
                     <Link
-                        href={`/characters/player/edit/${stored.id}?step=class`}
+                        href={`/characters/player/edit/${stored.id}?mode=level-up&from=${level}`}
                     >
                         {t("playerSheet.levelUp")}
                     </Link>

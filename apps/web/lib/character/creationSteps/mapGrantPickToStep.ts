@@ -1,7 +1,4 @@
 import type { Grant } from "@rpv/content";
-import type { Locale } from "@rpv/domain";
-import type { SystemKey } from "@/presets";
-import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import type { CreationStepGraph } from "./creationStep.types";
 import {
     featureLevelFromGrantPickKey,
@@ -116,18 +113,4 @@ export function mapFieldToStep(fieldName: string): string {
         default:
             return "finalize";
     }
-}
-
-export type ResolveLevelUpStepsInput = {
-    stored: StoredCharacter;
-    targetLevel: number;
-    system: SystemKey;
-    contentLocale: Locale;
-};
-
-/** Stub for post-creation level-up wizard (implemented in a later phase). */
-export function resolveLevelUpSteps(
-    _input: ResolveLevelUpStepsInput
-): CreationStepGraph["steps"] {
-    return [];
 }
