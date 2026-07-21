@@ -84,4 +84,22 @@ describe("sanitizeGrantPicks preparedSpells prune", () => {
             "magic-missile",
         ]);
     });
+
+    it("trims preparedSpells to preparedQuota when provided", () => {
+        const result = sanitizeGrantPicks(
+            wizardSelections(
+                {
+                    "class:wizard:1:spell:2:0": "burning-hands",
+                    "class:wizard:1:spell:2:1": "magic-missile",
+                },
+                ["burning-hands", "magic-missile"]
+            ),
+            "en",
+            "dnd",
+            1,
+            { preparedQuota: 1 }
+        );
+
+        expect(result.choices.preparedSpells).toEqual(["burning-hands"]);
+    });
 });

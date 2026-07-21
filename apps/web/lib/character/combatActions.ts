@@ -17,6 +17,7 @@ import {
 } from "./combatModifiers";
 import { buildSpellcastingSystemData } from "./spellcastingContext";
 import { filterCastableSpellGrants } from "./castableSpells";
+import { computePreparedSpellQuotaForStored } from "./preparedSpellQuota";
 
 export const WEAPON_SLOTS = ["main-hand", "off-hand"] as const;
 export type WeaponSlotId = (typeof WEAPON_SLOTS)[number];
@@ -199,6 +200,8 @@ export function listSpellActions(
                       ? storedOrGrants.systemData.characterClass
                       : undefined),
               preparedSpells: storedOrGrants.selections.choices.preparedSpells,
+              preparedQuota:
+                  computePreparedSpellQuotaForStored(storedOrGrants),
               system,
               locale: contentLocale,
           })

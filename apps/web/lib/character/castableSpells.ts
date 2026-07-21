@@ -3,6 +3,7 @@ import { getClassSpellcastingMode } from "@rpv/content";
 import type { SystemKey } from "@/presets";
 import { contentRepo } from "@/lib/content/contentRepository";
 import type { CharacterChoices } from "./storedCharacter";
+import { prunePreparedSpellsToQuota } from "./preparedSpellQuota";
 
 export function readPreparedSpells(choices?: CharacterChoices): string[] {
     return choices?.preparedSpells ?? [];
@@ -12,6 +13,8 @@ type FilterCastableSpellGrantsInput = {
     grants: CharacterGrant[];
     characterClass?: string;
     preparedSpells?: string[];
+    /** When set, only the first N prepared slugs count as prepared. */
+    preparedQuota?: number;
     system?: SystemKey;
     locale?: Locale;
 };
@@ -22,6 +25,7 @@ type FilterCastableSpellGrantsInput = {
  *
  * - `known` / absent mode: all spell grants
  * - `spellbook` / `prepared-list`: cantrips always; leveled only if prepared
+ *   (respecting optional preparation quota)
  */
 export function filterCastableSpellGrants(
     input: FilterCastableSpellGrantsInput
@@ -35,7 +39,14 @@ export function filterCastableSpellGrants(
         return spellGrants;
     }
 
-    const prepared = new Set(input.preparedSpells ?? []);
+    const withinQuota =
+        input.preparedQuota !== undefined
+            ? (prunePreparedSpellsToQuota(
+                  input.preparedSpells,
+                  input.preparedQuota
+              ) ?? [])
+            : (input.preparedSpells ?? []);
+    const prepared = new Set(withinQuota);
     const system = input.system ?? "dnd";
     const repo = contentRepo(system);
 

@@ -15,6 +15,7 @@ import {
     listKnownLeveledSpellRefs,
     prunePreparedSpellsToBook,
 } from "./knownLeveledSpells";
+import { prunePreparedSpellsToQuota } from "./preparedSpellQuota";
 import { collectValidStartingEquipmentPickKeys } from "./startingEquipmentValidation";
 import type { CharacterSelections } from "./storedCharacter";
 
@@ -205,7 +206,8 @@ export function sanitizeSelectionsWithStartingMaterialization(
     selections: CharacterSelections,
     locale: Locale,
     system: SystemKey,
-    characterLevel = 1
+    characterLevel = 1,
+    options?: { preparedQuota?: number }
 ): CharacterSelections {
     let next: CharacterSelections = {
         ...selections,
@@ -237,7 +239,7 @@ export function sanitizeSelectionsWithStartingMaterialization(
     }
 
     return mergeStartingGrants(
-        sanitizeGrantPicks(next, locale, system, characterLevel),
+        sanitizeGrantPicks(next, locale, system, characterLevel, options),
         locale,
         system,
         characterLevel
@@ -247,13 +249,15 @@ export function sanitizeSelectionsWithStartingMaterialization(
 /**
  * Drops grant pick entries whose keys no longer match pending choices for the
  * current race, subrace, class, subclass, background, equipped items, or character level.
- * Also prunes preparedSpells that are no longer in the known leveled book.
+ * Also prunes preparedSpells that are no longer in the known leveled book,
+ * and optionally trims preparedSpells to a preparation quota.
  */
 export function sanitizeGrantPicks(
     selections: CharacterSelections,
     locale: Locale,
     system: SystemKey,
-    characterLevel = 1
+    characterLevel = 1,
+    options?: { preparedQuota?: number }
 ): CharacterSelections {
     const pending = collectPendingChoiceGrants(
         selections,
@@ -311,10 +315,18 @@ export function sanitizeGrantPicks(
         system,
         characterLevel,
     });
-    const prunedPrepared = prunePreparedSpellsToBook(
+    let prunedPrepared = prunePreparedSpellsToBook(
         currentPrepared,
         knownLeveled
     );
+
+    if (options?.preparedQuota !== undefined) {
+        prunedPrepared = prunePreparedSpellsToQuota(
+            prunedPrepared,
+            options.preparedQuota
+        );
+    }
+
     const preparedChanged =
         JSON.stringify(prunedPrepared) !== JSON.stringify(currentPrepared);
 

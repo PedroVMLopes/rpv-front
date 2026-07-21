@@ -26,14 +26,25 @@ export function setPreparedSpells(
 
 export function togglePreparedSpell(
     form: UseFormReturn<Record<string, unknown>>,
-    slug: string
+    slug: string,
+    options?: { quota?: number }
 ) {
     const current =
         (form.getValues("choices") as CharacterChoices | undefined) ?? {};
     const prepared = current.preparedSpells ?? [];
-    const next = prepared.includes(slug)
-        ? prepared.filter((entry) => entry !== slug)
-        : [...prepared, slug];
+    const isSelected = prepared.includes(slug);
 
-    setPreparedSpells(form, next);
+    if (!isSelected) {
+        const quota = options?.quota;
+        if (quota !== undefined && prepared.length >= quota) {
+            return;
+        }
+        setPreparedSpells(form, [...prepared, slug]);
+        return;
+    }
+
+    setPreparedSpells(
+        form,
+        prepared.filter((entry) => entry !== slug)
+    );
 }

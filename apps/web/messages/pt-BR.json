@@ -331,8 +331,8 @@
       "levelUpConfirmTitle": "Confirmar nível {level}"
     },
     "prepareSpells": {
-      "help": "Selecione quais magias de nível do seu grimório estão preparadas. Truques ficam sempre disponíveis.",
-      "count": "{prepared} de {available} preparadas",
+      "help": "Selecione quais magias de nível do seu grimório estão preparadas (até nível + modificador de conjuração, mínimo 1). Truques ficam sempre disponíveis.",
+      "count": "{prepared} de {quota} preparadas",
       "empty": "Aprenda ao menos uma magia de nível para prepará-la aqui."
     },
     "spellPicks": {

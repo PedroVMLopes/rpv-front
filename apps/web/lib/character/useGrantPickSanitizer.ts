@@ -7,6 +7,7 @@ import type { SystemKey } from "@/presets";
 import { buildSelectionsFromForm } from "./characterAdapter";
 import { sanitizeSelectionsWithStartingMaterialization } from "./grantPickSanitize";
 import { readLevelFromForm } from "./level";
+import { computePreparedSpellQuotaFromForm } from "./preparedSpellQuota";
 import type { CharacterChoices } from "./storedCharacter";
 
 function startingPickSignature(grantPicks: Record<string, string>): string {
@@ -38,6 +39,7 @@ export function useGrantPickSanitizer(
     const subclass = form.watch("subclass");
     const background = form.watch("background");
     const level = form.watch("level");
+    const attributes = form.watch("attributes");
     const choices = form.watch("choices") as CharacterChoices | undefined;
     const startingPickHash = useMemo(
         () => startingPickSignature(choices?.grantPicks ?? {}),
@@ -52,16 +54,26 @@ export function useGrantPickSanitizer(
             ),
         [choices?.grantPicks]
     );
+    const attributesHash = useMemo(
+        () => JSON.stringify(attributes ?? null),
+        [attributes]
+    );
 
     useEffect(() => {
         const formValues = form.getValues();
         const selections = buildSelectionsFromForm(formValues);
         const characterLevel = readLevelFromForm(formValues);
+        const preparedQuota = computePreparedSpellQuotaFromForm(
+            formValues,
+            system,
+            contentLocale
+        );
         const sanitized = sanitizeSelectionsWithStartingMaterialization(
             selections,
             contentLocale,
             system,
-            characterLevel
+            characterLevel,
+            preparedQuota !== undefined ? { preparedQuota } : undefined
         );
         const current =
             (form.getValues("choices") as CharacterChoices | undefined) ?? {};
@@ -121,6 +133,7 @@ export function useGrantPickSanitizer(
         subclass,
         background,
         level,
+        attributesHash,
         startingPickHash,
         grantPickHash,
     ]);

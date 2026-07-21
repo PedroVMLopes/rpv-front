@@ -78,4 +78,26 @@ describe("filterCastableSpellGrants", () => {
 
         expect(result.map((grant) => grant.ref)).toEqual(["acid-splash"]);
     });
+
+    it("clamps prepared leveled spells to preparedQuota", () => {
+        const detectMagic: CharacterGrant = {
+            id: "class-wizard-spell-detect-magic",
+            kind: "spell",
+            ref: "detect-magic",
+            source: { type: "class", id: "wizard" },
+            name: "Detect Magic",
+        };
+
+        const result = filterCastableSpellGrants({
+            grants: [fireBolt, burningHands, detectMagic],
+            characterClass: "wizard",
+            preparedSpells: ["burning-hands", "detect-magic"],
+            preparedQuota: 1,
+        });
+
+        expect(result.map((grant) => grant.ref)).toEqual([
+            "fire-bolt",
+            "burning-hands",
+        ]);
+    });
 });

@@ -13,6 +13,7 @@ import {
     readPreparedSpellsFromForm,
     togglePreparedSpell,
 } from "@/lib/character/preparedSpellForm";
+import { computePreparedSpellQuotaFromForm } from "@/lib/character/preparedSpellQuota";
 import { buildSpellPickContentModel } from "@/lib/content/buildSpellPickContentModel";
 import type { ContentDetailModel } from "@/lib/content/contentDetail.types";
 import { ContentDetailModal } from "@/components/content/ContentDetailModal";
@@ -44,6 +45,16 @@ export function PreparedSpellChoiceGrid({
         [preparedSpells]
     );
 
+    const quota = useMemo(() => {
+        return (
+            computePreparedSpellQuotaFromForm(
+                formValues,
+                system,
+                contentLocale
+            ) ?? 1
+        );
+    }, [formValues, system, contentLocale]);
+
     const knownLeveled = useMemo(() => {
         const selections = buildSelectionsFromForm(formValues);
         const characterLevel = readLevelFromForm(formValues);
@@ -71,6 +82,8 @@ export function PreparedSpellChoiceGrid({
     const [detailModel, setDetailModel] = useState<ContentDetailModel | null>(
         null
     );
+
+    const poolFull = preparedSpells.length >= quota;
 
     function openSpellDetail(spellRef: string) {
         const catalogEntry = getSpell(spellRef, contentLocale);
@@ -101,12 +114,13 @@ export function PreparedSpellChoiceGrid({
             <p className="text-sm text-muted-foreground">
                 {tPrepare("count", {
                     prepared: preparedSpells.length,
-                    available: spellCards.length,
+                    quota,
                 })}
             </p>
             <div className="flex flex-col gap-3 md:grid md:grid-cols-2 md:gap-4 lg:grid-cols-3">
                 {spellCards.map((spell) => {
                     const isSelected = preparedSet.has(spell.slug);
+                    const selectDisabled = poolFull && !isSelected;
 
                     return (
                         <div
@@ -115,16 +129,20 @@ export function PreparedSpellChoiceGrid({
                                 "flex flex-col gap-2 rounded-xl border p-3 transition-colors",
                                 isSelected
                                     ? "border-primary bg-primary text-primary-foreground"
-                                    : "border-border bg-card"
+                                    : "border-border bg-card",
+                                selectDisabled && "opacity-60"
                             )}
                         >
                             <div className="flex items-start justify-between gap-2">
                                 <button
                                     type="button"
-                                    className="min-w-0 flex-1 text-left"
+                                    className="min-w-0 flex-1 text-left disabled:cursor-not-allowed"
                                     aria-pressed={isSelected}
+                                    disabled={selectDisabled}
                                     onClick={() =>
-                                        togglePreparedSpell(form, spell.slug)
+                                        togglePreparedSpell(form, spell.slug, {
+                                            quota,
+                                        })
                                     }
                                 >
                                     <span className="font-serif font-semibold leading-tight">

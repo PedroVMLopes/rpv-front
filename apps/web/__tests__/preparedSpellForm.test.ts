@@ -65,4 +65,25 @@ describe("preparedSpellForm", () => {
             "magic-missile",
         ]);
     });
+
+    it("no-ops when adding beyond quota", () => {
+        const { result } = renderHook(() =>
+            useForm({
+                defaultValues: {
+                    choices: {
+                        grantPicks: {},
+                        preparedSpells: ["burning-hands"],
+                    },
+                },
+            })
+        );
+
+        act(() => {
+            togglePreparedSpell(result.current, "magic-missile", { quota: 1 });
+        });
+
+        expect(readPreparedSpellsFromForm(result.current)).toEqual([
+            "burning-hands",
+        ]);
+    });
 });

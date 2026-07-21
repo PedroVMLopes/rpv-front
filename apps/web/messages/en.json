@@ -331,8 +331,8 @@
       "levelUpConfirmTitle": "Confirm level {level}"
     },
     "prepareSpells": {
-      "help": "Select which leveled spells from your spellbook are prepared. Cantrips are always available.",
-      "count": "{prepared} of {available} prepared",
+      "help": "Select which leveled spells from your spellbook are prepared (up to level + spellcasting modifier, minimum 1). Cantrips are always available.",
+      "count": "{prepared} of {quota} prepared",
       "empty": "Learn at least one leveled spell to prepare it here."
     },
     "spellPicks": {

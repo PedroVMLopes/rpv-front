@@ -30,8 +30,17 @@ function PrepareHarness({
     );
 }
 
+const wizardAttributes = [
+    { name: "strength", value: 8 },
+    { name: "dexterity", value: 14 },
+    { name: "constitution", value: 12 },
+    { name: "intelligence", value: 16 },
+    { name: "wisdom", value: 10 },
+    { name: "charisma", value: 10 },
+];
+
 describe("PrepareSpellsPage", () => {
-    it("toggles leveled known spells into preparedSpells", async () => {
+    it("toggles leveled known spells into preparedSpells within quota", async () => {
         const user = userEvent.setup();
 
         render(
@@ -40,6 +49,7 @@ describe("PrepareSpellsPage", () => {
                     race: "human",
                     characterClass: "wizard",
                     level: 1,
+                    attributes: wizardAttributes,
                     choices: {
                         grantPicks: {
                             "class:wizard:1:spell:1:0": "fire-bolt",
@@ -52,10 +62,11 @@ describe("PrepareSpellsPage", () => {
             />
         );
 
+        // INT 16 (+3) + level 1 → quota 4
         expect(screen.getByText("Burning Hands")).toBeInTheDocument();
         expect(screen.getByText("Magic Missile")).toBeInTheDocument();
         expect(screen.queryByText("Fire Bolt")).not.toBeInTheDocument();
-        expect(screen.getByText("0 of 2 prepared")).toBeInTheDocument();
+        expect(screen.getByText("0 of 4 prepared")).toBeInTheDocument();
 
         await user.click(screen.getByText("Burning Hands"));
         await user.click(screen.getByText("Magic Missile"));
@@ -67,7 +78,7 @@ describe("PrepareSpellsPage", () => {
             "burning-hands",
             "magic-missile",
         ]);
-        expect(screen.getByText("2 of 2 prepared")).toBeInTheDocument();
+        expect(screen.getByText("2 of 4 prepared")).toBeInTheDocument();
 
         await user.click(screen.getByText("Burning Hands"));
 
@@ -75,6 +86,50 @@ describe("PrepareSpellsPage", () => {
             screen.getByTestId("choices-output").textContent ?? "{}"
         );
         expect(choices.preparedSpells).toEqual(["magic-missile"]);
-        expect(screen.getByText("1 of 2 prepared")).toBeInTheDocument();
+        expect(screen.getByText("1 of 4 prepared")).toBeInTheDocument();
+    });
+
+    it("blocks selecting beyond quota", async () => {
+        const user = userEvent.setup();
+
+        render(
+            <PrepareHarness
+                defaultValues={{
+                    race: "human",
+                    characterClass: "wizard",
+                    level: 1,
+                    attributes: [
+                        { name: "strength", value: 8 },
+                        { name: "dexterity", value: 14 },
+                        { name: "constitution", value: 12 },
+                        { name: "intelligence", value: 8 },
+                        { name: "wisdom", value: 10 },
+                        { name: "charisma", value: 10 },
+                    ],
+                    choices: {
+                        grantPicks: {
+                            "class:wizard:1:spell:2:0": "burning-hands",
+                            "class:wizard:1:spell:2:1": "magic-missile",
+                        },
+                        preparedSpells: ["burning-hands"],
+                    },
+                }}
+            />
+        );
+
+        // INT 8 (−1) + level 1 → quota 1
+        expect(screen.getByText("1 of 1 prepared")).toBeInTheDocument();
+
+        const magicMissile = screen.getByRole("button", {
+            name: /^Magic Missile$/i,
+        });
+        expect(magicMissile).toBeDisabled();
+
+        await user.click(magicMissile);
+
+        const choices = JSON.parse(
+            screen.getByTestId("choices-output").textContent ?? "{}"
+        );
+        expect(choices.preparedSpells).toEqual(["burning-hands"]);
     });
 });
