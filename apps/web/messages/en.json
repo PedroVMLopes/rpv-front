@@ -331,7 +331,9 @@
       "levelUpConfirmTitle": "Confirm level {level}"
     },
     "prepareSpells": {
-      "placeholder": "Choose which leveled spells from your spellbook are prepared. Selection UI coming next."
+      "help": "Select which leveled spells from your spellbook are prepared. Cantrips are always available.",
+      "count": "{prepared} of {available} prepared",
+      "empty": "Learn at least one leveled spell to prepare it here."
     },
     "hints": {
       "selectRace": "Select a race before continuing.",

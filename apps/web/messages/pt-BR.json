@@ -331,7 +331,9 @@
       "levelUpConfirmTitle": "Confirmar nível {level}"
     },
     "prepareSpells": {
-      "placeholder": "Escolha quais magias de nível do seu grimório estão preparadas. A interface de seleção vem a seguir."
+      "help": "Selecione quais magias de nível do seu grimório estão preparadas. Truques ficam sempre disponíveis.",
+      "count": "{prepared} de {available} preparadas",
+      "empty": "Aprenda ao menos uma magia de nível para prepará-la aqui."
     },
     "hints": {
       "selectRace": "Selecione uma raça antes de continuar.",

@@ -447,7 +447,14 @@ export function PlayerCharacterForm({
                     </div>
                 );
             case "prepare_spells":
-                return <PrepareSpellsPage title={stepTitle} />;
+                return (
+                    <PrepareSpellsPage
+                        title={stepTitle}
+                        form={form}
+                        contentLocale={contentLocale}
+                        system={system}
+                    />
+                );
             case "finalize":
                 if (isLevelUp || activeStep.id === "level-up-confirm") {
                     return (

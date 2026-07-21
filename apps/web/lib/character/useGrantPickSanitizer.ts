@@ -43,6 +43,15 @@ export function useGrantPickSanitizer(
         () => startingPickSignature(choices?.grantPicks ?? {}),
         [choices?.grantPicks]
     );
+    const grantPickHash = useMemo(
+        () =>
+            JSON.stringify(
+                Object.entries(choices?.grantPicks ?? {}).sort(([a], [b]) =>
+                    a.localeCompare(b)
+                )
+            ),
+        [choices?.grantPicks]
+    );
 
     useEffect(() => {
         const formValues = form.getValues();
@@ -58,6 +67,8 @@ export function useGrantPickSanitizer(
             (form.getValues("choices") as CharacterChoices | undefined) ?? {};
         const currentPicks = current.grantPicks ?? {};
         const sanitizedPicks = sanitized.choices.grantPicks ?? {};
+        const currentPrepared = current.preparedSpells ?? [];
+        const sanitizedPrepared = sanitized.choices.preparedSpells ?? [];
         const currentInventory = form.getValues("inventory");
 
         if (sanitized.subclass !== selections.subclass) {
@@ -69,18 +80,27 @@ export function useGrantPickSanitizer(
 
         const picksChanged =
             JSON.stringify(currentPicks) !== JSON.stringify(sanitizedPicks);
+        const preparedChanged =
+            JSON.stringify(currentPrepared) !==
+            JSON.stringify(sanitizedPrepared);
         const inventoryChanged =
             JSON.stringify(currentInventory) !==
             JSON.stringify(sanitized.inventory);
 
-        if (!picksChanged && !inventoryChanged) {
+        if (!picksChanged && !preparedChanged && !inventoryChanged) {
             return;
         }
 
-        if (picksChanged) {
+        if (picksChanged || preparedChanged) {
             form.setValue(
                 "choices",
-                { ...current, grantPicks: sanitizedPicks },
+                {
+                    ...current,
+                    ...(picksChanged ? { grantPicks: sanitizedPicks } : {}),
+                    ...(preparedChanged
+                        ? { preparedSpells: sanitizedPrepared }
+                        : {}),
+                },
                 { shouldDirty: true, shouldValidate: true }
             );
         }
@@ -102,5 +122,6 @@ export function useGrantPickSanitizer(
         background,
         level,
         startingPickHash,
+        grantPickHash,
     ]);
 }

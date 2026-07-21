@@ -11,6 +11,10 @@ import {
 } from "./grantChoiceOptions";
 import { sanitizeInventory } from "./inventory";
 import { mergeStartingGrants } from "./materializeInventoryGrants";
+import {
+    listKnownLeveledSpellRefs,
+    prunePreparedSpellsToBook,
+} from "./knownLeveledSpells";
 import { collectValidStartingEquipmentPickKeys } from "./startingEquipmentValidation";
 import type { CharacterSelections } from "./storedCharacter";
 
@@ -243,6 +247,7 @@ export function sanitizeSelectionsWithStartingMaterialization(
 /**
  * Drops grant pick entries whose keys no longer match pending choices for the
  * current race, subrace, class, subclass, background, equipped items, or character level.
+ * Also prunes preparedSpells that are no longer in the known leveled book.
  */
 export function sanitizeGrantPicks(
     selections: CharacterSelections,
@@ -286,17 +291,46 @@ export function sanitizeGrantPicks(
         characterLevel
     );
 
-    if (
-        JSON.stringify(sanitizedPicks) === JSON.stringify(grantPicks)
-    ) {
+    const picksChanged =
+        JSON.stringify(sanitizedPicks) !== JSON.stringify(grantPicks);
+
+    let next: CharacterSelections = picksChanged
+        ? {
+              ...selections,
+              choices: {
+                  ...selections.choices,
+                  grantPicks: sanitizedPicks,
+              },
+          }
+        : selections;
+
+    const currentPrepared = next.choices.preparedSpells;
+    const knownLeveled = listKnownLeveledSpellRefs({
+        selections: next,
+        locale,
+        system,
+        characterLevel,
+    });
+    const prunedPrepared = prunePreparedSpellsToBook(
+        currentPrepared,
+        knownLeveled
+    );
+    const preparedChanged =
+        JSON.stringify(prunedPrepared) !== JSON.stringify(currentPrepared);
+
+    if (!picksChanged && !preparedChanged) {
         return selections;
     }
 
-    return {
-        ...selections,
-        choices: {
-            ...selections.choices,
-            grantPicks: sanitizedPicks,
-        },
-    };
+    if (preparedChanged && prunedPrepared !== undefined) {
+        next = {
+            ...next,
+            choices: {
+                ...next.choices,
+                preparedSpells: prunedPrepared,
+            },
+        };
+    }
+
+    return next;
 }
