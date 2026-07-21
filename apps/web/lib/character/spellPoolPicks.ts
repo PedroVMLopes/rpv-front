@@ -110,7 +110,8 @@ export function toggleSpellInPool(
 }
 
 /**
- * Buckets pool options by catalog levelInt (ascending). Unknown spells → -1.
+ * Buckets pool options by catalog levelInt (descending: highest first).
+ * Unknown spells → -1 (last).
  */
 export function bucketOptionsBySpellLevel(
     options: Array<{ value: string; label: string }>,
@@ -126,6 +127,6 @@ export function bucketOptionsBySpellLevel(
     }
 
     return [...buckets.entries()]
-        .sort(([a], [b]) => a - b)
+        .sort(([a], [b]) => b - a)
         .map(([levelInt, opts]) => ({ levelInt, options: opts }));
 }

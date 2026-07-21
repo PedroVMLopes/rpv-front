@@ -192,6 +192,52 @@ describe("wizard spell slot resources", () => {
         );
     });
 
+    it("uses SRD levelIntMax on leveled learn grants by feature level", () => {
+        const expectedMaxByFeatureLevel: Record<number, number> = {
+            1: 1,
+            2: 1,
+            3: 2,
+            4: 2,
+            5: 3,
+        };
+
+        for (const [featureLevel, max] of Object.entries(
+            expectedMaxByFeatureLevel
+        )) {
+            const level = Number(featureLevel);
+            const leveledSpells = getClassGrantSourcesForLevel("wizard", level)
+                .filter((block) => block.featureLevel === level)
+                .flatMap((block) => block.grants)
+                .filter(
+                    (grant) =>
+                        grant.grantType === "spell" &&
+                        grant.selectionFilter?.levelInt !== 0
+                );
+
+            expect(leveledSpells.length).toBeGreaterThan(0);
+            for (const grant of leveledSpells) {
+                expect(grant.selectionFilter).toEqual(
+                    expect.objectContaining({
+                        spellLists: ["wizard"],
+                        levelIntMax: max,
+                    })
+                );
+                expect(grant.selectionFilter?.levelInt).toBeUndefined();
+            }
+        }
+
+        const cantrips = getClassGrantSourcesForLevel("wizard", 1)
+            .filter((block) => block.featureLevel === 1)
+            .flatMap((block) => block.grants)
+            .filter((grant) => grant.selectionFilter?.levelInt === 0);
+
+        expect(cantrips).toHaveLength(1);
+        expect(cantrips[0]?.selectionFilter).toEqual({
+            spellLists: ["wizard"],
+            levelInt: 0,
+        });
+    });
+
     it("accumulates six resource grants at level 3", () => {
         const grants = getClassGrants("wizard", 3);
         const resourceGrants = grants.filter(

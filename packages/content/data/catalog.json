@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-25T20:45:36.389Z",
+  "generatedAt": "2026-07-21T04:17:29.705Z",
   "source": "open5e",
   "defaultLocale": "en",
   "races": [
@@ -422,6 +422,28 @@
       "sourceDocument": "wotc-srd"
     },
     {
+      "slug": "counterspell",
+      "language": "en",
+      "name": "Counterspell",
+      "levelInt": 3,
+      "level": "3rd-level",
+      "school": "Abjuration",
+      "castingTime": "1 reaction, which you take when you see a creature within 60 feet of you casting a spell",
+      "range": "60 feet",
+      "components": "S",
+      "duration": "Instantaneous",
+      "requiresConcentration": false,
+      "canBeCastAsRitual": false,
+      "description": "You attempt to interrupt a creature in the process of casting a spell. If the creature is casting a spell of 3rd level or lower, its spell fails and has no effect. If it is casting a spell of 4th level or higher, make an ability check using your spellcasting ability. The DC equals 10 + the spell's level. On a success, the creature's spell fails and has no effect.",
+      "higherLevel": "When you cast this spell using a spell slot of 4th level or higher, the interrupted spell has no effect if its level is less than or equal to the level of the spell slot you used.",
+      "spellLists": [
+        "sorcerer",
+        "warlock",
+        "wizard"
+      ],
+      "sourceDocument": "wotc-srd"
+    },
+    {
       "slug": "detect-magic",
       "language": "en",
       "name": "Detect Magic",
@@ -491,6 +513,74 @@
       "sourceDocument": "wotc-srd"
     },
     {
+      "slug": "fireball",
+      "language": "en",
+      "name": "Fireball",
+      "levelInt": 3,
+      "level": "3rd-level",
+      "school": "Evocation",
+      "castingTime": "1 action",
+      "range": "150 feet",
+      "components": "V, S, M",
+      "duration": "Instantaneous",
+      "requiresConcentration": false,
+      "canBeCastAsRitual": false,
+      "description": "A bright streak flashes from your pointing finger to a point you choose within range and then blossoms with a low roar into an explosion of flame. Each creature in a 20-foot-radius sphere centered on that point must make a dexterity saving throw. A target takes 8d6 fire damage on a failed save, or half as much damage on a successful one. The fire spreads around corners. It ignites flammable objects in the area that aren't being worn or carried.",
+      "higherLevel": "When you cast this spell using a spell slot of 4th level or higher, the damage increases by 1d6 for each slot level above 3rd.",
+      "spellLists": [
+        "sorcerer",
+        "wizard"
+      ],
+      "sourceDocument": "wotc-srd"
+    },
+    {
+      "slug": "fly",
+      "language": "en",
+      "name": "Fly",
+      "levelInt": 3,
+      "level": "3rd-level",
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "Touch",
+      "components": "V, S, M",
+      "duration": "Up to 10 minutes",
+      "requiresConcentration": true,
+      "canBeCastAsRitual": false,
+      "description": "You touch a willing creature. The target gains a flying speed of 60 feet for the duration. When the spell ends, the target falls if it is still aloft, unless it can stop the fall.",
+      "higherLevel": "When you cast this spell using a spell slot of 4th level or higher, you can target one additional creature for each slot level above 3rd.",
+      "spellLists": [
+        "sorcerer",
+        "warlock",
+        "wizard"
+      ],
+      "sourceDocument": "wotc-srd"
+    },
+    {
+      "slug": "hold-person",
+      "language": "en",
+      "name": "Hold Person",
+      "levelInt": 2,
+      "level": "2nd-level",
+      "school": "Enchantment",
+      "castingTime": "1 action",
+      "range": "60 feet",
+      "components": "V, S, M",
+      "duration": "Up to 1 minute",
+      "requiresConcentration": true,
+      "canBeCastAsRitual": false,
+      "description": "Choose a humanoid that you can see within range. The target must succeed on a wisdom saving throw or be paralyzed for the duration. At the end of each of its turns, the target can make another wisdom saving throw. On a success, the spell ends on the target.",
+      "higherLevel": "When you cast this spell using a spell slot of 3rd level or higher, you can target one additional humanoid for each slot level above 2nd. The humanoids must be within 30 feet of each other when you target them.",
+      "spellLists": [
+        "cleric",
+        "druid",
+        "bard",
+        "sorcerer",
+        "warlock",
+        "wizard"
+      ],
+      "sourceDocument": "wotc-srd"
+    },
+    {
       "slug": "identify",
       "language": "en",
       "name": "Identify",
@@ -507,6 +597,30 @@
       "higherLevel": "",
       "spellLists": [
         "bard",
+        "wizard"
+      ],
+      "sourceDocument": "wotc-srd"
+    },
+    {
+      "slug": "invisibility",
+      "language": "en",
+      "name": "Invisibility",
+      "levelInt": 2,
+      "level": "2nd-level",
+      "school": "Illusion",
+      "castingTime": "1 action",
+      "range": "Touch",
+      "components": "V, S, M",
+      "duration": "Up to 1 hour",
+      "requiresConcentration": true,
+      "canBeCastAsRitual": false,
+      "description": "A creature you touch becomes invisible until the spell ends. Anything the target is wearing or carrying is invisible as long as it is on the target's person. The spell ends for a target that attacks or casts a spell.",
+      "higherLevel": "When you cast this spell using a spell slot of 3rd level or higher, you can target one additional creature for each slot level above 2nd.",
+      "spellLists": [
+        "druid",
+        "bard",
+        "sorcerer",
+        "warlock",
         "wizard"
       ],
       "sourceDocument": "wotc-srd"
@@ -529,6 +643,28 @@
       "spellLists": [
         "cleric",
         "bard",
+        "sorcerer",
+        "wizard"
+      ],
+      "sourceDocument": "wotc-srd"
+    },
+    {
+      "slug": "lightning-bolt",
+      "language": "en",
+      "name": "Lightning Bolt",
+      "levelInt": 3,
+      "level": "3rd-level",
+      "school": "Evocation",
+      "castingTime": "1 action",
+      "range": "Self",
+      "components": "V, S, M",
+      "duration": "Instantaneous",
+      "requiresConcentration": false,
+      "canBeCastAsRitual": false,
+      "description": "A stroke of lightning forming a line 100 feet long and 5 feet wide blasts out from you in a direction you choose. Each creature in the line must make a dexterity saving throw. A creature takes 8d6 lightning damage on a failed save, or half as much damage on a successful one. The lightning ignites flammable objects in the area that aren't being worn or carried.",
+      "higherLevel": "When you cast this spell using a spell slot of 4th level or higher, the damage increases by 1d6 for each slot level above 3rd.",
+      "spellLists": [
+        "druid",
         "sorcerer",
         "wizard"
       ],
@@ -595,6 +731,52 @@
       "higherLevel": "When you cast this spell using a spell slot of 2nd level or higher, the spell creates one more dart for each slot level above 1st.",
       "spellLists": [
         "sorcerer",
+        "wizard"
+      ],
+      "sourceDocument": "wotc-srd"
+    },
+    {
+      "slug": "misty-step",
+      "language": "en",
+      "name": "Misty Step",
+      "levelInt": 2,
+      "level": "2nd-level",
+      "school": "Conjuration",
+      "castingTime": "1 bonus action",
+      "range": "Self",
+      "components": "V",
+      "duration": "Instantaneous",
+      "requiresConcentration": false,
+      "canBeCastAsRitual": false,
+      "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space that you can see.",
+      "higherLevel": "",
+      "spellLists": [
+        "druid",
+        "sorcerer",
+        "warlock",
+        "wizard"
+      ],
+      "sourceDocument": "wotc-srd"
+    },
+    {
+      "slug": "scorching-ray",
+      "language": "en",
+      "name": "Scorching Ray",
+      "levelInt": 2,
+      "level": "2nd-level",
+      "school": "Evocation",
+      "castingTime": "1 action",
+      "range": "120 feet",
+      "components": "V, S",
+      "duration": "Instantaneous",
+      "requiresConcentration": false,
+      "canBeCastAsRitual": false,
+      "description": "You create three rays of fire and hurl them at targets within range. You can hurl them at one target or several. Make a ranged spell attack for each ray. On a hit, the target takes 2d6 fire damage.",
+      "higherLevel": "When you cast this spell using a spell slot of 3rd level or higher, you create one additional ray for each slot level above 2nd.",
+      "spellLists": [
+        "cleric",
+        "sorcerer",
+        "warlock",
         "wizard"
       ],
       "sourceDocument": "wotc-srd"

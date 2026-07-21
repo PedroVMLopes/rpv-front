@@ -157,23 +157,27 @@ describe("toggleSpellInPool", () => {
 });
 
 describe("bucketOptionsBySpellLevel", () => {
-    it("groups options by catalog levelInt", () => {
+    it("groups options by catalog levelInt descending", () => {
         const buckets = bucketOptionsBySpellLevel(
             [
                 { value: "fire-bolt", label: "Fire Bolt" },
                 { value: "burning-hands", label: "Burning Hands" },
                 { value: "magic-missile", label: "Magic Missile" },
+                { value: "misty-step", label: "Misty Step" },
             ],
             "en"
         );
 
-        expect(buckets.map((bucket) => bucket.levelInt)).toEqual([0, 1]);
+        expect(buckets.map((bucket) => bucket.levelInt)).toEqual([2, 1, 0]);
         expect(buckets[0]?.options.map((option) => option.value)).toEqual([
-            "fire-bolt",
+            "misty-step",
         ]);
         expect(buckets[1]?.options.map((option) => option.value)).toEqual([
             "burning-hands",
             "magic-missile",
+        ]);
+        expect(buckets[2]?.options.map((option) => option.value)).toEqual([
+            "fire-bolt",
         ]);
     });
 });

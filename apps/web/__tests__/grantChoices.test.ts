@@ -124,7 +124,7 @@ describe("collectPendingChoiceGrants", () => {
         );
         const leveledChoice = spellChoices.find(
             (choice) =>
-                choice.grant.selectionFilter?.levelInt === 1 &&
+                choice.grant.selectionFilter?.levelIntMax === 1 &&
                 !choice.label.toLowerCase().includes("cantrip")
         );
 

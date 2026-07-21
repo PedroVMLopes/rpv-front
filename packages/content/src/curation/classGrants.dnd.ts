@@ -268,7 +268,7 @@ export const dndClasses: ClassEntry[] = [
                         description: "Choose spells",
                         selectionFilter: {
                             spellLists: ["wizard"],
-                            levelInt: 1,
+                            levelIntMax: 1,
                         },
                     },
                 ],
@@ -294,7 +294,7 @@ export const dndClasses: ClassEntry[] = [
                         description: "Learn a spell",
                         selectionFilter: {
                             spellLists: ["wizard"],
-                            levelInt: 1,
+                            levelIntMax: 1,
                         },
                     },
                 ],
@@ -326,7 +326,7 @@ export const dndClasses: ClassEntry[] = [
                         description: "Learn a spell",
                         selectionFilter: {
                             spellLists: ["wizard"],
-                            levelInt: 1,
+                            levelIntMax: 2,
                         },
                     },
                 ],
@@ -352,7 +352,7 @@ export const dndClasses: ClassEntry[] = [
                         description: "Learn a spell",
                         selectionFilter: {
                             spellLists: ["wizard"],
-                            levelInt: 1,
+                            levelIntMax: 2,
                         },
                     },
                 ],
@@ -372,7 +372,7 @@ export const dndClasses: ClassEntry[] = [
                         description: "Learn a spell",
                         selectionFilter: {
                             spellLists: ["wizard"],
-                            levelInt: 1,
+                            levelIntMax: 3,
                         },
                     },
                 ],

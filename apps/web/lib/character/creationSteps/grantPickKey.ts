@@ -74,7 +74,16 @@ export function isLeveledSpellGrant(grant: Grant): boolean {
         return false;
     }
 
-    const levelInt = grant.selectionFilter?.levelInt;
+    const filter = grant.selectionFilter;
+    if (!filter) {
+        return false;
+    }
+
+    if (filter.levelIntMax !== undefined && filter.levelIntMax >= 1) {
+        return true;
+    }
+
+    const levelInt = filter.levelInt;
 
     return levelInt !== undefined && levelInt > 0;
 }

@@ -238,9 +238,16 @@ export function resolveSpellPool(
     spells: SpellCatalogEntry[]
 ): SpellCatalogEntry[] {
     return spells.filter((spell) => {
-        if (filter.levelInt !== undefined && spell.levelInt !== filter.levelInt) {
-            return false;
+        if (filter.levelInt !== undefined) {
+            if (spell.levelInt !== filter.levelInt) {
+                return false;
+            }
+        } else if (filter.levelIntMax !== undefined) {
+            if (spell.levelInt < 1 || spell.levelInt > filter.levelIntMax) {
+                return false;
+            }
         }
+
         if (
             filter.spellLists &&
             !filter.spellLists.some((list) => spell.spellLists.includes(list))

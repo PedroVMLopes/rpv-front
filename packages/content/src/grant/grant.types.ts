@@ -23,7 +23,13 @@ export type GrantType =
  */
 export interface SelectionFilter {
     spellLists?: string[];
+    /** Exact spell level match (e.g. 0 for cantrips). */
     levelInt?: number;
+    /**
+     * Inclusive upper bound for leveled spell picks (1 … max).
+     * When set without `levelInt`, matches spells with levelInt in [1, levelIntMax].
+     */
+    levelIntMax?: number;
     any?: boolean;
     /** Choosable ability stats when grantType is ability_score and options omitted. */
     stats?: StatKey[];

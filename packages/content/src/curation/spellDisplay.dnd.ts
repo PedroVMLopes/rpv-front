@@ -13,6 +13,14 @@ const dndSpellDisplayMeta: Record<string, SpellDisplayMeta> = {
     "magic-missile": { targetKind: "multiple" },
     shield: { targetKind: "self", actionCost: "reaction" },
     sleep: { targetKind: "area" },
+    "misty-step": { targetKind: "self", actionCost: "bonus_action" },
+    "scorching-ray": { targetKind: "multiple" },
+    invisibility: { targetKind: "touch" },
+    "hold-person": { targetKind: "single" },
+    fireball: { targetKind: "area" },
+    counterspell: { targetKind: "single", actionCost: "reaction" },
+    fly: { targetKind: "touch" },
+    "lightning-bolt": { targetKind: "area" },
 };
 
 export function getSpellDisplayMeta(slug: string): SpellDisplayMeta | undefined {

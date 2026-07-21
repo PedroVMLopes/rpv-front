@@ -28,6 +28,23 @@ const dndSpellRollProfiles: Record<string, SpellRollProfile> = {
         mode: "damage_only",
         damageDice: "5d8",
     },
+    "scorching-ray": {
+        mode: "attack",
+        damageDice: "2d6",
+        damageType: "fire",
+    },
+    fireball: {
+        mode: "save",
+        saveAbility: "dexterity",
+        damageDice: "8d6",
+        damageType: "fire",
+    },
+    "lightning-bolt": {
+        mode: "save",
+        saveAbility: "dexterity",
+        damageDice: "8d6",
+        damageType: "lightning",
+    },
 };
 
 export function getSpellRollProfile(slug: string): SpellRollProfile | undefined {

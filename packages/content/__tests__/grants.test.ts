@@ -391,6 +391,60 @@ describe("resolveSpellPool", () => {
         expect(wizardL1.every((s) => !cantripSlugs.has(s.slug))).toBe(true);
     });
 
+    it("filters by levelIntMax inclusive upper bound without cantrips", () => {
+        const fixtureSpells = loadAllSpells();
+        const synthetic = [
+            {
+                ...fixtureSpells[0]!,
+                slug: "synth-cantrip",
+                levelInt: 0,
+                spellLists: ["wizard"],
+            },
+            {
+                ...fixtureSpells[0]!,
+                slug: "synth-l1",
+                levelInt: 1,
+                spellLists: ["wizard"],
+            },
+            {
+                ...fixtureSpells[0]!,
+                slug: "synth-l2",
+                levelInt: 2,
+                spellLists: ["wizard"],
+            },
+            {
+                ...fixtureSpells[0]!,
+                slug: "synth-l3",
+                levelInt: 3,
+                spellLists: ["wizard"],
+            },
+            {
+                ...fixtureSpells[0]!,
+                slug: "synth-cleric-l2",
+                levelInt: 2,
+                spellLists: ["cleric"],
+            },
+        ];
+
+        const pool = resolveSpellPool(
+            { spellLists: ["wizard"], levelIntMax: 2 },
+            synthetic
+        );
+
+        expect(pool.map((s) => s.slug).sort()).toEqual(["synth-l1", "synth-l2"]);
+    });
+
+    it("prefers exact levelInt over levelIntMax when both are set", () => {
+        const spells = loadAllSpells();
+        const pool = resolveSpellPool(
+            { spellLists: ["wizard"], levelInt: 0, levelIntMax: 2 },
+            spells
+        );
+
+        expect(pool.length).toBeGreaterThan(0);
+        expect(pool.every((s) => s.levelInt === 0)).toBe(true);
+    });
+
     it("resolves wizard L1 spell grant pool with at least two options", () => {
         const spells = loadAllSpells();
         const grant: Grant = {

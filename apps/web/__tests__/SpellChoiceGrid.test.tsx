@@ -14,17 +14,24 @@ import enMessages from "../messages/en.json";
 function SpellGridHarness({
     defaultValues,
     spellTier = "cantrip",
+    featureLevel = 1,
 }: {
     defaultValues: Record<string, unknown>;
     spellTier?: "cantrip" | "leveled";
+    featureLevel?: number;
 }) {
     const form = useForm({ defaultValues });
     const selections = buildSelectionsFromForm(defaultValues);
+    const characterLevel =
+        typeof defaultValues.level === "number" ? defaultValues.level : 1;
     const spellChoices = filterChoicesForStep(
-        collectPendingChoiceGrants(selections, "en", 1, "dnd").filter(
-            (choice) => choice.grant.grantType === "spell"
-        ),
-        { sourceTypes: ["class"], level: 1, spellTier }
+        collectPendingChoiceGrants(
+            selections,
+            "en",
+            characterLevel,
+            "dnd"
+        ).filter((choice) => choice.grant.grantType === "spell"),
+        { sourceTypes: ["class"], level: featureLevel, spellTier }
     );
 
     return (
@@ -114,6 +121,25 @@ describe("SpellChoiceGrid", () => {
         expect(screen.getByText("Level 1 spells")).toBeInTheDocument();
         expect(screen.getByText("0 of 2 selected")).toBeInTheDocument();
         expect(screen.getByRole("button", { name: /Burning Hands/i })).toBeInTheDocument();
+    });
+
+    it("shows the L3 leveled pool with a single pick quota", () => {
+        render(
+            <SpellGridHarness
+                spellTier="leveled"
+                featureLevel={3}
+                defaultValues={{
+                    race: "human",
+                    characterClass: "wizard",
+                    level: 3,
+                    choices: {},
+                }}
+            />
+        );
+
+        expect(screen.getByText("Level 1 spells")).toBeInTheDocument();
+        expect(screen.getByText("Level 2 spells")).toBeInTheDocument();
+        expect(screen.getByText("0 of 1 selected")).toBeInTheDocument();
     });
 
     it("disables a racial cantrip already picked in class cantrip slots", async () => {

@@ -34,6 +34,30 @@
     },
     "identify": {
       "name": "Identificar"
+    },
+    "misty-step": {
+      "name": "Passo Nebuloso"
+    },
+    "scorching-ray": {
+      "name": "Raio Ardente"
+    },
+    "invisibility": {
+      "name": "Invisibilidade"
+    },
+    "hold-person": {
+      "name": "Imobilizar Pessoa"
+    },
+    "fireball": {
+      "name": "Bola de Fogo"
+    },
+    "counterspell": {
+      "name": "Contramedida"
+    },
+    "fly": {
+      "name": "Voar"
+    },
+    "lightning-bolt": {
+      "name": "Relâmpago"
     }
   },
   "classes": {

@@ -31,6 +31,9 @@ data here.
     currency`
   - `choose === 0` → fixed (everything applies); `choose > 0` → the player picks
     `choose` entries from `options` or from a `selectionFilter` pool.
+  - Spell `selectionFilter`: `levelInt` = exact match (cantrips use `0`);
+    `levelIntMax` = inclusive upper bound for leveled picks
+    (`spell.levelInt` in `[1, levelIntMax]`). If both are set, `levelInt` wins.
   - `grants.ts` is the **bridge**: it converts `Grant`s into domain `Modifier`s
     and `CharacterGrant`s. This is how authored content feeds the engine. Keep
     this translation generic — driven by the grant data, not by hardcoded names.
