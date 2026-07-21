@@ -32,8 +32,6 @@ type LevelProgressionPageProps = {
     system: SystemKey;
     sourceFilter?: CreationStepSourceFilter;
     title: string;
-    pickStepIds?: string[];
-    onStepSelect?: (stepId: string) => void;
 };
 
 function resourceLine(
@@ -45,13 +43,7 @@ function resourceLine(
     return `${labelFor(ref)}: ${sign}${amount}`;
 }
 
-function LevelGainSummaryPanel({
-    summary,
-    onStepSelect,
-}: {
-    summary: LevelGainSummary;
-    onStepSelect?: (stepId: string) => void;
-}) {
+function LevelGainSummaryPanel({ summary }: { summary: LevelGainSummary }) {
     const t = useTranslations("characterCreation.levelSummary");
     const tResources = useTranslations("classResources");
 
@@ -69,19 +61,10 @@ function LevelGainSummaryPanel({
         <div className={cn(sheetInset, "flex flex-col gap-3 rounded-md p-3")}>
             <ul className="flex flex-col gap-2 text-sm">
                 {summary.subclassAvailable ? (
-                    <li className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                    <li>
                         <span className="font-medium text-foreground">
                             {t("subclassAvailable")}
                         </span>
-                        {onStepSelect ? (
-                            <button
-                                type="button"
-                                className="font-medium text-primary underline-offset-4 hover:underline"
-                                onClick={() => onStepSelect("subclass")}
-                            >
-                                {t("goToSubclass")}
-                            </button>
-                        ) : null}
                     </li>
                 ) : null}
 
@@ -167,8 +150,6 @@ export function LevelProgressionPage({
     system,
     sourceFilter,
     title,
-    pickStepIds = [],
-    onStepSelect,
 }: LevelProgressionPageProps) {
     const t = useTranslations("characterCreation");
     const { control } = form;
@@ -279,12 +260,7 @@ export function LevelProgressionPage({
         <div className="flex flex-col gap-4">
             <h2 className="text-lg font-bold">{title}</h2>
 
-            {showSummary ? (
-                <LevelGainSummaryPanel
-                    summary={summary}
-                    onStepSelect={onStepSelect}
-                />
-            ) : null}
+            {showSummary ? <LevelGainSummaryPanel summary={summary} /> : null}
 
             {showEmpty ? (
                 <p className="text-sm text-muted-foreground">
@@ -298,32 +274,6 @@ export function LevelProgressionPage({
                     contentLocale={contentLocale}
                     system={system}
                 />
-            ) : null}
-
-            {pickStepIds.length > 0 && onStepSelect ? (
-                <ul className="flex flex-col gap-2 border-t pt-4">
-                    {pickStepIds.map((stepId) => {
-                        let stepLabel: string;
-
-                        try {
-                            stepLabel = t(`steps.${stepId}` as never);
-                        } catch {
-                            stepLabel = stepId;
-                        }
-
-                        return (
-                            <li key={stepId}>
-                                <button
-                                    type="button"
-                                    className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-                                    onClick={() => onStepSelect(stepId)}
-                                >
-                                    {t("selection.goToStep", { stepLabel })}
-                                </button>
-                            </li>
-                        );
-                    })}
-                </ul>
             ) : null}
         </div>
     );

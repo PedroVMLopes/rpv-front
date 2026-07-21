@@ -384,20 +384,6 @@ export function PlayerCharacterForm({
         />
     );
 
-    const relatedPickStepIds = useMemo(() => {
-        if (!activeStep) {
-            return [];
-        }
-
-        return creationGraph.steps
-            .filter(
-                (step) =>
-                    step.parentId === activeStep.id &&
-                    step.kind === "grant_picks"
-            )
-            .map((step) => step.id);
-    }, [activeStep, creationGraph.steps]);
-
     const stepContent = (() => {
         if (!activeStep) {
             return null;
@@ -425,8 +411,6 @@ export function PlayerCharacterForm({
                         system={system}
                         sourceFilter={activeStep.sourceFilter}
                         title={stepTitle}
-                        pickStepIds={relatedPickStepIds}
-                        onStepSelect={handleStepSelect}
                     />
                 );
             case "grant_picks":

@@ -356,7 +356,6 @@
     },
     "levelSummary": {
       "subclassAvailable": "Especialização disponível",
-      "goToSubclass": "Escolher especialização →",
       "hitPoints": "Pontos de vida",
       "hpChange": "{before} → {after}",
       "classResources": "Recursos de classe",
@@ -370,7 +369,6 @@
       "deselect": "Limpar seleção",
       "deferredChoice": "Você escolherá {count} depois em {stepLabel} ({label})",
       "deferredChoiceGeneric": "Você fará esta escolha em um passo posterior",
-      "goToStep": "Escolher {stepLabel} →",
       "description": "Descrição",
       "grants": "O que você recebe",
       "preview": {

@@ -356,7 +356,6 @@
     },
     "levelSummary": {
       "subclassAvailable": "Subclass available",
-      "goToSubclass": "Choose subclass →",
       "hitPoints": "Hit points",
       "hpChange": "{before} → {after}",
       "classResources": "Class resources",
@@ -370,7 +369,6 @@
       "deselect": "Clear selection",
       "deferredChoice": "You will choose {count} later in {stepLabel} ({label})",
       "deferredChoiceGeneric": "You will make this choice in a later step",
-      "goToStep": "Choose {stepLabel} →",
       "description": "Description",
       "grants": "What you get",
       "preview": {
