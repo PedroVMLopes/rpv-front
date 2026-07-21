@@ -13,8 +13,10 @@ import enMessages from "../messages/en.json";
 
 function SpellGridHarness({
     defaultValues,
+    spellTier = "cantrip",
 }: {
     defaultValues: Record<string, unknown>;
+    spellTier?: "cantrip" | "leveled";
 }) {
     const form = useForm({ defaultValues });
     const selections = buildSelectionsFromForm(defaultValues);
@@ -22,7 +24,7 @@ function SpellGridHarness({
         collectPendingChoiceGrants(selections, "en", 1, "dnd").filter(
             (choice) => choice.grant.grantType === "spell"
         ),
-        { sourceTypes: ["class"], level: 1, spellTier: "cantrip" }
+        { sourceTypes: ["class"], level: 1, spellTier }
     );
 
     return (
@@ -41,7 +43,7 @@ function SpellGridHarness({
 }
 
 describe("SpellChoiceGrid", () => {
-    it("shows all cantrip slots on one screen and toggles selection", async () => {
+    it("shows one cantrip pool and toggles multi-select into grantPicks", async () => {
         const user = userEvent.setup();
 
         render(
@@ -55,25 +57,63 @@ describe("SpellChoiceGrid", () => {
             />
         );
 
-        const sections = screen.getAllByRole("heading", { level: 3 });
-        expect(sections.length).toBeGreaterThan(0);
+        expect(screen.getByText("0 of 3 selected")).toBeInTheDocument();
+        expect(screen.getByText("Cantrips")).toBeInTheDocument();
 
-        const spellButtons = screen.getAllByText(/Fire Bolt|Ray of Frost/i);
-        expect(spellButtons.length).toBeGreaterThan(0);
-        expect(screen.queryByText("Selected")).not.toBeInTheDocument();
-        expect(screen.queryByText("Available")).not.toBeInTheDocument();
+        const poolHeadings = screen.getAllByRole("heading", { level: 3 });
+        expect(poolHeadings).toHaveLength(1);
 
-        await user.click(spellButtons[0]!);
+        const fireBolt = screen.getByRole("button", { name: /^Fire Bolt$/i });
+        const mageHand = screen.getByRole("button", { name: /^Mage Hand$/i });
+        const light = screen.getByRole("button", { name: /^Light$/i });
+        const acidSplash = screen.getByRole("button", {
+            name: /^Acid Splash$/i,
+        });
 
-        expect(screen.getByTestId("choices-output")).toHaveTextContent(
-            "fire-bolt"
+        await user.click(fireBolt);
+        await user.click(mageHand);
+        await user.click(light);
+
+        let choices = JSON.parse(
+            screen.getByTestId("choices-output").textContent ?? "{}"
+        );
+        expect(Object.values(choices.grantPicks ?? {})).toEqual(
+            expect.arrayContaining(["fire-bolt", "mage-hand", "light"])
+        );
+        expect(screen.getByText("3 of 3 selected")).toBeInTheDocument();
+        expect(acidSplash).toBeDisabled();
+
+        await user.click(acidSplash);
+        choices = JSON.parse(
+            screen.getByTestId("choices-output").textContent ?? "{}"
+        );
+        expect(Object.values(choices.grantPicks ?? {})).not.toContain(
+            "acid-splash"
         );
 
-        await user.click(spellButtons[0]!);
+        await user.click(fireBolt);
+        expect(screen.getByText("2 of 3 selected")).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: /^Acid Splash$/i })
+        ).not.toBeDisabled();
+    });
 
-        expect(screen.getByTestId("choices-output")).not.toHaveTextContent(
-            "fire-bolt"
+    it("groups leveled spells under a level heading", () => {
+        render(
+            <SpellGridHarness
+                spellTier="leveled"
+                defaultValues={{
+                    race: "human",
+                    characterClass: "wizard",
+                    level: 1,
+                    choices: {},
+                }}
+            />
         );
+
+        expect(screen.getByText("Level 1 spells")).toBeInTheDocument();
+        expect(screen.getByText("0 of 2 selected")).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /Burning Hands/i })).toBeInTheDocument();
     });
 
     it("disables a racial cantrip already picked in class cantrip slots", async () => {

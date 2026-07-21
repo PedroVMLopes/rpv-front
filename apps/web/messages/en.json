@@ -335,6 +335,12 @@
       "count": "{prepared} of {available} prepared",
       "empty": "Learn at least one leveled spell to prepare it here."
     },
+    "spellPicks": {
+      "count": "{selected} of {quota} selected",
+      "levelCantrip": "Cantrips",
+      "levelN": "Level {level} spells",
+      "levelUnknown": "Spells"
+    },
     "hints": {
       "selectRace": "Select a race before continuing.",
       "selectClass": "Select a class before continuing.",

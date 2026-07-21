@@ -335,6 +335,12 @@
       "count": "{prepared} de {available} preparadas",
       "empty": "Aprenda ao menos uma magia de nível para prepará-la aqui."
     },
+    "spellPicks": {
+      "count": "{selected} de {quota} selecionadas",
+      "levelCantrip": "Truques",
+      "levelN": "Magias de nível {level}",
+      "levelUnknown": "Magias"
+    },
     "hints": {
       "selectRace": "Selecione uma raça antes de continuar.",
       "selectClass": "Selecione uma classe antes de continuar.",
