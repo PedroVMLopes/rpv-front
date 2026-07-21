@@ -11,6 +11,7 @@ import {
 } from "@rpv/content";
 import type { CreationStepSourceFilter } from "@/lib/character/creationSteps/creationStep.types";
 import { GrantPreviewGroupedPanel } from "@/components/characters/creation/GrantPreviewGroupedPanel";
+import { LevelGainSummaryPanel } from "@/components/characters/creation/levelSummary/LevelGainSummaryPanel";
 import {
     groupGrantPreviewBuckets,
     hasAnyBucketItems,
@@ -19,12 +20,8 @@ import {
 import {
     buildLevelGainSummary,
     hasLevelGainSummaryContent,
-    type LevelGainSummary,
 } from "@/lib/character/buildLevelGainSummary";
-import { formatResourceRefLabel } from "@/lib/character/resourceLabels";
-import { sheetInset } from "@/components/characters/PlayerSheet/playerSheetSurfaces";
 import type { SystemKey } from "@/presets";
-import { cn } from "@/lib/utils";
 
 type LevelProgressionPageProps = {
     form: UseFormReturn<Record<string, unknown>>;
@@ -33,116 +30,6 @@ type LevelProgressionPageProps = {
     sourceFilter?: CreationStepSourceFilter;
     title: string;
 };
-
-function resourceLine(
-    ref: string,
-    amount: number,
-    labelFor: (ref: string) => string
-): string {
-    const sign = amount > 0 ? "+" : "";
-    return `${labelFor(ref)}: ${sign}${amount}`;
-}
-
-function LevelGainSummaryPanel({ summary }: { summary: LevelGainSummary }) {
-    const t = useTranslations("characterCreation.levelSummary");
-    const tResources = useTranslations("classResources");
-
-    const labelFor = (ref: string) =>
-        formatResourceRefLabel(
-            ref,
-            (key) => tResources(key),
-            (key) => tResources.has(key)
-        );
-
-    const hasSpells =
-        summary.spellPicks.spells > 0 || summary.spellPicks.cantrips > 0;
-
-    return (
-        <div className={cn(sheetInset, "flex flex-col gap-3 rounded-md p-3")}>
-            <ul className="flex flex-col gap-2 text-sm">
-                {summary.subclassAvailable ? (
-                    <li>
-                        <span className="font-medium text-foreground">
-                            {t("subclassAvailable")}
-                        </span>
-                    </li>
-                ) : null}
-
-                {summary.hp ? (
-                    <li>
-                        <span className="font-medium text-foreground">
-                            {t("hitPoints")}
-                            {": "}
-                        </span>
-                        <span className="text-muted-foreground">
-                            {t("hpChange", {
-                                before: summary.hp.before,
-                                after: summary.hp.after,
-                            })}
-                        </span>
-                    </li>
-                ) : null}
-
-                {summary.classResources.length > 0 ? (
-                    <li className="flex flex-col gap-1">
-                        <span className="font-medium text-foreground">
-                            {t("classResources")}
-                        </span>
-                        <ul className="list-inside list-disc text-muted-foreground">
-                            {summary.classResources.map((entry) => (
-                                <li key={entry.ref}>
-                                    {resourceLine(
-                                        entry.ref,
-                                        entry.amount,
-                                        labelFor
-                                    )}
-                                </li>
-                            ))}
-                        </ul>
-                    </li>
-                ) : null}
-
-                {summary.subclassResources.length > 0 ? (
-                    <li className="flex flex-col gap-1">
-                        <span className="font-medium text-foreground">
-                            {t("subclassResources")}
-                        </span>
-                        <ul className="list-inside list-disc text-muted-foreground">
-                            {summary.subclassResources.map((entry) => (
-                                <li key={entry.ref}>
-                                    {resourceLine(
-                                        entry.ref,
-                                        entry.amount,
-                                        labelFor
-                                    )}
-                                </li>
-                            ))}
-                        </ul>
-                    </li>
-                ) : null}
-
-                {hasSpells ? (
-                    <li className="flex flex-col gap-1">
-                        {summary.spellPicks.cantrips > 0 ? (
-                            <span className="text-muted-foreground">
-                                {t("cantripsGained", {
-                                    count: summary.spellPicks.cantrips,
-                                })}
-                            </span>
-                        ) : null}
-                        {summary.spellPicks.spells > 0 ? (
-                            <span className="text-muted-foreground">
-                                {t("spellsGained", {
-                                    count: summary.spellPicks.spells,
-                                })}
-                            </span>
-                        ) : null}
-                    </li>
-                ) : null}
-            </ul>
-        </div>
-    );
-}
 
 export function LevelProgressionPage({
     form,
