@@ -45,6 +45,7 @@ export const dndCharacterSchema = {
     choices: z
       .object({
         grantPicks: z.record(z.string(), z.string()).optional(),
+        preparedSpells: z.array(z.string()).optional(),
       })
       .optional(),
     abilityScoreMethod: z

@@ -49,9 +49,15 @@ data here.
 - `featuresByLevel?` — level-gated grants (resources, abilities, spell picks).
 - `subclassLevel?` — minimum character level for subclass to apply / be required
   (pilot default: **3**).
+- `spellcastingAbility?` — governing ability for spell attack / save DC.
+- `spellcastingMode?` — how the class treats known vs castable spells:
+  - `known` — spell grants are always castable
+  - `prepared-list` — prepare from the full class list
+  - `spellbook` — learn into a book; prepare a subset to cast
+  - omitted — no preparation rules (non-casters)
 
 Helpers: `getClassGrants(slug, level)`, `getClassGrantSourcesForLevel`,
-`getClassSubclassLevel`.
+`getClassSubclassLevel`, `getClassSpellcastingMode`.
 
 ### `SubclassEntry` ([`subclassGrants.dnd.ts`](src/curation/subclassGrants.dnd.ts))
 
@@ -454,7 +460,7 @@ Persist the same JSON shapes as curation/catalog types:
 
 | Entity | Type | Notes |
 |--------|------|-------|
-| Class | `ClassEntry` | `grants`, `featuresByLevel`, `hitDie`, `subclassLevel` |
+| Class | `ClassEntry` | `grants`, `featuresByLevel`, `hitDie`, `subclassLevel`, `spellcastingMode` |
 | Subclass | `SubclassEntry` | `classSlug`, `grants`, `featuresByLevel` |
 | Background | `BackgroundEntry` | `grants` |
 | Item | `ItemEntry` | `grants`, slots, `stackable`, `category` |

@@ -3,6 +3,7 @@ import {
     getClassGrants,
     getClassGrantSourcesForLevel,
     getClassHitDie,
+    getClassSpellcastingMode,
     getClassSubclassLevel,
     listClasses,
 } from "../src";
@@ -56,9 +57,17 @@ describe("classGrants.dnd", () => {
                 name: "Wizard",
                 hitDie: 6,
                 spellcastingAbility: "intelligence",
+                spellcastingMode: "spellbook",
             })
         );
         expect(getClass("fighter")?.spellcastingAbility).toBeUndefined();
+        expect(getClass("fighter")?.spellcastingMode).toBeUndefined();
+    });
+
+    it("returns spellcasting mode by class slug", () => {
+        expect(getClassSpellcastingMode("wizard")).toBe("spellbook");
+        expect(getClassSpellcastingMode("fighter")).toBeUndefined();
+        expect(getClassSpellcastingMode("unknown")).toBeUndefined();
     });
 
     it("returns empty grants for unknown class", () => {

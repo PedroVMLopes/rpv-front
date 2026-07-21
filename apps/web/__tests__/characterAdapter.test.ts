@@ -149,6 +149,63 @@ describe("characterAdapter system-agnostic mapping", () => {
         });
     });
 
+    it("preserves preparedSpells from form choices", () => {
+        const selections = buildSelectionsFromForm({
+            race: "elf",
+            characterClass: "wizard",
+            choices: {
+                grantPicks: { "class:wizard:1:spell:0:0": "fire-bolt" },
+                preparedSpells: ["magic-missile", "burning-hands"],
+            },
+        });
+
+        expect(selections.choices).toEqual({
+            grantPicks: { "class:wizard:1:spell:0:0": "fire-bolt" },
+            preparedSpells: ["magic-missile", "burning-hands"],
+        });
+    });
+
+    it("keeps existing preparedSpells when form omits the field", () => {
+        const selections = buildSelectionsFromForm(
+            {
+                race: "elf",
+                characterClass: "wizard",
+                choices: {
+                    grantPicks: { "class:wizard:1:spell:0:0": "fire-bolt" },
+                },
+            },
+            {
+                inventory: emptyInventory(),
+                choices: {
+                    preparedSpells: ["burning-hands"],
+                },
+            }
+        );
+
+        expect(selections.choices.preparedSpells).toEqual(["burning-hands"]);
+        expect(selections.choices.grantPicks).toEqual({
+            "class:wizard:1:spell:0:0": "fire-bolt",
+        });
+    });
+
+    it("allows clearing preparedSpells with an empty array", () => {
+        const selections = buildSelectionsFromForm(
+            {
+                choices: {
+                    preparedSpells: [],
+                },
+            },
+            {
+                inventory: emptyInventory(),
+                choices: {
+                    preparedSpells: ["magic-missile"],
+                },
+            }
+        );
+
+        expect(selections.choices.preparedSpells).toEqual([]);
+    });
+
     it("backfills language for stored characters persisted before i18n", () => {
         const stored = normalizeStoredCharacter({
             id: "no-lang",

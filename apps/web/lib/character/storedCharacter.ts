@@ -4,6 +4,8 @@ import type { SystemKey } from "@/presets";
 
 export type CharacterChoices = {
     grantPicks?: Record<string, string>;
+    /** Leveled spell slugs prepared for casting (spellbook / prepared-list modes). */
+    preparedSpells?: string[];
 };
 
 export type CharacterSelections = {

@@ -4,6 +4,15 @@ import type { LevelFeature } from "../grant/levelFeature.types";
 import { resolveLevelFeatures } from "../grant/levelFeatures";
 import { localizeCurationEntry } from "./curationLocale";
 
+/**
+ * How a class treats learned vs castable spells.
+ * - `known` — spell grants are always castable (e.g. sorcerer).
+ * - `prepared-list` — prepare from the full class list (e.g. cleric).
+ * - `spellbook` — learn into a book; prepare a subset to cast (e.g. wizard).
+ * Absent = no preparation rules (non-casters / current default).
+ */
+export type SpellcastingMode = "known" | "prepared-list" | "spellbook";
+
 export interface ClassEntry {
     slug: string;
     name: string;
@@ -14,6 +23,8 @@ export interface ClassEntry {
     subclassLevel?: number;
     /** Governing ability for spell attack bonus and save DC. */
     spellcastingAbility?: StatKey;
+    /** How this class treats known vs prepared spells. */
+    spellcastingMode?: SpellcastingMode;
     grants: Grant[];
     featuresByLevel?: LevelFeature[];
 }
@@ -196,6 +207,7 @@ export const dndClasses: ClassEntry[] = [
         hitDie: 6,
         subclassLevel: 3,
         spellcastingAbility: "intelligence",
+        spellcastingMode: "spellbook",
         grants: [
             {
                 grantType: "saving_throw_proficiency",
@@ -761,4 +773,10 @@ export function getClassGrants(slug: string, characterLevel = 1): Grant[] {
 
 export function getClassHitDie(slug: string): number | undefined {
     return resolveClass(slug)?.hitDie;
+}
+
+export function getClassSpellcastingMode(
+    slug: string
+): SpellcastingMode | undefined {
+    return resolveClass(slug)?.spellcastingMode;
 }

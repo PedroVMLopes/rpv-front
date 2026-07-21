@@ -52,6 +52,15 @@ function coerceLocale(value: unknown, fallback: Locale = DEFAULT_LOCALE): Locale
     return isLocale(value) ? value : fallback;
 }
 
+function coercePreparedSpells(value: unknown): string[] | undefined {
+    if (!Array.isArray(value)) {
+        return undefined;
+    }
+
+    const slugs = value.filter((entry): entry is string => typeof entry === "string");
+    return slugs;
+}
+
 function coerceChoices(value: unknown, existing?: CharacterChoices): CharacterChoices {
     if (value && typeof value === "object" && !Array.isArray(value)) {
         const record = value as Record<string, unknown>;
@@ -59,19 +68,27 @@ function coerceChoices(value: unknown, existing?: CharacterChoices): CharacterCh
             record.grantPicks && typeof record.grantPicks === "object"
                 ? (record.grantPicks as Record<string, string>)
                 : existing?.grantPicks;
+        const preparedSpells =
+            coercePreparedSpells(record.preparedSpells) ?? existing?.preparedSpells;
 
+        const choices: CharacterChoices = {};
         if (grantPicks !== undefined) {
-            return { grantPicks };
+            choices.grantPicks = grantPicks;
         }
-
-        return {};
+        if (preparedSpells !== undefined) {
+            choices.preparedSpells = preparedSpells;
+        }
+        return choices;
     }
 
+    const choices: CharacterChoices = {};
     if (existing?.grantPicks !== undefined) {
-        return { grantPicks: existing.grantPicks };
+        choices.grantPicks = existing.grantPicks;
     }
-
-    return {};
+    if (existing?.preparedSpells !== undefined) {
+        choices.preparedSpells = existing.preparedSpells;
+    }
+    return choices;
 }
 
 function buildInventoryFromForm(
