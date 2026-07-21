@@ -94,7 +94,9 @@ const wizardStored: StoredCharacter = {
     ],
     selections: {
         characterClass: "wizard",
-        choices: {},
+        choices: {
+            preparedSpells: ["burning-hands"],
+        },
         inventory: { bag: [], equipped: {} },
     },
     resources: { hp: 8 },

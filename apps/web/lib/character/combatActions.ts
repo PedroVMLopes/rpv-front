@@ -16,6 +16,7 @@ import {
     formatWeaponToHit,
 } from "./combatModifiers";
 import { buildSpellcastingSystemData } from "./spellcastingContext";
+import { filterCastableSpellGrants } from "./castableSpells";
 
 export const WEAPON_SLOTS = ["main-hand", "off-hand"] as const;
 export type WeaponSlotId = (typeof WEAPON_SLOTS)[number];
@@ -179,7 +180,7 @@ export function listSpellActions(
     locale?: Locale
 ): { cantrips: SpellAction[]; spells: SpellAction[] } {
     const isStored = "grants" in storedOrGrants;
-    const grants = isStored ? storedOrGrants.grants ?? [] : storedOrGrants;
+    const rawGrants = isStored ? storedOrGrants.grants ?? [] : storedOrGrants;
     const resolved = isStored ? (resolvedOrLocale as Stats) : undefined;
     const contentLocale = isStored
         ? locale
@@ -188,6 +189,20 @@ export function listSpellActions(
     const spellcastingSystemData = isStored
         ? buildSpellcastingSystemData(storedOrGrants)
         : {};
+
+    const grants = isStored
+        ? filterCastableSpellGrants({
+              grants: rawGrants,
+              characterClass:
+                  storedOrGrants.selections.characterClass ??
+                  (typeof storedOrGrants.systemData.characterClass === "string"
+                      ? storedOrGrants.systemData.characterClass
+                      : undefined),
+              preparedSpells: storedOrGrants.selections.choices.preparedSpells,
+              system,
+              locale: contentLocale,
+          })
+        : rawGrants;
 
     const cantrips: SpellAction[] = [];
     const spells: SpellAction[] = [];
