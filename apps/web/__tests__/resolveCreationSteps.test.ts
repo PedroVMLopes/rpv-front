@@ -16,6 +16,7 @@ describe("resolveCreationSteps", () => {
             "class",
             "background",
             "abilities",
+            "spells",
             "finalize",
         ]);
     });
@@ -170,5 +171,73 @@ describe("resolveCreationSteps", () => {
         expect(
             graph.steps.some((step) => step.id === "subclass-level-3")
         ).toBe(true);
+    });
+
+    it("includes prepare-spells after abilities when wizard has leveled spells in book", () => {
+        const graph = resolveCreationSteps({
+            formValues: {
+                race: "human",
+                characterClass: "wizard",
+                level: 1,
+                choices: {
+                    grantPicks: {
+                        "class:wizard:1:spell:2:0": "burning-hands",
+                        "class:wizard:1:spell:2:1": "magic-missile",
+                    },
+                    preparedSpells: [],
+                },
+            },
+            system: "dnd",
+            contentLocale: "en",
+        });
+
+        const ids = graph.steps.map((step) => step.id);
+        const abilitiesIndex = ids.indexOf("abilities");
+        const prepareIndex = ids.indexOf("prepare-spells");
+        const finalizeIndex = ids.indexOf("finalize");
+
+        expect(prepareIndex).toBeGreaterThan(abilitiesIndex);
+        expect(finalizeIndex).toBeGreaterThan(prepareIndex);
+        expect(graph.getStep("prepare-spells")?.kind).toBe("prepare_spells");
+        expect(graph.getStep("prepare-spells")?.macroGroupId).toBe("spells");
+    });
+
+    it("omits prepare-spells for fighter", () => {
+        const graph = resolveCreationSteps({
+            formValues: {
+                race: "human",
+                characterClass: "fighter",
+                level: 1,
+            },
+            system: "dnd",
+            contentLocale: "en",
+        });
+
+        expect(graph.steps.some((step) => step.id === "prepare-spells")).toBe(
+            false
+        );
+    });
+
+    it("omits prepare-spells for wizard when book has only cantrips", () => {
+        const graph = resolveCreationSteps({
+            formValues: {
+                race: "human",
+                characterClass: "wizard",
+                level: 1,
+                choices: {
+                    grantPicks: {
+                        "class:wizard:1:spell:1:0": "acid-splash",
+                        "class:wizard:1:spell:1:1": "mage-hand",
+                        "class:wizard:1:spell:1:2": "prestidigitation",
+                    },
+                },
+            },
+            system: "dnd",
+            contentLocale: "en",
+        });
+
+        expect(graph.steps.some((step) => step.id === "prepare-spells")).toBe(
+            false
+        );
     });
 });

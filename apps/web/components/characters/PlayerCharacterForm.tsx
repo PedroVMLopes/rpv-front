@@ -20,6 +20,7 @@ import { CreationStepsDrawer } from "@/components/characters/creation/CreationSt
 import { LevelProgressionPage } from "@/components/characters/creation/LevelProgressionPage";
 import { SelectionStepRouter } from "@/components/characters/creation/SelectionStepRouter";
 import { GrantChoicePage } from "@/components/characters/creation/GrantChoicePage";
+import { PrepareSpellsPage } from "@/components/characters/creation/PrepareSpellsPage";
 import {
     buildPlayerGrantSourceFields,
     filterPlayerFormFields,
@@ -445,6 +446,8 @@ export function PlayerCharacterForm({
                         />
                     </div>
                 );
+            case "prepare_spells":
+                return <PrepareSpellsPage title={stepTitle} />;
             case "finalize":
                 if (isLevelUp || activeStep.id === "level-up-confirm") {
                     return (

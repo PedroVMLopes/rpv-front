@@ -86,4 +86,52 @@ describe("resolveLevelUpSteps", () => {
 
         expect(ids).toEqual(["class-level-2", "level-up-confirm"]);
     });
+
+    it("includes prepare-spells before confirm when wizard book has leveled spells", () => {
+        const graph = resolveLevelUpSteps({
+            formValues: {
+                race: "human",
+                characterClass: "wizard",
+                level: 2,
+                choices: {
+                    grantPicks: {
+                        "class:wizard:1:spell:2:0": "burning-hands",
+                        "class:wizard:1:spell:2:1": "magic-missile",
+                    },
+                    preparedSpells: [],
+                },
+            },
+            fromLevel: 1,
+            targetLevel: 2,
+            system: "dnd",
+            contentLocale: "en",
+        });
+
+        const ids = graph.steps.map((step) => step.id);
+        const prepareIndex = ids.indexOf("prepare-spells");
+        const confirmIndex = ids.indexOf("level-up-confirm");
+
+        expect(prepareIndex).toBeGreaterThan(-1);
+        expect(confirmIndex).toBe(ids.length - 1);
+        expect(prepareIndex).toBe(confirmIndex - 1);
+        expect(graph.getStep("prepare-spells")?.macroGroupId).toBe("spells");
+    });
+
+    it("omits prepare-spells on fighter level-up", () => {
+        const graph = resolveLevelUpSteps({
+            formValues: {
+                race: "human",
+                characterClass: "fighter",
+                level: 2,
+            },
+            fromLevel: 1,
+            targetLevel: 2,
+            system: "dnd",
+            contentLocale: "en",
+        });
+
+        expect(graph.steps.some((step) => step.id === "prepare-spells")).toBe(
+            false
+        );
+    });
 });

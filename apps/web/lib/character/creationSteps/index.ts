@@ -30,3 +30,7 @@ export {
     resolveLevelUpSteps,
     type ResolveLevelUpStepsInput,
 } from "./resolveLevelUpSteps";
+export {
+    shouldIncludePrepareSpellsStep,
+    type ShouldIncludePrepareSpellsStepInput,
+} from "./shouldIncludePrepareSpellsStep";

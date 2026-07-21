@@ -11,6 +11,7 @@ const MACRO_ORDER: CreationMacroGroupId[] = [
     "class",
     "background",
     "abilities",
+    "spells",
     "finalize",
 ];
 

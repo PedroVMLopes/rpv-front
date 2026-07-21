@@ -17,6 +17,7 @@ import {
     createStep,
 } from "./levelProgressionSteps";
 import { getCreationProgressionLevel } from "./progressionLevel";
+import { shouldIncludePrepareSpellsStep } from "./shouldIncludePrepareSpellsStep";
 
 export type ResolveCreationStepsInput = {
     formValues: Record<string, unknown>;
@@ -147,6 +148,17 @@ export function resolveCreationSteps(
     }
 
     steps.push(createStep("abilities", "abilities", "abilities"));
+
+    if (
+        shouldIncludePrepareSpellsStep({
+            formValues,
+            system,
+            contentLocale,
+            characterLevel,
+        })
+    ) {
+        steps.push(createStep("prepare-spells", "prepare_spells", "spells"));
+    }
 
     steps.push(
         createStep("finalize", "finalize", "finalize", {

@@ -11,6 +11,7 @@ import {
     appendSubclassLevelSteps,
     createStep,
 } from "./levelProgressionSteps";
+import { shouldIncludePrepareSpellsStep } from "./shouldIncludePrepareSpellsStep";
 
 export type ResolveLevelUpStepsInput = {
     formValues: Record<string, unknown>;
@@ -76,6 +77,17 @@ export function resolveLevelUpSteps(
                 });
             }
         }
+    }
+
+    if (
+        shouldIncludePrepareSpellsStep({
+            formValues,
+            system,
+            contentLocale,
+            characterLevel,
+        })
+    ) {
+        steps.push(createStep("prepare-spells", "prepare_spells", "spells"));
     }
 
     steps.push(

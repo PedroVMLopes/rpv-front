@@ -273,6 +273,7 @@
       "class": "Classe e Progressão",
       "background": "Antecedente",
       "abilities": "Atributos",
+      "spells": "Magias",
       "finalize": "Finalizar"
     },
     "steps": {
@@ -311,6 +312,7 @@
       "background": "Antecedente e Detalhes",
       "background-choices": "Escolhas de antecedente",
       "abilities": "Atributos",
+      "prepare-spells": "Preparar Magias",
       "finalize": "Equipamento Inicial",
       "equipment": "Equipamento Inicial",
       "level-up-confirm": "Confirmar"
@@ -327,6 +329,9 @@
     "progression": {
       "deferredLevels": "Este personagem está no nível {level}. Escolhas acima do nível {cap} podem ser concluídas após a criação via Subir de Nível ou configurações da ficha.",
       "levelUpConfirmTitle": "Confirmar nível {level}"
+    },
+    "prepareSpells": {
+      "placeholder": "Escolha quais magias de nível do seu grimório estão preparadas. A interface de seleção vem a seguir."
     },
     "hints": {
       "selectRace": "Selecione uma raça antes de continuar.",

@@ -8,6 +8,7 @@ export type CreationMacroGroupId =
     | "class"
     | "background"
     | "abilities"
+    | "spells"
     | "finalize"
     | "levelUp";
 
@@ -16,6 +17,7 @@ export type CreationStepKind =
     | "level_summary"
     | "grant_picks"
     | "abilities"
+    | "prepare_spells"
     | "finalize";
 
 export type CreationStepSourceFilter = {

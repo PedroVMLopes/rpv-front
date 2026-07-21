@@ -273,6 +273,7 @@
       "class": "Class & Progression",
       "background": "Background",
       "abilities": "Ability Scores",
+      "spells": "Spells",
       "finalize": "Finalize"
     },
     "steps": {
@@ -311,6 +312,7 @@
       "background": "Background & Details",
       "background-choices": "Background choices",
       "abilities": "Ability Scores",
+      "prepare-spells": "Prepare Spells",
       "finalize": "Starting Equipment",
       "equipment": "Starting Equipment",
       "level-up-confirm": "Confirm"
@@ -327,6 +329,9 @@
     "progression": {
       "deferredLevels": "This character is level {level}. Choices for levels above {cap} can be completed after creation via Level Up or character settings.",
       "levelUpConfirmTitle": "Confirm level {level}"
+    },
+    "prepareSpells": {
+      "placeholder": "Choose which leveled spells from your spellbook are prepared. Selection UI coming next."
     },
     "hints": {
       "selectRace": "Select a race before continuing.",
