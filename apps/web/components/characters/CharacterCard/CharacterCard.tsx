@@ -93,15 +93,9 @@ export default function CharacterCard({ characterId }: CharacterCardProps) {
 
             <CardFooter className="px-0">
                 <div className="flex w-full flex-row items-center gap-1">
-                    <Button asChild className="min-w-0 flex-1 font-semibold">
-                        <Link href={`/characters/player/${stored.id}`}>
-                            {t("openFullSheet")}
-                        </Link>
-                    </Button>
                     <Button
                         asChild
                         size="icon"
-                        variant="outline"
                         aria-label="Edit character"
                     >
                         <Link
@@ -110,13 +104,17 @@ export default function CharacterCard({ characterId }: CharacterCardProps) {
                             <FaGear />
                         </Link>
                     </Button>
+                    <Button asChild className="min-w-0 flex-1 font-semibold">
+                        <Link href={`/characters/player/${stored.id}`}>
+                            {t("openFullSheet")}
+                        </Link>
+                    </Button>
                     <CharacterCardExpandedDialog
                         characterId={characterId}
                         stored={stored}
                         trigger={
                             <Button
                                 size="icon"
-                                variant="outline"
                                 aria-label="Expand character"
                             >
                                 <FaExpand />
