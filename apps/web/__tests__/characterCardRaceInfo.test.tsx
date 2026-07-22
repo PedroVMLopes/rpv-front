@@ -40,13 +40,12 @@ const storedCharacter: StoredCharacter = {
         subrace: "high-elf",
         characterClass: "wizard",
         subclass: "wizard-evocation",
+        background: "sage",
         inventory: emptyInventory(),
         choices: {},
     },
     resources: { hp: 8 },
-    systemData: {
-        background: "Sage",
-    },
+    systemData: {},
 };
 
 function renderWithProviders(ui: ReactElement) {

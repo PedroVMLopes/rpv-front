@@ -37,6 +37,19 @@ function resolveSubclassName(
     return contentRepo().getSubclass(subclassSlug, locale)?.name ?? subclassSlug;
 }
 
+function resolveBackgroundName(
+    backgroundSlug: string | undefined,
+    fallback: unknown
+): string {
+    const slug =
+        backgroundSlug?.trim() ||
+        (typeof fallback === "string" && fallback.trim() ? fallback.trim() : "");
+    if (!slug) {
+        return "";
+    }
+    return contentRepo().getBackground(slug)?.name ?? slug;
+}
+
 /** Compact card: subrace if present, otherwise race; background on a second line. */
 export function RaceBackgroundBlock({ stored }: { stored: StoredCharacter }) {
     const contentLocale = useContentLocale((state) => state.contentLocale);
@@ -46,13 +59,10 @@ export function RaceBackgroundBlock({ stored }: { stored: StoredCharacter }) {
     );
     const raceName = resolveRaceDisplayName(stored.selections.race, contentLocale);
     const primary = subraceName ?? raceName ?? "";
-    const background = stored.systemData.background;
-    const backgroundStr =
-        background !== undefined &&
-        background !== null &&
-        String(background).trim() !== ""
-            ? String(background)
-            : "";
+    const backgroundStr = resolveBackgroundName(
+        stored.selections.background,
+        stored.systemData.background
+    );
 
     if (!primary && !backgroundStr) {
         return null;

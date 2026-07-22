@@ -29,6 +29,9 @@ function hasRaceBackgroundInfo(stored: StoredCharacter): boolean {
     if (stored.selections.subrace || stored.selections.race) {
         return true;
     }
+    if (stored.selections.background?.trim()) {
+        return true;
+    }
     const background = stored.systemData.background;
     return (
         background !== undefined &&
