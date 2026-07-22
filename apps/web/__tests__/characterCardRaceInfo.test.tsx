@@ -6,6 +6,8 @@ import { render, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import {
     ClassSubclassBlock,
+    ClassSubclassOnlyBlock,
+    RaceBackgroundBlock,
     RaceTraitsBlock,
     UnresolvedChoicesBlock,
 } from "../components/characters/CharacterCard/CharacterCardRaceInfo";
@@ -42,7 +44,9 @@ const storedCharacter: StoredCharacter = {
         choices: {},
     },
     resources: { hp: 8 },
-    systemData: {},
+    systemData: {
+        background: "Sage",
+    },
 };
 
 function renderWithProviders(ui: ReactElement) {
@@ -61,6 +65,41 @@ describe("CharacterCard race info", () => {
 
         expect(screen.getByText("Elf · High Elf Wizard")).toBeInTheDocument();
         expect(screen.getByText("Evocation")).toBeInTheDocument();
+    });
+
+    it("shows only subrace (not race) and background on the compact race block", () => {
+        renderWithProviders(<RaceBackgroundBlock stored={storedCharacter} />);
+
+        expect(screen.getByText("High Elf")).toBeInTheDocument();
+        expect(screen.queryByText("Elf", { exact: true })).not.toBeInTheDocument();
+        expect(screen.getByText("Sage")).toBeInTheDocument();
+    });
+
+    it("falls back to race when there is no subrace", () => {
+        renderWithProviders(
+            <RaceBackgroundBlock
+                stored={{
+                    ...storedCharacter,
+                    selections: {
+                        ...storedCharacter.selections,
+                        subrace: undefined,
+                    },
+                }}
+            />
+        );
+
+        expect(screen.getByText("Elf")).toBeInTheDocument();
+        expect(screen.queryByText("High Elf")).not.toBeInTheDocument();
+    });
+
+    it("shows class and subclass without mixing race on the compact class block", () => {
+        renderWithProviders(
+            <ClassSubclassOnlyBlock stored={storedCharacter} />
+        );
+
+        expect(screen.getByText("Wizard")).toBeInTheDocument();
+        expect(screen.getByText("Evocation")).toBeInTheDocument();
+        expect(screen.queryByText(/Elf/)).not.toBeInTheDocument();
     });
 
     it("shows localized subclass name for pt-BR content locale", () => {

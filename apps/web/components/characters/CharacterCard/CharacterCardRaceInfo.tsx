@@ -3,12 +3,15 @@
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { FaChevronDown } from "react-icons/fa6";
+import type { Locale } from "@rpv/domain";
 import { contentRepo } from "@/lib/content/contentRepository";
 import { useContentLocale } from "@/store/useContentLocale";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import {
     getRaceLineFromSelections,
     getRaceTraitDisplay,
+    resolveRaceDisplayName,
+    resolveSubraceDisplayName,
 } from "@/lib/character/raceDisplay";
 import { collectPendingDecisionsFromStored } from "@/lib/character/pendingDecisions";
 import { presets } from "@/presets";
@@ -17,17 +20,88 @@ import { SheetPanel } from "@/components/characters/SheetPanel";
 import { sheetInset } from "@/components/characters/PlayerSheet/playerSheetSurfaces";
 import { cn } from "@/lib/utils";
 
+function resolveClassName(classSlug: string | undefined, locale: Locale): string {
+    if (!classSlug) {
+        return "";
+    }
+    return contentRepo().getClass(classSlug, locale)?.name ?? classSlug;
+}
+
+function resolveSubclassName(
+    subclassSlug: string | undefined,
+    locale: Locale
+): string {
+    if (!subclassSlug) {
+        return "";
+    }
+    return contentRepo().getSubclass(subclassSlug, locale)?.name ?? subclassSlug;
+}
+
+/** Compact card: subrace if present, otherwise race; background on a second line. */
+export function RaceBackgroundBlock({ stored }: { stored: StoredCharacter }) {
+    const contentLocale = useContentLocale((state) => state.contentLocale);
+    const subraceName = resolveSubraceDisplayName(
+        stored.selections.subrace,
+        contentLocale
+    );
+    const raceName = resolveRaceDisplayName(stored.selections.race, contentLocale);
+    const primary = subraceName ?? raceName ?? "";
+    const background = stored.systemData.background;
+    const backgroundStr =
+        background !== undefined &&
+        background !== null &&
+        String(background).trim() !== ""
+            ? String(background)
+            : "";
+
+    if (!primary && !backgroundStr) {
+        return null;
+    }
+
+    return (
+        <div className="text-card-foreground">
+            {primary ? <p className="font-bold">{primary}</p> : null}
+            {backgroundStr ? <p className="text-sm">{backgroundStr}</p> : null}
+        </div>
+    );
+}
+
+/** Compact card: class + subclass only (no race mixed in). */
+export function ClassSubclassOnlyBlock({ stored }: { stored: StoredCharacter }) {
+    const contentLocale = useContentLocale((state) => state.contentLocale);
+    const classStr = resolveClassName(
+        stored.selections.characterClass,
+        contentLocale
+    );
+    const subclassStr = resolveSubclassName(
+        stored.selections.subclass,
+        contentLocale
+    );
+
+    if (!classStr && !subclassStr) {
+        return null;
+    }
+
+    return (
+        <div className="text-card-foreground">
+            {classStr ? <p className="font-bold">{classStr}</p> : null}
+            {subclassStr ? <p className="text-sm">{subclassStr}</p> : null}
+        </div>
+    );
+}
+
+/** Expanded dialog identity line: Race · Subrace Class + subclass below. */
 export function ClassSubclassBlock({ stored }: { stored: StoredCharacter }) {
     const contentLocale = useContentLocale((state) => state.contentLocale);
     const raceLine = getRaceLineFromSelections(stored.selections, contentLocale);
-    const classSlug = stored.selections.characterClass;
-    const classStr = classSlug
-        ? (contentRepo().getClass(classSlug, contentLocale)?.name ?? classSlug)
-        : "";
-    const subclassSlug = stored.selections.subclass;
-    const subclassStr = subclassSlug
-        ? (contentRepo().getSubclass(subclassSlug, contentLocale)?.name ?? subclassSlug)
-        : "";
+    const classStr = resolveClassName(
+        stored.selections.characterClass,
+        contentLocale
+    );
+    const subclassStr = resolveSubclassName(
+        stored.selections.subclass,
+        contentLocale
+    );
     const title = [raceLine, classStr].filter(Boolean).join(" ");
 
     if (!title && !subclassStr) {

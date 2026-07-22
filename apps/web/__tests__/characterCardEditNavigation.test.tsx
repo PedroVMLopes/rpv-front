@@ -76,4 +76,29 @@ describe("CharacterCard edit navigation", () => {
             `/characters/player/edit/${storedCharacter.id}`
         );
     });
+
+    it("links open sheet button to the player sheet", () => {
+        renderWithProviders(
+            <CharacterCard characterId={storedCharacter.id} />
+        );
+
+        const sheetLink = screen.getByRole("link", {
+            name: "Open full sheet",
+        });
+        expect(sheetLink).toHaveAttribute(
+            "href",
+            `/characters/player/${storedCharacter.id}`
+        );
+    });
+
+    it("does not show Save or footer HP controls", () => {
+        renderWithProviders(
+            <CharacterCard characterId={storedCharacter.id} />
+        );
+
+        expect(screen.queryByText("Save")).not.toBeInTheDocument();
+        expect(
+            screen.queryByRole("button", { name: /10/ })
+        ).not.toBeInTheDocument();
+    });
 });
