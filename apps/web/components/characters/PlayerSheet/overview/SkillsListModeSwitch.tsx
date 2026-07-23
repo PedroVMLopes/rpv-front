@@ -2,7 +2,6 @@
 
 import { useLayoutEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { sheetInset } from "../playerSheetSurfaces";
 import { cn } from "@/lib/utils";
 
 export type SkillsListMode = "proficient" | "all";
@@ -51,10 +50,7 @@ export function SkillsListModeSwitch({
             {thumbRect ? (
                 <div
                     aria-hidden
-                    className={cn(
-                        "pointer-events-none absolute inset-y-0.5 z-0 rounded-md shadow-sm transition-[left,width] duration-200",
-                        sheetInset
-                    )}
+                    className="pointer-events-none absolute inset-y-0.5 z-0 rounded-md border bg-background shadow-sm transition-[left,width] duration-200"
                     style={{
                         width: thumbRect.width,
                         left: thumbRect.left,
