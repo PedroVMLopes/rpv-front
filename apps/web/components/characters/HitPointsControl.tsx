@@ -169,7 +169,7 @@ export function HitPointsControl({
     return (
         <div
             className={cn(
-                "flex min-w-44 flex-col gap-2 rounded-2xl border bg-popover px-3 py-2",
+                "flex min-w-44 flex-col gap-2 rounded-2xl border bg-popover px-3 py-2 text-card-foreground",
                 className
             )}
             aria-label={`${t("hitPoints")} ${draftHp} / ${maxHp}`}
@@ -199,22 +199,22 @@ export function HitPointsControl({
                     type="button"
                     variant="secondary"
                     size="sm"
-                    className="h-8 flex-1 px-2 text-xs font-semibold"
-                    onClick={handleDamage}
-                    aria-label={t("damageAria")}
+                    className="h-8 flex-1 px-2 text-xs font-semibold bg-emerald-700"
+                    onClick={handleHeal}
+                    aria-label={t("healAria")}
                 >
-                    − {t("damage")}
+                    {t("heal")}
                 </Button>
                 {amountInput}
                 <Button
                     type="button"
                     variant="secondary"
                     size="sm"
-                    className="h-8 flex-1 px-2 text-xs font-semibold"
-                    onClick={handleHeal}
-                    aria-label={t("healAria")}
+                    className="h-8 flex-1 px-2 text-xs font-semibold bg-red-900"
+                    onClick={handleDamage}
+                    aria-label={t("damageAria")}
                 >
-                    + {t("heal")}
+                    {t("damage")}
                 </Button>
             </div>
         </div>
