@@ -31,8 +31,8 @@ export function ActionsCollapsible({
                 <CollapsibleTrigger
                     className={cn(
                         "group flex min-w-0 flex-1 items-center gap-1.5 text-left",
-                        "text-xs font-semibold uppercase text-muted-foreground",
-                        "hover:text-foreground"
+                        "text-xs font-semibold uppercase text-card-foreground/60",
+                        "hover:text-card-foreground"
                     )}
                     aria-label={t("expandSection", { title })}
                 >
