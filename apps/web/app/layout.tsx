@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Roboto_Slab } from "next/font/google";
+import { Outfit, Roboto_Slab } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import "./globals.css";
@@ -9,7 +9,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { SHOW_INITIATIVE_SIDEBAR } from "@/lib/layout/layoutConfig";
 
-const inter = Inter({
+const outfit = Outfit({
   subsets: ["latin"],
   variable: "--font-sans",
 });
@@ -35,7 +35,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${robotoSlab.variable} antialiased min-h-screen bg-background text-foreground${SHOW_INITIATIVE_SIDEBAR ? " flex" : ""}`}
+        className={`${outfit.variable} ${robotoSlab.variable} antialiased min-h-screen bg-background text-foreground${SHOW_INITIATIVE_SIDEBAR ? " flex" : ""}`}
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ThemeProvider
