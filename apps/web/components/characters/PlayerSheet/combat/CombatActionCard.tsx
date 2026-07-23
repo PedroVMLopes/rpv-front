@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { sheetInset } from "@/components/characters/PlayerSheet/playerSheetSurfaces";
 import { cn } from "@/lib/utils";
 
 type CombatActionCardProps = {
@@ -28,7 +29,12 @@ export function CombatActionCard({
     const canRoll = actionKind === "roll" && Boolean(onRoll);
 
     return (
-        <div className="flex flex-col gap-2 rounded-xl border bg-muted p-3 sm:flex-row sm:items-start sm:justify-between">
+        <div
+            className={cn(
+                "flex flex-col gap-2 rounded-xl p-3 sm:flex-row sm:items-start sm:justify-between",
+                sheetInset
+            )}
+        >
             <div className="min-w-0 flex-1 flex flex-col gap-1">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                     <span className="font-semibold">{title}</span>

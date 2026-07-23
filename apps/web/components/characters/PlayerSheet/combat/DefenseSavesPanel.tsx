@@ -15,6 +15,8 @@ import { useCharacterStore } from "@/store/useCharacterStore";
 import { Button } from "@/components/ui/button";
 import { useRollAssistant } from "../roll/RollAssistantProvider";
 import { OverviewPanel } from "../overview/OverviewPanel";
+import { sheetInset } from "../playerSheetSurfaces";
+import { cn } from "@/lib/utils";
 
 type DefenseSavesPanelProps = {
     stored: StoredCharacter;
@@ -52,7 +54,7 @@ export function DefenseSavesPanel({ stored }: DefenseSavesPanelProps) {
 
     return (
         <OverviewPanel title={t("combat.defenseSaves")}>
-            <div className="overflow-x-auto rounded-xl border bg-muted">
+            <div className={cn("overflow-x-auto rounded-xl", sheetInset)}>
                 <table className="w-full text-sm">
                     <thead>
                         <tr className="text-left text-xs uppercase text-muted-foreground">

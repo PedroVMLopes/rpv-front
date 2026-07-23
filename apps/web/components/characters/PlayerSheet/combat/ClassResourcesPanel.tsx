@@ -12,6 +12,8 @@ import { formatResourceRefLabel } from "@/lib/character/resourceLabels";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { OverviewPanel } from "../overview/OverviewPanel";
+import { sheetInset } from "../playerSheetSurfaces";
+import { cn } from "@/lib/utils";
 
 type ClassResourcesPanelProps = {
     stored: StoredCharacter;
@@ -61,7 +63,10 @@ export function ClassResourcesPanel({ stored }: ClassResourcesPanelProps) {
                     return (
                         <li
                             key={entry.ref}
-                            className="flex items-center justify-between gap-2 rounded-xl border bg-muted px-3 py-2"
+                            className={cn(
+                                "flex items-center justify-between gap-2 rounded-xl px-3 py-2",
+                                sheetInset
+                            )}
                         >
                             <div className="min-w-0">
                                 <p className="truncate text-sm font-semibold">

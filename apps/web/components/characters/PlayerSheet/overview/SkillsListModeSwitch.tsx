@@ -2,6 +2,7 @@
 
 import { useLayoutEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import { sheetInset } from "../playerSheetSurfaces";
 import { cn } from "@/lib/utils";
 
 export type SkillsListMode = "proficient" | "all";
@@ -10,8 +11,6 @@ type SkillsListModeSwitchProps = {
     value: SkillsListMode;
     onChange: (value: SkillsListMode) => void;
 };
-
-const MODES: SkillsListMode[] = ["proficient", "all"];
 
 export function SkillsListModeSwitch({
     value,
@@ -45,12 +44,12 @@ export function SkillsListModeSwitch({
         <div
             role="radiogroup"
             aria-label={t("skillsListModeLabel")}
-            className="relative isolate inline-flex rounded-lg border bg-muted p-0.5"
+            className={cn("relative isolate inline-flex rounded-lg p-0.5", sheetInset)}
         >
             {thumbRect ? (
                 <div
                     aria-hidden
-                    className="pointer-events-none absolute inset-y-0.5 z-0 rounded-md border bg-background shadow-sm transition-[left,width] duration-200"
+                    className="pointer-events-none absolute inset-y-0.5 z-0 rounded-md border border-card-foreground/10 bg-card shadow-sm transition-[left,width] duration-200"
                     style={{
                         width: thumbRect.width,
                         left: thumbRect.left,
@@ -66,8 +65,8 @@ export function SkillsListModeSwitch({
                 className={cn(
                     "relative shrink-0 whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
                     value === "proficient"
-                        ? "font-semibold text-foreground"
-                        : "text-muted-foreground hover:text-foreground"
+                        ? "font-semibold text-card-foreground"
+                        : "text-card-foreground/60 hover:text-card-foreground"
                 )}
                 onClick={() => {
                     if (value !== "proficient") {
@@ -86,8 +85,8 @@ export function SkillsListModeSwitch({
                 className={cn(
                     "relative shrink-0 whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
                     value === "all"
-                        ? "font-semibold text-foreground"
-                        : "text-muted-foreground hover:text-foreground"
+                        ? "font-semibold text-card-foreground"
+                        : "text-card-foreground/60 hover:text-card-foreground"
                 )}
                 onClick={() => {
                     if (value !== "all") {

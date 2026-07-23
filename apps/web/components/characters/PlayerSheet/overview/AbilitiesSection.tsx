@@ -81,7 +81,7 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
                                 sheetInset
                             )}
                         >
-                            <span className="text-xs font-semibold uppercase text-muted-foreground">
+                            <span className="text-xs font-semibold uppercase text-card-foreground/60">
                                 {ability.shortLabelKey
                                     ? t(ability.shortLabelKey)
                                     : ability.shortLabel ?? ability.name}
@@ -89,7 +89,7 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
                             <span className="text-lg font-bold tabular-nums">
                                 {ability.resolved}
                             </span>
-                            <span className="text-sm font-semibold tabular-nums text-muted-foreground">
+                            <span className="text-sm font-semibold tabular-nums text-card-foreground/60">
                                 {formatModifier(mod)}
                             </span>
                         </div>
@@ -99,13 +99,13 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
 
             <div className="grid grid-cols-2 gap-2 text-sm mt-2">
                 <div className={cn("rounded-lg p-2", sheetInset)}>
-                    <span className="text-muted-foreground">
+                    <span className="text-card-foreground/60">
                         {t("character.proficiencyBonus")}{" "}
                     </span>
                     <span className="font-bold">{formatModifier(profBonus)}</span>
                 </div>
                 <div className={cn("rounded-lg p-2", sheetInset)}>
-                    <span className="text-muted-foreground">
+                    <span className="text-card-foreground/60">
                         {t("character.passivePerception")}{" "}
                     </span>
                     <span className="font-bold">{passivePerception}</span>

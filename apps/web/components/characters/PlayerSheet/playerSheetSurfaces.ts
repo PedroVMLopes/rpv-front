@@ -6,6 +6,8 @@ export const sheetTabInactive =
 export const sheetTabActive =
     "border-border border-b-background bg-background text-foreground";
 
-export const sheetPanel = "bg-card border";
+export const sheetPanel = "bg-card text-card-foreground border";
 
-export const sheetInset = "bg-muted border";
+/** Light inset on cream cards (Paperwhite+ hierarchy B). */
+export const sheetInset =
+    "bg-card-foreground/8 text-card-foreground border-card-foreground/10 border";

@@ -28,7 +28,7 @@ export function SheetPanel({
         <Card
             className={cn(
                 "min-w-0 max-w-full gap-1.5 rounded-2xl border py-0",
-                variant === "default" && "bg-card shadow-sm",
+                variant === "default" && "bg-card text-card-foreground shadow-sm",
                 variant === "nested" && cn(sheetPanel, "shadow-xs"),
                 className
             )}

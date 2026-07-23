@@ -11,6 +11,8 @@ import {
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { OverviewPanel } from "../overview/OverviewPanel";
+import { sheetInset } from "../playerSheetSurfaces";
+import { cn } from "@/lib/utils";
 
 type PassiveStatsPanelProps = {
     stored: StoredCharacter;
@@ -43,7 +45,12 @@ export function PassiveStatsPanel({ stored }: PassiveStatsPanelProps) {
     return (
         <OverviewPanel>
             <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between gap-2 rounded-xl border bg-muted px-3 py-2">
+                <div
+                    className={cn(
+                        "flex items-center justify-between gap-2 rounded-xl px-3 py-2",
+                        sheetInset
+                    )}
+                >
                     <span className="text-sm font-medium">
                         {tCharacter("passivePerception")}
                     </span>
@@ -51,7 +58,12 @@ export function PassiveStatsPanel({ stored }: PassiveStatsPanelProps) {
                         {passives.perception}
                     </span>
                 </div>
-                <div className="flex items-center justify-between gap-2 rounded-xl border bg-muted px-3 py-2">
+                <div
+                    className={cn(
+                        "flex items-center justify-between gap-2 rounded-xl px-3 py-2",
+                        sheetInset
+                    )}
+                >
                     <span className="text-sm font-medium">
                         {t("combat.passiveInsight")}
                     </span>
