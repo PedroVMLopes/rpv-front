@@ -35,6 +35,13 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
+      <head>
+        <script
+            async
+            crossOrigin="anonymous"
+            src="https://tweakcn.com/live-preview.min.js"
+          />
+      </head>
       <body
         className={`${outfit.variable} ${gabriela.variable} antialiased min-h-screen bg-background text-foreground${SHOW_INITIATIVE_SIDEBAR ? " flex" : ""}`}
       >

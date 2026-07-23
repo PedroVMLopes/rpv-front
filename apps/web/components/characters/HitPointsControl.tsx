@@ -169,13 +169,13 @@ export function HitPointsControl({
     return (
         <div
             className={cn(
-                "flex min-w-44 flex-col gap-2 rounded-2xl border bg-card text-card-foreground px-3 py-2",
+                "flex min-w-44 flex-col gap-2 rounded-2xl border bg-popover text-popover-foreground px-3 py-2",
                 className
             )}
             aria-label={`${t("hitPoints")} ${draftHp} / ${maxHp}`}
         >
             <div className="flex items-center justify-between gap-3">
-                <span className="text-sm font-bold font-serif">
+                <span className="text-sm font-semibold font-serif">
                     {t("hitPoints")}
                 </span>
                 <span className="text-sm font-bold tabular-nums">

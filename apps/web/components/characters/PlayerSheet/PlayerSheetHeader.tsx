@@ -127,7 +127,7 @@ export function PlayerSheetHeader({
                         <div className="flex w-full flex-col justify-center gap-2 sm:w-auto">
                             <div className="flex w-full items-stretch gap-2">
                                 <div
-                                    className="flex min-w-0 flex-1 flex-row items-center justify-center gap-1 rounded-2xl border bg-card text-card-foreground px-3 py-2 sm:min-w-16 sm:flex-none"
+                                    className="flex min-w-0 flex-1 flex-row items-center justify-center gap-1 rounded-2xl border bg-popover text-popover-foreground px-3 py-2 sm:min-w-16 sm:flex-none"
                                     aria-label={`${tCombat("ac")} ${ac}`}
                                 >
                                     <span className="flex items-center gap-1 text-xs font-semibold uppercase text-muted-foreground">
@@ -139,7 +139,7 @@ export function PlayerSheetHeader({
                                 </div>
 
                                 <div
-                                    className="flex min-w-0 flex-1 flex-row items-center justify-center gap-1 rounded-2xl border bg-card text-card-foreground px-3 py-2 sm:min-w-16 sm:flex-none"
+                                    className="flex min-w-0 flex-1 flex-row items-center justify-center gap-1 rounded-2xl border bg-popover text-popover-foreground px-3 py-2 sm:min-w-16 sm:flex-none"
                                     aria-label={`${tCharacter("initiative")} ${formatModifier(initiative)}`}
                                 >
                                     <span className="text-sm font-semibold text-muted-foreground font-serif">
@@ -153,7 +153,7 @@ export function PlayerSheetHeader({
 
                             {walkSpeed !== undefined ? (
                                 <div
-                                    className="flex w-full flex-row items-center justify-center rounded-2xl border bg-card text-card-foreground px-3 py-2 gap-1"
+                                    className="flex w-full flex-row items-center justify-center rounded-2xl border bg-popover text-popover-foreground px-3 py-2 gap-1"
                                     aria-label={`${t("speed")} ${t("speedValue", { speed: walkSpeed })}`}
                                 >
                                     <span className="text-sm font-semibold text-muted-foreground font-serif">

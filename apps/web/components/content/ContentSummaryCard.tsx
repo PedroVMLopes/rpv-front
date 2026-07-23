@@ -21,45 +21,49 @@ export function ContentSummaryCard({
     onUse,
 }: ContentSummaryCardProps) {
     const subtitle = model.badges.map((badge) => badge.label).join(" · ");
+    const useAction = model.useAction;
+    const showBody = Boolean(useAction && onUse);
 
     return (
-        <div className="flex h-full flex-col gap-2 rounded-xl border-2 bg-accent text-accent-foreground p-3">
-            <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0 flex flex-1 flex-col gap-0.5">
-                    <span className="font-serif font-semibold leading-tight">
+        <div className="flex h-full flex-col overflow-hidden rounded-lg border-2">
+            <div className="flex items-start justify-between bg-accent text-accent-foreground p-2">
+                <div className="flex flex-col">
+                    <span className="min-w-0 flex-1 font-serif font-semibold">
                         {model.title}
                     </span>
                     {subtitle ? (
-                        <span className="text-xs">
-                            {subtitle}
-                        </span>
-                    ) : null}
+                            <span className="text-xs text-accent-foreground/70">
+                                {subtitle}
+                            </span>
+                        ) : null}
                 </div>
+                <Button
+                    type="button"
+                    variant="ghost"
+                    className="size-6 cursor-pointer"
+                    aria-label={expandLabel}
+                    onClick={onExpand}
+                >
+                    <Maximize2 className="" aria-hidden />
+                </Button>
+            </div>
 
-                <div className="flex shrink-0 items-center gap-1">
-                    {model.useAction && onUse ? (
+            {showBody ? (
+                <div className="flex flex-1 flex-col gap-1 bg-accent/20 text-accent-foreground p-2">
+                    {useAction && onUse ? (
                         <Button
                             type="button"
                             variant="secondary"
                             size="sm"
-                            className="font-semibold"
-                            onClick={() => onUse(model.useAction!)}
+                            className="w-full font-semibold"
+                            onClick={() => onUse(useAction)}
                         >
-                            {model.useAction.label}
+                            {useAction.label}
                         </Button>
                     ) : null}
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="size-8"
-                        aria-label={expandLabel}
-                        onClick={onExpand}
-                    >
-                        <Maximize2 className="size-4" aria-hidden />
-                    </Button>
+                    
                 </div>
-            </div>
+            ) : null}
         </div>
     );
 }
