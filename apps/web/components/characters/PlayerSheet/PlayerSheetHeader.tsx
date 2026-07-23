@@ -127,26 +127,25 @@ export function PlayerSheetHeader({
                         <div className="flex w-full flex-col justify-center gap-2 sm:w-auto">
                             <div className="flex w-full items-stretch gap-2">
                                 <div
-                                    className="flex min-w-0 flex-1 flex-row items-center justify-center gap-2 rounded-2xl border bg-popover px-3 py-2 sm:min-w-16 sm:flex-none"
+                                    className="flex min-w-0 flex-1 flex-row items-center justify-center gap-1 rounded-2xl border bg-popover px-3 py-2 sm:min-w-16 sm:flex-none"
                                     aria-label={`${tCombat("ac")} ${ac}`}
                                 >
                                     <span className="flex items-center gap-1 text-xs font-semibold uppercase text-muted-foreground">
-                                        <FaShield className="size-3" aria-hidden />
-                                        {tCombat("ac")}
+                                        <FaShield className="size-4 text-secondary" aria-hidden />
                                     </span>
-                                    <span className="font-bold tabular-nums">
-                                        {ac}
+                                    <span className="font-bold tabular-nums text-card-foreground">
+                                        <p>{ac}</p>
                                     </span>
                                 </div>
 
                                 <div
-                                    className="flex min-w-0 flex-1 flex-row items-center justify-center gap-2 rounded-2xl border bg-popover px-3 py-2 sm:min-w-16 sm:flex-none"
+                                    className="flex min-w-0 flex-1 flex-row items-center justify-center gap-1 rounded-2xl border bg-popover px-3 py-2 sm:min-w-16 sm:flex-none"
                                     aria-label={`${tCharacter("initiative")} ${formatModifier(initiative)}`}
                                 >
-                                    <span className="text-xs font-semibold uppercase text-muted-foreground">
+                                    <span className="text-sm font-semibold text-muted-foreground font-serif">
                                         {tCharacter("initiative")}
                                     </span>
-                                    <span className="font-bold tabular-nums">
+                                    <span className="font-bold tabular-nums text-card-foreground">
                                         {formatModifier(initiative)}
                                     </span>
                                 </div>
@@ -154,13 +153,13 @@ export function PlayerSheetHeader({
 
                             {walkSpeed !== undefined ? (
                                 <div
-                                    className="flex w-full flex-row items-center justify-center rounded-2xl border bg-popover px-3 py-2 gap-2"
+                                    className="flex w-full flex-row items-center justify-center rounded-2xl border bg-popover px-3 py-2 gap-1"
                                     aria-label={`${t("speed")} ${t("speedValue", { speed: walkSpeed })}`}
                                 >
-                                    <span className="text-xs font-semibold uppercase text-muted-foreground">
+                                    <span className="text-sm font-semibold text-muted-foreground font-serif">
                                         {t("speed")}
                                     </span>
-                                    <span className="font-bold tabular-nums">
+                                    <span className="font-bold tabular-nums text-card-foreground">
                                         {t("speedValue", { speed: walkSpeed })}
                                     </span>
                                 </div>
