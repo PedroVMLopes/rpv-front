@@ -23,14 +23,14 @@ export function ContentSummaryCard({
     const subtitle = model.badges.map((badge) => badge.label).join(" · ");
 
     return (
-        <div className="flex h-full flex-col gap-2 rounded-xl border bg-card p-3">
+        <div className="flex h-full flex-col gap-2 rounded-xl border-2 bg-accent text-accent-foreground p-3">
             <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0 flex flex-1 flex-col gap-0.5">
                     <span className="font-serif font-semibold leading-tight">
                         {model.title}
                     </span>
                     {subtitle ? (
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-xs">
                             {subtitle}
                         </span>
                     ) : null}
@@ -50,9 +50,9 @@ export function ContentSummaryCard({
                     ) : null}
                     <Button
                         type="button"
-                        variant="secondary"
+                        variant="ghost"
                         size="icon"
-                        className="size-8 text-foreground hover:text-foreground"
+                        className="size-8"
                         aria-label={expandLabel}
                         onClick={onExpand}
                     >
