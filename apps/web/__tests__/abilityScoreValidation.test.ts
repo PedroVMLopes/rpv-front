@@ -70,10 +70,10 @@ describe("applyAbilityScoreValidation", () => {
             attributes: [
                 { name: "strength", value: 15 },
                 { name: "dexterity", value: 14 },
-                { name: "constitution", value: 0 },
-                { name: "intelligence", value: 0 },
-                { name: "wisdom", value: 0 },
-                { name: "charisma", value: 0 },
+                { name: "constitution", value: 8 },
+                { name: "intelligence", value: 8 },
+                { name: "wisdom", value: 8 },
+                { name: "charisma", value: 8 },
             ],
         };
 
@@ -82,7 +82,7 @@ describe("applyAbilityScoreValidation", () => {
     });
 
     it("passes complete standard array assignments", () => {
-        const result = schema.safeParse({
+        const formData = {
             name: "Test Hero",
             abilityScoreMethod: "standard-array",
             attributes: [
@@ -93,9 +93,32 @@ describe("applyAbilityScoreValidation", () => {
                 { name: "wisdom", value: 10 },
                 { name: "charisma", value: 8 },
             ],
+        };
+
+        expect(schema.safeParse(formData).success).toBe(true);
+        expect(isAbilityScoresIncomplete(formData, dndStatConfig)).toBe(false);
+    });
+
+    it("rejects standard array values outside the pool", () => {
+        const result = schema.safeParse({
+            name: "Test Hero",
+            abilityScoreMethod: "standard-array",
+            attributes: [
+                { name: "strength", value: 16 },
+                { name: "dexterity", value: 14 },
+                { name: "constitution", value: 13 },
+                { name: "intelligence", value: 12 },
+                { name: "wisdom", value: 10 },
+                { name: "charisma", value: 8 },
+            ],
         });
 
-        expect(result.success).toBe(true);
+        expect(result.success).toBe(false);
+        if (!result.success) {
+            expect(
+                result.error.issues.some((issue) => issue.path[0] === "attributes")
+            ).toBe(true);
+        }
     });
 
     it("allows partially assigned roll pools at save time", () => {

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,6 +43,19 @@ function AbilityScoresHarness({
     );
 }
 
+function abilityCard(label: string) {
+    const card = screen.getByText(label).closest("div.rounded");
+    expect(card).not.toBeNull();
+    return card as HTMLElement;
+}
+
+function parkingAttributes() {
+    return dndStatConfig.abilities.map((ability) => ({
+        name: ability.name,
+        value: 8,
+    }));
+}
+
 describe("AbilityScoresField", () => {
     it("updates abilityScoreMethod when the selector changes", async () => {
         const user = userEvent.setup();
@@ -71,18 +84,65 @@ describe("AbilityScoresField", () => {
                 defaultValues={{
                     name: "Test Hero",
                     abilityScoreMethod: "standard-array",
+                    attributes: parkingAttributes(),
+                }}
+            />
+        );
+
+        await user.click(
+            within(abilityCard("Strength")).getByRole("button", { name: "15" })
+        );
+
+        expect(screen.getByTestId("ability-output")).toHaveTextContent(
+            '"name":"strength","value":15'
+        );
+    });
+
+    it("swaps a taken standard array value with the previous owner", async () => {
+        const user = userEvent.setup();
+
+        render(
+            <AbilityScoresHarness
+                defaultValues={{
+                    name: "Test Hero",
+                    abilityScoreMethod: "standard-array",
                     attributes: dndStatConfig.abilities.map((ability) => ({
                         name: ability.name,
-                        value: 0,
+                        value: ability.name === "strength" ? 15 : 8,
                     })),
                 }}
             />
         );
 
-        const selects = screen.getAllByRole("combobox");
-        await user.selectOptions(selects[1], "15");
+        await user.click(
+            within(abilityCard("Dexterity")).getByRole("button", { name: "15" })
+        );
 
-        expect(screen.getByTestId("ability-output")).toHaveTextContent('"value":15');
+        const output = screen.getByTestId("ability-output").textContent ?? "";
+        expect(output).toContain('"name":"strength","value":8');
+        expect(output).toContain('"name":"dexterity","value":15');
+    });
+
+    it("defaults standard array attributes to parking value 8", () => {
+        render(
+            <AbilityScoresHarness
+                defaultValues={{
+                    name: "Test Hero",
+                    level: 1,
+                }}
+            />
+        );
+
+        const output = JSON.parse(
+            screen.getByTestId("ability-output").textContent ?? "{}"
+        );
+        expect(output.method).toBe("standard-array");
+        expect(output.attributes).toEqual(
+            dndStatConfig.abilities.map((ability) => ({
+                name: ability.name,
+                value: 8,
+            }))
+        );
     });
 
     it("shows remaining point-buy budget and blocks overspending", async () => {
@@ -93,10 +153,7 @@ describe("AbilityScoresField", () => {
                 defaultValues={{
                     name: "Test Hero",
                     abilityScoreMethod: "point-buy",
-                    attributes: dndStatConfig.abilities.map((ability) => ({
-                        name: ability.name,
-                        value: 8,
-                    })),
+                    attributes: parkingAttributes(),
                 }}
             />
         );
@@ -140,7 +197,9 @@ describe("AbilityScoresField", () => {
         const assignmentSelect = screen.getAllByRole("combobox")[1];
         await user.selectOptions(assignmentSelect, "18");
 
-        expect(screen.getByTestId("ability-output")).toHaveTextContent('"value":18');
+        expect(screen.getByTestId("ability-output")).toHaveTextContent(
+            '"value":18'
+        );
 
         randomSpy.mockRestore();
     });

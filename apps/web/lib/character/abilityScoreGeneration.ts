@@ -69,6 +69,12 @@ export function isPointBuyValid(
     return pointBuySpent(values, config) <= config.budget;
 }
 
+export function standardArrayParkingValue(
+    config: Pick<AbilityGenerationConfig, "standardArray">
+): number {
+    return Math.min(...config.standardArray);
+}
+
 export function isStandardArrayValid(
     values: number[],
     config: AbilityGenerationConfig
@@ -84,6 +90,59 @@ export function isStandardArrayValid(
         expected.length === actual.length &&
         expected.every((value, index) => value === actual[index])
     );
+}
+
+export function hasStandardArrayOutOfPoolValue(
+    values: number[],
+    config: Pick<AbilityGenerationConfig, "standardArray">
+): boolean {
+    const pool = new Set(config.standardArray);
+    return values.some(
+        (value) =>
+            value !== UNASSIGNED_ABILITY_VALUE && !pool.has(value)
+    );
+}
+
+/**
+ * Assigns a standard-array score to one ability index.
+ * Parking value (min of pool) may be selected freely.
+ * Non-parking values already held elsewhere swap with that ability.
+ */
+export function assignStandardArrayScore(
+    values: number[],
+    index: number,
+    next: number,
+    parking: number
+): number[] {
+    if (values[index] === next) {
+        return values;
+    }
+
+    if (next === parking) {
+        return values.map((value, valueIndex) =>
+            valueIndex === index ? next : value
+        );
+    }
+
+    const otherIndex = values.findIndex(
+        (value, valueIndex) => valueIndex !== index && value === next
+    );
+
+    if (otherIndex === -1) {
+        return values.map((value, valueIndex) =>
+            valueIndex === index ? next : value
+        );
+    }
+
+    return values.map((value, valueIndex) => {
+        if (valueIndex === index) {
+            return next;
+        }
+        if (valueIndex === otherIndex) {
+            return values[index]!;
+        }
+        return value;
+    });
 }
 
 function countValues(values: number[]): Map<number, number> {
@@ -153,9 +212,11 @@ export function getMethodDefaults(
     const defaultValue =
         method === "point-buy" && generation
             ? generation.pointBuy.min
-            : method === "manual"
-              ? statConfig.defaultAbilityValue
-              : UNASSIGNED_ABILITY_VALUE;
+            : method === "standard-array" && generation
+              ? standardArrayParkingValue(generation)
+              : method === "manual"
+                ? statConfig.defaultAbilityValue
+                : UNASSIGNED_ABILITY_VALUE;
 
     return abilities.map((ability) => ({
         name: ability.name,
@@ -198,6 +259,10 @@ export function isAbilityScoresIncomplete(
         statConfig.abilities
     );
 
+    if (method === "standard-array") {
+        return !isStandardArrayValid(values, generation);
+    }
+
     return values.some((value) => value === UNASSIGNED_ABILITY_VALUE);
 }
 
@@ -220,6 +285,19 @@ export function validateAbilityScoresForMethod(
         return null;
     }
 
+    if (method === "standard-array") {
+        if (isStandardArrayValid(values, generation)) {
+            return null;
+        }
+
+        // Incomplete / multi-parking assignments are soft-pending, not hard errors.
+        if (hasStandardArrayOutOfPoolValue(values, generation)) {
+            return "standardArrayInvalid";
+        }
+
+        return null;
+    }
+
     if (values.some((value) => value === UNASSIGNED_ABILITY_VALUE)) {
         return null;
     }
@@ -228,12 +306,6 @@ export function validateAbilityScoresForMethod(
         return isPointBuyValid(values, generation.pointBuy)
             ? null
             : "pointBuyInvalid";
-    }
-
-    if (method === "standard-array") {
-        return isStandardArrayValid(values, generation)
-            ? null
-            : "standardArrayInvalid";
     }
 
     if (method === "roll") {

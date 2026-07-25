@@ -75,8 +75,9 @@ describe("PlayerCharacterForm abilities step", () => {
 
         const strengthCard = screen.getByText("Strength").closest("div.rounded");
         expect(strengthCard).not.toBeNull();
-        const strengthSelect = within(strengthCard!).getByRole("combobox");
-        await user.selectOptions(strengthSelect, "15");
+        await user.click(
+            within(strengthCard!).getByRole("button", { name: "15" })
+        );
 
         expect(within(strengthCard!).getByText("Base: 15")).toBeInTheDocument();
     });

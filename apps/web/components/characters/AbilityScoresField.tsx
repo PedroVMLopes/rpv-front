@@ -5,7 +5,6 @@ import { useWatch, type UseFormReturn } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import type { Locale } from "@rpv/domain";
 import type {
-    AbilityGenerationConfig,
     AbilityScoreMethod,
     PresetAbilityAttribute,
     PresetStatConfig,
@@ -14,6 +13,7 @@ import { buildSelectionsFromForm } from "@/lib/character/characterAdapter";
 import { readLevelFromForm } from "@/lib/character/level";
 import { deriveRaceModifiers } from "@/lib/character/raceModifiers";
 import {
+    assignStandardArrayScore,
     defaultAbilityScoreMethodForLevel,
     getMethodDefaults,
     pointBuyCost,
@@ -21,6 +21,7 @@ import {
     readAttributeValues,
     rollAbilityPool,
     shouldShowMigrationHint,
+    standardArrayParkingValue,
     UNASSIGNED_ABILITY_VALUE,
     type AttributeEntry,
 } from "@/lib/character/abilityScoreGeneration";
@@ -65,6 +66,20 @@ function setAttributeValue(
                 : (current[abilityIndex]?.value ?? UNASSIGNED_ABILITY_VALUE),
     }));
     writeAttributes(form, next);
+}
+
+function writeAttributeValues(
+    form: UseFormReturn<Record<string, unknown>>,
+    abilities: PresetAbilityAttribute[],
+    values: number[]
+) {
+    writeAttributes(
+        form,
+        abilities.map((ability, abilityIndex) => ({
+            name: ability.name,
+            value: values[abilityIndex] ?? UNASSIGNED_ABILITY_VALUE,
+        }))
+    );
 }
 
 export function AbilityScoresField({
@@ -208,10 +223,7 @@ export function AbilityScoresField({
         return null;
     }
 
-    const usedStandardValues = new Set(
-        attributeValues.filter((value) => value !== UNASSIGNED_ABILITY_VALUE)
-    );
-
+    const parkingValue = standardArrayParkingValue(config);
     const usedRollValues = countPoolUsage(attributeValues, rolls);
 
     function handleRoll() {
@@ -224,6 +236,16 @@ export function AbilityScoresField({
             form,
             getMethodDefaults("roll", abilities, statConfig)
         );
+    }
+
+    function applyStandardArrayPick(index: number, option: number) {
+        const nextValues = assignStandardArrayScore(
+            attributeValues,
+            index,
+            option,
+            parkingValue
+        );
+        writeAttributeValues(form, abilities, nextValues);
     }
 
     function canIncreasePointBuy(index: number): boolean {
@@ -325,35 +347,29 @@ export function AbilityScoresField({
                             )}
 
                             {method === "standard-array" && (
-                                <select
-                                    className="bg-background rounded border px-2 py-1 text-sm"
-                                    value={
-                                        value === UNASSIGNED_ABILITY_VALUE
-                                            ? ""
-                                            : String(value)
-                                    }
-                                    onChange={(event) =>
-                                        setAttributeValue(
-                                            form,
-                                            abilities,
-                                            index,
-                                            event.target.value === ""
-                                                ? UNASSIGNED_ABILITY_VALUE
-                                                : Number(event.target.value)
-                                        )
-                                    }
-                                >
-                                    <option value="">{t("assignScore")}</option>
-                                    {getStandardArrayOptions(
-                                        config.standardArray,
-                                        value,
-                                        usedStandardValues
-                                    ).map((option) => (
-                                        <option key={option} value={option}>
+                                <div className="flex flex-wrap gap-1">
+                                    {config.standardArray.map((option) => (
+                                        <Button
+                                            key={option}
+                                            type="button"
+                                            size="sm"
+                                            variant={
+                                                value === option
+                                                    ? "default"
+                                                    : "outline"
+                                            }
+                                            aria-pressed={value === option}
+                                            onClick={() =>
+                                                applyStandardArrayPick(
+                                                    index,
+                                                    option
+                                                )
+                                            }
+                                        >
                                             {option}
-                                        </option>
+                                        </Button>
                                     ))}
-                                </select>
+                                </div>
                             )}
 
                             {method === "point-buy" && (
@@ -494,26 +510,6 @@ function countPoolUsage(values: number[], pool: number[]): Map<number, number> {
     }
 
     return usage;
-}
-
-function getStandardArrayOptions(
-    standardArray: number[],
-    selected: number,
-    usedValues: Set<number>
-): number[] {
-    const options = new Set<number>();
-
-    if (selected !== UNASSIGNED_ABILITY_VALUE) {
-        options.add(selected);
-    }
-
-    for (const value of standardArray) {
-        if (!usedValues.has(value)) {
-            options.add(value);
-        }
-    }
-
-    return [...options].sort((a, b) => b - a);
 }
 
 function getRollOptions(
