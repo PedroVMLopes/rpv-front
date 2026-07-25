@@ -10,9 +10,9 @@ export function HealthSlider({ className, thumbClassName, ...props }: HealthSlid
   return (
     <SliderPrimitive.Root className={cn("relative flex w-full touch-none select-none items-center", className)} {...props}>
       <SliderPrimitive.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-red-900">
-        <SliderPrimitive.Range className="absolute h-full bg-emerald-700" />
+        <SliderPrimitive.Range className="absolute h-full bg-emerald-800" />
       </SliderPrimitive.Track>
-      <SliderPrimitive.Thumb className={cn("block size-2.5 rounded-full bg-emerald-700", thumbClassName)} aria-label="Character Health" />
+      <SliderPrimitive.Thumb className={cn("block size-2 rounded-full bg-emerald-900", thumbClassName)} aria-label="Character Health" />
     </SliderPrimitive.Root>
   );
 }

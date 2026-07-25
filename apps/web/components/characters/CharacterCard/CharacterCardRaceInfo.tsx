@@ -69,7 +69,7 @@ export function RaceBackgroundBlock({ stored }: { stored: StoredCharacter }) {
     }
 
     return (
-        <div className="text-card-foreground">
+        <div>
             {primary ? <p className="font-bold">{primary}</p> : null}
             {backgroundStr ? <p className="text-sm">{backgroundStr}</p> : null}
         </div>
@@ -93,7 +93,7 @@ export function ClassSubclassOnlyBlock({ stored }: { stored: StoredCharacter }) 
     }
 
     return (
-        <div className="text-card-foreground">
+        <div>
             {classStr ? <p className="font-bold">{classStr}</p> : null}
             {subclassStr ? <p className="text-sm">{subclassStr}</p> : null}
         </div>
@@ -119,7 +119,7 @@ export function ClassSubclassBlock({ stored }: { stored: StoredCharacter }) {
     }
 
     return (
-        <div className="text-card-foreground">
+        <div>
             {title ? <p className="font-bold">{title}</p> : null}
             {subclassStr ? <p className="text-sm">{subclassStr}</p> : null}
         </div>
@@ -168,7 +168,7 @@ export function RaceTraitsBlock({
             <ul className="flex flex-col gap-1.5">
                 {traits.map((trait) => (
                     <li key={trait.slug}>
-                        <details className={cn("group rounded-xl text-card-foreground", sheetInset)}>
+                        <details className={cn("group rounded-xl", sheetInset)}>
                             <summary className="flex cursor-pointer list-none items-center justify-between gap-2 rounded-xl px-3 py-2 text-sm font-semibold marker:content-none [&::-webkit-details-marker]:hidden">
                                 <span>{trait.name}</span>
                                 <FaChevronDown

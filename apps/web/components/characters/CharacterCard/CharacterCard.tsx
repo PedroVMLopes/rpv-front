@@ -20,6 +20,7 @@ import CharacterCardExpandedDialog from "./CharacterCardExpandedDialog";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { CharacterTitle } from "./characterCardUi";
+import { Separator } from "@/components/ui/separator";
 
 interface CharacterCardProps {
     characterId: string;
@@ -67,7 +68,7 @@ export default function CharacterCard({ characterId }: CharacterCardProps) {
     const showClassBlock = hasClassSubclassInfo(stored);
 
     return (
-        <Card className="gap-3 p-3 sm:max-w-xs">
+        <Card className="gap-0 p-3 sm:max-w-xs bg-card text-card-foreground">
             <CardHeader className="flex flex-row items-center justify-between p-0 pl-1">
                 <CardTitle className="text-lg font-bold font-serif">
                     <CharacterTitle name={stored.name} level={systemData.level} />
@@ -76,15 +77,17 @@ export default function CharacterCard({ characterId }: CharacterCardProps) {
 
             <CardContent className="flex flex-col items-center p-0">
                 {(showRaceBlock || showClassBlock) && (
-                    <div className="my-2 grid w-full grid-cols-2 gap-2">
+                    <div className="my-2 w-full gap-2">
                         {showRaceBlock ? (
-                            <div className="rounded-2xl border bg-popover p-2 px-3 text-popover-foreground">
+                            <div className="rounded-2xl border p-2 px-3 bg-popover text-popover-foreground flex flex-row justify-around gap-2">
                                 <RaceBackgroundBlock stored={stored} />
-                            </div>
-                        ) : null}
-                        {showClassBlock ? (
-                            <div className="rounded-2xl border bg-popover p-2 px-3 text-popover-foreground">
-                                <ClassSubclassOnlyBlock stored={stored} />
+                                <Separator
+                                    orientation="vertical"
+                                    className="self-stretch data-[orientation=vertical]:h-auto"
+                                />
+                                {showClassBlock ? (
+                                    <ClassSubclassOnlyBlock stored={stored} />
+                                ) : null}
                             </div>
                         ) : null}
                     </div>
@@ -95,6 +98,7 @@ export default function CharacterCard({ characterId }: CharacterCardProps) {
                 <div className="flex w-full flex-row items-center gap-1">
                     <Button
                         asChild
+                        variant="ghost"
                         size="icon"
                         aria-label="Edit character"
                     >
@@ -104,23 +108,24 @@ export default function CharacterCard({ characterId }: CharacterCardProps) {
                             <FaGear />
                         </Link>
                     </Button>
-                    <Button asChild className="min-w-0 flex-1 font-semibold">
-                        <Link href={`/characters/player/${stored.id}`}>
-                            {t("openFullSheet")}
-                        </Link>
-                    </Button>
                     <CharacterCardExpandedDialog
                         characterId={characterId}
                         stored={stored}
                         trigger={
                             <Button
                                 size="icon"
+                                variant="ghost"
                                 aria-label="Expand character"
                             >
                                 <FaExpand />
                             </Button>
                         }
                     />
+                    <Button asChild variant="secondary" className="min-w-0 flex-1 font-semibold">
+                        <Link href={`/characters/player/${stored.id}`}>
+                            {t("openFullSheet")}
+                        </Link>
+                    </Button>
                 </div>
             </CardFooter>
         </Card>
