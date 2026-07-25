@@ -5,6 +5,7 @@ export {
     type CreationStep,
     type CreationStepGraph,
     type CreationStepKind,
+    type CreationStepLabelValues,
     type CreationStepSourceFilter,
 } from "./creationStep.types";
 export { buildCreationStepGraph } from "./buildCreationStepGraph";

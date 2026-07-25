@@ -6,6 +6,8 @@ import type {
     CreationStepKind,
     CreationStepSourceFilter,
 } from "./creationStep.types";
+
+const LEVEL_UNLOCKS_LABEL_KEY = "steps.levelUnlocks";
 import {
     featureLevelFromGrantPickKey,
     isCantripGrant,
@@ -20,12 +22,15 @@ export function createStep(
         parentId?: string;
         sourceFilter?: CreationStepSourceFilter;
         fieldNames?: string[];
+        labelKey?: string;
+        labelValues?: CreationStep["labelValues"];
     } = {}
 ): CreationStep {
     return {
         id,
         kind,
-        labelKey: `steps.${id}`,
+        labelKey: options.labelKey ?? `steps.${id}`,
+        labelValues: options.labelValues,
         macroGroupId,
         parentId: options.parentId,
         sourceFilter: options.sourceFilter,
@@ -160,6 +165,8 @@ export function appendClassLevelSteps(
             steps.push(
                 createStep(levelStepId, "level_summary", macroGroupId, {
                     ...(classParentId ? { parentId: classParentId } : {}),
+                    labelKey: LEVEL_UNLOCKS_LABEL_KEY,
+                    labelValues: { level },
                     sourceFilter: {
                         sourceTypes: ["class"],
                         level,
@@ -253,6 +260,8 @@ export function appendSubclassLevelSteps(
             steps.push(
                 createStep(levelStepId, "level_summary", macroGroupId, {
                     ...(subclassParentId ? { parentId: subclassParentId } : {}),
+                    labelKey: LEVEL_UNLOCKS_LABEL_KEY,
+                    labelValues: { level },
                     sourceFilter: {
                         sourceTypes: ["subclass"],
                         level,

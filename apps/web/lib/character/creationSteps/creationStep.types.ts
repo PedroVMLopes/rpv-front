@@ -27,10 +27,14 @@ export type CreationStepSourceFilter = {
     spellTier?: "cantrip" | "leveled";
 };
 
+export type CreationStepLabelValues = Record<string, string | number>;
+
 export type CreationStep = {
     id: string;
     kind: CreationStepKind;
     labelKey: string;
+    /** Optional values for i18n interpolation (e.g. `{ level }` for unlock titles). */
+    labelValues?: CreationStepLabelValues;
     macroGroupId: CreationMacroGroupId;
     parentId?: string;
     sourceFilter?: CreationStepSourceFilter;

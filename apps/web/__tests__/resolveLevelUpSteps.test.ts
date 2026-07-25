@@ -63,9 +63,13 @@ describe("resolveLevelUpSteps", () => {
         });
 
         const ids = graph.steps.map((step) => step.id);
+        const subclassLevel3 = graph.getStep("subclass-level-3");
 
         expect(ids).toContain("subclass");
         expect(ids).toContain("subclass-level-3");
+        expect(subclassLevel3?.kind).toBe("level_summary");
+        expect(subclassLevel3?.labelKey).toBe("steps.levelUnlocks");
+        expect(subclassLevel3?.labelValues).toEqual({ level: 3 });
         expect(ids.at(-1)).toBe("level-up-confirm");
     });
 
@@ -83,8 +87,12 @@ describe("resolveLevelUpSteps", () => {
         });
 
         const ids = graph.steps.map((step) => step.id);
+        const classLevel2 = graph.getStep("class-level-2");
 
         expect(ids).toEqual(["class-level-2", "level-up-confirm"]);
+        expect(classLevel2?.kind).toBe("level_summary");
+        expect(classLevel2?.labelKey).toBe("steps.levelUnlocks");
+        expect(classLevel2?.labelValues).toEqual({ level: 2 });
     });
 
     it("includes prepare-spells before confirm when wizard book has leveled spells", () => {

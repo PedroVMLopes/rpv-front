@@ -30,9 +30,13 @@ function humanizeStepId(stepId: string): string {
 function useStepLabel() {
     const t = useTranslations("characterCreation");
 
-    return (labelKey: string, stepId: string) => {
+    return (
+        labelKey: string,
+        stepId: string,
+        labelValues?: Record<string, string | number>
+    ) => {
         try {
-            return t(labelKey as never);
+            return t(labelKey as never, labelValues as never);
         } catch {
             return humanizeStepId(stepId);
         }
@@ -92,7 +96,7 @@ export function CharacterCreationSidebar({
                         "bg-primary text-primary-foreground hover:bg-primary/90"
                 )}
             >
-                {labelFor(step.labelKey, stepId)}
+                {labelFor(step.labelKey, stepId, step.labelValues)}
             </button>
         );
     }
@@ -136,7 +140,11 @@ export function CharacterCreationSidebar({
                                             "bg-primary text-primary-foreground hover:bg-primary/90"
                                     )}
                                 >
-                                    {labelFor(step.labelKey, stepId)}
+                                    {labelFor(
+                                        step.labelKey,
+                                        stepId,
+                                        step.labelValues
+                                    )}
                                 </button>
                                 {macroPending > 0 ? (
                                     <span className="shrink-0 rounded-full bg-destructive/15 px-2 py-0.5 text-xs font-semibold text-destructive">

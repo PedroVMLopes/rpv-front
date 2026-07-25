@@ -131,6 +131,8 @@ describe("resolveCreationSteps", () => {
         const level2 = graph.getStep("class-level-2");
 
         expect(level2?.kind).toBe("level_summary");
+        expect(level2?.labelKey).toBe("steps.levelUnlocks");
+        expect(level2?.labelValues).toEqual({ level: 2 });
     });
 
     it("omits subclass level steps when subclass only has base grants", () => {
@@ -168,9 +170,12 @@ describe("resolveCreationSteps", () => {
         expect(
             graph.steps.some((step) => step.id === "subclass-level-2")
         ).toBe(false);
-        expect(
-            graph.steps.some((step) => step.id === "subclass-level-3")
-        ).toBe(true);
+
+        const subclassLevel3 = graph.getStep("subclass-level-3");
+
+        expect(subclassLevel3?.kind).toBe("level_summary");
+        expect(subclassLevel3?.labelKey).toBe("steps.levelUnlocks");
+        expect(subclassLevel3?.labelValues).toEqual({ level: 3 });
     });
 
     it("includes prepare-spells after abilities when wizard has leveled spells in book", () => {

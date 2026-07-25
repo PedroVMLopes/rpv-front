@@ -107,8 +107,37 @@ describe("PlayerCharacterForm", () => {
         const sidebar = getCreationSidebar();
 
         expect(
-            sidebar.queryByRole("button", { name: "Level 1" })
+            sidebar.queryByRole("button", { name: "Level 1 unlocks" })
         ).not.toBeInTheDocument();
+        expect(
+            sidebar.getByRole("button", { name: "Level 1 choices" })
+        ).toBeInTheDocument();
+    });
+
+    it("shows level unlock labels for class and subclass summaries", async () => {
+        render(
+            <PlayerFormHarness
+                defaultValues={{
+                    race: "human",
+                    characterClass: "fighter",
+                    subclass: "fighter-champion",
+                    level: 3,
+                }}
+                initialStepId="class-level-2"
+            />
+        );
+
+        const sidebar = getCreationSidebar();
+
+        expect(
+            sidebar.getByRole("button", { name: "Level 2 unlocks" })
+        ).toBeInTheDocument();
+        expect(
+            sidebar.getAllByRole("button", { name: "Level 3 unlocks" })
+        ).toHaveLength(2);
+        expect(
+            screen.getByRole("heading", { name: "Level 2 unlocks" })
+        ).toBeInTheDocument();
         expect(
             sidebar.getByRole("button", { name: "Level 1 choices" })
         ).toBeInTheDocument();

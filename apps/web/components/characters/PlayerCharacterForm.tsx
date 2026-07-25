@@ -249,7 +249,10 @@ export function PlayerCharacterForm({
         }
 
         try {
-            return t(activeStep.labelKey as never);
+            return t(
+                activeStep.labelKey as never,
+                (activeStep.labelValues ?? {}) as never
+            );
         } catch {
             return humanizeStepId(activeStep.id);
         }
