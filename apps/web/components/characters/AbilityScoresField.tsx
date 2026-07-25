@@ -348,27 +348,45 @@ export function AbilityScoresField({
 
                             {method === "standard-array" && (
                                 <div className="flex flex-wrap gap-1">
-                                    {config.standardArray.map((option) => (
-                                        <Button
-                                            key={option}
-                                            type="button"
-                                            size="sm"
-                                            variant={
-                                                value === option
-                                                    ? "default"
-                                                    : "outline"
-                                            }
-                                            aria-pressed={value === option}
-                                            onClick={() =>
-                                                applyStandardArrayPick(
-                                                    index,
-                                                    option
-                                                )
-                                            }
-                                        >
-                                            {option}
-                                        </Button>
-                                    ))}
+                                    {config.standardArray.map((option) => {
+                                        const selected = value === option;
+                                        // Non-parking scores held elsewhere: darker label on other cards.
+                                        const takenElsewhere =
+                                            !selected &&
+                                            option !== parkingValue &&
+                                            attributeValues.some(
+                                                (assigned, assignedIndex) =>
+                                                    assignedIndex !== index &&
+                                                    assigned === option
+                                            );
+
+                                        return (
+                                            <Button
+                                                key={option}
+                                                type="button"
+                                                size="sm"
+                                                variant={
+                                                    selected
+                                                        ? "default"
+                                                        : "outline"
+                                                }
+                                                aria-pressed={selected}
+                                                className={
+                                                    takenElsewhere
+                                                        ? "text-foreground/40"
+                                                        : undefined
+                                                }
+                                                onClick={() =>
+                                                    applyStandardArrayPick(
+                                                        index,
+                                                        option
+                                                    )
+                                                }
+                                            >
+                                                {option}
+                                            </Button>
+                                        );
+                                    })}
                                 </div>
                             )}
 
