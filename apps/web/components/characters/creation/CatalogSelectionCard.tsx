@@ -2,6 +2,7 @@
 
 import type { CatalogSelectionEntry } from "@/lib/character/creation/catalogSelection.types";
 import { cn } from "@/lib/utils";
+import { Maximize2 } from "lucide-react";
 
 type CatalogSelectionCardProps = {
     entry: CatalogSelectionEntry;
@@ -34,9 +35,12 @@ export function CatalogSelectionCard({
                     : "border-border bg-accent text-accent-foreground hover:bg-card hover:text-card-foreground"
             )}
         >
-            <span className="min-w-0 flex-1 font-serif text-base font-semibold leading-tight">
-                {entry.title}
-            </span>
+            <div className="flex items-center justify-between w-full gap-2">
+                <span className="min-w-0 flex-1 font-serif text-base font-semibold leading-tight">
+                    {entry.title}
+                </span>
+                <Maximize2 className="size-4 shrink-0 cursor-pointer" />
+            </div>
         </div>
     );
 }
