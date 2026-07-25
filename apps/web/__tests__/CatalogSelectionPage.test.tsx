@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
 import { NextIntlClientProvider } from "next-intl";
@@ -59,6 +59,36 @@ describe("CatalogSelectionPage", () => {
         expect(screen.getByText("Proficiencies")).toBeInTheDocument();
         expect(screen.getByText("Speed: 25 ft")).toBeInTheDocument();
         expect(screen.getByText("Darkvision: 60 ft")).toBeInTheDocument();
+    });
+
+    it("opens expand modal with grouped weapons, languages, and resources", async () => {
+        const user = userEvent.setup();
+        render(<CatalogHarness />);
+
+        const dwarfCard = screen.getByTestId("catalog-card-dwarf");
+        await user.click(
+            within(dwarfCard).getByRole("button", { name: "View details" })
+        );
+
+        const dialog = await screen.findByRole("dialog");
+        expect(dialog).toBeInTheDocument();
+        expect(within(dialog).getByText("Weapons")).toBeInTheDocument();
+        expect(within(dialog).getByText("Languages")).toBeInTheDocument();
+        expect(within(dialog).getByText("Resources")).toBeInTheDocument();
+        expect(within(dialog).getByText("Speed: 25 ft")).toBeInTheDocument();
+        expect(within(dialog).getByText("Darkvision: 60 ft")).toBeInTheDocument();
+        expect(within(dialog).getByText("Common")).toBeInTheDocument();
+        expect(within(dialog).getByText("Dwarvish")).toBeInTheDocument();
+        expect(
+            within(dialog).getAllByText(
+                "Dwarf Traits Your dwarf character has an assortment of inborn abilities, part and parcel of dwarven nature."
+            ).length
+        ).toBeGreaterThan(0);
+        expect(
+            within(dialog).getByText("Your Constitution score increases by 2.")
+        ).toBeInTheDocument();
+        expect(within(dialog).queryByText(/\*\*_/)).not.toBeInTheDocument();
+        expect(within(dialog).queryByText(/## /)).not.toBeInTheDocument();
     });
 
     it("deselects race on second click", async () => {

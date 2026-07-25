@@ -152,6 +152,8 @@ export function CatalogSelectionPage({
                     contentLocale={contentLocale}
                     system={system}
                     source={buildSourceForField(formField, expandedEntry)}
+                    selectionKind={kind}
+                    metadata={expandedEntry.metadata}
                 />
             ) : null}
         </div>

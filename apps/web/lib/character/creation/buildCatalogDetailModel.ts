@@ -1,6 +1,6 @@
 import type { CatalogSelectionEntry, CatalogSelectionKind } from "./catalogSelection.types";
 import type { ContentDetailModel, ContentDetailSection } from "@/lib/content/contentDetail.types";
-import { stripLeadingLabel } from "./textUtils";
+import { stripLeadingLabel, stripMarkdown } from "./textUtils";
 
 export function buildCatalogDetailModel(
     entry: CatalogSelectionEntry,
@@ -41,7 +41,10 @@ export function buildCatalogDetailModel(
     if (metadata?.asiDesc?.trim()) {
         rows.push({
             labelKey: "abilityScores",
-            value: metadata.asiDesc.trim(),
+            value: stripLeadingLabel(
+                metadata.asiDesc,
+                "Ability Score Increase"
+            ),
         });
     }
 
@@ -65,12 +68,14 @@ export function buildCatalogDetailModel(
         sections.push({ rows });
     }
 
+    const description = stripMarkdown(entry.detailDescription);
+
     return {
         id: entry.slug,
         kind: "catalog",
         title: entry.title,
         sections,
-        description: entry.detailDescription,
+        description: description || undefined,
         catalogGrants: entry.grants,
     };
 }

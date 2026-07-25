@@ -1,10 +1,16 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { Locale } from "@rpv/domain";
 import type { ModifierSource } from "@rpv/domain";
+import type {
+    CatalogSelectionKind,
+    CatalogSelectionMetadata,
+} from "@/lib/character/creation/catalogSelection.types";
+import { buildRaceResourcePreviewChips } from "@/lib/character/creation/raceCatalogResourceChips";
 import type { ContentDetailModel } from "@/lib/content/contentDetail.types";
 import { ContentDetailModal } from "@/components/content/ContentDetailModal";
-import { GrantPreviewList } from "@/components/characters/creation/GrantPreviewList";
+import { GrantPreviewGroupedPanel } from "@/components/characters/creation/GrantPreviewGroupedPanel";
 import type { SystemKey } from "@/presets";
 
 type CatalogDetailModalProps = {
@@ -14,6 +20,8 @@ type CatalogDetailModalProps = {
     contentLocale: Locale;
     system: SystemKey;
     source: ModifierSource;
+    selectionKind?: CatalogSelectionKind;
+    metadata?: CatalogSelectionMetadata;
 };
 
 export function CatalogDetailModal({
@@ -23,9 +31,26 @@ export function CatalogDetailModal({
     contentLocale,
     system,
     source,
+    selectionKind,
+    metadata,
 }: CatalogDetailModalProps) {
+    const t = useTranslations("characterCreation");
     const grants =
         model.kind === "catalog" ? model.catalogGrants ?? [] : [];
+
+    const extraResourceChips =
+        selectionKind === "race"
+            ? buildRaceResourcePreviewChips(metadata, {
+                  speed: (speed) =>
+                      t("selection.preview.speedValue", { speed }),
+                  darkvision: () => t("selection.preview.darkvision"),
+                  darkvisionWithRange: (range) =>
+                      t("selection.preview.darkvisionValue", { range }),
+              })
+            : [];
+
+    const showGroupedPreview =
+        grants.length > 0 || extraResourceChips.length > 0;
 
     return (
         <ContentDetailModal
@@ -33,12 +58,12 @@ export function CatalogDetailModal({
             open={open}
             onOpenChange={onOpenChange}
             afterContent={
-                grants.length > 0 ? (
-                    <GrantPreviewList
-                        grants={grants}
+                showGroupedPreview ? (
+                    <GrantPreviewGroupedPanel
+                        contexts={grants.map((grant) => ({ grant, source }))}
                         contentLocale={contentLocale}
                         system={system}
-                        source={source}
+                        extraResourceChips={extraResourceChips}
                     />
                 ) : null
             }

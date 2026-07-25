@@ -76,4 +76,32 @@ describe("race catalog details", () => {
             },
         ]);
     });
+
+    it("strips markdown from description and ability score increase", () => {
+        const model = buildCatalogDetailModel(
+            {
+                slug: "dwarf",
+                title: "Dwarf",
+                summary: "Dwarf summary",
+                detailDescription:
+                    "## Dwarf Traits\nYour dwarf character has an assortment of inborn abilities.",
+                grants: [],
+                metadata: {
+                    asiDesc:
+                        "**_Ability Score Increase._** Your Constitution score increases by 2.",
+                },
+            },
+            "race"
+        );
+
+        expect(model.description).toBe(
+            "Dwarf Traits Your dwarf character has an assortment of inborn abilities."
+        );
+        expect(model.sections[0]?.rows).toEqual([
+            {
+                labelKey: "abilityScores",
+                value: "Your Constitution score increases by 2.",
+            },
+        ]);
+    });
 });
