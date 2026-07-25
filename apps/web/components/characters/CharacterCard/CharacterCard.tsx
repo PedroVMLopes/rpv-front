@@ -70,32 +70,10 @@ export default function CharacterCard({ characterId }: CharacterCardProps) {
     return (
         <Card className="gap-0 p-3 sm:max-w-xs bg-card text-card-foreground">
             <CardHeader className="flex flex-row items-center justify-between p-0 pl-1">
-                <CardTitle className="text-lg font-bold font-serif">
+                <CardTitle className="text-xl font-bold font-serif">
                     <CharacterTitle name={stored.name} level={systemData.level} />
                 </CardTitle>
-            </CardHeader>
-
-            <CardContent className="flex flex-col items-center p-0">
-                {(showRaceBlock || showClassBlock) && (
-                    <div className="my-2 w-full gap-2">
-                        {showRaceBlock ? (
-                            <div className="rounded-2xl border p-2 px-3 bg-popover text-popover-foreground flex flex-row justify-around gap-2">
-                                <RaceBackgroundBlock stored={stored} />
-                                <Separator
-                                    orientation="vertical"
-                                    className="self-stretch data-[orientation=vertical]:h-auto"
-                                />
-                                {showClassBlock ? (
-                                    <ClassSubclassOnlyBlock stored={stored} />
-                                ) : null}
-                            </div>
-                        ) : null}
-                    </div>
-                )}
-            </CardContent>
-
-            <CardFooter className="px-0">
-                <div className="flex w-full flex-row items-center gap-1">
+                <div className="flex flex-row gap-1">
                     <Button
                         asChild
                         variant="ghost"
@@ -121,6 +99,28 @@ export default function CharacterCard({ characterId }: CharacterCardProps) {
                             </Button>
                         }
                     />
+                </div>
+            </CardHeader>
+
+            <CardContent className="flex flex-col items-center p-0">
+                {(showRaceBlock || showClassBlock) && (
+                    <div className="my-2 w-full">
+                            <div className="rounded-2xl p-2 px-3 border-3 border-secondary bg-popover text-popover-foreground flex flex-row justify-around">
+                                {showRaceBlock ? (
+                                    <div>
+                                        <RaceBackgroundBlock stored={stored} />
+                                    </div>
+                                ) : null}
+                                {showClassBlock ? (
+                                    <ClassSubclassOnlyBlock stored={stored} />
+                                ) : null}
+                            </div>
+                    </div>
+                )}
+            </CardContent>
+
+            <CardFooter className="px-0">
+                <div className="flex w-full flex-row items-center gap-1">
                     <Button asChild variant="secondary" className="min-w-0 flex-1 font-semibold">
                         <Link href={`/characters/player/${stored.id}`}>
                             {t("openFullSheet")}

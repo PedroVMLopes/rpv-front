@@ -49,7 +49,7 @@ export function ContentSummaryCard({
             </div>
 
             {showBody ? (
-                <div className="flex flex-1 flex-col gap-1 bg-accent/20 text-accent-foreground p-2">
+                <div className="flex flex-1 flex-col gap-1 bg-accent text-accent-foreground p-2">
                     {useAction && onUse ? (
                         <Button
                             type="button"
