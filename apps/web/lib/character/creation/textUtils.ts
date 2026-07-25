@@ -9,6 +9,13 @@ export function stripMarkdown(value: string): string {
         .trim();
 }
 
+export function stripLeadingLabel(value: string, label: string): string {
+    const plain = stripMarkdown(value);
+    const escapedLabel = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    return plain.replace(new RegExp(`^${escapedLabel}\\.?\\s*`, "i"), "").trim();
+}
+
 export function truncateSummary(value: string, maxLength = 160): string {
     const plain = stripMarkdown(value);
 

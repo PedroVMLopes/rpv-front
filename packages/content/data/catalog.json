@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-21T04:17:29.705Z",
+  "generatedAt": "2026-07-25T17:01:19.519Z",
   "source": "open5e",
   "defaultLocale": "en",
   "races": [
@@ -10,6 +10,8 @@
       "system": "dnd",
       "sourceDocument": "wotc-srd",
       "description": "## Dwarf Traits\nYour dwarf character has an assortment of inborn abilities, part and parcel of dwarven nature.",
+      "ageDesc": "**_Age._** Dwarves mature at the same rate as humans, but they're considered young until they reach the age of 50. On average, they live about 350 years.",
+      "alignmentDesc": "**_Alignment._** Most dwarves are lawful, believing firmly in the benefits of a well-ordered society.",
       "size": "Medium",
       "speedWalk": 25,
       "languagesDesc": "**_Languages._** You can speak, read, and write Common and Dwarvish.",
@@ -148,6 +150,8 @@
       "system": "dnd",
       "sourceDocument": "wotc-srd",
       "description": "## Elf Traits\nYour elf character has a variety of natural abilities, the result of thousands of years of elven refinement.",
+      "ageDesc": "**_Age._** Although elves reach physical maturity at about the same age as humans, the elven understanding of adulthood goes beyond physical growth.",
+      "alignmentDesc": "**_Alignment._** Elves love freedom, variety, and self-expression, so they lean strongly toward the gentler aspects of chaos.",
       "size": "Medium",
       "speedWalk": 30,
       "languagesDesc": "**_Languages._** You can speak, read, and write Common and Elvish.",
@@ -305,6 +309,8 @@
       "system": "dnd",
       "sourceDocument": "wotc-srd",
       "description": "## Half-Elf Traits\nYour half-elf character shares some qualities with elves and some that are unique to half-elves.",
+      "ageDesc": "**_Age._** Half-elves mature at the same rate humans do and reach adulthood around the age of 20.",
+      "alignmentDesc": "**_Alignment._** Half-elves share the chaotic bent of their elven heritage.",
       "size": "Medium",
       "speedWalk": 30,
       "languagesDesc": "**_Languages._** You can speak, read, and write Common, Elvish, and one extra language of your choice.",

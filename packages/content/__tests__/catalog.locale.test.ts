@@ -13,6 +13,8 @@ const catalog: Catalog = {
             system: "dnd",
             sourceDocument: "wotc-srd",
             description: "Tough mountain folk.",
+            ageDesc: "Dwarves live for centuries.",
+            alignmentDesc: "Dwarves tend toward lawful alignments.",
             size: "Medium",
             speedWalk: 25,
             languagesDesc: "Common, Dwarvish",

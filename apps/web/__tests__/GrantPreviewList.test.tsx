@@ -24,6 +24,15 @@ const deferredGrant: Grant = {
     description: "Two languages",
 };
 
+const fixedLanguagesGrant: Grant = {
+    grantType: "language",
+    choose: 0,
+    options: [
+        { optionType: "language", ref: "common" },
+        { optionType: "language", ref: "dwarvish" },
+    ],
+};
+
 describe("GrantPreviewList", () => {
     function renderList(grants: Grant[]) {
         return render(
@@ -56,6 +65,13 @@ describe("GrantPreviewList", () => {
         expect(
             screen.getByText(/You will choose 2 later in/i)
         ).toBeInTheDocument();
+    });
+
+    it("renders every fixed language from a single grant", () => {
+        renderList([fixedLanguagesGrant]);
+
+        expect(screen.getByText("Common")).toBeInTheDocument();
+        expect(screen.getByText("Dwarvish")).toBeInTheDocument();
     });
 
     it("renders multiple fixed contexts without duplicate React keys", () => {

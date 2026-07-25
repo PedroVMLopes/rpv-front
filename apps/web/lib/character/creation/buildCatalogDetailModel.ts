@@ -1,5 +1,6 @@
 import type { CatalogSelectionEntry, CatalogSelectionKind } from "./catalogSelection.types";
 import type { ContentDetailModel, ContentDetailSection } from "@/lib/content/contentDetail.types";
+import { stripLeadingLabel } from "./textUtils";
 
 export function buildCatalogDetailModel(
     entry: CatalogSelectionEntry,
@@ -41,6 +42,22 @@ export function buildCatalogDetailModel(
         rows.push({
             labelKey: "abilityScores",
             value: metadata.asiDesc.trim(),
+        });
+    }
+
+    if (selectionKind === "race" && metadata?.ageDesc?.trim()) {
+        rows.push({
+            labelKey: "age",
+            value: stripLeadingLabel(metadata.ageDesc, "Age"),
+            fullWidth: true,
+        });
+    }
+
+    if (selectionKind === "race" && metadata?.alignmentDesc?.trim()) {
+        rows.push({
+            labelKey: "alignment",
+            value: stripLeadingLabel(metadata.alignmentDesc, "Alignment"),
+            fullWidth: true,
         });
     }
 

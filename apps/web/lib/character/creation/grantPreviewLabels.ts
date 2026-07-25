@@ -126,23 +126,33 @@ export function buildGrantPreviewItems(
             return;
         }
 
-        const [characterGrant] = fixedGrantsToCharacterGrants(
+        const characterGrants = fixedGrantsToCharacterGrants(
             [grant],
             source,
             { featureLevel }
         );
 
+        if (characterGrants.length > 0) {
+            characterGrants.forEach((characterGrant, characterGrantIndex) => {
+                items.push({
+                    kind: "fixed",
+                    id: `fixed-${grantIndex}-${characterGrantIndex}`,
+                    label: formatClassStepGrantLabel(
+                        characterGrant,
+                        locale,
+                        translateAbility,
+                        (ref) => formatResourceRefLabel(ref, translateResource)
+                    ),
+                    grant,
+                });
+            });
+            return;
+        }
+
         items.push({
             kind: "fixed",
             id: `fixed-${grantIndex}`,
-            label: characterGrant
-                ? formatClassStepGrantLabel(
-                      characterGrant,
-                      locale,
-                      translateAbility,
-                      (ref) => formatResourceRefLabel(ref, translateResource)
-                  )
-                : grant.description?.trim() || humanizeRef(grant.grantType),
+            label: grant.description?.trim() || humanizeRef(grant.grantType),
             grant,
         });
     });

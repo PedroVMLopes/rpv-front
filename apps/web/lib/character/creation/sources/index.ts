@@ -35,6 +35,8 @@ function listDndRaces(locale: Locale): CatalogSelectionEntry[] {
                 visionDesc: race.visionDesc,
                 size: race.size,
                 asiDesc: race.asiDesc,
+                ageDesc: race.ageDesc,
+                alignmentDesc: race.alignmentDesc,
             },
         }));
 }

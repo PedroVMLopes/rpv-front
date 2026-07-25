@@ -1,6 +1,7 @@
 export type ContentDetailRow = {
     labelKey: string;
     value: string;
+    fullWidth?: boolean;
 };
 
 export type ContentDetailSection = {

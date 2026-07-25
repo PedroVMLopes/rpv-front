@@ -70,7 +70,7 @@ export function RaceBackgroundBlock({ stored }: { stored: StoredCharacter }) {
 
     return (
         <div>
-            {primary ? <p className="font-bold text-primary">{primary}</p> : null}
+            {primary ? <p className="font-bold">{primary}</p> : null}
             {backgroundStr ? <p className="text-sm">{backgroundStr}</p> : null}
         </div>
     );
@@ -94,7 +94,7 @@ export function ClassSubclassOnlyBlock({ stored }: { stored: StoredCharacter }) 
 
     return (
         <div>
-            {classStr ? <p className="font-bold text-primary">{classStr}</p> : null}
+            {classStr ? <p className="font-bold">{classStr}</p> : null}
             {subclassStr ? <p className="text-sm">{subclassStr}</p> : null}
         </div>
     );

@@ -557,7 +557,9 @@
       "subclassLevel": "Subclasse no nível",
       "size": "Tamanho",
       "speed": "Deslocamento",
-      "abilityScores": "Aumento de atributo"
+      "abilityScores": "Aumento de atributo",
+      "age": "Idade",
+      "alignment": "Alinhamento"
     }
   },
   "items": {

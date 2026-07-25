@@ -71,6 +71,22 @@ export const dndRaceLevelGrants: Record<string, Grant[]> = {
             ],
         },
     ],
+    "half-elf": [
+        {
+            grantType: "language",
+            choose: 0,
+            options: [
+                { optionType: "language", ref: "common" },
+                { optionType: "language", ref: "elvish" },
+            ],
+        },
+        {
+            grantType: "language",
+            choose: 1,
+            selectionFilter: { any: true },
+            description: "One extra language of your choice",
+        },
+    ],
 };
 
 /**

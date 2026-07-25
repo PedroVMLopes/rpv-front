@@ -557,7 +557,9 @@
       "subclassLevel": "Subclass at level",
       "size": "Size",
       "speed": "Speed",
-      "abilityScores": "Ability score increase"
+      "abilityScores": "Ability score increase",
+      "age": "Age",
+      "alignment": "Alignment"
     }
   },
   "items": {

@@ -107,9 +107,7 @@ export default function CharacterCard({ characterId }: CharacterCardProps) {
                     <div className="my-2 w-full">
                             <div className="rounded-2xl p-2 px-3 border-3 bg-accent text-accent-foreground flex flex-row justify-around">
                                 {showRaceBlock ? (
-                                    <div>
-                                        <RaceBackgroundBlock stored={stored} />
-                                    </div>
+                                    <RaceBackgroundBlock stored={stored} />
                                 ) : null}
                                 {showClassBlock ? (
                                     <ClassSubclassOnlyBlock stored={stored} />

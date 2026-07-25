@@ -35,10 +35,10 @@ export function CatalogSelectionCard({
                 }
             }}
             className={cn(
-                "flex w-full cursor-pointer items-center justify-between gap-2 rounded-xl border p-3 text-left transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "flex w-full cursor-pointer items-center justify-between gap-2 rounded-xl border-3 p-3 text-left transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 selected
-                    ? "border-primary border-2 ring-1 ring-primary/20"
-                    : "border-border bg-card hover:bg-muted/40"
+                    ? "border-primary border-2 ring-1 ring-primary/20 bg-card text-card-foreground hover:bg-muted/40 hover:text-card"
+                    : "border-border bg-accent text-accent-foreground hover:bg-card hover:text-card-foreground"
             )}
         >
             <span className="min-w-0 flex-1 font-serif text-base font-semibold leading-tight">
@@ -46,7 +46,7 @@ export function CatalogSelectionCard({
             </span>
             <Button
                 type="button"
-                variant="secondary"
+                variant="default"
                 size="icon"
                 className="size-8 shrink-0"
                 aria-label={t("selection.expandDetails")}

@@ -112,6 +112,8 @@ export function mapOpen5eRace(
         system: "dnd",
         sourceDocument: api.document__slug ?? "",
         description: api.desc,
+        ageDesc: api.age,
+        alignmentDesc: api.alignment,
         size: api.size_raw,
         speedWalk: api.speed?.walk ?? 0,
         languagesDesc: api.languages,

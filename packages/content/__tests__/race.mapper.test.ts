@@ -31,6 +31,17 @@ describe("mapOpen5eRace", () => {
         ]);
     });
 
+    it("maps age and alignment descriptions", () => {
+        const dwarf = mapOpen5eRace(loadRace("dwarf"));
+
+        expect(dwarf.ageDesc).toContain(
+            "Dwarves mature at the same rate as humans"
+        );
+        expect(dwarf.alignmentDesc).toContain(
+            "Most dwarves are lawful"
+        );
+    });
+
     it("applies curation overrides to parsed traits", () => {
         const elf = mapOpen5eRace(loadRace("elf"));
         const keenSenses = elf.traits.find((t) => t.slug === "keen-senses");

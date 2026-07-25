@@ -21,6 +21,8 @@ export type CatalogSelectionMetadata = {
     visionDesc?: string;
     size?: string;
     asiDesc?: string;
+    ageDesc?: string;
+    alignmentDesc?: string;
 };
 
 export type CatalogSelectionEntry = {

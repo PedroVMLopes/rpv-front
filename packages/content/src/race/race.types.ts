@@ -38,6 +38,8 @@ export interface RaceCatalogEntry {
     system: "dnd";
     sourceDocument: string;
     description: string;
+    ageDesc: string;
+    alignmentDesc: string;
     size: string;
     speedWalk: number;
     languagesDesc: string;

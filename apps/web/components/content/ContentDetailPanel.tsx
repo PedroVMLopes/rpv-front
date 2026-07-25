@@ -20,7 +20,9 @@ export function ContentDetailPanel({ model }: ContentDetailPanelProps) {
                     {section.rows.map((row) => (
                         <div
                             key={row.labelKey}
-                            className="flex flex-col gap-0.5 text-sm"
+                            className={`flex flex-col gap-0.5 text-sm ${
+                                row.fullWidth ? "sm:col-span-2" : ""
+                            }`}
                         >
                             <dt className="text-muted-foreground">
                                 {t(`fields.${row.labelKey}`)}
