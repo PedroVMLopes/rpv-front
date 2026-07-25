@@ -11,6 +11,8 @@ import { buildRaceResourcePreviewChips } from "@/lib/character/creation/raceCata
 import type { ContentDetailModel } from "@/lib/content/contentDetail.types";
 import { ContentDetailModal } from "@/components/content/ContentDetailModal";
 import { GrantPreviewGroupedPanel } from "@/components/characters/creation/GrantPreviewGroupedPanel";
+import { Button } from "@/components/ui/button";
+import { DialogFooter } from "@/components/ui/dialog";
 import type { SystemKey } from "@/presets";
 
 type CatalogDetailModalProps = {
@@ -22,6 +24,8 @@ type CatalogDetailModalProps = {
     source: ModifierSource;
     selectionKind?: CatalogSelectionKind;
     metadata?: CatalogSelectionMetadata;
+    onCancel: () => void;
+    onChoose: () => void;
 };
 
 export function CatalogDetailModal({
@@ -33,8 +37,11 @@ export function CatalogDetailModal({
     source,
     selectionKind,
     metadata,
+    onCancel,
+    onChoose,
 }: CatalogDetailModalProps) {
     const t = useTranslations("characterCreation");
+    const tCommon = useTranslations("common");
     const grants =
         model.kind === "catalog" ? model.catalogGrants ?? [] : [];
 
@@ -66,6 +73,20 @@ export function CatalogDetailModal({
                         extraResourceChips={extraResourceChips}
                     />
                 ) : null
+            }
+            footer={
+                <DialogFooter className="sm:justify-between">
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={onCancel}
+                    >
+                        {tCommon("cancel")}
+                    </Button>
+                    <Button type="button" variant="default" onClick={onChoose}>
+                        {t("selection.choose")}
+                    </Button>
+                </DialogFooter>
             }
         />
     );

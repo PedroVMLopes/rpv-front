@@ -98,20 +98,25 @@ export function CatalogSelectionPage({
         });
     }
 
-    function handleToggle(entry: CatalogSelectionEntry) {
+    function handleOpen(entry: CatalogSelectionEntry) {
         if (disabled) {
             return;
         }
 
-        const current =
-            typeof selectedSlug === "string" ? selectedSlug : "";
-        const nextSlug = current === entry.slug ? "" : entry.slug;
+        setExpandedEntry(entry);
+    }
 
-        if (nextSlug === current) {
+    function handleCancel() {
+        setExpandedEntry(null);
+    }
+
+    function handleChoose() {
+        if (!expandedEntry) {
             return;
         }
 
-        applySelection(nextSlug);
+        applySelection(expandedEntry.slug);
+        setExpandedEntry(null);
     }
 
     const expandedModel = expandedEntry
@@ -126,8 +131,7 @@ export function CatalogSelectionPage({
                         key={entry.slug}
                         entry={entry}
                         selected={selectedSlug === entry.slug}
-                        onToggle={() => handleToggle(entry)}
-                        onExpand={() => setExpandedEntry(entry)}
+                        onOpen={() => handleOpen(entry)}
                     />
                 ))}
             </CatalogSelectionGrid>
@@ -154,6 +158,8 @@ export function CatalogSelectionPage({
                     source={buildSourceForField(formField, expandedEntry)}
                     selectionKind={kind}
                     metadata={expandedEntry.metadata}
+                    onCancel={handleCancel}
+                    onChoose={handleChoose}
                 />
             ) : null}
         </div>

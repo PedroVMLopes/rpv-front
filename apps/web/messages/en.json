@@ -379,6 +379,7 @@
     },
     "selection": {
       "expandDetails": "View details",
+      "choose": "Choose",
       "deselect": "Clear selection",
       "deferredChoice": "You will choose {count} later in {stepLabel} ({label})",
       "deferredChoiceGeneric": "You will make this choice in a later step",

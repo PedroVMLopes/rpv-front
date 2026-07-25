@@ -37,41 +37,71 @@ describe("CatalogSelectionPage", () => {
         );
     });
 
-    it("selects race with primary border styling", async () => {
+    it("opens modal on card click without selecting until Choose", async () => {
         const user = userEvent.setup();
         render(<CatalogHarness />);
 
         const dwarfCard = screen.getByTestId("catalog-card-dwarf");
         await user.click(dwarfCard);
 
-        expect(screen.getByTestId("race-value")).toHaveTextContent("dwarf");
-        expect(dwarfCard.className).toMatch(/border-primary/);
-        expect(dwarfCard.className).not.toMatch(/bg-primary/);
+        expect(screen.getByTestId("race-value")).not.toHaveTextContent("dwarf");
+        expect(
+            screen.getByTestId("catalog-detail-placeholder")
+        ).toBeInTheDocument();
+
+        const dialog = await screen.findByRole("dialog");
+        expect(dialog).toBeInTheDocument();
+        expect(
+            within(dialog).getByRole("button", { name: "Cancel" })
+        ).toBeInTheDocument();
+        expect(
+            within(dialog).getByRole("button", { name: "Choose" })
+        ).toBeInTheDocument();
     });
 
-    it("shows detail panel after selection", async () => {
+    it("keeps selection unchanged when Cancel closes the modal", async () => {
+        const user = userEvent.setup();
+        render(<CatalogHarness defaultValues={{ race: "elf" }} />);
+
+        await user.click(screen.getByTestId("catalog-card-dwarf"));
+
+        const dialog = await screen.findByRole("dialog");
+        await user.click(within(dialog).getByRole("button", { name: "Cancel" }));
+
+        expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+        expect(screen.getByTestId("race-value")).toHaveTextContent("elf");
+        expect(screen.getByTestId("catalog-card-elf").className).toMatch(
+            /border-primary/
+        );
+    });
+
+    it("applies selection and shows detail panel on Choose", async () => {
         const user = userEvent.setup();
         render(<CatalogHarness />);
 
         await user.click(screen.getByTestId("catalog-card-dwarf"));
 
+        const dialog = await screen.findByRole("dialog");
+        await user.click(within(dialog).getByRole("button", { name: "Choose" }));
+
+        expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+        expect(screen.getByTestId("race-value")).toHaveTextContent("dwarf");
+        expect(screen.getByTestId("catalog-card-dwarf").className).toMatch(
+            /border-primary/
+        );
         expect(screen.getByTestId("catalog-detail-panel")).toBeInTheDocument();
         expect(screen.getByText("Proficiencies")).toBeInTheDocument();
         expect(screen.getByText("Speed: 25 ft")).toBeInTheDocument();
         expect(screen.getByText("Darkvision: 60 ft")).toBeInTheDocument();
     });
 
-    it("opens expand modal with grouped weapons, languages, and resources", async () => {
+    it("opens modal with grouped weapons, languages, and resources", async () => {
         const user = userEvent.setup();
         render(<CatalogHarness />);
 
-        const dwarfCard = screen.getByTestId("catalog-card-dwarf");
-        await user.click(
-            within(dwarfCard).getByRole("button", { name: "View details" })
-        );
+        await user.click(screen.getByTestId("catalog-card-dwarf"));
 
         const dialog = await screen.findByRole("dialog");
-        expect(dialog).toBeInTheDocument();
         expect(within(dialog).getByText("Weapons")).toBeInTheDocument();
         expect(within(dialog).getByText("Languages")).toBeInTheDocument();
         expect(within(dialog).getByText("Resources")).toBeInTheDocument();
@@ -91,17 +121,6 @@ describe("CatalogSelectionPage", () => {
         expect(within(dialog).queryByText(/## /)).not.toBeInTheDocument();
     });
 
-    it("deselects race on second click", async () => {
-        const user = userEvent.setup();
-        render(<CatalogHarness defaultValues={{ race: "dwarf" }} />);
-
-        const dwarfCard = screen.getByTestId("catalog-card-dwarf");
-        await user.click(dwarfCard);
-
-        expect(screen.getByTestId("race-value")).toHaveTextContent("");
-        expect(screen.getByTestId("catalog-detail-placeholder")).toBeInTheDocument();
-    });
-
     it("uses responsive grid classes", () => {
         render(<CatalogHarness />);
 
@@ -110,7 +129,7 @@ describe("CatalogSelectionPage", () => {
         expect(grid?.className).toMatch(/md:grid/);
     });
 
-    it("applies race change immediately when grant picks exist", async () => {
+    it("changes race only after Choose when grant picks exist", async () => {
         const user = userEvent.setup();
         render(
             <CatalogHarness
@@ -128,6 +147,11 @@ describe("CatalogSelectionPage", () => {
         );
 
         await user.click(screen.getByTestId("catalog-card-elf"));
+
+        expect(screen.getByTestId("race-value")).toHaveTextContent("dwarf");
+
+        const dialog = await screen.findByRole("dialog");
+        await user.click(within(dialog).getByRole("button", { name: "Choose" }));
 
         expect(screen.getByTestId("race-value")).toHaveTextContent("elf");
         expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
