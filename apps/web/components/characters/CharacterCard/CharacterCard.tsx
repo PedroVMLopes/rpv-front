@@ -105,7 +105,7 @@ export default function CharacterCard({ characterId }: CharacterCardProps) {
             <CardContent className="flex flex-col items-center p-0">
                 {(showRaceBlock || showClassBlock) && (
                     <div className="my-2 w-full">
-                            <div className="rounded-2xl p-2 px-3 border-3 border-secondary bg-popover text-popover-foreground flex flex-row justify-around">
+                            <div className="rounded-2xl p-2 px-3 border-3 bg-accent text-accent-foreground flex flex-row justify-around">
                                 {showRaceBlock ? (
                                     <div>
                                         <RaceBackgroundBlock stored={stored} />
