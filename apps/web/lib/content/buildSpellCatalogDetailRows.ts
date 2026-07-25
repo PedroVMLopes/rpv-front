@@ -42,7 +42,6 @@ export function buildSpellCatalogDetailRows(
 ): ContentDetailRow[] {
     const yes = formatters.tContentDetail("yes");
     const no = formatters.tContentDetail("no");
-    const source = formatSpellSource(catalogEntry);
     const archetype = catalogEntry.archetype.trim();
 
     const rows: ContentDetailRow[] = [
@@ -78,14 +77,6 @@ export function buildSpellCatalogDetailRows(
         rows.push({
             labelKey: "archetype",
             value: archetype,
-            fullWidth: true,
-        });
-    }
-
-    if (source) {
-        rows.push({
-            labelKey: "source",
-            value: source,
             fullWidth: true,
         });
     }

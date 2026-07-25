@@ -21,8 +21,10 @@ export type ContentDetailModel = {
     kind: "spell" | "item" | "catalog";
     title: string;
     sections: ContentDetailSection[];
+    shortDescription?: string;
     description?: string;
     higherLevel?: string;
+    source?: string;
     useAction?: ContentUseActionSpec;
     catalogGrants?: Grant[];
 };

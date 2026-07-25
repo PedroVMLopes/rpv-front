@@ -84,9 +84,7 @@ describe("buildSpellContentModel", () => {
             detail.sections[0]?.rows.find((row) => row.labelKey === "castingTime")
                 ?.value
         ).toBe("1 action");
-        expect(
-            detail.sections[0]?.rows.find((row) => row.labelKey === "source")?.value
-        ).toBe("5e Core Rules · phb 242");
+        expect(detail.source).toBe("5e Core Rules · phb 242");
     });
 
     it("builds a cast use action for detect-magic without roll profile", () => {
@@ -167,6 +165,10 @@ describe("buildSpellContentModel", () => {
         expect(byKey.castingTime).toBe("1 action");
         expect(byKey.spellLists).toBe("Sorcerer, Wizard");
         expect(byKey.archetype).toBe("Cleric: Light, Warlock: Fiend");
-        expect(byKey.source).toBe("5e Core Rules · phb 220");
+        expect(byKey.source).toBeUndefined();
+        expect(detail.shortDescription).toBe(
+            "15-foot cone; Dexterity save; 3d6 fire damage, half on success; ignites flammable objects"
+        );
+        expect(detail.source).toBe("5e Core Rules · phb 220");
     });
 });

@@ -128,10 +128,10 @@ export function PreparedSpellChoiceGrid({
                         <div
                             key={spell.slug}
                             className={cn(
-                                "flex flex-col gap-2 rounded-xl border p-3 transition-colors",
+                                "flex flex-col gap-2 rounded-xl border-3 p-3 transition-colors",
                                 isSelected
-                                    ? "border-primary bg-primary text-primary-foreground"
-                                    : "border-border bg-card",
+                                    ? "border-primary border-2 ring-1 ring-primary/20 bg-card text-card-foreground"
+                                    : "border-border bg-accent text-accent-foreground",
                                 selectDisabled && "opacity-60"
                             )}
                         >
@@ -151,14 +151,7 @@ export function PreparedSpellChoiceGrid({
                                         {spell.name}
                                     </span>
                                     {spell.shortDescription ? (
-                                        <span
-                                            className={cn(
-                                                "mt-1 block text-xs leading-snug",
-                                                isSelected
-                                                    ? "text-primary-foreground/80"
-                                                    : "text-muted-foreground"
-                                            )}
-                                        >
+                                        <span className="mt-1 block text-xs leading-snug opacity-80">
                                             {spell.shortDescription}
                                         </span>
                                     ) : null}

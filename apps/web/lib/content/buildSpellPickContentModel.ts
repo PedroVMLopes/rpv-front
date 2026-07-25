@@ -9,7 +9,7 @@ import type {
     SpellContentModels,
 } from "./contentDetail.types";
 import type { SpellContentFormatters } from "./buildSpellContentModel";
-import { buildSpellCatalogDetailRows } from "./buildSpellCatalogDetailRows";
+import { buildSpellCatalogDetailRows, formatSpellSource } from "./buildSpellCatalogDetailRows";
 
 function schoolToKey(school: string): string {
     return school.trim().toLowerCase().replace(/\s+/g, "_");
@@ -137,8 +137,10 @@ export function buildSpellPickContentModel(
         kind: "spell",
         title: catalogEntry.name,
         sections: [{ rows: detailRows }],
+        shortDescription,
         description: catalogEntry.description,
         higherLevel: catalogEntry.higherLevel || undefined,
+        source: formatSpellSource(catalogEntry),
     };
 
     return { summary, detail };

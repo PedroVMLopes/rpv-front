@@ -10,7 +10,7 @@ import {
     hasSpellRollAction,
 } from "@/lib/roll/buildRollRequest";
 import { formatRollButtonLabel } from "./formatRollButtonLabel";
-import { buildSpellCatalogDetailRows } from "./buildSpellCatalogDetailRows";
+import { buildSpellCatalogDetailRows, formatSpellSource } from "./buildSpellCatalogDetailRows";
 import type {
     ContentDetailModel,
     ContentSummaryModel,
@@ -229,6 +229,9 @@ export function buildSpellContentModel(
         : baseRows;
 
     const shortDescription = catalogEntry?.shortDescription.trim() || undefined;
+    const source = catalogEntry
+        ? formatSpellSource(catalogEntry)
+        : undefined;
 
     const summary: ContentSummaryModel = {
         id: spell.id,
@@ -244,8 +247,10 @@ export function buildSpellContentModel(
         kind: "spell",
         title: spell.name,
         sections: [{ rows: detailRows }],
+        shortDescription,
         description: catalogEntry?.description ?? spell.description,
         higherLevel: catalogEntry?.higherLevel || undefined,
+        source,
         useAction,
     };
 

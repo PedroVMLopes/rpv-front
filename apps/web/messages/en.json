@@ -528,6 +528,7 @@
   "contentDetail": {
     "expand": "Expand {title}",
     "description": "Description",
+    "summary": "Summary",
     "higherLevel": "At higher levels",
     "yes": "Yes",
     "no": "No",

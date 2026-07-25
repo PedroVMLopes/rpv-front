@@ -12,6 +12,17 @@ export function ContentDetailPanel({ model }: ContentDetailPanelProps) {
 
     return (
         <div className="flex flex-col gap-4">
+            {model.shortDescription ? (
+                <div className="flex flex-col gap-1.5">
+                    <p className="text-sm font-medium text-muted-foreground">
+                        {t("summary")}
+                    </p>
+                    <p className="text-sm leading-relaxed">
+                        {model.shortDescription}
+                    </p>
+                </div>
+            ) : null}
+
             {model.sections.map((section, sectionIndex) => (
                 <dl
                     key={`section-${sectionIndex}`}
@@ -48,6 +59,15 @@ export function ContentDetailPanel({ model }: ContentDetailPanelProps) {
                         {t("higherLevel")}
                     </p>
                     <p className="text-sm leading-relaxed">{model.higherLevel}</p>
+                </div>
+            ) : null}
+
+            {model.source ? (
+                <div className="flex flex-col gap-1.5">
+                    <p className="text-sm font-medium text-muted-foreground">
+                        {t("fields.source")}
+                    </p>
+                    <p className="text-sm leading-relaxed">{model.source}</p>
                 </div>
             ) : null}
         </div>
