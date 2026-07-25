@@ -1,4 +1,8 @@
-import { listSpellSlotResources } from "../lib/character/spellSlotResources";
+import {
+    formatSpellSlotResourceLabel,
+    listSpellSlotResources,
+    parseSpellSlotLevel,
+} from "../lib/character/spellSlotResources";
 
 describe("listSpellSlotResources", () => {
     it("returns spell slot resources sorted by level", () => {
@@ -27,5 +31,31 @@ describe("listSpellSlotResources", () => {
 
     it("ignores non spell slot resource keys", () => {
         expect(listSpellSlotResources({ hp: 8 })).toEqual([]);
+    });
+});
+
+describe("parseSpellSlotLevel", () => {
+    it("parses numeric spell slot levels", () => {
+        expect(parseSpellSlotLevel("spell-slots-3")).toBe(3);
+        expect(parseSpellSlotLevel("rage-uses")).toBeUndefined();
+    });
+});
+
+describe("formatSpellSlotResourceLabel", () => {
+    const translate = (
+        key: "spellSlotsGrouped" | "spellSlotsGroupedDelta",
+        values: { level: number; count: number }
+    ) =>
+        key === "spellSlotsGroupedDelta"
+            ? `Spell Slots Level ${values.level}: +${values.count}`
+            : `Spell Slots Level ${values.level}: ${values.count}`;
+
+    it("formats totals and signed deltas", () => {
+        expect(formatSpellSlotResourceLabel(1, 4, translate)).toBe(
+            "Spell Slots Level 1: 4"
+        );
+        expect(
+            formatSpellSlotResourceLabel(2, 1, translate, { signed: true })
+        ).toBe("Spell Slots Level 2: +1");
     });
 });

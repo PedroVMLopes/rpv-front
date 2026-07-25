@@ -152,6 +152,8 @@
     "grantedFeaturesTitle": "Recursos Concedidos",
     "spellSlotsTitle": "Espaços de Magia",
     "spellSlotEntry": "Nível {level}: {count}",
+    "spellSlotsGrouped": "Espaços de Magia Nível {level}: {count}",
+    "spellSlotsGroupedDelta": "Espaços de Magia Nível {level}: +{count}",
     "classResourcesTitle": "Recursos derivados",
     "classResourceEntry": "{ref}: {count}",
     "classFeaturesTitle": "Habilidades de Classe",

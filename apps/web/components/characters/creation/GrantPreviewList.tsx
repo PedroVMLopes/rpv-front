@@ -11,6 +11,7 @@ import {
     type GrantPreviewItem,
 } from "@/lib/character/creation/grantPreviewLabels";
 import type { GrantPreviewContext } from "@/lib/character/creation/groupGrantPreviewBuckets";
+import type { SpellSlotLabelTranslate } from "@/lib/character/spellSlotResources";
 import { contentRepo } from "@/lib/content/contentRepository";
 import { buildItemPreviewContentModel } from "@/lib/content/buildItemPreviewContentModel";
 import { buildSpellPickContentModel } from "@/lib/content/buildSpellPickContentModel";
@@ -35,7 +36,8 @@ function buildItemsFromContexts(
     contentLocale: Locale,
     system: SystemKey,
     translateAbility: (ref: string) => string,
-    translateResource: (ref: string) => string
+    translateResource: (ref: string) => string,
+    translateSpellSlots?: SpellSlotLabelTranslate
 ): GrantPreviewItem[] {
     return contexts.flatMap(({ grant, source, featureLevel }, contextIndex) =>
         buildGrantPreviewItems(
@@ -45,7 +47,8 @@ function buildItemsFromContexts(
             system,
             translateAbility,
             translateResource,
-            featureLevel
+            featureLevel,
+            translateSpellSlots
         ).map((item) => ({
             ...item,
             id: `${source.type}:${source.id}:${featureLevel ?? "base"}:${contextIndex}:${item.id}`,
@@ -73,6 +76,7 @@ export function GrantPreviewList({
     const t = useTranslations("characterCreation");
     const tAbilities = useTranslations("abilities");
     const tResources = useTranslations("classResources");
+    const tGrants = useTranslations("grants");
     const tSpells = useTranslations("spells");
     const tContentDetail = useTranslations("contentDetail");
 
@@ -84,6 +88,8 @@ export function GrantPreviewList({
         const translateAbility = (ref: string) => tAbilities(ref as never);
         const translateResource = (key: string, values?: Record<string, unknown>) =>
             tResources(key as never, values as never);
+        const translateSpellSlots: SpellSlotLabelTranslate = (key, values) =>
+            tGrants(key, values);
 
         const built = contexts
             ? buildItemsFromContexts(
@@ -91,7 +97,8 @@ export function GrantPreviewList({
                   contentLocale,
                   system,
                   translateAbility,
-                  translateResource
+                  translateResource,
+                  translateSpellSlots
               )
             : buildGrantPreviewItems(
                   grants,
@@ -100,7 +107,8 @@ export function GrantPreviewList({
                   system,
                   translateAbility,
                   translateResource,
-                  featureLevel
+                  featureLevel,
+                  translateSpellSlots
               );
 
         if (mode === "fixed-only") {
@@ -117,6 +125,7 @@ export function GrantPreviewList({
         featureLevel,
         mode,
         tAbilities,
+        tGrants,
         tResources,
     ]);
 

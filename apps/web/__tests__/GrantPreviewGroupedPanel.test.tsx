@@ -65,6 +65,26 @@ describe("GrantPreviewGroupedPanel", () => {
         expect(screen.getByText("Cantrips")).toBeInTheDocument();
         expect(screen.getByText("Resources")).toBeInTheDocument();
         expect(screen.getByText("Fire Bolt")).toBeInTheDocument();
-        expect(screen.getByText(/Spell Slots/i)).toBeInTheDocument();
+        expect(screen.getByText("Spell Slots Level 1: 2")).toBeInTheDocument();
+    });
+
+    it("aggregates wizard spell slots through level 3 in resources preview", () => {
+        const contexts = getClassGrantSourcesForLevel("wizard", 3).flatMap(
+            (block) =>
+                block.grants.map((grant) => ({
+                    grant,
+                    source: { type: "class" as const, id: "wizard" },
+                    featureLevel: block.featureLevel,
+                }))
+        );
+
+        renderPanel(contexts);
+
+        expect(screen.getByText("Spell Slots Level 1: 4")).toBeInTheDocument();
+        expect(screen.getByText("Spell Slots Level 2: 2")).toBeInTheDocument();
+        expect(screen.getByText("Spell Slots Level 3: 1")).toBeInTheDocument();
+        expect(
+            screen.queryByText("Spell Slots Level 1: 2")
+        ).not.toBeInTheDocument();
     });
 });

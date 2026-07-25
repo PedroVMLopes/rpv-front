@@ -5,6 +5,11 @@ import {
     getClassGrantSourcesForLevel,
     type Grant,
 } from "@rpv/content";
+import {
+    formatSpellSlotResourceLabel,
+    parseSpellSlotLevel,
+    type SpellSlotLabelTranslate,
+} from "@/lib/character/spellSlotResources";
 
 const FIXED_PROFICIENCY_GRANT_TYPES = new Set<Grant["grantType"]>([
     "saving_throw_proficiency",
@@ -134,16 +139,25 @@ export function formatClassStepGrantLabel(
     grant: CharacterGrant,
     locale: Locale,
     translateAbility: (ref: string) => string,
-    translateResource: (ref: string) => string
+    translateResource: (ref: string) => string,
+    translateSpellSlots?: SpellSlotLabelTranslate
 ): string {
     if (grant.name) {
         return grant.name;
     }
 
     if (grant.kind === "resource") {
-        if (grant.ref.startsWith("spell-slots-")) {
-            const level = grant.ref.slice("spell-slots-".length);
-            const label = `L${level} spell slots`;
+        const slotLevel = parseSpellSlotLevel(grant.ref);
+        if (slotLevel !== undefined && translateSpellSlots) {
+            return formatSpellSlotResourceLabel(
+                slotLevel,
+                grant.amount ?? 0,
+                translateSpellSlots
+            );
+        }
+
+        if (slotLevel !== undefined) {
+            const label = `L${slotLevel} spell slots`;
             return grant.amount !== undefined ? `${label}: ${grant.amount}` : label;
         }
 

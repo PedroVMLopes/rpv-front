@@ -14,6 +14,7 @@ import {
 } from "@/lib/character/classStepDisplay";
 import { readLevelFromForm } from "@/lib/character/level";
 import { formatResourceRefLabel } from "@/lib/character/resourceLabels";
+import type { SpellSlotLabelTranslate } from "@/lib/character/spellSlotResources";
 import { getGrantSourceTypesForStep } from "@/lib/character/characterCreationSteps";
 
 type FieldConfig = {
@@ -37,7 +38,11 @@ export function ClassStepContent({
     const t = useTranslations("characterCreation");
     const tAbilities = useTranslations("abilities");
     const tResources = useTranslations("classResources");
+    const tGrants = useTranslations("grants");
     const { control } = form;
+
+    const translateSpellSlots: SpellSlotLabelTranslate = (key, values) =>
+        tGrants(key, values);
 
     const classSlug = useWatch({ control, name: "characterClass" });
     const watchedLevel = useWatch({ control, name: "level" });
@@ -74,7 +79,8 @@ export function ClassStepContent({
                                     (ref) =>
                                         formatResourceRefLabel(ref, (key) =>
                                             tResources(key)
-                                        )
+                                        ),
+                                    translateSpellSlots
                                 )}
                             </span>
                         ))}

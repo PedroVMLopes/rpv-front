@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import type { Locale } from "@rpv/domain";
+import { aggregateResourcePreviewContexts } from "@/lib/character/creation/aggregateResourcePreviewContexts";
 import {
     groupGrantPreviewBuckets,
     hasAnyActionsResourceItems,
@@ -110,7 +111,9 @@ export function GrantPreviewGroupedPanel({
         {
             key: "resources",
             labelKey: "resources",
-            contexts: buckets.actionsAndResources.resources,
+            contexts: aggregateResourcePreviewContexts(
+                buckets.actionsAndResources.resources
+            ),
         },
     ];
 

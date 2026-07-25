@@ -152,6 +152,8 @@
     "grantedFeaturesTitle": "Granted Features",
     "spellSlotsTitle": "Spell Slots",
     "spellSlotEntry": "Level {level}: {count}",
+    "spellSlotsGrouped": "Spell Slots Level {level}: {count}",
+    "spellSlotsGroupedDelta": "Spell Slots Level {level}: +{count}",
     "classResourcesTitle": "Class Resources",
     "classResourceEntry": "{ref}: {count}",
     "classFeaturesTitle": "Class Features",

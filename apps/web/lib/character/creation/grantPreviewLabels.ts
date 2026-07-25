@@ -7,6 +7,7 @@ import {
 import type { Locale, ModifierSource } from "@rpv/domain";
 import { formatClassStepGrantLabel } from "@/lib/character/classStepDisplay";
 import { formatResourceRefLabel } from "@/lib/character/resourceLabels";
+import type { SpellSlotLabelTranslate } from "@/lib/character/spellSlotResources";
 import { contentRepo } from "@/lib/content/contentRepository";
 import type { SystemKey } from "@/presets";
 
@@ -75,7 +76,8 @@ export function buildGrantPreviewItems(
     system: SystemKey,
     translateAbility: (ref: string) => string,
     translateResource: (ref: string) => string,
-    featureLevel?: number
+    featureLevel?: number,
+    translateSpellSlots?: SpellSlotLabelTranslate
 ): GrantPreviewItem[] {
     const items: GrantPreviewItem[] = [];
 
@@ -141,7 +143,8 @@ export function buildGrantPreviewItems(
                         characterGrant,
                         locale,
                         translateAbility,
-                        (ref) => formatResourceRefLabel(ref, translateResource)
+                        (ref) => formatResourceRefLabel(ref, translateResource),
+                        translateSpellSlots
                     ),
                     grant,
                 });

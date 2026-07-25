@@ -71,10 +71,10 @@ describe("ClassResourcesField", () => {
             />
         );
 
-        expect(screen.getByText("Level 1: 4")).toBeInTheDocument();
-        expect(screen.getByText("Level 2: 3")).toBeInTheDocument();
-        expect(screen.getByText("Level 3: 2")).toBeInTheDocument();
-        expect(screen.getByText("Level 4: 1")).toBeInTheDocument();
+        expect(screen.getByText("Spell Slots Level 1: 4")).toBeInTheDocument();
+        expect(screen.getByText("Spell Slots Level 2: 3")).toBeInTheDocument();
+        expect(screen.getByText("Spell Slots Level 3: 2")).toBeInTheDocument();
+        expect(screen.getByText("Spell Slots Level 4: 1")).toBeInTheDocument();
     });
 
     it("updates spell slot totals when level changes", async () => {
@@ -90,14 +90,18 @@ describe("ClassResourcesField", () => {
             />
         );
 
-        expect(screen.getByText("Level 1: 2")).toBeInTheDocument();
-        expect(screen.queryByText("Level 2: 3")).not.toBeInTheDocument();
+        expect(screen.getByText("Spell Slots Level 1: 2")).toBeInTheDocument();
+        expect(
+            screen.queryByText("Spell Slots Level 2: 3")
+        ).not.toBeInTheDocument();
 
         await user.clear(screen.getByLabelText("level-input"));
         await user.type(screen.getByLabelText("level-input"), "5");
 
         await waitFor(() => {
-            expect(screen.getByText("Level 2: 3")).toBeInTheDocument();
+            expect(
+                screen.getByText("Spell Slots Level 2: 3")
+            ).toBeInTheDocument();
         });
     });
 

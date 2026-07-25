@@ -3,13 +3,31 @@
 import { useTranslations } from "next-intl";
 import type { LevelGainSummary } from "@/lib/character/buildLevelGainSummary";
 import { formatResourceRefLabel } from "@/lib/character/resourceLabels";
+import {
+    formatSpellSlotResourceLabel,
+    parseSpellSlotLevel,
+} from "@/lib/character/spellSlotResources";
 import { LevelGainInfoCard } from "./LevelGainInfoCard";
 
 function resourceLine(
     ref: string,
     amount: number,
-    labelFor: (ref: string) => string
+    labelFor: (ref: string) => string,
+    translateSpellSlots: (
+        key: "spellSlotsGrouped" | "spellSlotsGroupedDelta",
+        values: { level: number; count: number }
+    ) => string
 ): string {
+    const slotLevel = parseSpellSlotLevel(ref);
+    if (slotLevel !== undefined) {
+        return formatSpellSlotResourceLabel(
+            slotLevel,
+            amount,
+            translateSpellSlots,
+            { signed: true }
+        );
+    }
+
     const sign = amount > 0 ? "+" : "";
     return `${labelFor(ref)}: ${sign}${amount}`;
 }
@@ -21,6 +39,7 @@ export function LevelGainSummaryPanel({
 }) {
     const t = useTranslations("characterCreation.levelSummary");
     const tResources = useTranslations("classResources");
+    const tGrants = useTranslations("grants");
 
     const labelFor = (ref: string) =>
         formatResourceRefLabel(
@@ -28,6 +47,11 @@ export function LevelGainSummaryPanel({
             (key) => tResources(key),
             (key) => tResources.has(key)
         );
+
+    const translateSpellSlots = (
+        key: "spellSlotsGrouped" | "spellSlotsGroupedDelta",
+        values: { level: number; count: number }
+    ) => tGrants(key, values);
 
     const hasSpells =
         summary.spellPicks.spells > 0 || summary.spellPicks.cantrips > 0;
@@ -54,7 +78,12 @@ export function LevelGainSummaryPanel({
                     <ul className="list-inside list-disc text-sm text-muted-foreground">
                         {summary.classResources.map((entry) => (
                             <li key={entry.ref}>
-                                {resourceLine(entry.ref, entry.amount, labelFor)}
+                                {resourceLine(
+                                    entry.ref,
+                                    entry.amount,
+                                    labelFor,
+                                    translateSpellSlots
+                                )}
                             </li>
                         ))}
                     </ul>
@@ -66,7 +95,12 @@ export function LevelGainSummaryPanel({
                     <ul className="list-inside list-disc text-sm text-muted-foreground">
                         {summary.subclassResources.map((entry) => (
                             <li key={entry.ref}>
-                                {resourceLine(entry.ref, entry.amount, labelFor)}
+                                {resourceLine(
+                                    entry.ref,
+                                    entry.amount,
+                                    labelFor,
+                                    translateSpellSlots
+                                )}
                             </li>
                         ))}
                     </ul>

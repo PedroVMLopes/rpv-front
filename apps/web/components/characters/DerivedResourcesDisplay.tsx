@@ -4,6 +4,7 @@ import { useMemo, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { parseDerivedResources } from "@/lib/character/deriveResourcesFromForm";
 import { formatResourceRefLabel } from "@/lib/character/resourceLabels";
+import { formatSpellSlotResourceLabel } from "@/lib/character/spellSlotResources";
 
 type DerivedResourcesDisplayProps = {
     resources: Record<string, number>;
@@ -83,10 +84,11 @@ export function DerivedResourcesDisplay({
             >
                 {spellSlots.map((slot) => (
                     <li key={slot.ref}>
-                        {tGrants("spellSlotEntry", {
-                            level: slot.level,
-                            count: slot.count,
-                        })}
+                        {formatSpellSlotResourceLabel(
+                            slot.level,
+                            slot.count,
+                            (key, values) => tGrants(key, values)
+                        )}
                     </li>
                 ))}
             </ResourceSection>

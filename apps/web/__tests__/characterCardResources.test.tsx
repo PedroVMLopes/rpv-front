@@ -31,8 +31,8 @@ describe("DerivedResourcesDisplay on character card", () => {
 
         expect(screen.getByText("Rage Uses: 3")).toBeInTheDocument();
         expect(screen.queryByText(/rage-uses/)).not.toBeInTheDocument();
-        expect(screen.getByText("Level 1: 4")).toBeInTheDocument();
-        expect(screen.getByText("Level 2: 3")).toBeInTheDocument();
+        expect(screen.getByText("Spell Slots Level 1: 4")).toBeInTheDocument();
+        expect(screen.getByText("Spell Slots Level 2: 3")).toBeInTheDocument();
     });
 
     it("returns null when there are no derived resources and no empty hint", () => {
