@@ -16,7 +16,13 @@
     "level_int": 1,
     "school": "Transmutation",
     "dnd_class": "Bard, Sorcerer, Wizard",
-    "spell_lists": ["bard", "sorcerer", "wizard"],
+    "spell_lists": [
+        "bard",
+        "sorcerer",
+        "wizard"
+    ],
     "document__slug": "wotc-srd",
-    "document__title": "5e Core Rules"
+    "document__title": "5e Core Rules",
+    "page": "phb 239",
+    "archetype": ""
 }

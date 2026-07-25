@@ -32,6 +32,7 @@ export type ContentSummaryModel = {
     kind: "spell" | "item";
     title: string;
     badges: Array<{ label: string; variant?: "default" | "muted" }>;
+    shortDescription?: string;
     useAction?: ContentUseActionSpec;
 };
 

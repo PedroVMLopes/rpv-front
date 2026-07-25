@@ -192,6 +192,12 @@ export function SpellChoiceGrid({
                                             isFull && !isSelected;
                                         const disabled =
                                             unavailable || disabledByQuota;
+                                        const catalogEntry = getSpell(
+                                            option.value,
+                                            contentLocale
+                                        );
+                                        const shortDescription =
+                                            catalogEntry?.shortDescription.trim();
 
                                         return (
                                             <div
@@ -231,6 +237,20 @@ export function SpellChoiceGrid({
                                                                 ? `✓ ${option.label}`
                                                                 : option.label}
                                                         </span>
+                                                        {shortDescription ? (
+                                                            <span
+                                                                className={cn(
+                                                                    "mt-1 block text-xs leading-snug",
+                                                                    isSelected
+                                                                        ? "text-primary-foreground/80"
+                                                                        : "text-muted-foreground"
+                                                                )}
+                                                            >
+                                                                {
+                                                                    shortDescription
+                                                                }
+                                                            </span>
+                                                        ) : null}
                                                     </button>
                                                     <Button
                                                         type="button"

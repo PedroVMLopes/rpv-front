@@ -74,6 +74,8 @@ export function PreparedSpellChoiceGrid({
             return {
                 slug,
                 name: catalogEntry?.name ?? slug,
+                shortDescription:
+                    catalogEntry?.shortDescription.trim() || undefined,
                 catalogEntry,
             };
         });
@@ -148,6 +150,18 @@ export function PreparedSpellChoiceGrid({
                                     <span className="font-serif font-semibold leading-tight">
                                         {spell.name}
                                     </span>
+                                    {spell.shortDescription ? (
+                                        <span
+                                            className={cn(
+                                                "mt-1 block text-xs leading-snug",
+                                                isSelected
+                                                    ? "text-primary-foreground/80"
+                                                    : "text-muted-foreground"
+                                            )}
+                                        >
+                                            {spell.shortDescription}
+                                        </span>
+                                    ) : null}
                                 </button>
                                 <Button
                                     type="button"

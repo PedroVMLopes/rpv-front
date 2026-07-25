@@ -9,6 +9,7 @@ import type {
     SpellContentModels,
 } from "./contentDetail.types";
 import type { SpellContentFormatters } from "./buildSpellContentModel";
+import { buildSpellCatalogDetailRows } from "./buildSpellCatalogDetailRows";
 
 function schoolToKey(school: string): string {
     return school.trim().toLowerCase().replace(/\s+/g, "_");
@@ -86,7 +87,7 @@ export function buildSpellPickContentModel(
         variant: "muted",
     });
 
-    const detailRows = [
+    const baseRows = [
         {
             labelKey: "school",
             value: formatters.tSpells(
@@ -115,11 +116,20 @@ export function buildSpellPickContentModel(
         },
     ];
 
+    const detailRows = buildSpellCatalogDetailRows(
+        catalogEntry,
+        formatters,
+        baseRows
+    );
+
+    const shortDescription = catalogEntry.shortDescription.trim() || undefined;
+
     const summary: ContentSummaryModel = {
         id: catalogEntry.slug,
         kind: "spell",
         title: catalogEntry.name,
         badges,
+        shortDescription,
     };
 
     const detail: ContentDetailModel = {

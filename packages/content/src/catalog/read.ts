@@ -9,7 +9,13 @@ import type {
 } from "./catalog.types";
 
 function applyTranslation<
-    T extends { slug: string; name: string; description: string; language: Locale }
+    T extends {
+        slug: string;
+        name: string;
+        description: string;
+        language: Locale;
+        shortDescription?: string;
+    }
 >(
     entry: T,
     overlay: Record<string, CatalogEntryTranslation> | undefined,
@@ -24,6 +30,13 @@ function applyTranslation<
         ...entry,
         name: translation.name ?? entry.name,
         description: translation.description ?? entry.description,
+        ...(translation.shortDescription !== undefined ||
+        entry.shortDescription !== undefined
+            ? {
+                  shortDescription:
+                      translation.shortDescription ?? entry.shortDescription,
+              }
+            : {}),
         language: locale,
     };
 }

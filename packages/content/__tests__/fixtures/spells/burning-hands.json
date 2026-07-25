@@ -16,7 +16,12 @@
     "level_int": 1,
     "school": "Evocation",
     "dnd_class": "Sorcerer, Wizard",
-    "spell_lists": ["sorcerer", "wizard"],
+    "spell_lists": [
+        "sorcerer",
+        "wizard"
+    ],
     "document__slug": "wotc-srd",
-    "document__title": "5e Core Rules"
+    "document__title": "5e Core Rules",
+    "page": "phb 220",
+    "archetype": "Cleric: Light, Warlock: Fiend"
 }

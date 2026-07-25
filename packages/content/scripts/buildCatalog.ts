@@ -10,6 +10,7 @@ import type { Catalog } from "../src/catalog/catalog.types";
 import { dndLanguages } from "../src/catalog/languages.seed";
 import { dndSkills } from "../src/catalog/skills.seed";
 import type { Open5eRace, Open5eSpell } from "../src/open5e/open5e.types";
+import { getSpellShortDescription } from "../src/curation/spellShortDescriptions.dnd";
 import { mapOpen5eRace } from "../src/race/race.mapper";
 import { mapOpen5eSpell } from "../src/spell/spell.mapper";
 
@@ -35,7 +36,17 @@ const catalog: Catalog = {
     source: "open5e",
     defaultLocale: "en",
     races: rawRaces.map((race) => mapOpen5eRace(race)).sort(bySlug),
-    spells: rawSpells.map(mapOpen5eSpell).sort(bySlug),
+    spells: rawSpells
+        .map((raw) => {
+            const mapped = mapOpen5eSpell(raw);
+            return {
+                ...mapped,
+                shortDescription:
+                    getSpellShortDescription(mapped.slug) ??
+                    mapped.shortDescription,
+            };
+        })
+        .sort(bySlug),
     skills: dndSkills,
     languages: dndLanguages,
 };

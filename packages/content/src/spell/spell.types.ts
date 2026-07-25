@@ -11,13 +11,19 @@ export interface SpellCatalogEntry {
     castingTime: string;
     range: string;
     components: string;
+    material: string;
     duration: string;
     requiresConcentration: boolean;
     canBeCastAsRitual: boolean;
     description: string;
+    /** Curated one-line summary of the spell effect. */
+    shortDescription: string;
     higherLevel: string;
     spellLists: string[];
+    archetype: string;
+    page: string;
     sourceDocument: string;
+    sourceDocumentTitle: string;
 }
 
 export type SpellTargetKind =

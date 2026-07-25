@@ -30,6 +30,7 @@ export interface Catalog {
 export interface CatalogEntryTranslation {
     name?: string;
     description?: string;
+    shortDescription?: string;
 }
 
 /**

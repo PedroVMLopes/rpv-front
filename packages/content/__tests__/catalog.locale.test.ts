@@ -45,13 +45,18 @@ const catalog: Catalog = {
             castingTime: "1 action",
             range: "60 feet",
             components: "V, S",
+            material: "",
             duration: "Instantaneous",
             requiresConcentration: false,
             canBeCastAsRitual: false,
             description: "You hurl a bubble of acid.",
+            shortDescription: "Dexterity save; 1d6 acid",
             higherLevel: "",
             spellLists: ["wizard"],
+            archetype: "",
+            page: "phb 211",
             sourceDocument: "wotc-srd",
+            sourceDocumentTitle: "5e Core Rules",
         },
     ],
     skills: [],
@@ -61,7 +66,12 @@ const catalog: Catalog = {
 const ptBR: CatalogTranslations = {
     races: { dwarf: { name: "Anão" } },
     subraces: { "hill-dwarf": { name: "Anão da Colina" } },
-    spells: { "acid-splash": { name: "Respingo Ácido" } },
+    spells: {
+        "acid-splash": {
+            name: "Respingo Ácido",
+            shortDescription: "salvaguarda de Destreza; 1d6 de ácido",
+        },
+    },
 };
 
 describe("locale-aware catalog reads", () => {
@@ -75,8 +85,10 @@ describe("locale-aware catalog reads", () => {
         expect(race?.name).toBe("Anão");
         expect(race?.language).toBe("pt-BR");
         expect(race?.subraces[0].name).toBe("Anão da Colina");
-        expect(getSpell(catalog, "acid-splash", "pt-BR", ptBR)?.name).toBe(
-            "Respingo Ácido"
+        const spell = getSpell(catalog, "acid-splash", "pt-BR", ptBR);
+        expect(spell?.name).toBe("Respingo Ácido");
+        expect(spell?.shortDescription).toBe(
+            "salvaguarda de Destreza; 1d6 de ácido"
         );
     });
 

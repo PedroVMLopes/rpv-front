@@ -10,6 +10,7 @@ import {
     hasSpellRollAction,
 } from "@/lib/roll/buildRollRequest";
 import { formatRollButtonLabel } from "./formatRollButtonLabel";
+import { buildSpellCatalogDetailRows } from "./buildSpellCatalogDetailRows";
 import type {
     ContentDetailModel,
     ContentSummaryModel,
@@ -184,7 +185,7 @@ export function buildSpellContentModel(
         badges.push({ label: targetLabel, variant: "muted" });
     }
 
-    const detailRows = [
+    const baseRows = [
         {
             labelKey: "school",
             value: catalogEntry
@@ -223,11 +224,18 @@ export function buildSpellContentModel(
         },
     ];
 
+    const detailRows = catalogEntry
+        ? buildSpellCatalogDetailRows(catalogEntry, formatters, baseRows)
+        : baseRows;
+
+    const shortDescription = catalogEntry?.shortDescription.trim() || undefined;
+
     const summary: ContentSummaryModel = {
         id: spell.id,
         kind: "spell",
         title: spell.name,
         badges,
+        shortDescription,
         useAction,
     };
 

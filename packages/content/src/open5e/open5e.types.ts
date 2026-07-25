@@ -46,6 +46,7 @@ export interface Open5eSpell {
     name: string;
     desc: string;
     higher_level: string;
+    page?: string;
     range: string;
     components: string;
     material: string;
@@ -60,6 +61,7 @@ export interface Open5eSpell {
     school: string;
     dnd_class: string;
     spell_lists: string[];
+    archetype?: string;
     document__slug?: string;
     document__title?: string;
 }

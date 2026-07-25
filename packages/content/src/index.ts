@@ -32,6 +32,7 @@ export * from "./curation/subclassGrants.dnd";
 export * from "./curation/featureDescriptions.dnd";
 export * from "./curation/spellCombat.dnd";
 export * from "./curation/spellDisplay.dnd";
+export * from "./curation/spellShortDescriptions.dnd";
 export * from "./spell/castingTime";
 
 export {

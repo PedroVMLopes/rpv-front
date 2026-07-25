@@ -121,7 +121,7 @@ describe("PrepareSpellsPage", () => {
         expect(screen.getByText("1 of 1 prepared")).toBeInTheDocument();
 
         const magicMissile = screen.getByRole("button", {
-            name: /^Magic Missile$/i,
+            name: /Magic Missile/i,
         });
         expect(magicMissile).toBeDisabled();
 

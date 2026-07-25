@@ -70,11 +70,11 @@ describe("SpellChoiceGrid", () => {
         const poolHeadings = screen.getAllByRole("heading", { level: 3 });
         expect(poolHeadings).toHaveLength(1);
 
-        const fireBolt = screen.getByRole("button", { name: /^Fire Bolt$/i });
-        const mageHand = screen.getByRole("button", { name: /^Mage Hand$/i });
-        const light = screen.getByRole("button", { name: /^Light$/i });
+        const fireBolt = screen.getByRole("button", { name: /Fire Bolt/i });
+        const mageHand = screen.getByRole("button", { name: /Mage Hand/i });
+        const light = screen.getByRole("button", { name: /Light/i });
         const acidSplash = screen.getByRole("button", {
-            name: /^Acid Splash$/i,
+            name: /Acid Splash/i,
         });
 
         await user.click(fireBolt);
@@ -101,7 +101,7 @@ describe("SpellChoiceGrid", () => {
         await user.click(fireBolt);
         expect(screen.getByText("2 of 3 selected")).toBeInTheDocument();
         expect(
-            screen.getByRole("button", { name: /^Acid Splash$/i })
+            screen.getByRole("button", { name: /Acid Splash/i })
         ).not.toBeDisabled();
     });
 

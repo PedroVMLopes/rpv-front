@@ -9,55 +9,84 @@
   },
   "spells": {
     "acid-splash": {
-      "name": "Respingo Ácido"
+      "name": "Respingo Ácido",
+      "shortDescription": "1 ou 2 alvos a até 5 pés um do outro; salvaguarda de Destreza; 1d6 de dano de ácido na falha"
     },
     "magic-missile": {
-      "name": "Mísseis Mágicos"
+      "name": "Mísseis Mágicos",
+      "shortDescription": "três dardos; cada um causa 1d4+1 de dano de força; acertam automaticamente e podem dividir alvos"
     },
     "shield": {
-      "name": "Escudo Mágico"
+      "name": "Escudo Mágico",
+      "shortDescription": "reação; +5 CA até o seu próximo turno e imunidade a mísseis mágicos"
     },
     "detect-magic": {
-      "name": "Detectar Magia"
+      "name": "Detectar Magia",
+      "shortDescription": "sente magia em 30 pés; ação para ver auras em criaturas ou objetos mágicos visíveis"
     },
     "mage-armor": {
-      "name": "Armadura Arcana"
+      "name": "Armadura Arcana",
+      "shortDescription": "criatura voluntária sem armadura; CA base torna-se 13 + modificador de Destreza"
     },
     "sleep": {
-      "name": "Sono"
+      "name": "Sono",
+      "shortDescription": "5d8 de PV de criaturas em raio de 20 pés adormecem, do menor PV ao maior"
     },
     "burning-hands": {
-      "name": "Mãos Flamejantes"
+      "name": "Mãos Flamejantes",
+      "shortDescription": "cone de 15 pés; salvaguarda de Destreza; 3d6 de dano de fogo, metade no sucesso; objetos inflamáveis podem pegar fogo"
     },
     "feather-fall": {
-      "name": "Queda Suave"
+      "name": "Queda Suave",
+      "shortDescription": "até 5 criaturas caindo; descida reduzida a 60 pés/rodada; sem dano de queda se pousarem a tempo"
     },
     "identify": {
-      "name": "Identificar"
+      "name": "Identificar",
+      "shortDescription": "toque um objeto para aprender propriedades mágicas, necessidade de sintonia e cargas"
     },
     "misty-step": {
-      "name": "Passo Nebuloso"
+      "name": "Passo Nebuloso",
+      "shortDescription": "ação bônus; teletransporte de até 30 pés para um espaço desocupado que você possa ver"
     },
     "scorching-ray": {
-      "name": "Raio Ardente"
+      "name": "Raio Ardente",
+      "shortDescription": "três raios; ataque mágico à distância cada; 2d6 de dano de fogo no acerto"
     },
     "invisibility": {
-      "name": "Invisibilidade"
+      "name": "Invisibilidade",
+      "shortDescription": "criatura tocada fica invisível até atacar ou conjurar uma magia"
     },
     "hold-person": {
-      "name": "Imobilizar Pessoa"
+      "name": "Imobilizar Pessoa",
+      "shortDescription": "um humanoide; salvaguarda de Sabedoria ou fica paralisado; nova salvaguarda no fim de cada turno"
     },
     "fireball": {
-      "name": "Bola de Fogo"
+      "name": "Bola de Fogo",
+      "shortDescription": "esfera de 20 pés de raio; salvaguarda de Destreza; 8d6 de dano de fogo, metade no sucesso; objetos inflamáveis pegam fogo"
     },
     "counterspell": {
-      "name": "Contramedida"
+      "name": "Contramedida",
+      "shortDescription": "interrompe uma criatura conjurando; sucesso automático até 3º nível, teste de habilidade caso contrário"
     },
     "fly": {
-      "name": "Voar"
+      "name": "Voar",
+      "shortDescription": "criatura voluntária ganha deslocamento de voo de 60 pés; cai se ainda estiver no ar ao terminar"
     },
     "lightning-bolt": {
-      "name": "Relâmpago"
+      "name": "Relâmpago",
+      "shortDescription": "linha de 100 pés por 5 pés; salvaguarda de Destreza; 8d6 de dano elétrico, metade no sucesso"
+    },
+    "fire-bolt": {
+      "name": "Raio de Fogo",
+      "shortDescription": "ataque mágico à distância; 1d10 de dano de fogo no acerto"
+    },
+    "light": {
+      "name": "Luz",
+      "shortDescription": "objeto tocado emite luz intensa em 20 pés e luz fraca em mais 20 pés"
+    },
+    "mage-hand": {
+      "name": "Mão Mágica",
+      "shortDescription": "mão espectral manipula objetos, abre recipientes destrancados ou despeja frascos"
     }
   },
   "classes": {

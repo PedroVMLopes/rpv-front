@@ -22,7 +22,9 @@ export function ContentSummaryCard({
 }: ContentSummaryCardProps) {
     const subtitle = model.badges.map((badge) => badge.label).join(" · ");
     const useAction = model.useAction;
-    const showBody = Boolean(useAction && onUse);
+    const showBody = Boolean(
+        (useAction && onUse) || model.shortDescription
+    );
 
     return (
         <div className="flex h-full flex-col overflow-hidden rounded-lg border-2">
@@ -49,7 +51,12 @@ export function ContentSummaryCard({
             </div>
 
             {showBody ? (
-                <div className="flex flex-1 flex-col gap-1 bg-accent text-accent-foreground p-2">
+                <div className="flex flex-1 flex-col gap-2 bg-accent text-accent-foreground p-2">
+                    {model.shortDescription ? (
+                        <p className="text-xs leading-snug text-accent-foreground/80">
+                            {model.shortDescription}
+                        </p>
+                    ) : null}
                     {useAction && onUse ? (
                         <Button
                             type="button"
@@ -61,7 +68,6 @@ export function ContentSummaryCard({
                             {useAction.label}
                         </Button>
                     ) : null}
-                    
                 </div>
             ) : null}
         </div>

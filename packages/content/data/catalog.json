@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-25T17:01:19.519Z",
+  "generatedAt": "2026-07-25T19:45:21.295Z",
   "source": "open5e",
   "defaultLocale": "en",
   "races": [
@@ -395,16 +395,21 @@
       "castingTime": "1 action",
       "range": "60 feet",
       "components": "V, S",
+      "material": "",
       "duration": "Instantaneous",
       "requiresConcentration": false,
       "canBeCastAsRitual": false,
       "description": "You hurl a bubble of acid. Choose one creature within range, or choose two creatures within range that are within 5 feet of each other. A target must succeed on a dexterity saving throw or take 1d6 acid damage.",
+      "shortDescription": "1 or 2 targets within 5 ft of each other; Dexterity save; 1d6 acid damage on fail",
       "higherLevel": "This spell's damage increases by 1d6 when you reach 5th level (2d6), 11th level (3d6), and 17th level (4d6).",
       "spellLists": [
         "sorcerer",
         "wizard"
       ],
-      "sourceDocument": "wotc-srd"
+      "archetype": "",
+      "page": "phb 211",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules"
     },
     {
       "slug": "burning-hands",
@@ -416,16 +421,21 @@
       "castingTime": "1 action",
       "range": "Self (15-foot cone)",
       "components": "V, S",
+      "material": "",
       "duration": "Instantaneous",
       "requiresConcentration": false,
       "canBeCastAsRitual": false,
       "description": "As you hold your hands with thumbs touching and fingers spread, a thin sheet of flames shoots forth from your outstretched fingertips. Each creature in a 15-foot cone must make a Dexterity saving throw. A creature takes 3d6 fire damage on a failed save, or half as much damage on a successful one.",
+      "shortDescription": "15-foot cone; Dexterity save; 3d6 fire damage, half on success; ignites flammable objects",
       "higherLevel": "When you cast this spell using a spell slot of 2nd level or higher, the damage increases by 1d6 for each slot level above 1st.",
       "spellLists": [
         "sorcerer",
         "wizard"
       ],
-      "sourceDocument": "wotc-srd"
+      "archetype": "Cleric: Light, Warlock: Fiend",
+      "page": "phb 220",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules"
     },
     {
       "slug": "counterspell",
@@ -437,17 +447,22 @@
       "castingTime": "1 reaction, which you take when you see a creature within 60 feet of you casting a spell",
       "range": "60 feet",
       "components": "S",
+      "material": "",
       "duration": "Instantaneous",
       "requiresConcentration": false,
       "canBeCastAsRitual": false,
       "description": "You attempt to interrupt a creature in the process of casting a spell. If the creature is casting a spell of 3rd level or lower, its spell fails and has no effect. If it is casting a spell of 4th level or higher, make an ability check using your spellcasting ability. The DC equals 10 + the spell's level. On a success, the creature's spell fails and has no effect.",
+      "shortDescription": "interrupt a creature casting a spell; auto-succeeds vs 3rd level or lower, ability check otherwise",
       "higherLevel": "When you cast this spell using a spell slot of 4th level or higher, the interrupted spell has no effect if its level is less than or equal to the level of the spell slot you used.",
       "spellLists": [
         "sorcerer",
         "warlock",
         "wizard"
       ],
-      "sourceDocument": "wotc-srd"
+      "archetype": "Paladin: Redemption",
+      "page": "phb 228",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules"
     },
     {
       "slug": "detect-magic",
@@ -459,10 +474,12 @@
       "castingTime": "1 action",
       "range": "Self",
       "components": "V, S",
+      "material": "",
       "duration": "Concentration, up to 10 minutes",
       "requiresConcentration": true,
       "canBeCastAsRitual": true,
       "description": "For the duration, you sense the presence of magic within 30 feet of you. If you sense magic in this way, you can use your action to see a faint aura around any visible creature or object in the area that bears magic.",
+      "shortDescription": "sense magic within 30 feet; action to see auras on visible magical creatures or objects",
       "higherLevel": "",
       "spellLists": [
         "bard",
@@ -473,7 +490,10 @@
         "sorcerer",
         "wizard"
       ],
-      "sourceDocument": "wotc-srd"
+      "archetype": "",
+      "page": "phb 231",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules"
     },
     {
       "slug": "feather-fall",
@@ -485,17 +505,22 @@
       "castingTime": "1 reaction",
       "range": "60 feet",
       "components": "V, M",
+      "material": "a small feather or piece of down",
       "duration": "1 minute",
       "requiresConcentration": false,
       "canBeCastAsRitual": false,
       "description": "Choose up to five falling creatures within range. A falling creature's rate of descent slows to 60 feet per round until the spell ends. If the creature lands before the spell ends, it takes no falling damage and can land on its feet, and the spell ends for that creature.",
+      "shortDescription": "up to 5 falling creatures; descent slows to 60 ft/round; no falling damage if they land in time",
       "higherLevel": "",
       "spellLists": [
         "bard",
         "sorcerer",
         "wizard"
       ],
-      "sourceDocument": "wotc-srd"
+      "archetype": "",
+      "page": "phb 239",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules"
     },
     {
       "slug": "fire-bolt",
@@ -507,16 +532,21 @@
       "castingTime": "1 action",
       "range": "120 feet",
       "components": "V, S",
+      "material": "",
       "duration": "Instantaneous",
       "requiresConcentration": false,
       "canBeCastAsRitual": false,
       "description": "You hurl a mote of fire at a creature or object within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 fire damage.",
+      "shortDescription": "ranged spell attack; 1d10 fire damage on hit",
       "higherLevel": "This spell's damage increases by 1d10 when you reach 5th level (2d10), 11th level (3d10), and 17th level (4d10).",
       "spellLists": [
         "sorcerer",
         "wizard"
       ],
-      "sourceDocument": "wotc-srd"
+      "archetype": "",
+      "page": "phb 242",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules"
     },
     {
       "slug": "fireball",
@@ -528,16 +558,21 @@
       "castingTime": "1 action",
       "range": "150 feet",
       "components": "V, S, M",
+      "material": "A tiny ball of bat guano and sulfur.",
       "duration": "Instantaneous",
       "requiresConcentration": false,
       "canBeCastAsRitual": false,
       "description": "A bright streak flashes from your pointing finger to a point you choose within range and then blossoms with a low roar into an explosion of flame. Each creature in a 20-foot-radius sphere centered on that point must make a dexterity saving throw. A target takes 8d6 fire damage on a failed save, or half as much damage on a successful one. The fire spreads around corners. It ignites flammable objects in the area that aren't being worn or carried.",
+      "shortDescription": "20-foot-radius sphere; Dexterity save; 8d6 fire damage, half on success; ignites flammable objects",
       "higherLevel": "When you cast this spell using a spell slot of 4th level or higher, the damage increases by 1d6 for each slot level above 3rd.",
       "spellLists": [
         "sorcerer",
         "wizard"
       ],
-      "sourceDocument": "wotc-srd"
+      "archetype": "Cleric: Light, Warlock: Fiend",
+      "page": "phb 241",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules"
     },
     {
       "slug": "fly",
@@ -549,17 +584,22 @@
       "castingTime": "1 action",
       "range": "Touch",
       "components": "V, S, M",
+      "material": "A wing feather from any bird.",
       "duration": "Up to 10 minutes",
       "requiresConcentration": true,
       "canBeCastAsRitual": false,
       "description": "You touch a willing creature. The target gains a flying speed of 60 feet for the duration. When the spell ends, the target falls if it is still aloft, unless it can stop the fall.",
+      "shortDescription": "willing creature gains 60 ft flying speed; falls when the spell ends if still aloft",
       "higherLevel": "When you cast this spell using a spell slot of 4th level or higher, you can target one additional creature for each slot level above 3rd.",
       "spellLists": [
         "sorcerer",
         "warlock",
         "wizard"
       ],
-      "sourceDocument": "wotc-srd"
+      "archetype": "",
+      "page": "phb 243",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules"
     },
     {
       "slug": "hold-person",
@@ -571,10 +611,12 @@
       "castingTime": "1 action",
       "range": "60 feet",
       "components": "V, S, M",
+      "material": "A small, straight piece of iron.",
       "duration": "Up to 1 minute",
       "requiresConcentration": true,
       "canBeCastAsRitual": false,
       "description": "Choose a humanoid that you can see within range. The target must succeed on a wisdom saving throw or be paralyzed for the duration. At the end of each of its turns, the target can make another wisdom saving throw. On a success, the spell ends on the target.",
+      "shortDescription": "one humanoid; Wisdom save or paralyzed; repeat save at end of each turn",
       "higherLevel": "When you cast this spell using a spell slot of 3rd level or higher, you can target one additional humanoid for each slot level above 2nd. The humanoids must be within 30 feet of each other when you target them.",
       "spellLists": [
         "cleric",
@@ -584,7 +626,10 @@
         "warlock",
         "wizard"
       ],
-      "sourceDocument": "wotc-srd"
+      "archetype": "Paladin: Vengeance",
+      "page": "phb 251",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules"
     },
     {
       "slug": "identify",
@@ -596,16 +641,21 @@
       "castingTime": "1 minute",
       "range": "Touch",
       "components": "V, S, M",
+      "material": "a pearl worth at least 100 gp and an owl feather",
       "duration": "Instantaneous",
       "requiresConcentration": false,
       "canBeCastAsRitual": true,
       "description": "You choose one object that you must touch throughout the casting of the spell. If it is a magic item or some other magic-imbued object, you learn its properties and how to use them, whether it requires attunement, and how many charges it has, if any.",
+      "shortDescription": "touch an object to learn its magical properties, attunement needs, and charges",
       "higherLevel": "",
       "spellLists": [
         "bard",
         "wizard"
       ],
-      "sourceDocument": "wotc-srd"
+      "archetype": "Cleric: Knowledge",
+      "page": "phb 252",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules"
     },
     {
       "slug": "invisibility",
@@ -617,10 +667,12 @@
       "castingTime": "1 action",
       "range": "Touch",
       "components": "V, S, M",
+      "material": "An eyelash encased in gum arabic.",
       "duration": "Up to 1 hour",
       "requiresConcentration": true,
       "canBeCastAsRitual": false,
       "description": "A creature you touch becomes invisible until the spell ends. Anything the target is wearing or carrying is invisible as long as it is on the target's person. The spell ends for a target that attacks or casts a spell.",
+      "shortDescription": "touched creature becomes invisible until it attacks or casts a spell",
       "higherLevel": "When you cast this spell using a spell slot of 3rd level or higher, you can target one additional creature for each slot level above 2nd.",
       "spellLists": [
         "druid",
@@ -629,7 +681,10 @@
         "warlock",
         "wizard"
       ],
-      "sourceDocument": "wotc-srd"
+      "archetype": "Druid: Grassland",
+      "page": "phb 254",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules"
     },
     {
       "slug": "light",
@@ -641,10 +696,12 @@
       "castingTime": "1 action",
       "range": "Touch",
       "components": "V, M",
+      "material": "A firefly or phosphorescent moss.",
       "duration": "1 hour",
       "requiresConcentration": false,
       "canBeCastAsRitual": false,
       "description": "You touch one object that is no larger than 10 feet in any dimension. Until the spell ends, the object sheds bright light in a 20-foot radius and dim light for an additional 20 feet.",
+      "shortDescription": "touched object sheds bright light 20 ft and dim light 20 ft more",
       "higherLevel": "",
       "spellLists": [
         "cleric",
@@ -652,7 +709,10 @@
         "sorcerer",
         "wizard"
       ],
-      "sourceDocument": "wotc-srd"
+      "archetype": "",
+      "page": "phb 255",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules"
     },
     {
       "slug": "lightning-bolt",
@@ -664,17 +724,22 @@
       "castingTime": "1 action",
       "range": "Self",
       "components": "V, S, M",
+      "material": "A bit of fur and a rod of amber, crystal, or glass.",
       "duration": "Instantaneous",
       "requiresConcentration": false,
       "canBeCastAsRitual": false,
       "description": "A stroke of lightning forming a line 100 feet long and 5 feet wide blasts out from you in a direction you choose. Each creature in the line must make a dexterity saving throw. A creature takes 8d6 lightning damage on a failed save, or half as much damage on a successful one. The lightning ignites flammable objects in the area that aren't being worn or carried.",
+      "shortDescription": "100-foot line, 5 ft wide; Dexterity save; 8d6 lightning damage, half on success",
       "higherLevel": "When you cast this spell using a spell slot of 4th level or higher, the damage increases by 1d6 for each slot level above 3rd.",
       "spellLists": [
         "druid",
         "sorcerer",
         "wizard"
       ],
-      "sourceDocument": "wotc-srd"
+      "archetype": "Druid: Mountain",
+      "page": "phb 255",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules"
     },
     {
       "slug": "mage-armor",
@@ -686,16 +751,21 @@
       "castingTime": "1 action",
       "range": "Touch",
       "components": "V, S, M",
+      "material": "a piece of cured leather",
       "duration": "8 hours",
       "requiresConcentration": false,
       "canBeCastAsRitual": false,
       "description": "You touch a willing creature who isn't wearing armor, and a protective magical force surrounds it until the spell ends. The target's base AC becomes 13 + its Dexterity modifier. The spell ends if the target dons armor or if you dismiss the spell as an action.",
+      "shortDescription": "willing unarmored creature; base AC becomes 13 + Dexterity modifier",
       "higherLevel": "",
       "spellLists": [
         "sorcerer",
         "wizard"
       ],
-      "sourceDocument": "wotc-srd"
+      "archetype": "",
+      "page": "phb 256",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules"
     },
     {
       "slug": "mage-hand",
@@ -707,10 +777,12 @@
       "castingTime": "1 action",
       "range": "30 feet",
       "components": "V, S",
+      "material": "",
       "duration": "1 minute",
       "requiresConcentration": false,
       "canBeCastAsRitual": false,
       "description": "A spectral, floating hand appears at a point you choose within range. You can use the hand to manipulate an object, open an unlocked door or container, stow or retrieve an item from an open container, or pour the contents out of a vial.",
+      "shortDescription": "spectral hand manipulates objects, opens unlocked containers, or pours vials within range",
       "higherLevel": "",
       "spellLists": [
         "bard",
@@ -718,7 +790,10 @@
         "warlock",
         "wizard"
       ],
-      "sourceDocument": "wotc-srd"
+      "archetype": "",
+      "page": "phb 256",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules"
     },
     {
       "slug": "magic-missile",
@@ -730,16 +805,21 @@
       "castingTime": "1 action",
       "range": "120 feet",
       "components": "V, S",
+      "material": "",
       "duration": "Instantaneous",
       "requiresConcentration": false,
       "canBeCastAsRitual": false,
       "description": "You create three glowing darts of magical force. Each dart hits a creature of your choice that you can see within range. A dart deals 1d4+1 force damage to its target. The darts all strike simultaneously, and you can direct them to hit one creature or several.",
+      "shortDescription": "three darts; each deals 1d4+1 force damage; hit automatically, can split targets",
       "higherLevel": "When you cast this spell using a spell slot of 2nd level or higher, the spell creates one more dart for each slot level above 1st.",
       "spellLists": [
         "sorcerer",
         "wizard"
       ],
-      "sourceDocument": "wotc-srd"
+      "archetype": "",
+      "page": "phb 257",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules"
     },
     {
       "slug": "misty-step",
@@ -751,10 +831,12 @@
       "castingTime": "1 bonus action",
       "range": "Self",
       "components": "V",
+      "material": "",
       "duration": "Instantaneous",
       "requiresConcentration": false,
       "canBeCastAsRitual": false,
       "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space that you can see.",
+      "shortDescription": "bonus action teleport up to 30 feet to a seen unoccupied space",
       "higherLevel": "",
       "spellLists": [
         "druid",
@@ -762,7 +844,10 @@
         "warlock",
         "wizard"
       ],
-      "sourceDocument": "wotc-srd"
+      "archetype": "Druid: Coast, Paladin: Ancients, Vengeance",
+      "page": "phb 260",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules"
     },
     {
       "slug": "scorching-ray",
@@ -774,10 +859,12 @@
       "castingTime": "1 action",
       "range": "120 feet",
       "components": "V, S",
+      "material": "",
       "duration": "Instantaneous",
       "requiresConcentration": false,
       "canBeCastAsRitual": false,
       "description": "You create three rays of fire and hurl them at targets within range. You can hurl them at one target or several. Make a ranged spell attack for each ray. On a hit, the target takes 2d6 fire damage.",
+      "shortDescription": "three rays; ranged spell attack each; 2d6 fire damage on hit",
       "higherLevel": "When you cast this spell using a spell slot of 3rd level or higher, you create one additional ray for each slot level above 2nd.",
       "spellLists": [
         "cleric",
@@ -785,7 +872,10 @@
         "warlock",
         "wizard"
       ],
-      "sourceDocument": "wotc-srd"
+      "archetype": "Cleric: Light, Warlock: Fiend",
+      "page": "phb 273",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules"
     },
     {
       "slug": "shield",
@@ -797,16 +887,21 @@
       "castingTime": "1 reaction",
       "range": "Self",
       "components": "V, S",
+      "material": "",
       "duration": "1 round",
       "requiresConcentration": false,
       "canBeCastAsRitual": false,
       "description": "An invisible barrier of magical force appears and protects you. Until the start of your next turn, you have a +5 bonus to AC, including against the triggering attack, and you take no damage from magic missile.",
+      "shortDescription": "reaction; +5 AC until your next turn and immune to magic missile",
       "higherLevel": "",
       "spellLists": [
         "sorcerer",
         "wizard"
       ],
-      "sourceDocument": "wotc-srd"
+      "archetype": "",
+      "page": "phb 275",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules"
     },
     {
       "slug": "sleep",
@@ -818,17 +913,22 @@
       "castingTime": "1 action",
       "range": "90 feet",
       "components": "V, S, M",
+      "material": "a pinch of fine sand, rose petals, or a cricket",
       "duration": "1 minute",
       "requiresConcentration": false,
       "canBeCastAsRitual": false,
       "description": "This spell sends creatures into a magical slumber. Roll 5d8; the total is how many hit points of creatures this spell can affect. Creatures within 20 feet of a point you choose within range are affected in ascending order of their current hit points.",
+      "shortDescription": "5d8 HP of creatures in a 20-foot radius fall asleep, lowest HP first",
       "higherLevel": "When you cast this spell using a spell slot of 2nd level or higher, roll an additional 2d8 for each slot level above 1st.",
       "spellLists": [
         "bard",
         "sorcerer",
         "wizard"
       ],
-      "sourceDocument": "wotc-srd"
+      "archetype": "Warlock: Archfey",
+      "page": "phb 276",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules"
     }
   ],
   "skills": [

@@ -16,7 +16,17 @@
     "level_int": 1,
     "school": "Divination",
     "dnd_class": "Bard, Cleric, Druid, Paladin, Ranger, Sorcerer, Wizard",
-    "spell_lists": ["bard", "cleric", "druid", "paladin", "ranger", "sorcerer", "wizard"],
+    "spell_lists": [
+        "bard",
+        "cleric",
+        "druid",
+        "paladin",
+        "ranger",
+        "sorcerer",
+        "wizard"
+    ],
     "document__slug": "wotc-srd",
-    "document__title": "5e Core Rules"
+    "document__title": "5e Core Rules",
+    "page": "phb 231",
+    "archetype": ""
 }

@@ -23,5 +23,7 @@
         "wizard"
     ],
     "document__slug": "wotc-srd",
-    "document__title": "5e Core Rules"
+    "document__title": "5e Core Rules",
+    "page": "phb 256",
+    "archetype": ""
 }
