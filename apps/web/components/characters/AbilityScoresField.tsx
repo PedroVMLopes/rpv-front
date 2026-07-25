@@ -223,11 +223,12 @@ export function AbilityScoresField({
         return null;
     }
 
-    const parkingValue = standardArrayParkingValue(config);
+    const abilityGeneration = config;
+    const parkingValue = standardArrayParkingValue(abilityGeneration);
     const usedRollValues = countPoolUsage(attributeValues, rolls);
 
     function handleRoll() {
-        const pool = rollAbilityPool(config);
+        const pool = rollAbilityPool(abilityGeneration);
         form.setValue("abilityScoreRolls", pool, {
             shouldDirty: true,
             shouldValidate: true,
@@ -251,7 +252,7 @@ export function AbilityScoresField({
     function canIncreasePointBuy(index: number): boolean {
         const current = attributeValues[index];
         const next = current + 1;
-        if (next > config.pointBuy.max) {
+        if (next > abilityGeneration.pointBuy.max) {
             return false;
         }
 
@@ -259,11 +260,11 @@ export function AbilityScoresField({
             valueIndex === index ? next : value
         );
 
-        return pointBuyRemaining(nextValues, config.pointBuy) >= 0;
+        return pointBuyRemaining(nextValues, abilityGeneration.pointBuy) >= 0;
     }
 
     function canDecreasePointBuy(index: number): boolean {
-        return attributeValues[index] > config.pointBuy.min;
+        return attributeValues[index] > abilityGeneration.pointBuy.min;
     }
 
     return (
