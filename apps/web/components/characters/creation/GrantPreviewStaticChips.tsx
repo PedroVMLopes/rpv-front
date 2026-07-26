@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import type { ResourcePreviewChip } from "@/lib/character/creation/raceCatalogResourceChips";
 import { cn } from "@/lib/utils";
 
@@ -18,9 +19,9 @@ export function GrantPreviewStaticChips({
         <ul className={cn("flex flex-wrap gap-1.5", className)}>
             {chips.map((chip) => (
                 <li key={chip.id}>
-                    <span className="inline-flex rounded-full border bg-muted/50 px-2 py-0.5 text-xs">
+                    <Badge variant="secondary">
                         {chip.label}
-                    </span>
+                    </Badge>
                 </li>
             ))}
         </ul>
