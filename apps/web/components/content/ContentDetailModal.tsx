@@ -50,7 +50,7 @@ export function ContentDetailModal({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="flex max-h-[85vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-lg">
+            <DialogContent className="flex max-h-[85vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-lg bg-card text-card-foreground">
                 <div className="min-h-0 flex-1 overflow-y-auto p-6">
                     <div className="flex flex-col gap-4">
                         <DialogHeader>

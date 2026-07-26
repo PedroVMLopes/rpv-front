@@ -128,7 +128,7 @@ export function GrantPreviewGroupedPanel({
     return (
         <div className={cn("flex flex-col gap-4", className)}>
             {showProficiencies ? (
-                <div className="flex flex-col gap-4 rounded-xl border bg-muted/20 p-4">
+                <div className="flex flex-col gap-4 rounded-xl border bg-popover text-popover-foreground p-4">
                     {showProficienciesTitle ? (
                         <h4 className="text-sm font-semibold">
                             {t("selection.preview.proficiencies")}
@@ -144,7 +144,7 @@ export function GrantPreviewGroupedPanel({
             ) : null}
 
             {showActionsResources ? (
-                <div className="flex flex-col gap-4 rounded-xl border bg-muted/20 p-4">
+                <div className="flex flex-col gap-4 rounded-xl border bg-popover text-popover-foreground p-4">
                     {renderSubsections(
                         actionsResourceSubsections,
                         t,

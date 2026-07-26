@@ -41,7 +41,7 @@ export default function Navbar() {
                 <Link
                     href="/"
                     className={cn(
-                        "font-serif text-xl font-bold tracking-tight transition-colors",
+                        "text-xl font-bold tracking-tight transition-colors",
                         isHomeActive
                             ? "text-primary"
                             : "text-foreground hover:text-primary"
