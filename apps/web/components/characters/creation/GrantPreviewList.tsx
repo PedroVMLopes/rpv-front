@@ -17,6 +17,7 @@ import { buildItemPreviewContentModel } from "@/lib/content/buildItemPreviewCont
 import { buildSpellPickContentModel } from "@/lib/content/buildSpellPickContentModel";
 import type { ContentDetailModel } from "@/lib/content/contentDetail.types";
 import { ContentDetailModal } from "@/components/content/ContentDetailModal";
+import { Badge } from "@/components/ui/badge";
 import type { SystemKey } from "@/presets";
 import { cn } from "@/lib/utils";
 
@@ -200,9 +201,7 @@ export function GrantPreviewList({
 
                         return (
                             <li key={item.id}>
-                                <span className="inline-flex rounded-full border border-dashed px-2 py-0.5 text-xs text-muted-foreground">
-                                    {deferredLabel}
-                                </span>
+                                <Badge variant="dashed">{deferredLabel}</Badge>
                             </li>
                         );
                     }
@@ -212,25 +211,24 @@ export function GrantPreviewList({
                     return (
                         <li key={item.id}>
                             {clickable ? (
-                                <button
-                                    type="button"
-                                    className="inline-flex rounded-full border bg-muted/50 px-2 py-0.5 text-xs hover:bg-muted"
-                                    onClick={(event) => {
-                                        event.stopPropagation();
+                                <Badge asChild variant="secondary">
+                                    <button
+                                        type="button"
+                                        onClick={(event) => {
+                                            event.stopPropagation();
 
-                                        if (item.spellRef) {
-                                            openSpellDetail(item.spellRef);
-                                        } else if (item.itemRef) {
-                                            openItemDetail(item.itemRef);
-                                        }
-                                    }}
-                                >
-                                    {item.label}
-                                </button>
+                                            if (item.spellRef) {
+                                                openSpellDetail(item.spellRef);
+                                            } else if (item.itemRef) {
+                                                openItemDetail(item.itemRef);
+                                            }
+                                        }}
+                                    >
+                                        {item.label}
+                                    </button>
+                                </Badge>
                             ) : (
-                                <span className="inline-flex rounded-full border bg-muted/50 px-2 py-0.5 text-xs">
-                                    {item.label}
-                                </span>
+                                <Badge variant="secondary">{item.label}</Badge>
                             )}
                         </li>
                     );
