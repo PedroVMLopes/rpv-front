@@ -172,6 +172,13 @@
   --tracking-widest: calc(var(--tracking-normal) + 0.1em);
 }
 
+@utility border-offset {
+  border-style: solid;
+  border-width: 3px;
+  border-right-width: 4px;
+  border-bottom-width: 4px;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

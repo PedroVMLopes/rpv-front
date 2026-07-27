@@ -29,7 +29,7 @@ export function CatalogSelectionCard({
                 }
             }}
             className={cn(
-                "flex w-full cursor-pointer items-center gap-2 rounded-xl border-3 border-r-4 border-b-4 p-3 text-left transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "flex w-full cursor-pointer items-center gap-2 rounded-xl border-offset p-3 text-left transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 selected
                     ? "border-primary ring-1 ring-primary/20 bg-primary/80 text-primary-foreground hover:bg-primary/50 hover:text-primary-foreground shadow-xs"
                     : "border-border bg-popover text-popover-foreground hover:bg-primary/50 hover:border-primary hover:shadow-xs"
