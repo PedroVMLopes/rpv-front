@@ -250,7 +250,7 @@ type CreationStep = {
 
 ### 8.2 Stepper
 
-[`CharacterCreationStepper`](../apps/web/components/characters/CharacterCreationStepper.tsx) passa a consumir `resolveCreationSteps()`:
+[`CharacterCreationSidebar`](../apps/web/components/characters/creation/CharacterCreationSidebar.tsx) consome o grafo de `resolveCreationSteps()`:
 
 - Stepper **macro** (Raça, Classe, Subclasse, Antecedente, Atributos, Final) com indicador de sub-etapas pendentes
 - Ou lista achatada com indentação visual para sub-etapas — decisão de implementação; o grafo suporta ambos

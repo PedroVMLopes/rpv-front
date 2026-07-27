@@ -36,7 +36,7 @@ export function PressableSelectionCard({
                     ? "cursor-not-allowed opacity-50 border-border bg-popover text-popover-foreground"
                     : selected
                       ? "cursor-pointer ring-1 ring-primary/20 bg-primary/80 text-primary-foreground hover:bg-primary/50 hover:text-primary-foreground shadow-xs"
-                      : "cursor-pointer border-border bg-popover text-popover-foreground hover:bg-primary/50 hover:border-primary hover:shadow-xs",
+                      : "cursor-pointer border-border bg-popover text-popover-foreground hover:bg-primary/50 hover:shadow-xs",
                 className
             )}
         >
