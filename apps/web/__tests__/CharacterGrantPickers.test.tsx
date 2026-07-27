@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -50,6 +50,13 @@ function GrantPickerHarness({
     );
 }
 
+function choiceSlot(label: string) {
+    const heading = screen.getByText(label);
+    const slot = heading.closest("div.flex.flex-col");
+    expect(slot).not.toBeNull();
+    return slot as HTMLElement;
+}
+
 describe("CharacterGrantPickers", () => {
     it("shows auto-known languages and language choice slots for high elf", () => {
         render(
@@ -81,8 +88,7 @@ describe("CharacterGrantPickers", () => {
             />
         );
 
-        const languageSelect = screen.getAllByRole("combobox")[0];
-        await user.selectOptions(languageSelect, "draconic");
+        await user.click(screen.getByRole("button", { name: "Draconic" }));
 
         expect(screen.getByTestId("choices-output")).toHaveTextContent(
             "draconic"
@@ -102,19 +108,13 @@ describe("CharacterGrantPickers", () => {
             />
         );
 
-        const skillSelects = screen.getAllByRole("combobox");
-        const firstSkillSelect = skillSelects.find((select) =>
-            Array.from(select.options).some((option) =>
-                option.textContent?.includes("History")
-            )
-        );
-
-        expect(firstSkillSelect).toBeDefined();
-        const historyOption = Array.from(firstSkillSelect!.options).find(
-            (option) => option.value === "history"
-        );
-        expect(historyOption?.textContent).toBe("✓ History");
-        expect(historyOption).toBeDisabled();
+        const historyButtons = screen.getAllByRole("button", {
+            name: "✓ History",
+        });
+        expect(historyButtons.length).toBeGreaterThan(0);
+        for (const history of historyButtons) {
+            expect(history).toBeDisabled();
+        }
     });
 
     it("shows sibling skill picks as disabled with a checkmark", () => {
@@ -133,16 +133,15 @@ describe("CharacterGrantPickers", () => {
             />
         );
 
-        const athleticsOptions = screen
-            .getAllByRole("combobox")
-            .flatMap((select) => Array.from(select.options))
-            .filter((option) => option.value === "athletics");
-
-        expect(athleticsOptions.length).toBeGreaterThan(1);
+        const athleticsButtons = screen.getAllByRole("button", {
+            name: /Athletics/,
+        });
+        expect(athleticsButtons.length).toBeGreaterThan(1);
         expect(
-            athleticsOptions.some(
-                (option) =>
-                    option.textContent === "✓ Athletics" && option.disabled
+            athleticsButtons.some(
+                (button) =>
+                    button.textContent === "✓ Athletics" &&
+                    (button as HTMLButtonElement).disabled
             )
         ).toBe(true);
     });
@@ -172,22 +171,13 @@ describe("CharacterGrantPickers", () => {
             screen.queryByText("Additional skill (Level 3) (Level 3)")
         ).not.toBeInTheDocument();
 
-        const level3Select = screen
-            .getByText("Additional skill (Level 3)")
-            .closest("label")
-            ?.querySelector("select");
-
-        expect(level3Select).toBeDefined();
-        const athleticsOption = Array.from(level3Select!.options).find(
-            (option) => option.value === "athletics"
-        );
-        const perceptionOption = Array.from(level3Select!.options).find(
-            (option) => option.value === "perception"
-        );
-        expect(athleticsOption?.textContent).toBe("✓ Athletics");
-        expect(athleticsOption).toBeDisabled();
-        expect(perceptionOption?.textContent).toBe("✓ Perception");
-        expect(perceptionOption).toBeDisabled();
+        const level3Slot = choiceSlot("Additional skill (Level 3)");
+        expect(
+            within(level3Slot).getByRole("button", { name: "✓ Athletics" })
+        ).toBeDisabled();
+        expect(
+            within(level3Slot).getByRole("button", { name: "✓ Perception" })
+        ).toBeDisabled();
     });
 
     it("shows languages picked in other slots as disabled with a checkmark", () => {
@@ -207,17 +197,13 @@ describe("CharacterGrantPickers", () => {
             />
         );
 
-        const draconicOptions = screen
-            .getAllByRole("combobox")
-            .flatMap((select) => Array.from(select.options))
-            .filter((option) => option.value === "draconic");
-
-        expect(
-            draconicOptions.some(
-                (option) =>
-                    option.textContent === "✓ Draconic" && option.disabled
-            )
-        ).toBe(true);
+        const draconicButtons = screen.getAllByRole("button", {
+            name: "✓ Draconic",
+        });
+        expect(draconicButtons.length).toBeGreaterThan(0);
+        for (const button of draconicButtons) {
+            expect(button).toBeDisabled();
+        }
     });
 
     it("shows invalid choices error after validation", async () => {
@@ -298,15 +284,12 @@ describe("CharacterGrantPickers", () => {
             />
         );
 
-        const cantripSelect = screen.getAllByRole("combobox").find((select) =>
-            Array.from(select.options).some((option) => option.value === "acid-splash")
-        );
-
-        expect(cantripSelect).toBeDefined();
-        const acidSplashOption = Array.from(cantripSelect!.options).find(
-            (option) => option.value === "acid-splash"
-        );
-        expect(acidSplashOption?.textContent).toBe("✓ Acid Splash");
-        expect(acidSplashOption).toBeDisabled();
+        const acidSplashButtons = screen.getAllByRole("button", {
+            name: "✓ Acid Splash",
+        });
+        expect(acidSplashButtons.length).toBeGreaterThan(0);
+        for (const button of acidSplashButtons) {
+            expect(button).toBeDisabled();
+        }
     });
 });

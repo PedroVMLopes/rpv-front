@@ -1,7 +1,7 @@
 "use client";
 
 import type { CatalogSelectionEntry } from "@/lib/character/creation/catalogSelection.types";
-import { cn } from "@/lib/utils";
+import { PressableSelectionCard } from "@/components/characters/creation/PressableSelectionCard";
 import { Maximize2 } from "lucide-react";
 
 type CatalogSelectionCardProps = {
@@ -16,31 +16,18 @@ export function CatalogSelectionCard({
     onOpen,
 }: CatalogSelectionCardProps) {
     return (
-        <div
-            role="button"
-            tabIndex={0}
-            data-testid={`catalog-card-${entry.slug}`}
-            aria-pressed={selected}
+        <PressableSelectionCard
+            selected={selected}
             onClick={onOpen}
-            onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    onOpen();
-                }
-            }}
-            className={cn(
-                "flex w-full cursor-pointer items-center gap-2 rounded-xl border-offset p-3 text-left transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                selected
-                    ? "border-primary ring-1 ring-primary/20 bg-primary/80 text-primary-foreground hover:bg-primary/50 hover:text-primary-foreground shadow-xs"
-                    : "border-border bg-popover text-popover-foreground hover:bg-primary/50 hover:border-primary hover:shadow-xs"
-            )}
+            data-testid={`catalog-card-${entry.slug}`}
+            className="w-full"
         >
-            <div className="flex items-center justify-between w-full gap-2">
+            <div className="flex w-full items-center justify-between gap-2">
                 <span className="min-w-0 flex-1 font-serif text-base font-semibold leading-tight">
                     {entry.title}
                 </span>
                 <Maximize2 className="size-4 shrink-0 cursor-pointer" />
             </div>
-        </div>
+        </PressableSelectionCard>
     );
 }

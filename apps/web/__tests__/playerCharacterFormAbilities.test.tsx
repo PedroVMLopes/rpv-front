@@ -70,8 +70,9 @@ describe("PlayerCharacterForm abilities step", () => {
             />
         );
 
-        const methodSelect = screen.getAllByRole("combobox")[0];
-        expect(methodSelect).toHaveValue("standard-array");
+        expect(
+            screen.getByRole("button", { name: "Standard Array" })
+        ).toHaveAttribute("aria-pressed", "true");
 
         const strengthCard = screen.getByText("Strength").closest("div.rounded");
         expect(strengthCard).not.toBeNull();
@@ -95,7 +96,9 @@ describe("PlayerCharacterForm abilities step", () => {
             />
         );
 
-        expect(screen.getAllByRole("combobox")[0]).toHaveValue("manual");
+        expect(
+            screen.getByRole("button", { name: "Manual" })
+        ).toHaveAttribute("aria-pressed", "true");
         expect(
             screen.getByText(
                 /the Total below each field is the value that matters/i
@@ -117,8 +120,7 @@ describe("PlayerCharacterForm abilities step", () => {
             />
         );
 
-        const methodSelect = screen.getAllByRole("combobox")[0];
-        await user.selectOptions(methodSelect, "point-buy");
+        await user.click(screen.getByRole("button", { name: "Point Buy" }));
 
         const strengthCard = screen.getByText("Strength").closest("div.rounded");
         expect(strengthCard).not.toBeNull();
@@ -143,8 +145,7 @@ describe("PlayerCharacterForm abilities step", () => {
 
         expect(screen.queryByRole("spinbutton")).not.toBeInTheDocument();
 
-        const methodSelect = screen.getAllByRole("combobox")[0];
-        await user.selectOptions(methodSelect, "manual");
+        await user.click(screen.getByRole("button", { name: "Manual" }));
 
         expect(screen.getAllByRole("spinbutton").length).toBeGreaterThan(0);
     });

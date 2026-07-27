@@ -25,6 +25,7 @@ import {
     UNASSIGNED_ABILITY_VALUE,
     type AttributeEntry,
 } from "@/lib/character/abilityScoreGeneration";
+import { PressableSelectionCard } from "@/components/characters/creation/PressableSelectionCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -270,25 +271,27 @@ export function AbilityScoresField({
     return (
         <div className="space-y-4 border rounded-lg p-4 bg-muted/30">
             <div className="flex flex-col gap-2">
-                <label className="text-sm font-bold">{t("title")}</label>
-                <select
-                    className="bg-background rounded border px-2 py-1 text-sm"
-                    value={method}
-                    onChange={(event) => {
-                        userChangedMethodRef.current = true;
-                        form.setValue(
-                            "abilityScoreMethod",
-                            event.target.value as AbilityScoreMethod,
-                            { shouldDirty: true, shouldValidate: true }
-                        );
-                    }}
-                >
+                <span className="text-sm font-bold">{t("title")}</span>
+                <div className="flex flex-wrap gap-2">
                     {config.methods.map((entry) => (
-                        <option key={entry} value={entry}>
-                            {t(`methods.${entry}`)}
-                        </option>
+                        <PressableSelectionCard
+                            key={entry}
+                            selected={method === entry}
+                            onClick={() => {
+                                userChangedMethodRef.current = true;
+                                form.setValue(
+                                    "abilityScoreMethod",
+                                    entry as AbilityScoreMethod,
+                                    { shouldDirty: true, shouldValidate: true }
+                                );
+                            }}
+                        >
+                            <span className="text-sm font-medium">
+                                {t(`methods.${entry}`)}
+                            </span>
+                        </PressableSelectionCard>
                     ))}
-                </select>
+                </div>
             </div>
 
             {method === "point-buy" && remainingPoints !== null && (

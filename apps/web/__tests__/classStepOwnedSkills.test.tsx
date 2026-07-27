@@ -1,12 +1,10 @@
 /**
  * @jest-environment jsdom
  */
-import { render, screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { render, screen } from "@testing-library/react";
 import { useForm } from "react-hook-form";
 import { NextIntlClientProvider } from "next-intl";
 import { CharacterGrantPickers } from "../components/characters/CharacterGrantPickers";
-import { getCreationSidebar } from "./helpers/characterCreationNav";
 import messages from "../messages/en.json";
 
 function ClassStepHarness({ defaultValues }: { defaultValues: Record<string, unknown> }) {
@@ -41,16 +39,12 @@ describe("class step owned background skills", () => {
             />
         );
 
-        const skillSelects = screen.getAllByRole("combobox");
-        const firstSkillSelect = skillSelects.find((select) =>
-            Array.from(select.options).some((option) => option.value === "history")
-        );
-
-        expect(firstSkillSelect).toBeDefined();
-        const historyOption = Array.from(firstSkillSelect!.options).find(
-            (option) => option.value === "history"
-        );
-        expect(historyOption?.textContent).toBe("✓ History");
-        expect(historyOption).toBeDisabled();
+        const historyButtons = screen.getAllByRole("button", {
+            name: "✓ History",
+        });
+        expect(historyButtons.length).toBeGreaterThan(0);
+        for (const history of historyButtons) {
+            expect(history).toBeDisabled();
+        }
     });
 });

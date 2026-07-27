@@ -69,7 +69,7 @@ describe("AbilityScoresField", () => {
             />
         );
 
-        await user.selectOptions(screen.getByRole("combobox"), "point-buy");
+        await user.click(screen.getByRole("button", { name: "Point Buy" }));
 
         expect(screen.getByTestId("ability-output")).toHaveTextContent(
             "point-buy"
@@ -194,7 +194,7 @@ describe("AbilityScoresField", () => {
 
         expect(screen.getByTestId("ability-output")).toHaveTextContent("rolls");
 
-        const assignmentSelect = screen.getAllByRole("combobox")[1];
+        const assignmentSelect = screen.getAllByRole("combobox")[0];
         await user.selectOptions(assignmentSelect, "18");
 
         expect(screen.getByTestId("ability-output")).toHaveTextContent(

@@ -29,6 +29,7 @@ import {
 import type { CharacterChoices, CharacterSelections } from "@/lib/character/storedCharacter";
 import { readLevelFromForm } from "@/lib/character/level";
 import type { SystemKey } from "@/presets";
+import { PressableSelectionCard } from "@/components/characters/creation/PressableSelectionCard";
 import { cn } from "@/lib/utils";
 
 type CharacterGrantPickersProps = {
@@ -285,9 +286,8 @@ export function CharacterGrantPickers({
         return null;
     }
 
-    function renderChoiceSelect(
-        choice: (typeof nonInventoryChoices)[number],
-        placeholder: string
+    function renderChoiceOptions(
+        choice: (typeof nonInventoryChoices)[number]
     ) {
         const ownedRefs =
             ownedRefsByGrantType.get(choice.grant.grantType) ??
@@ -310,41 +310,45 @@ export function CharacterGrantPickers({
                     ? tAbilities(option.label)
                     : option.label,
         }));
+        const selected = grantPicks[choice.key] ?? "";
+        const isInvalid = invalidChoiceKeys.has(choice.key);
 
         return (
-            <label
+            <div
                 key={choice.key}
                 data-focus-key={choice.key}
                 className={cn(
-                    "flex flex-col gap-1 rounded-md text-sm",
+                    "flex flex-col gap-2 rounded-md text-sm",
                     focusKey === choice.key &&
-                        "ring-2 ring-primary ring-offset-2"
+                        "ring-2 ring-primary ring-offset-2",
+                    isInvalid && "ring-2 ring-destructive ring-offset-2"
                 )}
             >
                 <span className="font-medium">{choice.label}</span>
-                <select
-                    className={`bg-background rounded border px-2 py-1${
-                        invalidChoiceKeys.has(choice.key)
-                            ? " border-destructive"
-                            : ""
-                    }`}
-                    value={grantPicks[choice.key] ?? ""}
-                    onChange={(event) =>
-                        setGrantPick(form, choice.key, event.target.value)
-                    }
-                >
-                    <option value="">{placeholder}</option>
-                    {options.map((option) => (
-                        <option
-                            key={option.value}
-                            value={option.value}
-                            disabled={option.disabled}
-                        >
-                            {option.label}
-                        </option>
-                    ))}
-                </select>
-            </label>
+                <div className="flex flex-wrap gap-2">
+                    {options.map((option) => {
+                        const isSelected = selected === option.value;
+                        return (
+                            <PressableSelectionCard
+                                key={option.value}
+                                selected={isSelected}
+                                disabled={option.disabled}
+                                onClick={() =>
+                                    setGrantPick(
+                                        form,
+                                        choice.key,
+                                        isSelected ? "" : option.value
+                                    )
+                                }
+                            >
+                                <span className="text-sm font-medium">
+                                    {option.label}
+                                </span>
+                            </PressableSelectionCard>
+                        );
+                    })}
+                </div>
+            </div>
         );
     }
 
@@ -395,45 +399,48 @@ export function CharacterGrantPickers({
                             ownedLanguageRefs,
                             otherLanguagePicks
                         );
+                        const isInvalid = invalidChoiceKeys.has(choice.key);
 
                         return (
-                            <label
+                            <div
                                 key={choice.key}
                                 data-focus-key={choice.key}
                                 className={cn(
-                                    "flex flex-col gap-1 rounded-md text-sm",
+                                    "flex flex-col gap-2 rounded-md text-sm",
                                     focusKey === choice.key &&
-                                        "ring-2 ring-primary ring-offset-2"
+                                        "ring-2 ring-primary ring-offset-2",
+                                    isInvalid &&
+                                        "ring-2 ring-destructive ring-offset-2"
                                 )}
                             >
                                 <span className="font-medium">{choice.label}</span>
-                                <select
-                                    className={`bg-background rounded border px-2 py-1${
-                                        invalidChoiceKeys.has(choice.key)
-                                            ? " border-destructive"
-                                            : ""
-                                    }`}
-                                    value={selected}
-                                    onChange={(event) =>
-                                        setGrantPick(
-                                            form,
-                                            choice.key,
-                                            event.target.value
-                                        )
-                                    }
-                                >
-                                    <option value="">{t("selectLanguage")}</option>
-                                    {options.map((option) => (
-                                        <option
-                                            key={option.value}
-                                            value={option.value}
-                                            disabled={option.disabled}
-                                        >
-                                            {option.label}
-                                        </option>
-                                    ))}
-                                </select>
-                            </label>
+                                <div className="flex flex-wrap gap-2">
+                                    {options.map((option) => {
+                                        const isSelected =
+                                            selected === option.value;
+                                        return (
+                                            <PressableSelectionCard
+                                                key={option.value}
+                                                selected={isSelected}
+                                                disabled={option.disabled}
+                                                onClick={() =>
+                                                    setGrantPick(
+                                                        form,
+                                                        choice.key,
+                                                        isSelected
+                                                            ? ""
+                                                            : option.value
+                                                    )
+                                                }
+                                            >
+                                                <span className="text-sm font-medium">
+                                                    {option.label}
+                                                </span>
+                                            </PressableSelectionCard>
+                                        );
+                                    })}
+                                </div>
+                            </div>
                         );
                     })}
                 </section>
@@ -443,7 +450,7 @@ export function CharacterGrantPickers({
                 <section className="flex flex-col gap-2">
                     <h2 className="text-sm font-bold">{t("racialAsiTitle")}</h2>
                     {racialAsiChoices.map((choice) =>
-                        renderChoiceSelect(choice, t("selectStat"))
+                        renderChoiceOptions(choice)
                     )}
                 </section>
             )}
@@ -452,7 +459,7 @@ export function CharacterGrantPickers({
                 <section className="flex flex-col gap-2">
                     <h2 className="text-sm font-bold">{t("abilityChoicesTitle")}</h2>
                     {otherChoices.map((choice) =>
-                        renderChoiceSelect(choice, t("selectOption"))
+                        renderChoiceOptions(choice)
                     )}
                 </section>
             )}
