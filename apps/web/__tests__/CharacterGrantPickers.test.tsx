@@ -117,7 +117,7 @@ describe("CharacterGrantPickers", () => {
         }
     });
 
-    it("shows sibling skill picks as disabled with a checkmark", () => {
+    it("shows sibling skill picks as selected in one pooled selector", () => {
         render(
             <GrantPickerHarness
                 defaultValues={{
@@ -133,17 +133,17 @@ describe("CharacterGrantPickers", () => {
             />
         );
 
-        const athleticsButtons = screen.getAllByRole("button", {
-            name: /Athletics/,
-        });
-        expect(athleticsButtons.length).toBeGreaterThan(1);
+        expect(screen.getByText("Choose two skills.")).toBeInTheDocument();
         expect(
-            athleticsButtons.some(
-                (button) =>
-                    button.textContent === "✓ Athletics" &&
-                    (button as HTMLButtonElement).disabled
-            )
-        ).toBe(true);
+            screen.queryByText("Choose two skills. (1/2)")
+        ).not.toBeInTheDocument();
+        expect(
+            screen.queryByText("Choose two skills. (2/2)")
+        ).not.toBeInTheDocument();
+
+        const athletics = screen.getByRole("button", { name: "Athletics" });
+        expect(athletics).toHaveAttribute("aria-pressed", "true");
+        expect(athletics).not.toBeDisabled();
     });
 
     it("shows earlier fighter skill picks with checkmark in level 3 slot", () => {
@@ -164,14 +164,15 @@ describe("CharacterGrantPickers", () => {
             />
         );
 
+        expect(screen.getByText("Additional skill")).toBeInTheDocument();
         expect(
-            screen.getByText("Additional skill (Level 3)")
-        ).toBeInTheDocument();
+            screen.queryByText("Additional skill (Level 3)")
+        ).not.toBeInTheDocument();
         expect(
             screen.queryByText("Additional skill (Level 3) (Level 3)")
         ).not.toBeInTheDocument();
 
-        const level3Slot = choiceSlot("Additional skill (Level 3)");
+        const level3Slot = choiceSlot("Additional skill");
         expect(
             within(level3Slot).getByRole("button", { name: "✓ Athletics" })
         ).toBeDisabled();
@@ -264,7 +265,56 @@ describe("CharacterGrantPickers", () => {
         expect(screen.getByText("Racial ability increases")).toBeInTheDocument();
         expect(
             screen.getAllByText(/Two other ability scores of your choice/).length
-        ).toBe(2);
+        ).toBe(1);
+    });
+
+    it("groups background language choose:2 into one selector and stores both slots", async () => {
+        const user = userEvent.setup();
+
+        render(
+            <GrantPickerHarness
+                defaultValues={{
+                    name: "Test Hero",
+                    race: "human",
+                    background: "sage",
+                    choices: {},
+                }}
+            />
+        );
+
+        expect(
+            screen.getByText("Two languages of your choice.")
+        ).toBeInTheDocument();
+        expect(
+            screen.queryByText("Two languages of your choice. (1/2)")
+        ).not.toBeInTheDocument();
+        expect(
+            screen.queryByText("Two languages of your choice. (2/2)")
+        ).not.toBeInTheDocument();
+
+        await user.click(screen.getByRole("button", { name: "Draconic" }));
+        await user.click(screen.getByRole("button", { name: "Dwarvish" }));
+
+        const output = screen.getByTestId("choices-output").textContent ?? "";
+        expect(output).toContain("draconic");
+        expect(output).toContain("dwarvish");
+        expect(output).toContain("background:sage:base:language:0:0");
+        expect(output).toContain("background:sage:base:language:0:1");
+    });
+
+    it("keeps a single language selector for choose:1", () => {
+        render(
+            <GrantPickerHarness
+                defaultValues={{
+                    race: "elf",
+                    subrace: "high-elf",
+                    choices: {},
+                }}
+            />
+        );
+
+        expect(screen.getByText(/Choose 1 language/)).toBeInTheDocument();
+        expect(screen.getAllByText(/Choose 1 language/).length).toBe(1);
     });
 
     it("disables a racial cantrip already picked when showing class spell choices", () => {

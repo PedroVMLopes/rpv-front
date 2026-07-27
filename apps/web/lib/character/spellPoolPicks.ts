@@ -2,21 +2,21 @@ import type { Locale } from "@rpv/domain";
 import type { UseFormReturn } from "react-hook-form";
 import { getSpell } from "@rpv/content";
 import type { PendingChoiceGrant } from "./grantChoices";
-import { getGrantChoicePoolKey } from "./grantChoiceOptions";
-import { setGrantPick } from "./grantPickForm";
+import {
+    groupChoicesByPool,
+    readPoolSelectedRefs,
+    toggleRefInPool,
+    type GrantChoicePool,
+} from "./grantChoicePool";
 
-export type SpellChoicePool = {
-    poolKey: string;
-    slots: PendingChoiceGrant[];
-    /** Shared option list from the first slot (siblings share the same grant). */
-    options: Array<{ value: string; label: string }>;
-    label: string;
-};
+export type SpellChoicePool = GrantChoicePool;
 
 export type SpellLevelBucket = {
     levelInt: number;
     options: Array<{ value: string; label: string }>;
 };
+
+export { readPoolSelectedRefs };
 
 /**
  * Groups sibling spell slots (same grant, choose:N) into one pool each.
@@ -25,51 +25,7 @@ export type SpellLevelBucket = {
 export function groupSpellChoicesByPool(
     choices: PendingChoiceGrant[]
 ): SpellChoicePool[] {
-    const order: string[] = [];
-    const byKey = new Map<string, PendingChoiceGrant[]>();
-
-    for (const choice of choices) {
-        const poolKey = getGrantChoicePoolKey(choice.key);
-        const existing = byKey.get(poolKey);
-
-        if (!existing) {
-            order.push(poolKey);
-            byKey.set(poolKey, [choice]);
-        } else {
-            existing.push(choice);
-        }
-    }
-
-    return order.map((poolKey) => {
-        const slots = byKey.get(poolKey) ?? [];
-        const first = slots[0]!;
-
-        return {
-            poolKey,
-            slots,
-            options: first.options,
-            label: first.label
-                .replace(/\s*\(\d+\/\d+\)/g, "")
-                .replace(/\s*\(Level \d+\)/gi, "")
-                .trim(),
-        };
-    });
-}
-
-export function readPoolSelectedRefs(
-    grantPicks: Record<string, string>,
-    slots: PendingChoiceGrant[]
-): string[] {
-    const refs: string[] = [];
-
-    for (const slot of slots) {
-        const ref = grantPicks[slot.key]?.trim();
-        if (ref) {
-            refs.push(ref);
-        }
-    }
-
-    return refs;
+    return groupChoicesByPool(choices);
 }
 
 /**
@@ -83,30 +39,7 @@ export function toggleSpellInPool(
     slots: PendingChoiceGrant[],
     slug: string
 ): void {
-    if (slots.length === 0) {
-        return;
-    }
-
-    const grantPicks =
-        (
-            form.getValues("choices") as
-                | { grantPicks?: Record<string, string> }
-                | undefined
-        )?.grantPicks ?? {};
-
-    for (const slot of slots) {
-        if (grantPicks[slot.key]?.trim() === slug) {
-            setGrantPick(form, slot.key, "");
-            return;
-        }
-    }
-
-    for (const slot of slots) {
-        if (!grantPicks[slot.key]?.trim()) {
-            setGrantPick(form, slot.key, slug);
-            return;
-        }
-    }
+    toggleRefInPool(form, slots, slug);
 }
 
 /**

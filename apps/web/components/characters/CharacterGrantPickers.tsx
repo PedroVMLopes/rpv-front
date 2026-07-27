@@ -17,16 +17,21 @@ import {
     collectLanguageChoiceGrants,
     collectNonLanguageChoiceGrants,
     collectPendingChoiceGrants,
+    type PendingChoiceGrant,
 } from "@/lib/character/grantChoices";
+import { getOtherPickedRefsForGrantType } from "@/lib/character/grantChoiceOptions";
 import {
-    buildGrantChoiceSelectOptions,
-    getOtherPickedRefsForGrantType,
-} from "@/lib/character/grantChoiceOptions";
+    groupChoicesByPool,
+    readPoolSelectedRefs,
+    toggleRefInPool,
+    type GrantChoicePool,
+} from "@/lib/character/grantChoicePool";
 import { buildSelectionsFromForm } from "@/lib/character/characterAdapter";
-import {
-    findInvalidGrantPicks,
-} from "@/lib/character/choiceValidation";
-import type { CharacterChoices, CharacterSelections } from "@/lib/character/storedCharacter";
+import { findInvalidGrantPicks } from "@/lib/character/choiceValidation";
+import type {
+    CharacterChoices,
+    CharacterSelections,
+} from "@/lib/character/storedCharacter";
 import { readLevelFromForm } from "@/lib/character/level";
 import type { SystemKey } from "@/presets";
 import { PressableSelectionCard } from "@/components/characters/creation/PressableSelectionCard";
@@ -43,28 +48,11 @@ type CharacterGrantPickersProps = {
     focusKey?: string;
 };
 
-function readGrantPicks(form: UseFormReturn<Record<string, unknown>>): Record<string, string> {
+function readGrantPicks(
+    form: UseFormReturn<Record<string, unknown>>
+): Record<string, string> {
     const choices = form.watch("choices") as CharacterChoices | undefined;
     return choices?.grantPicks ?? {};
-}
-
-function setGrantPick(
-    form: UseFormReturn<Record<string, unknown>>,
-    key: string,
-    value: string
-) {
-    const current = (form.getValues("choices") as CharacterChoices | undefined) ?? {};
-    form.setValue(
-        "choices",
-        {
-            ...current,
-            grantPicks: {
-                ...(current.grantPicks ?? {}),
-                [key]: value,
-            },
-        },
-        { shouldDirty: true, shouldValidate: true }
-    );
 }
 
 function buildOwnedRefsByGrantType(
@@ -89,6 +77,17 @@ function buildOwnedRefsByGrantType(
     }
 
     return owned;
+}
+
+function resolvePoolFocusKey(
+    pool: GrantChoicePool,
+    focusKey: string | undefined
+): string {
+    if (focusKey && pool.slots.some((slot) => slot.key === focusKey)) {
+        return focusKey;
+    }
+
+    return pool.slots[0]?.key ?? pool.poolKey;
 }
 
 export function CharacterGrantPickers({
@@ -147,8 +146,12 @@ export function CharacterGrantPickers({
 
     const fixedLanguages = useMemo(
         () =>
-            getFixedLanguageGrants(selections, contentLocale, characterLevel).filter(
-                (grant) => matchesGrantSourceTypes(grant.source, sourceTypes)
+            getFixedLanguageGrants(
+                selections,
+                contentLocale,
+                characterLevel
+            ).filter((grant) =>
+                matchesGrantSourceTypes(grant.source, sourceTypes)
             ),
         [selections, contentLocale, characterLevel, sourceTypes]
     );
@@ -164,16 +167,13 @@ export function CharacterGrantPickers({
         [selections, contentLocale, characterLevel, system]
     );
 
-    const languageChoices = useMemo(
-        () => {
-            const filtered = allLanguageChoices.filter((choice) =>
-                matchesGrantSourceTypes(choice.source, sourceTypes)
-            );
+    const languageChoices = useMemo(() => {
+        const filtered = allLanguageChoices.filter((choice) =>
+            matchesGrantSourceTypes(choice.source, sourceTypes)
+        );
 
-            return filterChoicesForStep(filtered, stepFilter);
-        },
-        [allLanguageChoices, sourceTypes, stepFilter]
-    );
+        return filterChoicesForStep(filtered, stepFilter);
+    }, [allLanguageChoices, sourceTypes, stepFilter]);
 
     const nonInventoryChoices = useMemo(() => {
         if (stepFilter) {
@@ -220,6 +220,21 @@ export function CharacterGrantPickers({
         [nonInventoryChoices]
     );
 
+    const languagePools = useMemo(
+        () => groupChoicesByPool(languageChoices),
+        [languageChoices]
+    );
+
+    const racialAsiPools = useMemo(
+        () => groupChoicesByPool(racialAsiChoices),
+        [racialAsiChoices]
+    );
+
+    const otherPools = useMemo(
+        () => groupChoicesByPool(otherChoices),
+        [otherChoices]
+    );
+
     const languageBudget = useMemo(() => {
         if (sourceTypes && sourceTypes.length > 0) {
             return languageChoices.length;
@@ -246,7 +261,9 @@ export function CharacterGrantPickers({
 
                     return matchesGrantSourceTypes(
                         {
-                            type: issue.key.split(":")[0] as ModifierSource["type"],
+                            type: issue.key.split(
+                                ":"
+                            )[0] as ModifierSource["type"],
                             id: issue.key.split(":")[1] ?? "",
                         },
                         sourceTypes
@@ -278,71 +295,94 @@ export function CharacterGrantPickers({
         (sections === "all" ||
             stepFilter?.grantTypes?.includes("ability_score") === true);
 
-    if (
-        !showLanguages &&
-        !showRacialAsi &&
-        otherChoices.length === 0
-    ) {
+    if (!showLanguages && !showRacialAsi && otherChoices.length === 0) {
         return null;
     }
 
-    function renderChoiceOptions(
-        choice: (typeof nonInventoryChoices)[number]
-    ) {
-        const ownedRefs =
-            ownedRefsByGrantType.get(choice.grant.grantType) ??
-            new Set<string>();
-        const otherPickedRefs = getOtherPickedRefsForGrantType(
-            choice.grant.grantType,
-            allPendingChoices,
-            grantPicks,
-            choice.key
-        );
-        const options = buildGrantChoiceSelectOptions(
-            choice,
-            grantPicks,
+    function renderChoicePool(
+        pool: GrantChoicePool,
+        {
+            pendingForType,
             ownedRefs,
-            otherPickedRefs
-        ).map((option) => ({
-            ...option,
-            label:
-                choice.grant.grantType === "ability_score"
-                    ? tAbilities(option.label)
-                    : option.label,
-        }));
-        const selected = grantPicks[choice.key] ?? "";
-        const isInvalid = invalidChoiceKeys.has(choice.key);
+            translateOptionLabel,
+        }: {
+            pendingForType: PendingChoiceGrant[];
+            ownedRefs: Set<string>;
+            translateOptionLabel?: (label: string) => string;
+        }
+    ) {
+        const firstSlot = pool.slots[0]!;
+        const selectedRefs = readPoolSelectedRefs(grantPicks, pool.slots);
+        const selectedSet = new Set(selectedRefs);
+        const quota = pool.slots.length;
+        const isFull = selectedRefs.length >= quota;
+        const poolFocusKey = resolvePoolFocusKey(pool, focusKey);
+        const poolFocused =
+            focusKey !== undefined &&
+            pool.slots.some((slot) => slot.key === focusKey);
+        const isInvalid = pool.slots.some((slot) =>
+            invalidChoiceKeys.has(slot.key)
+        );
+
+        const otherPicked = getOtherPickedRefsForGrantType(
+            firstSlot.grant.grantType,
+            pendingForType,
+            grantPicks,
+            firstSlot.key
+        );
+
+        for (const ref of selectedRefs) {
+            otherPicked.delete(ref);
+        }
 
         return (
             <div
-                key={choice.key}
-                data-focus-key={choice.key}
+                key={pool.poolKey}
+                data-focus-key={poolFocusKey}
+                data-pool-key={pool.poolKey}
                 className={cn(
                     "flex flex-col gap-2 rounded-md text-sm",
-                    focusKey === choice.key &&
-                        "ring-2 ring-primary ring-offset-2",
+                    poolFocused && "ring-2 ring-primary ring-offset-2",
                     isInvalid && "ring-2 ring-destructive ring-offset-2"
                 )}
             >
-                <span className="font-medium">{choice.label}</span>
+                <span className="font-medium">{pool.label}</span>
                 <div className="flex flex-wrap gap-2">
-                    {options.map((option) => {
-                        const isSelected = selected === option.value;
+                    {pool.options.map((option) => {
+                        const isSelected = selectedSet.has(option.value);
+                        const owned = ownedRefs.has(option.value);
+                        const pickedElsewhere = otherPicked.has(option.value);
+                        const unavailable =
+                            owned || (pickedElsewhere && !isSelected);
+                        const disabledByQuota = isFull && !isSelected;
+                        const disabled = unavailable || disabledByQuota;
+                        const displayLabel = translateOptionLabel
+                            ? translateOptionLabel(option.label)
+                            : option.label;
+                        const label =
+                            owned || (pickedElsewhere && !isSelected)
+                                ? `✓ ${displayLabel}`
+                                : displayLabel;
+
                         return (
                             <PressableSelectionCard
                                 key={option.value}
                                 selected={isSelected}
-                                disabled={option.disabled}
-                                onClick={() =>
-                                    setGrantPick(
+                                disabled={disabled}
+                                onClick={() => {
+                                    if (disabled) {
+                                        return;
+                                    }
+
+                                    toggleRefInPool(
                                         form,
-                                        choice.key,
-                                        isSelected ? "" : option.value
-                                    )
-                                }
+                                        pool.slots,
+                                        option.value
+                                    );
+                                }}
                             >
                                 <span className="text-sm font-medium">
-                                    {option.label}
+                                    {label}
                                 </span>
                             </PressableSelectionCard>
                         );
@@ -385,82 +425,44 @@ export function CharacterGrantPickers({
                         </p>
                     )}
 
-                    {languageChoices.map((choice) => {
-                        const selected = grantPicks[choice.key] ?? "";
-                        const otherLanguagePicks = getOtherPickedRefsForGrantType(
-                            "language",
-                            allLanguageChoices,
-                            grantPicks,
-                            choice.key
-                        );
-                        const options = buildGrantChoiceSelectOptions(
-                            choice,
-                            grantPicks,
-                            ownedLanguageRefs,
-                            otherLanguagePicks
-                        );
-                        const isInvalid = invalidChoiceKeys.has(choice.key);
-
-                        return (
-                            <div
-                                key={choice.key}
-                                data-focus-key={choice.key}
-                                className={cn(
-                                    "flex flex-col gap-2 rounded-md text-sm",
-                                    focusKey === choice.key &&
-                                        "ring-2 ring-primary ring-offset-2",
-                                    isInvalid &&
-                                        "ring-2 ring-destructive ring-offset-2"
-                                )}
-                            >
-                                <span className="font-medium">{choice.label}</span>
-                                <div className="flex flex-wrap gap-2">
-                                    {options.map((option) => {
-                                        const isSelected =
-                                            selected === option.value;
-                                        return (
-                                            <PressableSelectionCard
-                                                key={option.value}
-                                                selected={isSelected}
-                                                disabled={option.disabled}
-                                                onClick={() =>
-                                                    setGrantPick(
-                                                        form,
-                                                        choice.key,
-                                                        isSelected
-                                                            ? ""
-                                                            : option.value
-                                                    )
-                                                }
-                                            >
-                                                <span className="text-sm font-medium">
-                                                    {option.label}
-                                                </span>
-                                            </PressableSelectionCard>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        );
-                    })}
+                    {languagePools.map((pool) =>
+                        renderChoicePool(pool, {
+                            pendingForType: allLanguageChoices,
+                            ownedRefs: ownedLanguageRefs,
+                        })
+                    )}
                 </section>
             )}
 
             {showRacialAsi && (
                 <section className="flex flex-col gap-2">
                     <h2 className="text-sm font-bold">{t("racialAsiTitle")}</h2>
-                    {racialAsiChoices.map((choice) =>
-                        renderChoiceOptions(choice)
+                    {racialAsiPools.map((pool) =>
+                        renderChoicePool(pool, {
+                            pendingForType: allPendingChoices,
+                            ownedRefs:
+                                ownedRefsByGrantType.get("ability_score") ??
+                                new Set(),
+                            translateOptionLabel: (label) => tAbilities(label),
+                        })
                     )}
                 </section>
             )}
 
-            {otherChoices.length > 0 && (
+            {otherPools.length > 0 && (
                 <section className="flex flex-col gap-2">
-                    <h2 className="text-sm font-bold">{t("abilityChoicesTitle")}</h2>
-                    {otherChoices.map((choice) =>
-                        renderChoiceOptions(choice)
-                    )}
+                    <h2 className="text-sm font-bold">
+                        {t("abilityChoicesTitle")}
+                    </h2>
+                    {otherPools.map((pool) => {
+                        const grantType = pool.slots[0]!.grant.grantType;
+                        return renderChoicePool(pool, {
+                            pendingForType: allPendingChoices,
+                            ownedRefs:
+                                ownedRefsByGrantType.get(grantType) ??
+                                new Set(),
+                        });
+                    })}
                 </section>
             )}
         </div>
