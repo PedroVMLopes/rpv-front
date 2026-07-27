@@ -353,7 +353,7 @@ export function CharacterGrantPickers({
     }
 
     return (
-        <div className="flex flex-col gap-4 border rounded-lg p-4 bg-muted/30">
+        <div className="flex flex-col gap-4 border rounded-lg p-4 bg-card text-card-foreground">
             {choicesError && hasInvalidChoices ? (
                 <p className="text-sm font-medium text-destructive">
                     {t("choicesIncomplete")}
