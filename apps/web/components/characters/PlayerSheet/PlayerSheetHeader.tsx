@@ -126,6 +126,7 @@ export function PlayerSheetHeader({
 
                         <div className="flex w-full flex-col justify-center gap-2 sm:w-auto">
                             <div className="flex w-full items-stretch gap-2">
+                                
                                 <div
                                     className="flex min-w-0 flex-1 flex-row items-center justify-center gap-1 rounded-2xl border-3 bg-accent text-accent-foreground px-3 py-2 sm:min-w-16 sm:flex-none"
                                     aria-label={`${tCombat("ac")} ${ac}`}

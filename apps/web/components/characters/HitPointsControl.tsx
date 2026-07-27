@@ -169,7 +169,7 @@ export function HitPointsControl({
     return (
         <div
             className={cn(
-                "flex min-w-44 flex-col gap-2 rounded-2xl border-o bg-accent text-accent-foreground px-3 py-2",
+                "flex min-w-44 flex-col gap-2 rounded-2xl border-custom bg-accent text-accent-foreground px-3 py-2",
                 className
             )}
             aria-label={`${t("hitPoints")} ${draftHp} / ${maxHp}`}
@@ -197,7 +197,6 @@ export function HitPointsControl({
             <div className="flex items-center gap-1.5">
                 <Button
                     type="button"
-                    variant="secondary"
                     size="sm"
                     className="h-8 flex-1 px-2 text-xs font-semibold bg-emerald-800"
                     onClick={handleHeal}
@@ -208,7 +207,6 @@ export function HitPointsControl({
                 {amountInput}
                 <Button
                     type="button"
-                    variant="secondary"
                     size="sm"
                     className="h-8 flex-1 px-2 text-xs font-semibold bg-red-900"
                     onClick={handleDamage}
