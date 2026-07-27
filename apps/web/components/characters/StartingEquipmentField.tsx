@@ -22,6 +22,7 @@ import { STARTING_EQUIPMENT_SOURCES } from "@/lib/character/materializeCurrencyG
 import { ExclusiveBranchChoice } from "@/components/characters/creation/items/ExclusiveBranchChoice";
 import { ItemChoiceGrid } from "@/components/characters/creation/items/ItemChoiceGrid";
 import { cn } from "@/lib/utils";
+import { Badge } from "../ui/badge";
 
 type StartingEquipmentFieldProps = {
     form: UseFormReturn<Record<string, unknown>>;
@@ -242,12 +243,12 @@ export function StartingEquipmentField({
 
             {preview.fixedItems.length > 0 ? (
                 <div className="flex flex-col gap-2">
-                    <h3 className="text-sm font-semibold">{t("autoGranted")}</h3>
+                    <h3 className="font-semibold">{t("autoGranted")}</h3>
                     <div className="flex flex-wrap gap-2">
                         {preview.fixedItems.map((item) => (
                             <span
                                 key={`${item.source.type}:${item.source.id}:${item.slug}`}
-                                className="rounded-full bg-secondary px-3 py-1 text-xs font-medium"
+                                className="rounded-full bg-secondary text-secondary-foreground px-3 py-1 text-xs font-medium border-3"
                             >
                                 {item.quantity > 1
                                     ? `${item.name} ×${item.quantity}`
@@ -263,7 +264,7 @@ export function StartingEquipmentField({
 
             {preview.choiceGrants.length > 0 ? (
                 <div className="flex flex-col gap-2">
-                    <h3 className="text-sm font-semibold">{t("choicesTitle")}</h3>
+                    <h3 className="font-semibold">{t("choicesTitle")}</h3>
                     <ItemChoiceGrid
                         form={form}
                         contentLocale={contentLocale}
@@ -324,9 +325,9 @@ export function StartingEquipmentField({
             ) : null}
 
             <div className="flex flex-col gap-2">
-                <h3 className="text-sm font-semibold">{t("bagTitle")}</h3>
+                <h3 className="font-semibold">{t("bagTitle")}</h3>
                 {preview.bag.length === 0 ? (
-                    <p className="text-xs text-muted-foreground">{t("bagEmpty")}</p>
+                    <p className="text-sm">{t("bagEmpty")}</p>
                 ) : (
                     <ul className="flex flex-col gap-1 text-sm">
                         {preview.bag.map((stack) => {
@@ -340,18 +341,18 @@ export function StartingEquipmentField({
                                     key={bagStackReactKey(stack)}
                                     className="flex flex-wrap items-center gap-2"
                                 >
-                                    <span>
+                                    <Badge variant="secondary">
                                         {stack.quantity > 1
                                             ? `${itemName} ×${stack.quantity}`
                                             : itemName}
-                                    </span>
-                                    {stack.provenance ? (
+                                    </Badge>
+                                    {/* {stack.provenance ? (
                                         <span className="rounded bg-secondary px-2 py-0.5 text-xs text-muted-foreground">
                                             {t("provenanceGrant", {
                                                 provenance: stack.provenance,
                                             })}
                                         </span>
-                                    ) : null}
+                                    ) : null} */}
                                 </li>
                             );
                         })}

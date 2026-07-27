@@ -223,7 +223,7 @@ export function ItemChoiceGrid({
                                             </button>
                                             <Button
                                                 type="button"
-                                                variant="secondary"
+                                                variant="ghost"
                                                 size="icon"
                                                 className="size-8 shrink-0"
                                                 aria-label={t(
