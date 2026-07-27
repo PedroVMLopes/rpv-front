@@ -204,8 +204,8 @@ export function StartingEquipmentField({
     );
 
     return (
-        <section className="flex flex-col gap-4 rounded-lg border bg-muted/30 p-4">
-            <h2 className="text-sm font-bold">{t("title")}</h2>
+        <section className="flex flex-col gap-4 rounded-lg border bg-card text-card-foreground p-4">
+            <h2 className="font-bold">{t("title")}</h2>
 
             {choicesError && hasInvalidChoices ? (
                 <p className="text-sm font-medium text-destructive">

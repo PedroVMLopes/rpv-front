@@ -175,10 +175,10 @@ export function ItemChoiceGrid({
                                         key={`${choice.key}-${option.value}`}
                                         data-testid={`item-option-${choice.key}-${option.value}`}
                                         className={cn(
-                                            "flex flex-col gap-2 rounded-xl border p-3 transition-colors",
+                                            "flex flex-col gap-2 rounded-xl border-custom bg-popover text-popover-foreground p-3 transition-colors",
                                             isSelected
-                                                ? "border-primary"
-                                                : "border-border bg-card",
+                                                ? "bg-primary text-primary-foreground"
+                                                : "",
                                             option.disabled &&
                                                 !isSelected &&
                                                 "opacity-50"
@@ -216,7 +216,7 @@ export function ItemChoiceGrid({
                                                     {option.label}
                                                 </span>
                                                 {badges.length > 0 ? (
-                                                    <span className="mt-1 block text-xs text-muted-foreground">
+                                                    <span className="mt-1 block text-xs">
                                                         {badges.join(" · ")}
                                                     </span>
                                                 ) : null}

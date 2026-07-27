@@ -89,10 +89,10 @@ export function ExclusiveBranchChoice({
                             key={branch.branchId}
                             data-testid={`exclusive-branch-${branch.branchId}`}
                             className={cn(
-                                "flex flex-col gap-2 rounded-xl border p-3 transition-colors",
+                                "flex flex-col gap-2 rounded-xl border-custom bg-popover text-popover-foreground p-3 transition-colors",
                                 isSelected
-                                    ? "border-primary"
-                                    : "border-border bg-card"
+                                    ? "bg-primary text-primary-foreground"
+                                    : ""
                             )}
                         >
                             <div className="flex items-start justify-between gap-2">
@@ -110,7 +110,7 @@ export function ExclusiveBranchChoice({
                                     <span className="font-serif font-semibold leading-tight">
                                         {branch.label}
                                     </span>
-                                    <span className="mt-1 block text-xs text-muted-foreground">
+                                    <span className="mt-1 block text-xs">
                                         {branch.summary}
                                     </span>
                                 </button>
