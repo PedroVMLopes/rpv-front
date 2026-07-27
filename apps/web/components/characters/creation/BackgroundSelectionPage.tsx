@@ -3,14 +3,12 @@
 import { useMemo } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import type { Locale } from "@rpv/domain";
-import { DynamicForm } from "@/components/forms/DynamicForm";
+import {
+    DynamicForm,
+    type FieldConfig,
+} from "@/components/forms/DynamicForm";
 import { CatalogSelectionPage } from "@/components/characters/creation/CatalogSelectionPage";
 import type { SystemKey } from "@/presets";
-
-type FieldConfig = {
-    name: string;
-    [key: string]: unknown;
-};
 
 type BackgroundSelectionPageProps = {
     form: UseFormReturn<Record<string, unknown>>;

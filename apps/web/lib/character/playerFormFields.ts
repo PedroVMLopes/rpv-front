@@ -5,19 +5,13 @@ import { filterFieldsForStep } from "@/lib/character/characterCreationSteps";
 import {
     listRaceOptions,
     listSubraceOptions,
-    type CatalogSelectOption,
 } from "@/lib/catalog/raceCatalog";
 import {
     listBackgroundOptions,
     listClassOptions,
     listSubclassOptions,
 } from "@/lib/catalog/grantCatalog";
-
-type FieldConfig = {
-    name: string;
-    options?: Array<string | CatalogSelectOption>;
-    [key: string]: unknown;
-};
+import type { FieldConfig } from "@/components/forms/DynamicForm";
 
 type PlayerGrantSourceFieldOptions = {
     raceSlug?: string;

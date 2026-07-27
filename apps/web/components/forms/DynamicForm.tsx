@@ -16,7 +16,7 @@ import { useTranslations } from "next-intl";
 
 export type SelectOption = string | { value: string; label: string };
 
-interface FieldConfig {
+export interface FieldConfig {
     name: string;
     label?: string;
     /** Translation key for built-in systems; resolved against the active UI locale. */

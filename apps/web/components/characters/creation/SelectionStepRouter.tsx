@@ -8,13 +8,11 @@ import { SubraceSelectionPage } from "@/components/characters/creation/SubraceSe
 import { ClassSelectionPage } from "@/components/characters/creation/ClassSelectionPage";
 import { SubclassSelectionPage } from "@/components/characters/creation/SubclassSelectionPage";
 import { BackgroundSelectionPage } from "@/components/characters/creation/BackgroundSelectionPage";
-import { DynamicForm } from "@/components/forms/DynamicForm";
+import {
+    DynamicForm,
+    type FieldConfig,
+} from "@/components/forms/DynamicForm";
 import type { SystemKey } from "@/presets";
-
-type FieldConfig = {
-    name: string;
-    [key: string]: unknown;
-};
 
 type SelectionStepRouterProps = {
     step: CreationStep;

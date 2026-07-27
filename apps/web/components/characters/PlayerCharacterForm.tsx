@@ -8,7 +8,10 @@ import { getClassSubclassLevel } from "@rpv/content";
 import type { SystemKey } from "@/presets";
 import type { PresetStatConfig } from "@/presets/types";
 import { Button } from "@/components/ui/button";
-import { DynamicForm } from "@/components/forms/DynamicForm";
+import {
+    DynamicForm,
+    type FieldConfig,
+} from "@/components/forms/DynamicForm";
 import { AbilityScoresField } from "@/components/characters/AbilityScoresField";
 import { HitPointsField } from "@/components/characters/HitPointsField";
 import { ArmorClassField } from "@/components/characters/ArmorClassField";
@@ -63,10 +66,6 @@ function useMediaQuery(query: string): boolean {
     return matches;
 }
 
-type FieldConfig = {
-    name: string;
-    [key: string]: unknown;
-};
 
 export type PlayerCharacterFormProps = {
     mode: PlayerFormMode;

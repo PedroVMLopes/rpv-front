@@ -5,7 +5,10 @@ import { useWatch, type UseFormReturn } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import type { Locale } from "@rpv/domain";
 import type { SystemKey } from "@/presets";
-import { DynamicForm } from "@/components/forms/DynamicForm";
+import {
+    DynamicForm,
+    type FieldConfig,
+} from "@/components/forms/DynamicForm";
 import { CharacterLevelSelector } from "@/components/characters/CharacterLevelSelector";
 import { CharacterGrantPickers } from "@/components/characters/CharacterGrantPickers";
 import {
@@ -16,11 +19,6 @@ import { readLevelFromForm } from "@/lib/character/level";
 import { formatResourceRefLabel } from "@/lib/character/resourceLabels";
 import type { SpellSlotLabelTranslate } from "@/lib/character/spellSlotResources";
 import { getGrantSourceTypesForStep } from "@/lib/character/characterCreationSteps";
-
-type FieldConfig = {
-    name: string;
-    [key: string]: unknown;
-};
 
 type ClassStepContentProps = {
     form: UseFormReturn<Record<string, unknown>>;
