@@ -124,7 +124,7 @@ export function CatalogSelectionPage({
         : null;
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
             <CatalogSelectionGrid>
                 {entries.map((entry) => (
                     <CatalogSelectionCard

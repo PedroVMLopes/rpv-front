@@ -56,13 +56,13 @@ export function CatalogSelectionDetailPanel({
 
     return (
         <div
-            className="flex flex-col gap-4 rounded-xl border bg-muted/20 p-4"
+            className="flex flex-col gap-2 rounded-xl border-3 bg-card text-card-foreground p-4"
             data-testid="catalog-detail-panel"
         >
             <h3 className="font-serif text-lg font-semibold">{entry.title}</h3>
 
             {description ? (
-                <p className="text-sm leading-relaxed text-muted-foreground">
+                <p className="text-sm leading-relaxed">
                     {description}
                 </p>
             ) : null}

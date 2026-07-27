@@ -29,10 +29,10 @@ export function CatalogSelectionCard({
                 }
             }}
             className={cn(
-                "flex w-full cursor-pointer items-center gap-2 rounded-xl border-3 p-3 text-left transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "flex w-full cursor-pointer items-center gap-2 rounded-xl border-3 border-r-4 border-b-4 p-3 text-left transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 selected
-                    ? "border-primary border-2 ring-1 ring-primary/20 bg-card text-card-foreground hover:bg-muted/40 hover:text-card"
-                    : "border-border bg-accent text-accent-foreground hover:bg-card hover:text-card-foreground"
+                    ? "border-primary ring-1 ring-primary/20 bg-primary/80 text-primary-foreground hover:bg-primary/50 hover:text-primary-foreground shadow-xs"
+                    : "border-border bg-popover text-popover-foreground hover:bg-primary/50 hover:border-primary hover:shadow-xs"
             )}
         >
             <div className="flex items-center justify-between w-full gap-2">

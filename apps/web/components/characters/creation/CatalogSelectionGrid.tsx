@@ -13,7 +13,7 @@ export function CatalogSelectionGrid({
     return (
         <div
             className={cn(
-                "flex flex-col gap-3 md:grid md:grid-cols-2 md:gap-4 lg:grid-cols-3",
+                "flex flex-col gap-2 md:grid md:grid-cols-2 lg:grid-cols-3 bg-card text-card-foreground p-2 rounded-xl border-3",
                 className
             )}
         >
