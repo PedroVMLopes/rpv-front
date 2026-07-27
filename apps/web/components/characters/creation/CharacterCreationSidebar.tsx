@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { useMessages, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { CreationStepGraph } from "@/lib/character/creationSteps";
@@ -29,106 +29,15 @@ function humanizeStepId(stepId: string): string {
 
 function useStepLabel() {
     const t = useTranslations("characterCreation");
-    // #region agent log
-    const allMessages = useMessages();
-    // #endregion
 
     return (
         labelKey: string,
         stepId: string,
         labelValues?: Record<string, string | number>
     ) => {
-        // #region agent log
-        const stepsMessages = (
-            allMessages as {
-                characterCreation?: { steps?: Record<string, string> };
-            }
-        )?.characterCreation?.steps;
-        const hasReviewKey = Boolean(stepsMessages?.review);
-        const hasEquipmentKey = Boolean(stepsMessages?.equipment);
-        // #endregion
         try {
-            const result = t(labelKey as never, labelValues as never);
-            // #region agent log
-            if (stepId === "review" || labelKey.includes("review")) {
-                fetch(
-                    "http://127.0.0.1:7476/ingest/c64e1074-a4b1-458d-b20f-54db574b559c",
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "X-Debug-Session-Id": "8a527e",
-                        },
-                        body: JSON.stringify({
-                            sessionId: "8a527e",
-                            runId: "pre-fix",
-                            hypothesisId: "A-B-C",
-                            location:
-                                "CharacterCreationSidebar.tsx:useStepLabel",
-                            message: "review step label resolved",
-                            data: {
-                                labelKey,
-                                stepId,
-                                result,
-                                hasReviewKey,
-                                hasEquipmentKey,
-                                stepMessageKeys: stepsMessages
-                                    ? Object.keys(stepsMessages).filter((k) =>
-                                          [
-                                              "review",
-                                              "equipment",
-                                              "finalize",
-                                          ].includes(k)
-                                      )
-                                    : null,
-                            },
-                            timestamp: Date.now(),
-                        }),
-                    }
-                ).catch(() => {});
-            }
-            // #endregion
-            return result;
-        } catch (error) {
-            // #region agent log
-            fetch(
-                "http://127.0.0.1:7476/ingest/c64e1074-a4b1-458d-b20f-54db574b559c",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-Debug-Session-Id": "8a527e",
-                    },
-                    body: JSON.stringify({
-                        sessionId: "8a527e",
-                        runId: "pre-fix",
-                        hypothesisId: "A-D-E",
-                        location: "CharacterCreationSidebar.tsx:useStepLabel",
-                        message: "step label MISSING_MESSAGE catch",
-                        data: {
-                            labelKey,
-                            stepId,
-                            hasReviewKey,
-                            hasEquipmentKey,
-                            errorMessage:
-                                error instanceof Error
-                                    ? error.message
-                                    : String(error),
-                            stepMessageKeys: stepsMessages
-                                ? Object.keys(stepsMessages).filter((k) =>
-                                      [
-                                          "review",
-                                          "equipment",
-                                          "finalize",
-                                      ].includes(k)
-                                  )
-                                : null,
-                        },
-                        timestamp: Date.now(),
-                    }),
-                }
-            ).catch(() => {});
-            // #endregion
+            return t(labelKey as never, labelValues as never);
+        } catch {
             return humanizeStepId(stepId);
         }
     };
