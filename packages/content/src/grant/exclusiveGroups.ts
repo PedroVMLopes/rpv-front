@@ -1,3 +1,4 @@
+import type { ModifierSource } from "@rpv/domain";
 import type { Grant } from "./grant.types";
 
 export type ExclusiveGroupContext = {
@@ -16,7 +17,7 @@ export type ExclusiveGroupChoice = {
     groupId: string;
     label: string;
     branches: ExclusiveGroupBranch[];
-    source: { type: string; id: string };
+    source: ModifierSource;
     featureLevel?: number;
 };
 
@@ -54,7 +55,7 @@ function groupLabel(grants: Grant[], groupId: string): string {
 
 export function collectExclusiveGroupChoices(
     grants: Grant[],
-    source: { type: string; id: string },
+    source: ModifierSource,
     featureLevel?: number
 ): ExclusiveGroupChoice[] {
     const groupIds = new Set<string>();

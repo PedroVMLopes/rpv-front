@@ -38,7 +38,12 @@ export type StartingEquipmentCurrencyChoiceGrant = CurrencyChoiceGrant & {
     source: ModifierSource;
 };
 
-export type StartingEquipmentExclusiveGroupChoice = ExclusiveGroupChoice;
+export type StartingEquipmentExclusiveGroupChoice = Omit<
+    ExclusiveGroupChoice,
+    "source"
+> & {
+    source: ModifierSource;
+};
 
 export type StartingEquipmentPreview = {
     exclusiveGroups: StartingEquipmentExclusiveGroupChoice[];
