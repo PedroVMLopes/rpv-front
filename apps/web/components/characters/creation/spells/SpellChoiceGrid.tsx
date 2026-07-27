@@ -203,13 +203,13 @@ export function SpellChoiceGrid({
                                             <div
                                                 key={`${pool.poolKey}-${option.value}`}
                                                 className={cn(
-                                                    "flex flex-col gap-2 rounded-xl border-3 p-3 transition-colors",
+                                                    "flex flex-col gap-2 rounded-xl border-custom p-3 transition-colors",
                                                     isSelected
-                                                        ? "border-primary border-2 ring-1 ring-primary/20 bg-card text-card-foreground"
+                                                        ? "ring-1 bg-card text-card-foreground"
                                                         : "border-border bg-accent text-accent-foreground",
                                                     disabled &&
                                                         !isSelected &&
-                                                        "opacity-50"
+                                                        "opacity-40"
                                                 )}
                                             >
                                                 <div className="flex items-start justify-between gap-2">
@@ -247,9 +247,9 @@ export function SpellChoiceGrid({
                                                     </button>
                                                     <Button
                                                         type="button"
-                                                        variant="secondary"
+                                                        variant="link"
                                                         size="icon"
-                                                        className="size-8 shrink-0"
+                                                        className="size-8 shrink-0 hover:text-primary hover:cursor-pointer"
                                                         aria-label={t(
                                                             "selection.expandDetails"
                                                         )}

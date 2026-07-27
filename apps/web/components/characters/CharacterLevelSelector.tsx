@@ -16,7 +16,7 @@ type CharacterLevelSelectorProps = {
     form: UseFormReturn<Record<string, unknown>>;
 };
 
-const PRESETS: LevelPreset[] = ["lv1", "lv2", "lv3", "custom"];
+const PRESETS: LevelPreset[] = ["lv1", "lv3", "custom"];
 
 export function CharacterLevelSelector({ form }: CharacterLevelSelectorProps) {
     const t = useTranslations("characterCreation");
@@ -38,11 +38,6 @@ export function CharacterLevelSelector({ form }: CharacterLevelSelectorProps) {
             return;
         }
 
-        if (nextPreset === "lv2") {
-            setLevel(2);
-            return;
-        }
-
         if (nextPreset === "lv3") {
             setLevel(3);
             return;
@@ -61,7 +56,6 @@ export function CharacterLevelSelector({ form }: CharacterLevelSelectorProps) {
                     <Button
                         key={entry}
                         type="button"
-                        size="sm"
                         variant={preset === entry ? "default" : "outline"}
                         onClick={() => setPreset(entry)}
                     >
