@@ -4,8 +4,8 @@ import { extendTailwindMerge } from "tailwind-merge"
 const twMerge = extendTailwindMerge({
   extend: {
     classGroups: {
-      // Custom @utility border-offset lives with border-width, not border-color.
-      "border-w": ["border-offset"],
+      // Custom @utility border-custom lives with border-width, not border-color.
+      "border-w": ["border-custom"],
     },
   },
 })

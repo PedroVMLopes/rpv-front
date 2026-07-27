@@ -169,7 +169,7 @@ export function HitPointsControl({
     return (
         <div
             className={cn(
-                "flex min-w-44 flex-col gap-2 rounded-2xl border-3 bg-accent text-accent-foreground px-3 py-2",
+                "flex min-w-44 flex-col gap-2 rounded-2xl border-o bg-accent text-accent-foreground px-3 py-2",
                 className
             )}
             aria-label={`${t("hitPoints")} ${draftHp} / ${maxHp}`}
