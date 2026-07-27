@@ -105,19 +105,15 @@ export function PlayerCharacterForm({
     const t = useTranslations("characterCreation");
     const isDesktopSidebar = useMediaQuery("(min-width: 768px)");
     const formValues = form.watch();
-    const raceSlug = form.watch("race");
-    const classSlug = form.watch("characterClass");
+    const raceWatch = form.watch("race");
+    const classWatch = form.watch("characterClass");
+    const raceSlug = typeof raceWatch === "string" ? raceWatch : undefined;
+    const classSlug = typeof classWatch === "string" ? classWatch : undefined;
     const level = form.watch("level");
     const isLevelUp = mode === "level-up";
 
-    const previousRaceRef = useRef<string | undefined>(
-        typeof formValues.race === "string" ? formValues.race : undefined
-    );
-    const previousClassRef = useRef<string | undefined>(
-        typeof formValues.characterClass === "string"
-            ? formValues.characterClass
-            : undefined
-    );
+    const previousRaceRef = useRef<string | undefined>(raceSlug);
+    const previousClassRef = useRef<string | undefined>(classSlug);
     const previousLevelRef = useRef<number | undefined>(
         readLevelFromForm(formValues)
     );
