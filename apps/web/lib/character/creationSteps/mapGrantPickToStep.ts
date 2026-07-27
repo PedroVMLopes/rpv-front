@@ -24,7 +24,7 @@ export function mapGrantPickToStep(
     graph?: CreationStepGraph
 ): string {
     if (isInventoryOrExclusiveKey(key)) {
-        return "finalize";
+        return "equipment";
     }
 
     const parsed = parseGrantPickKey(key);
@@ -109,8 +109,8 @@ export function mapFieldToStep(fieldName: string): string {
         case "gold":
         case "silver":
         case "bronze":
-            return "finalize";
+            return "review";
         default:
-            return "finalize";
+            return "review";
     }
 }

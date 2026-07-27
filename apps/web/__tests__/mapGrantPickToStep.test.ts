@@ -64,10 +64,10 @@ describe("mapGrantPickToStep", () => {
         ).toBe("class-level-1-choices");
     });
 
-    it("maps inventory picks to finalize", () => {
+    it("maps inventory picks to equipment", () => {
         expect(
             mapGrantPickToStep("class:fighter:base:inventory_item:0:0")
-        ).toBe("finalize");
+        ).toBe("equipment");
     });
 
     it("maps L4 spell keys to class-level-4-spells even when absent from wizard graph", () => {

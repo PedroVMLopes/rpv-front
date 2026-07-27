@@ -97,7 +97,7 @@ function getStepIdForValidationPath(
     const root = path[0];
 
     if (!root) {
-        return graph.steps.at(-1)?.id ?? "finalize";
+        return graph.steps.at(-1)?.id ?? "review";
     }
 
     if (root === "choices") {
@@ -117,14 +117,14 @@ function getStepIdForValidationPath(
                     : undefined;
             const stepId = mapGrantPickToStep(grantPickKey, grant, graph);
 
-            return graph.isValidStepId(stepId) ? stepId : "finalize";
+            return graph.isValidStepId(stepId) ? stepId : "equipment";
         }
 
-        return graph.steps.at(-1)?.id ?? "finalize";
+        return graph.steps.at(-1)?.id ?? "review";
     }
 
     if (root === "inventory") {
-        return "finalize";
+        return "equipment";
     }
 
     const mapped = mapFieldToStep(root);

@@ -9,7 +9,11 @@ describe("resolveCreationSteps", () => {
         });
 
         expect(graph.steps[0]?.id).toBe("race");
-        expect(graph.steps.at(-1)?.id).toBe("finalize");
+        expect(graph.steps.at(-1)?.id).toBe("review");
+        expect(graph.steps.map((step) => step.id).slice(-2)).toEqual([
+            "equipment",
+            "review",
+        ]);
         expect(graph.macroGroups.map((group) => group.id)).toEqual([
             "levelUp",
             "race",
@@ -199,10 +203,12 @@ describe("resolveCreationSteps", () => {
         const ids = graph.steps.map((step) => step.id);
         const abilitiesIndex = ids.indexOf("abilities");
         const prepareIndex = ids.indexOf("prepare-spells");
-        const finalizeIndex = ids.indexOf("finalize");
+        const equipmentIndex = ids.indexOf("equipment");
+        const reviewIndex = ids.indexOf("review");
 
         expect(prepareIndex).toBeGreaterThan(abilitiesIndex);
-        expect(finalizeIndex).toBeGreaterThan(prepareIndex);
+        expect(equipmentIndex).toBeGreaterThan(prepareIndex);
+        expect(reviewIndex).toBeGreaterThan(equipmentIndex);
         expect(graph.getStep("prepare-spells")?.kind).toBe("prepare_spells");
         expect(graph.getStep("prepare-spells")?.macroGroupId).toBe("spells");
     });

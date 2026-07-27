@@ -8,13 +8,9 @@ import { getClassSubclassLevel } from "@rpv/content";
 import type { SystemKey } from "@/presets";
 import type { PresetStatConfig } from "@/presets/types";
 import { Button } from "@/components/ui/button";
-import {
-    DynamicForm,
-    type FieldConfig,
-} from "@/components/forms/DynamicForm";
+import { type FieldConfig } from "@/components/forms/DynamicForm";
 import { AbilityScoresField } from "@/components/characters/AbilityScoresField";
 import { HitPointsField } from "@/components/characters/HitPointsField";
-import { ArmorClassField } from "@/components/characters/ArmorClassField";
 import { ClassResourcesField } from "@/components/characters/ClassResourcesField";
 import { CharacterGrantPickers } from "@/components/characters/CharacterGrantPickers";
 import { StartingEquipmentField } from "@/components/characters/StartingEquipmentField";
@@ -24,6 +20,7 @@ import { LevelProgressionPage } from "@/components/characters/creation/LevelProg
 import { SelectionStepRouter } from "@/components/characters/creation/SelectionStepRouter";
 import { GrantChoicePage } from "@/components/characters/creation/GrantChoicePage";
 import { PrepareSpellsPage } from "@/components/characters/creation/PrepareSpellsPage";
+import { CharacterReviewPage } from "@/components/characters/creation/CharacterReviewPage";
 import {
     buildPlayerGrantSourceFields,
     filterPlayerFormFields,
@@ -453,34 +450,7 @@ export function PlayerCharacterForm({
                         system={system}
                     />
                 );
-            case "finalize":
-                if (isLevelUp || activeStep.id === "level-up-confirm") {
-                    return (
-                        <div className="flex flex-col gap-4">
-                            <h2 className="text-lg font-bold md:sr-only">
-                                {stepTitle}
-                            </h2>
-                            <div className="flex flex-col gap-4 rounded-lg border bg-muted/30 p-4">
-                                <h3 className="text-sm font-bold">
-                                    {t("progression.levelUpConfirmTitle", {
-                                        level: readLevelFromForm(formValues),
-                                    })}
-                                </h3>
-                                <HitPointsField
-                                    form={form}
-                                    system={system}
-                                    contentLocale={contentLocale}
-                                />
-                                <ClassResourcesField
-                                    form={form}
-                                    contentLocale={contentLocale}
-                                    system={system}
-                                />
-                            </div>
-                        </div>
-                    );
-                }
-
+            case "equipment":
                 return (
                     <div className="flex flex-col gap-4">
                         <h2 className="text-lg font-bold md:sr-only">{stepTitle}</h2>
@@ -492,27 +462,37 @@ export function PlayerCharacterForm({
                                 })}
                             </p>
                         ) : null}
-                        <DynamicForm
-                            form={form}
-                            fields={stepFields}
-                            hideSubmit
-                        />
                         <StartingEquipmentField
                             form={form}
                             contentLocale={contentLocale}
                             system={system}
                             focusKey={activeFocusKey}
                         />
+                    </div>
+                );
+            case "review":
+                return (
+                    <CharacterReviewPage
+                        title={stepTitle}
+                        form={form}
+                        stepFields={stepFields}
+                        contentLocale={contentLocale}
+                        system={system}
+                    />
+                );
+            case "finalize":
+                return (
+                    <div className="flex flex-col gap-4">
+                        <h2 className="text-lg font-bold md:sr-only">
+                            {stepTitle}
+                        </h2>
                         <div className="flex flex-col gap-4 rounded-lg border bg-muted/30 p-4">
                             <h3 className="text-sm font-bold">
-                                {t("combatPreviewTitle")}
+                                {t("progression.levelUpConfirmTitle", {
+                                    level: readLevelFromForm(formValues),
+                                })}
                             </h3>
                             <HitPointsField
-                                form={form}
-                                system={system}
-                                contentLocale={contentLocale}
-                            />
-                            <ArmorClassField
                                 form={form}
                                 system={system}
                                 contentLocale={contentLocale}

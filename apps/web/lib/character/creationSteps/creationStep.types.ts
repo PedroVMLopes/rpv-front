@@ -18,6 +18,8 @@ export type CreationStepKind =
     | "grant_picks"
     | "abilities"
     | "prepare_spells"
+    | "equipment"
+    | "review"
     | "finalize";
 
 export type CreationStepSourceFilter = {

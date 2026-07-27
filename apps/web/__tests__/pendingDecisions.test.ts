@@ -118,7 +118,7 @@ describe("collectPendingDecisions", () => {
         const exclusive = pending.find((decision) =>
             decision.focusKey?.includes(":exclusive:")
         );
-        expect(exclusive?.stepId).toBe("finalize");
+        expect(exclusive?.stepId).toBe("equipment");
         expect(exclusive?.focusKey).toBe(
             "class:fighter:base:exclusive:starting-wealth"
         );

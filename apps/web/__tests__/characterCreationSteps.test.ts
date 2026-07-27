@@ -55,7 +55,8 @@ describe("characterCreationSteps navigation helpers", () => {
         );
 
         expect(graph.isValidStepId("class-level-3")).toBe(true);
-        expect(graph.getStep("finalize")?.kind).toBe("finalize");
+        expect(graph.getStep("equipment")?.kind).toBe("equipment");
+        expect(graph.getStep("review")?.kind).toBe("review");
     });
 });
 

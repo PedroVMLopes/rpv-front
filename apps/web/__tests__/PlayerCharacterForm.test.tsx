@@ -168,7 +168,7 @@ describe("PlayerCharacterForm", () => {
         expect(sidebar.getByText("Select a race")).toBeInTheDocument();
     });
 
-    it("shows deferred level banner on finalize when level is above cap", async () => {
+    it("shows deferred level banner on equipment when level is above cap", async () => {
         render(
             <PlayerFormHarness
                 defaultValues={{
@@ -176,7 +176,7 @@ describe("PlayerCharacterForm", () => {
                     characterClass: "wizard",
                     level: 5,
                 }}
-                initialStepId="finalize"
+                initialStepId="equipment"
             />
         );
 
@@ -204,7 +204,7 @@ describe("PlayerCharacterForm", () => {
                     })),
                 }}
                 onSave={onSave}
-                initialStepId="finalize"
+                initialStepId="review"
             />
         );
 

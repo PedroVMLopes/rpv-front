@@ -177,7 +177,7 @@
     }
   },
   "startingEquipment": {
-    "title": "Equipamento Inicial",
+    "title": "Equipamento",
     "autoGranted": "Concedido automaticamente",
     "choicesTitle": "Escolhas de equipamento",
     "bagTitle": "Bolsa inicial",
@@ -306,8 +306,9 @@
       "background-choices": "Escolhas de antecedente",
       "abilities": "Atributos",
       "prepare-spells": "Preparar Magias",
-      "finalize": "Equipamento Inicial",
-      "equipment": "Equipamento Inicial",
+      "finalize": "Revisão",
+      "equipment": "Equipamento",
+      "review": "Revisão",
       "level-up-confirm": "Confirmar"
     },
     "navigation": {

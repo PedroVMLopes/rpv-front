@@ -177,7 +177,7 @@
     }
   },
   "startingEquipment": {
-    "title": "Starting Equipment",
+    "title": "Equipment",
     "autoGranted": "Granted automatically",
     "choicesTitle": "Equipment choices",
     "bagTitle": "Starting bag",
@@ -306,8 +306,9 @@
       "background-choices": "Background choices",
       "abilities": "Ability Scores",
       "prepare-spells": "Prepare Spells",
-      "finalize": "Starting Equipment",
-      "equipment": "Starting Equipment",
+      "finalize": "Review",
+      "equipment": "Equipment",
+      "review": "Review",
       "level-up-confirm": "Confirm"
     },
     "navigation": {

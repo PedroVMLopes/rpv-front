@@ -160,8 +160,9 @@ export function resolveCreationSteps(
         steps.push(createStep("prepare-spells", "prepare_spells", "spells"));
     }
 
+    steps.push(createStep("equipment", "equipment", "finalize"));
     steps.push(
-        createStep("finalize", "finalize", "finalize", {
+        createStep("review", "review", "finalize", {
             fieldNames: ["gold", "silver", "bronze"],
         })
     );
@@ -169,12 +170,32 @@ export function resolveCreationSteps(
     return buildCreationStepGraph(steps);
 }
 
+/** Legacy deep-link alias: `finalize` → `equipment`. */
+function resolveLegacyStepId(
+    requestedStepId: string,
+    graph: CreationStepGraph
+): string | undefined {
+    if (requestedStepId === "finalize" && graph.isValidStepId("equipment")) {
+        return "equipment";
+    }
+
+    return undefined;
+}
+
 export function resolveInitialStepId(
     requestedStepId: string | undefined,
     graph: CreationStepGraph
 ): string {
-    if (requestedStepId && graph.isValidStepId(requestedStepId)) {
-        return requestedStepId;
+    if (requestedStepId) {
+        const legacy = resolveLegacyStepId(requestedStepId, graph);
+
+        if (legacy) {
+            return legacy;
+        }
+
+        if (graph.isValidStepId(requestedStepId)) {
+            return requestedStepId;
+        }
     }
 
     return graph.steps[0]?.id ?? "race";

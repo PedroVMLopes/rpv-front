@@ -60,7 +60,8 @@ flowchart TD
     SCS --> SCLVL[4.x Progressão subclasse por nível]
     SCLVL --> BG
     BG --> AB[6. Atributos]
-    AB --> FN[7. Final — equipamento + pendências]
+    AB --> EQ[7. Equipamento]
+    EQ --> RV[8. Revisão — moeda + prévia de combate]
 ```
 
 ### 3.2 Etapas fixas (sempre presentes)
@@ -71,7 +72,8 @@ flowchart TD
 | 3 | `class` | Seleção de classe + **seletor de nível** (`CharacterLevelSelector`) |
 | 5 | `background` | Antecedente + campos de identidade (nome, idade, objetivos) |
 | 6 | `abilities` | Atributos, bônus distribuíveis, revisão de proficiências em perícias |
-| 7 | `finalize` | Equipamento inicial, moeda, `PendingDecisionsPanel` |
+| 7 | `equipment` | Equipamento inicial (`StartingEquipmentField`) |
+| 8 | `review` | Moeda manual + prévia de combate (HP / CA / recursos) |
 
 ### 3.3 Etapas condicionais
 
@@ -101,7 +103,7 @@ A subclasse vem **depois** das etapas de truques e magias da **classe** porque a
 2. Para cada nível L1..N: ganhos da classe (HP, recursos, escolhas) — incluindo sub-etapas de truques/magias da classe naquele nível
 3. Subclasse (quando desbloqueada)
 4. Para cada nível aplicável: ganhos da subclasse — incluindo sub-etapas de truques/magias da subclasse
-5. Antecedente → Atributos → Final
+5. Antecedente → Atributos → Equipamento → Revisão
 
 ---
 
@@ -182,9 +184,9 @@ Cada pendência deve apontar para a **sub-etapa exata** (ex.: `class-level-1-can
 
 ---
 
-## 6. Etapa de Atributos (antes do Final)
+## 6. Etapa de Atributos (antes do Equipamento)
 
-Posição: **penúltima etapa**, imediatamente antes de Equipamento Inicial / Final.
+Posição: imediatamente antes de Equipamento / Revisão.
 
 ### 6.1 Geração de scores
 
@@ -215,12 +217,20 @@ Perícias **não** usam UI rica de cards na v1; podem permanecer como lista edit
 
 ---
 
-## 7. Etapa Final
+## 7. Equipamento e Revisão
+
+### 7.1 Equipamento (`equipment`)
 
 - `StartingEquipmentField` — escolhas de equipamento inicial; itens com UI rica quando forem opções de `inventory_item` / bundles
+- Pendências de inventário / exclusive / currency picks apontam para esta etapa
+
+### 7.2 Revisão (`review`) — última etapa de create/edit
+
 - Moeda manual (`gold`, `silver`, `bronze`) se o preset expuser
-- `PendingDecisionsPanel` — resumo de tudo incompleto ou inválido, com links para a sub-etapa correta (`?step=` na edição)
+- Prévia de combate (HP / CA / recursos de classe)
 - Save com nome padrão se nome vazio (comportamento atual)
+
+Pendências incompletas continuam listadas na sidebar com deep links (`?step=` na edição). Level-up usa `level-up-confirm` (“Confirmar”), não `review`.
 
 ---
 
@@ -240,7 +250,7 @@ Cada `CreationStep`:
 ```ts
 type CreationStep = {
   id: string;                    // ex. "class-level-3-spells"
-  kind: "selection" | "grant_picks" | "level_summary" | "abilities" | "finalize";
+  kind: "selection" | "grant_picks" | "level_summary" | "abilities" | "equipment" | "review" | "finalize";
   labelKey: string;              // i18n
   parentId?: string;
   sourceFilter?: { sourceTypes, level?, grantTypes?, spellTier? };
@@ -265,7 +275,9 @@ type CreationStep = {
 | `level_summary` | `LevelProgressionPage` — structured gain preview (average HP before→after, class/subclass resources, spell/cantrip pick counts, subclass unlock) plus remaining fixed grants |
 | `grant_picks` | `GrantChoicePage` → `SpellChoiceGrid` / `ItemChoiceGrid` / pickers legados |
 | `abilities` | `AbilitiesStepPage` (scores + ASI picks + skill review) |
-| `finalize` | equipamento + pendências |
+| `equipment` | `StartingEquipmentField` |
+| `review` | `CharacterReviewPage` (moeda manual + prévia de combate) |
+| `finalize` | level-up confirm (HP + recursos) |
 
 ### 8.4 Preview de grants
 

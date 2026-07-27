@@ -47,7 +47,7 @@ describe("StartingEquipmentField", () => {
             />
         );
 
-        expect(screen.getByText("Starting Equipment")).toBeInTheDocument();
+        expect(screen.getByText("Equipment")).toBeInTheDocument();
         expect(screen.getByText(/Starting wealth/)).toBeInTheDocument();
         expect(screen.getAllByText(/Longsword/).length).toBeGreaterThan(0);
         expect(screen.getAllByText(/From class: fighter/).length).toBeGreaterThan(0);
@@ -152,6 +152,6 @@ describe("StartingEquipmentField", () => {
             <StartingEquipmentHarness defaultValues={{ choices: {} }} />
         );
 
-        expect(screen.queryByText("Starting Equipment")).not.toBeInTheDocument();
+        expect(screen.queryByText("Equipment")).not.toBeInTheDocument();
     });
 });

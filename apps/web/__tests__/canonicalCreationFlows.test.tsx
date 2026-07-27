@@ -117,7 +117,7 @@ describe("canonical character creation flows", () => {
         ).toBeGreaterThanOrEqual(1);
     });
 
-    it("Fighter L3: subclass in sidebar and equipment cards on finalize", async () => {
+    it("Fighter L3: subclass in sidebar and equipment cards on equipment step", async () => {
         const user = userEvent.setup();
 
         render(
@@ -134,7 +134,7 @@ describe("canonical character creation flows", () => {
                         },
                     },
                 }}
-                initialStepId="finalize"
+                initialStepId="equipment"
             />
         );
 
@@ -176,7 +176,7 @@ describe("canonical character creation flows", () => {
                         },
                     },
                 }}
-                initialStepId="finalize"
+                initialStepId="equipment"
                 initialFocusKey={focusKey}
             />
         );

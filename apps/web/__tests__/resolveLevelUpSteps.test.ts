@@ -21,6 +21,8 @@ describe("resolveLevelUpSteps", () => {
         expect(ids.at(-1)).toBe("level-up-confirm");
         expect(ids).not.toContain("race");
         expect(ids).not.toContain("finalize");
+        expect(ids).not.toContain("equipment");
+        expect(ids).not.toContain("review");
         expect(ids).not.toContain("class-level-1");
         expect(ids).not.toContain("subclass");
     });
