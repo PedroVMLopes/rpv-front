@@ -42,27 +42,27 @@ describe("abilityScoreGeneration helpers", () => {
 
     it("assigns a free standard array score without swapping", () => {
         const values = [8, 8, 8, 8, 8, 8];
-        expect(assignStandardArrayScore(values, 0, 15, 8)).toEqual([
+        expect(assignStandardArrayScore(values, 0, 15)).toEqual([
             15, 8, 8, 8, 8, 8,
         ]);
     });
 
-    it("parks an ability by selecting the parking value", () => {
+    it("swaps when selecting a score already held elsewhere, including 8", () => {
         const values = [15, 14, 8, 8, 8, 8];
-        expect(assignStandardArrayScore(values, 0, 8, 8)).toEqual([
-            8, 14, 8, 8, 8, 8,
+        expect(assignStandardArrayScore(values, 0, 8)).toEqual([
+            8, 14, 15, 8, 8, 8,
         ]);
     });
 
     it("swaps when selecting a score already held elsewhere", () => {
         const values = [15, 8, 8, 8, 8, 8];
-        expect(assignStandardArrayScore(values, 1, 15, 8)).toEqual([
+        expect(assignStandardArrayScore(values, 1, 15)).toEqual([
             8, 15, 8, 8, 8, 8,
         ]);
     });
 
     it("is a no-op when selecting the current score", () => {
         const values = [15, 8, 8, 8, 8, 8];
-        expect(assignStandardArrayScore(values, 0, 15, 8)).toBe(values);
+        expect(assignStandardArrayScore(values, 0, 15)).toBe(values);
     });
 });

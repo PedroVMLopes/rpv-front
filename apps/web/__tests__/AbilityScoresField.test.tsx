@@ -44,7 +44,7 @@ function AbilityScoresHarness({
 }
 
 function abilityCard(label: string) {
-    const card = screen.getByText(label).closest("div.rounded");
+    const card = screen.getByText(label).closest("div.rounded-xl");
     expect(card).not.toBeNull();
     return card as HTMLElement;
 }
@@ -121,6 +121,43 @@ describe("AbilityScoresField", () => {
         const output = screen.getByTestId("ability-output").textContent ?? "";
         expect(output).toContain('"name":"strength","value":8');
         expect(output).toContain('"name":"dexterity","value":15');
+    });
+
+    it("treats 8 like other standard array scores when swapping", async () => {
+        const user = userEvent.setup();
+
+        render(
+            <AbilityScoresHarness
+                defaultValues={{
+                    name: "Test Hero",
+                    abilityScoreMethod: "standard-array",
+                    attributes: dndStatConfig.abilities.map((ability) => ({
+                        name: ability.name,
+                        value:
+                            ability.name === "strength"
+                                ? 15
+                                : ability.name === "dexterity"
+                                  ? 14
+                                  : 8,
+                    })),
+                }}
+            />
+        );
+
+        const strengthEight = within(abilityCard("Strength")).getByRole(
+            "button",
+            { name: "8" }
+        );
+        expect(strengthEight).toHaveAttribute("aria-pressed", "false");
+
+        await user.click(strengthEight);
+
+        const output = screen.getByTestId("ability-output").textContent ?? "";
+        expect(output).toContain('"name":"strength","value":8');
+        expect(output).toContain('"name":"constitution","value":15');
+        expect(
+            within(abilityCard("Strength")).getByRole("button", { name: "8" })
+        ).toHaveAttribute("aria-pressed", "true");
     });
 
     it("defaults standard array attributes to parking value 8", () => {

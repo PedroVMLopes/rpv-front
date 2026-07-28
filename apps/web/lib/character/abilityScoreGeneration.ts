@@ -105,23 +105,15 @@ export function hasStandardArrayOutOfPoolValue(
 
 /**
  * Assigns a standard-array score to one ability index.
- * Parking value (min of pool) may be selected freely.
- * Non-parking values already held elsewhere swap with that ability.
+ * Values already held elsewhere swap with that ability.
  */
 export function assignStandardArrayScore(
     values: number[],
     index: number,
-    next: number,
-    parking: number
+    next: number
 ): number[] {
     if (values[index] === next) {
         return values;
-    }
-
-    if (next === parking) {
-        return values.map((value, valueIndex) =>
-            valueIndex === index ? next : value
-        );
     }
 
     const otherIndex = values.findIndex(

@@ -21,7 +21,6 @@ import {
     readAttributeValues,
     rollAbilityPool,
     shouldShowMigrationHint,
-    standardArrayParkingValue,
     UNASSIGNED_ABILITY_VALUE,
     type AttributeEntry,
 } from "@/lib/character/abilityScoreGeneration";
@@ -226,7 +225,6 @@ export function AbilityScoresField({
     }
 
     const abilityGeneration = config;
-    const parkingValue = standardArrayParkingValue(abilityGeneration);
     const usedRollValues = countPoolUsage(attributeValues, rolls);
 
     function handleRoll() {
@@ -245,8 +243,7 @@ export function AbilityScoresField({
         const nextValues = assignStandardArrayScore(
             attributeValues,
             index,
-            option,
-            parkingValue
+            option
         );
         writeAttributeValues(form, abilities, nextValues);
     }
@@ -355,10 +352,8 @@ export function AbilityScoresField({
                                 <div className="flex flex-wrap gap-1">
                                     {config.standardArray.map((option) => {
                                         const selected = value === option;
-                                        // Non-parking scores held elsewhere: darker label on other cards.
                                         const takenElsewhere =
                                             !selected &&
-                                            option !== parkingValue &&
                                             attributeValues.some(
                                                 (assigned, assignedIndex) =>
                                                     assignedIndex !== index &&
@@ -376,9 +371,10 @@ export function AbilityScoresField({
                                                         : "outline"
                                                 }
                                                 aria-pressed={selected}
-                                                className={
-                                                    cn("border-2",
-                                                    takenElsewhere && "opacity-50"
+                                                className={cn(
+                                                    "border-2",
+                                                    takenElsewhere &&
+                                                        "opacity-50"
                                                 )}
                                                 onClick={() =>
                                                     applyStandardArrayPick(
