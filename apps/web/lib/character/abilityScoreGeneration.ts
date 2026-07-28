@@ -137,6 +137,34 @@ export function assignStandardArrayScore(
     });
 }
 
+/**
+ * Assigns a rolled score. Duplicate pool values can be held by multiple abilities
+ * until the pool count is exhausted; only then does a pick swap with another owner.
+ */
+export function assignRollScore(
+    values: number[],
+    index: number,
+    next: number,
+    pool: number[]
+): number[] {
+    if (values[index] === next) {
+        return values;
+    }
+
+    const poolCount = pool.filter((value) => value === next).length;
+    const usedElsewhere = values.filter(
+        (value, valueIndex) => valueIndex !== index && value === next
+    ).length;
+
+    if (usedElsewhere < poolCount) {
+        return values.map((value, valueIndex) =>
+            valueIndex === index ? next : value
+        );
+    }
+
+    return assignStandardArrayScore(values, index, next);
+}
+
 function countValues(values: number[]): Map<number, number> {
     const counts = new Map<number, number>();
     for (const value of values) {

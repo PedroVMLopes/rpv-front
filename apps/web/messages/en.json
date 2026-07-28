@@ -209,7 +209,7 @@
     "pointsRemaining": "Points remaining: {count}",
     "points": "pts",
     "roll": "Roll scores",
-    "assignScore": "Assign score",
+    "rollHint": "Let the dice decide how you assign your abilities. The button below rolls 4d6, drops the lowest, and sums the rest. Assign the six results however you like.",
     "migrationHint": "Enter your existing ability scores below. Racial bonuses are applied automatically — the Total below each field is the value that matters.",
     "preview": "{base} ({mod, plural, =0 {+0 race} other {+# race}}) = {total}",
     "columns": {

@@ -14,6 +14,7 @@ import { readLevelFromForm } from "@/lib/character/level";
 import { deriveRaceModifiers } from "@/lib/character/raceModifiers";
 import {
     assignStandardArrayScore,
+    assignRollScore,
     defaultAbilityScoreMethodForLevel,
     getMethodDefaults,
     pointBuyCost,
@@ -231,7 +232,6 @@ export function AbilityScoresField({
     }
 
     const abilityGeneration = config;
-    const usedRollValues = countPoolUsage(attributeValues, rolls);
 
     function handleRoll() {
         const pool = rollAbilityPool(abilityGeneration);
@@ -245,11 +245,21 @@ export function AbilityScoresField({
         );
     }
 
-    function applyStandardArrayPick(index: number, option: number) {
+    function applyScorePick(index: number, option: number) {
         const nextValues = assignStandardArrayScore(
             attributeValues,
             index,
             option
+        );
+        writeAttributeValues(form, abilities, nextValues);
+    }
+
+    function applyRollPick(index: number, option: number) {
+        const nextValues = assignRollScore(
+            attributeValues,
+            index,
+            option,
+            rolls
         );
         writeAttributeValues(form, abilities, nextValues);
     }
@@ -305,9 +315,12 @@ export function AbilityScoresField({
             )}
 
             {method === "roll" && (
-                <Button type="button" variant="outline" onClick={handleRoll}>
-                    {t("roll")}
-                </Button>
+                <div className="space-y-2">
+                    <p className="text-sm">{t("rollHint")}</p>
+                    <Button type="button" variant="secondary" className="border-2" onClick={handleRoll}>
+                        {t("roll")}
+                    </Button>
+                </div>
             )}
 
             {shouldShowMigrationHint(level, method) && (
@@ -340,6 +353,7 @@ export function AbilityScoresField({
                                     min={0}
                                     max={20}
                                     value={value === UNASSIGNED_ABILITY_VALUE ? "" : value}
+                                    className="font-bold border-2"
                                     onChange={(event) => {
                                         const nextValue = event.target.value;
                                         setAttributeValue(
@@ -383,10 +397,7 @@ export function AbilityScoresField({
                                                         "opacity-50"
                                                 )}
                                                 onClick={() =>
-                                                    applyStandardArrayPick(
-                                                        index,
-                                                        option
-                                                    )
+                                                    applyScorePick(index, option)
                                                 }
                                             >
                                                 {option}
@@ -439,37 +450,41 @@ export function AbilityScoresField({
                                 </div>
                             )}
 
-                            {method === "roll" && (
-                                <select
-                                    className="bg-background rounded border px-2 py-1 text-sm"
-                                    value={
-                                        value === UNASSIGNED_ABILITY_VALUE
-                                            ? ""
-                                            : String(value)
-                                    }
-                                    disabled={rolls.length === 0}
-                                    onChange={(event) =>
-                                        setAttributeValue(
-                                            form,
-                                            abilities,
-                                            index,
-                                            event.target.value === ""
-                                                ? UNASSIGNED_ABILITY_VALUE
-                                                : Number(event.target.value)
-                                        )
-                                    }
-                                >
-                                    <option value="">{t("assignScore")}</option>
-                                    {getRollOptions(
-                                        rolls,
-                                        value,
-                                        usedRollValues
-                                    ).map((option) => (
-                                        <option key={option} value={option}>
-                                            {option}
-                                        </option>
-                                    ))}
-                                </select>
+                            {method === "roll" && rolls.length > 0 && (
+                                <div className="flex flex-wrap gap-1">
+                                    {rolls.map((option, poolIndex) => {
+                                        const { selected, taken } =
+                                            getRollButtonState(
+                                                rolls,
+                                                attributeValues,
+                                                index,
+                                                poolIndex
+                                            );
+
+                                        return (
+                                            <Button
+                                                key={poolIndex}
+                                                type="button"
+                                                size="sm"
+                                                variant={
+                                                    selected
+                                                        ? "default"
+                                                        : "outline"
+                                                }
+                                                aria-pressed={selected}
+                                                className={cn(
+                                                    "border-2",
+                                                    taken && "opacity-50"
+                                                )}
+                                                onClick={() =>
+                                                    applyRollPick(index, option)
+                                                }
+                                            >
+                                                {option}
+                                            </Button>
+                                        );
+                                    })}
+                                </div>
                             )}
 
                             {value !== UNASSIGNED_ABILITY_VALUE && (
@@ -519,46 +534,37 @@ export function AbilityScoresField({
     );
 }
 
-function countPoolUsage(values: number[], pool: number[]): Map<number, number> {
-    const usage = new Map<number, number>();
-    for (const value of values) {
-        if (value === UNASSIGNED_ABILITY_VALUE) {
-            continue;
-        }
-        usage.set(value, (usage.get(value) ?? 0) + 1);
-    }
-
-    const poolCounts = new Map<number, number>();
-    for (const value of pool) {
-        poolCounts.set(value, (poolCounts.get(value) ?? 0) + 1);
-    }
-
-    return usage;
-}
-
-function getRollOptions(
+/**
+ * Maps a pool-slot button to selected/taken using multiplicity.
+ * Same-value slots are ordered by pool index: others consume first, then this ability.
+ */
+function getRollButtonState(
     pool: number[],
-    selected: number,
-    usedCounts: Map<number, number>
-): number[] {
-    const poolCounts = new Map<number, number>();
-    for (const value of pool) {
-        poolCounts.set(value, (poolCounts.get(value) ?? 0) + 1);
+    attributeValues: number[],
+    abilityIndex: number,
+    poolIndex: number
+): { selected: boolean; taken: boolean } {
+    const option = pool[poolIndex];
+    if (option === undefined) {
+        return { selected: false, taken: false };
     }
 
-    const options = new Set<number>();
+    const sameValueIndices = pool.flatMap((value, index) =>
+        value === option ? [index] : []
+    );
+    const rank = sameValueIndices.indexOf(poolIndex);
+    const usedByOthers = attributeValues.filter(
+        (value, index) => index !== abilityIndex && value === option
+    ).length;
+    const selectedHere = attributeValues[abilityIndex] === option;
 
-    if (selected !== UNASSIGNED_ABILITY_VALUE) {
-        options.add(selected);
+    if (rank < usedByOthers) {
+        return { selected: false, taken: true };
     }
 
-    for (const [value, poolCount] of poolCounts) {
-        const used = usedCounts.get(value) ?? 0;
-        const selectedCount = selected === value ? 1 : 0;
-        if (used - selectedCount < poolCount) {
-            options.add(value);
-        }
+    if (selectedHere && rank === usedByOthers) {
+        return { selected: true, taken: false };
     }
 
-    return [...options].sort((a, b) => b - a);
+    return { selected: false, taken: false };
 }

@@ -231,18 +231,72 @@ describe("AbilityScoresField", () => {
             />
         );
 
+        expect(
+            screen.getByText(
+                /let the dice decide how you assign your abilities/i
+            )
+        ).toBeInTheDocument();
+
         await user.click(screen.getByRole("button", { name: "Roll scores" }));
 
         expect(screen.getByTestId("ability-output")).toHaveTextContent("rolls");
 
-        const assignmentSelect = screen.getAllByRole("combobox")[0];
-        await user.selectOptions(assignmentSelect, "18");
+        await user.click(
+            within(abilityCard("Strength")).getAllByRole("button", {
+                name: "18",
+            })[0]
+        );
 
         expect(screen.getByTestId("ability-output")).toHaveTextContent(
             '"value":18'
         );
 
         randomSpy.mockRestore();
+    });
+
+    it("renders duplicate rolled scores as separate buttons", async () => {
+        const user = userEvent.setup();
+        const pool = [14, 14, 15, 13, 12, 10];
+
+        render(
+            <AbilityScoresHarness
+                defaultValues={{
+                    name: "Test Hero",
+                    abilityScoreMethod: "roll",
+                    abilityScoreRolls: pool,
+                    attributes: dndStatConfig.abilities.map((ability) => ({
+                        name: ability.name,
+                        value: 0,
+                    })),
+                }}
+            />
+        );
+
+        const strengthCard = abilityCard("Strength");
+        const fourteenButtons = within(strengthCard).getAllByRole("button", {
+            name: "14",
+        });
+        expect(fourteenButtons).toHaveLength(2);
+
+        await user.click(fourteenButtons[0]);
+
+        expect(screen.getByTestId("ability-output")).toHaveTextContent(
+            '"name":"strength","value":14'
+        );
+
+        const dexterityFourteens = within(abilityCard("Dexterity")).getAllByRole(
+            "button",
+            { name: "14" }
+        );
+        expect(dexterityFourteens).toHaveLength(2);
+        expect(dexterityFourteens[0]).toHaveClass("opacity-50");
+        expect(dexterityFourteens[1]).not.toHaveClass("opacity-50");
+
+        await user.click(dexterityFourteens[1]);
+
+        const output = screen.getByTestId("ability-output").textContent ?? "";
+        expect(output).toContain('"name":"strength","value":14');
+        expect(output).toContain('"name":"dexterity","value":14');
     });
 
     it("defaults to standard array at level 1", () => {

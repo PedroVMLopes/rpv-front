@@ -1,5 +1,6 @@
 import {
     assignStandardArrayScore,
+    assignRollScore,
     defaultAbilityScoreMethodForLevel,
     getMethodDefaults,
     shouldShowMigrationHint,
@@ -64,5 +65,21 @@ describe("abilityScoreGeneration helpers", () => {
     it("is a no-op when selecting the current score", () => {
         const values = [15, 8, 8, 8, 8, 8];
         expect(assignStandardArrayScore(values, 0, 15)).toBe(values);
+    });
+
+    it("assigns duplicate roll scores without swapping while pool allows it", () => {
+        const pool = [14, 14, 15, 13, 12, 10];
+        const values = [14, 0, 0, 0, 0, 0];
+        expect(assignRollScore(values, 1, 14, pool)).toEqual([
+            14, 14, 0, 0, 0, 0,
+        ]);
+    });
+
+    it("swaps roll scores when the pool count is exhausted", () => {
+        const pool = [14, 14, 15, 13, 12, 10];
+        const values = [14, 14, 0, 0, 0, 0];
+        expect(assignRollScore(values, 2, 14, pool)).toEqual([
+            0, 14, 14, 0, 0, 0,
+        ]);
     });
 });

@@ -209,7 +209,7 @@
     "pointsRemaining": "Pontos restantes: {count}",
     "points": "pts",
     "roll": "Rolar atributos",
-    "assignScore": "Atribuir valor",
+    "rollHint": "Deixe os dados decidirem como você pode atribuir as suas habilidades. O botão abaixo rola 4d6, descarta o menor e soma os restantes. Você atribui os seis resultados como desejar.",
     "migrationHint": "Informe abaixo os atributos do seu personagem. Os bônus raciais são aplicados automaticamente — o Total abaixo de cada campo é o valor que importa.",
     "preview": "{base} ({mod, plural, =0 {+0 raça} other {+# raça}}) = {total}",
     "columns": {
