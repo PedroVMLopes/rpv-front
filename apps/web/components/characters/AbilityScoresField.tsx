@@ -28,6 +28,7 @@ import {
 import { PressableSelectionCard } from "@/components/characters/creation/PressableSelectionCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 type AbilityScoresFieldProps = {
     form: UseFormReturn<Record<string, unknown>>;
@@ -269,7 +270,7 @@ export function AbilityScoresField({
     }
 
     return (
-        <div className="space-y-4 border rounded-lg p-4 bg-muted/30">
+        <div className="space-y-4 border rounded-lg p-4 bg-card text-card-foreground">
             <div className="flex flex-col gap-2">
                 <span className="text-sm font-bold">{t("title")}</span>
                 <div className="flex flex-wrap gap-2">
@@ -295,7 +296,7 @@ export function AbilityScoresField({
             </div>
 
             {method === "point-buy" && remainingPoints !== null && (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs">
                     {t("pointsRemaining", { count: remainingPoints })}
                 </p>
             )}
@@ -307,7 +308,7 @@ export function AbilityScoresField({
             )}
 
             {shouldShowMigrationHint(level, method) && (
-                <p className="text-xs text-muted-foreground">{t("migrationHint")}</p>
+                <p className="text-xs">{t("migrationHint")}</p>
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -322,7 +323,7 @@ export function AbilityScoresField({
                     return (
                         <div
                             key={ability.name}
-                            className="flex flex-col gap-2 rounded border p-3 bg-background"
+                            className={cn("flex flex-col gap-2 rounded border p-3 bg-popover text-popover-foreground border-custom rounded-xl")}
                         >
                             <span className="text-sm font-semibold">
                                 {ability.labelKey
@@ -376,10 +377,9 @@ export function AbilityScoresField({
                                                 }
                                                 aria-pressed={selected}
                                                 className={
-                                                    takenElsewhere
-                                                        ? "text-foreground/40"
-                                                        : undefined
-                                                }
+                                                    cn("border-2",
+                                                    takenElsewhere && "opacity-50"
+                                                )}
                                                 onClick={() =>
                                                     applyStandardArrayPick(
                                                         index,
