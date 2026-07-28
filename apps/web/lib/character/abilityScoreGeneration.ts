@@ -220,7 +220,7 @@ export function rollAbilityPool(
 ): number[] {
     return Array.from({ length: config.roll.count }, () =>
         rollAbilityScore(config.roll, rng)
-    );
+    ).sort((a, b) => b - a);
 }
 
 export function getMethodDefaults(

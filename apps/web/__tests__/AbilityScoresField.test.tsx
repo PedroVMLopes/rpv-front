@@ -239,7 +239,12 @@ describe("AbilityScoresField", () => {
 
         await user.click(screen.getByRole("button", { name: "Roll scores" }));
 
-        expect(screen.getByTestId("ability-output")).toHaveTextContent("rolls");
+        const output = JSON.parse(
+            screen.getByTestId("ability-output").textContent ?? "{}"
+        );
+        expect(output.rolls).toEqual(
+            [...output.rolls].sort((a: number, b: number) => b - a)
+        );
 
         await user.click(
             within(abilityCard("Strength")).getAllByRole("button", {

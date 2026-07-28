@@ -3,6 +3,7 @@ import {
     assignRollScore,
     defaultAbilityScoreMethodForLevel,
     getMethodDefaults,
+    rollAbilityPool,
     shouldShowMigrationHint,
     standardArrayParkingValue,
 } from "../lib/character/abilityScoreGeneration";
@@ -81,5 +82,20 @@ describe("abilityScoreGeneration helpers", () => {
         expect(assignRollScore(values, 2, 14, pool)).toEqual([
             0, 14, 14, 0, 0, 0,
         ]);
+    });
+
+    it("returns rolled pools sorted descending", () => {
+        let call = 0;
+        const rng = () => {
+            // Produce varied d6 faces so the six ability scores differ.
+            const sequence = [0.1, 0.2, 0.3, 0.9, 0.5, 0.6, 0.7, 0.8, 0.4, 0.15, 0.25, 0.95, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.05, 0.12, 0.22, 0.32, 0.42, 0.52];
+            const value = sequence[call % sequence.length]!;
+            call += 1;
+            return value;
+        };
+
+        const pool = rollAbilityPool(dndStatConfig.abilityGeneration!, rng);
+        expect(pool).toHaveLength(6);
+        expect(pool).toEqual([...pool].sort((a, b) => b - a));
     });
 });
