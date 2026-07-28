@@ -430,6 +430,7 @@ export function PlayerCharacterForm({
                             abilities={statConfig.abilities}
                             statConfig={statConfig}
                             contentLocale={contentLocale}
+                            mode={mode}
                         />
                         <CharacterGrantPickers
                             form={form}

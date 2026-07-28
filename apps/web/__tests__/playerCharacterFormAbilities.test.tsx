@@ -74,7 +74,7 @@ describe("PlayerCharacterForm abilities step", () => {
             screen.getByRole("button", { name: "Standard Array" })
         ).toHaveAttribute("aria-pressed", "true");
 
-        const strengthCard = screen.getByText("Strength").closest("div.rounded");
+        const strengthCard = screen.getByText("Strength").closest("div.rounded-xl");
         expect(strengthCard).not.toBeNull();
         await user.click(
             within(strengthCard!).getByRole("button", { name: "15" })
@@ -122,7 +122,7 @@ describe("PlayerCharacterForm abilities step", () => {
 
         await user.click(screen.getByRole("button", { name: "Point Buy" }));
 
-        const strengthCard = screen.getByText("Strength").closest("div.rounded");
+        const strengthCard = screen.getByText("Strength").closest("div.rounded-xl");
         expect(strengthCard).not.toBeNull();
         await user.click(within(strengthCard!).getByRole("button", { name: "+" }));
 

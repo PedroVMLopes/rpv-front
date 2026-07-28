@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { NextIntlClientProvider } from "next-intl";
 import { AbilityScoresField } from "../components/characters/AbilityScoresField";
+import type { PlayerFormMode } from "../lib/character/characterCreationSteps";
 import { createDynamicSchema } from "../lib/schema/zodDynamic";
 import { applyAbilityScoreValidation } from "../lib/character/abilityScoreGeneration";
 import { dndCharacterSchema } from "../presets/dnd/characterSchema";
@@ -12,8 +13,10 @@ import messages from "../messages/en.json";
 
 function AbilityScoresHarness({
     defaultValues,
+    mode = "create",
 }: {
     defaultValues: Record<string, unknown>;
+    mode?: PlayerFormMode;
 }) {
     const schema = applyAbilityScoreValidation(
         createDynamicSchema(dndCharacterSchema, "player"),
@@ -31,6 +34,7 @@ function AbilityScoresHarness({
                 abilities={dndStatConfig.abilities}
                 statConfig={dndStatConfig}
                 contentLocale="en"
+                mode={mode}
             />
             <pre data-testid="ability-output">
                 {JSON.stringify({
@@ -272,6 +276,73 @@ describe("AbilityScoresField", () => {
                 /the Total below each field is the value that matters/i
             )
         ).toBeInTheDocument();
+    });
+
+    it("forces manual on edit and keeps existing attribute scores", () => {
+        const existingAttributes = [
+            { name: "strength", value: 15 },
+            { name: "dexterity", value: 14 },
+            { name: "constitution", value: 13 },
+            { name: "intelligence", value: 12 },
+            { name: "wisdom", value: 10 },
+            { name: "charisma", value: 8 },
+        ];
+
+        render(
+            <AbilityScoresHarness
+                mode="edit"
+                defaultValues={{
+                    name: "Test Hero",
+                    level: 1,
+                    abilityScoreMethod: "standard-array",
+                    attributes: existingAttributes,
+                }}
+            />
+        );
+
+        const output = JSON.parse(
+            screen.getByTestId("ability-output").textContent ?? "{}"
+        );
+        expect(output.method).toBe("manual");
+        expect(output.attributes).toEqual(existingAttributes);
+
+        const strengthInput = within(abilityCard("Strength")).getByRole(
+            "spinbutton"
+        );
+        expect(strengthInput).toHaveValue(15);
+    });
+
+    it("preserves filled scores when switching generation methods", async () => {
+        const user = userEvent.setup();
+        const existingAttributes = [
+            { name: "strength", value: 15 },
+            { name: "dexterity", value: 14 },
+            { name: "constitution", value: 13 },
+            { name: "intelligence", value: 12 },
+            { name: "wisdom", value: 10 },
+            { name: "charisma", value: 8 },
+        ];
+
+        render(
+            <AbilityScoresHarness
+                defaultValues={{
+                    name: "Test Hero",
+                    abilityScoreMethod: "standard-array",
+                    attributes: existingAttributes,
+                }}
+            />
+        );
+
+        await user.click(screen.getByRole("button", { name: "Manual" }));
+
+        const output = JSON.parse(
+            screen.getByTestId("ability-output").textContent ?? "{}"
+        );
+        expect(output.method).toBe("manual");
+        expect(output.attributes).toEqual(existingAttributes);
+        expect(within(abilityCard("Strength")).getByRole("spinbutton")).toHaveValue(
+            15
+        );
     });
 
     it("hides base preview for default manual score of 10", () => {

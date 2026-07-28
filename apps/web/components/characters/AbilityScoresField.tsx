@@ -24,6 +24,7 @@ import {
     UNASSIGNED_ABILITY_VALUE,
     type AttributeEntry,
 } from "@/lib/character/abilityScoreGeneration";
+import type { PlayerFormMode } from "@/lib/character/characterCreationSteps";
 import { PressableSelectionCard } from "@/components/characters/creation/PressableSelectionCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +35,7 @@ type AbilityScoresFieldProps = {
     abilities: PresetAbilityAttribute[];
     statConfig: Pick<PresetStatConfig, "defaultAbilityValue" | "abilityGeneration">;
     contentLocale: Locale;
+    mode?: PlayerFormMode;
 };
 
 function getAttributes(
@@ -88,10 +90,12 @@ export function AbilityScoresField({
     abilities,
     statConfig,
     contentLocale,
+    mode = "create",
 }: AbilityScoresFieldProps) {
     const t = useTranslations("abilityScores");
     const tAbilities = useTranslations("abilities");
     const config = statConfig.abilityGeneration;
+    const forceManualOnInit = mode === "edit" || mode === "level-up";
 
     const { control } = form;
 
@@ -109,7 +113,9 @@ export function AbilityScoresField({
         name: "abilityScoreMethod",
     });
     const method = (watchedMethod ??
-        defaultAbilityScoreMethodForLevel(level)) as AbilityScoreMethod;
+        (forceManualOnInit
+            ? "manual"
+            : defaultAbilityScoreMethodForLevel(level))) as AbilityScoreMethod;
     const rolls = (useWatch({ control, name: "abilityScoreRolls" }) ??
         []) as number[];
 
@@ -129,10 +135,11 @@ export function AbilityScoresField({
         const storedMethod = form.getValues("abilityScoreMethod") as
             | AbilityScoreMethod
             | undefined;
-        const initialMethod =
-            storedMethod ?? defaultAbilityScoreMethodForLevel(currentLevel);
+        const initialMethod: AbilityScoreMethod = forceManualOnInit
+            ? "manual"
+            : (storedMethod ?? defaultAbilityScoreMethodForLevel(currentLevel));
 
-        if (!storedMethod) {
+        if (forceManualOnInit || !storedMethod) {
             form.setValue("abilityScoreMethod", initialMethod, {
                 shouldDirty: false,
             });
@@ -151,7 +158,7 @@ export function AbilityScoresField({
                 getMethodDefaults(initialMethod, abilities, statConfig)
             );
         }
-    }, [abilities, form, statConfig]);
+    }, [abilities, forceManualOnInit, form, statConfig]);
 
     useEffect(() => {
         if (previousLevelRef.current === undefined) {
@@ -177,14 +184,13 @@ export function AbilityScoresField({
             return;
         }
 
-        writeAttributes(form, getMethodDefaults(method, abilities, statConfig));
-
+        // Preserve filled scores when switching methods; only clear roll pool.
         if (method !== "roll") {
             form.setValue("abilityScoreRolls", undefined, { shouldDirty: true });
         }
 
         previousMethodRef.current = method;
-    }, [abilities, form, method, statConfig]);
+    }, [form, method]);
 
     const attributeValues = useMemo(
         () => readAttributeValues(attributes, abilities),
