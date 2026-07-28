@@ -201,16 +201,19 @@ describe("resolveCreationSteps", () => {
         });
 
         const ids = graph.steps.map((step) => step.id);
-        const abilitiesIndex = ids.indexOf("abilities");
         const prepareIndex = ids.indexOf("prepare-spells");
+        const abilitiesIndex = ids.indexOf("abilities");
         const equipmentIndex = ids.indexOf("equipment");
         const reviewIndex = ids.indexOf("review");
 
-        expect(prepareIndex).toBeGreaterThan(abilitiesIndex);
-        expect(equipmentIndex).toBeGreaterThan(prepareIndex);
+        expect(abilitiesIndex).toBeGreaterThan(prepareIndex);
+        expect(equipmentIndex).toBeGreaterThan(abilitiesIndex);
         expect(reviewIndex).toBeGreaterThan(equipmentIndex);
         expect(graph.getStep("prepare-spells")?.kind).toBe("prepare_spells");
         expect(graph.getStep("prepare-spells")?.macroGroupId).toBe("spells");
+        expect(graph.getStep("abilities")?.macroGroupId).toBe("finalize");
+        expect(graph.getStep("equipment")?.macroGroupId).toBe("finalize");
+        expect(graph.getStep("review")?.macroGroupId).toBe("finalize");
     });
 
     it("omits prepare-spells for fighter", () => {

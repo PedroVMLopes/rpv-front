@@ -147,8 +147,6 @@ export function resolveCreationSteps(
         appendBackgroundGrantSteps(steps, pending);
     }
 
-    steps.push(createStep("abilities", "abilities", "abilities"));
-
     if (
         shouldIncludePrepareSpellsStep({
             formValues,
@@ -160,6 +158,7 @@ export function resolveCreationSteps(
         steps.push(createStep("prepare-spells", "prepare_spells", "spells"));
     }
 
+    steps.push(createStep("abilities", "abilities", "finalize"));
     steps.push(createStep("equipment", "equipment", "finalize"));
     steps.push(
         createStep("review", "review", "finalize", {

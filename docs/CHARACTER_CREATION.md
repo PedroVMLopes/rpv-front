@@ -59,9 +59,10 @@ flowchart TD
     SC -->|abaixo do unlock| BG[5. Antecedente]
     SCS --> SCLVL[4.x Progressão subclasse por nível]
     SCLVL --> BG
-    BG --> AB[6. Atributos]
-    AB --> EQ[7. Equipamento]
-    EQ --> RV[8. Revisão — moeda + prévia de combate]
+    BG --> PS[6. Preparar Magias?]
+    PS --> AB[7. Atributos]
+    AB --> EQ[8. Equipamento]
+    EQ --> RV[9. Revisão — moeda + prévia de combate]
 ```
 
 ### 3.2 Etapas fixas (sempre presentes)
@@ -71,9 +72,9 @@ flowchart TD
 | 1 | `race` | Seleção de raça (cards com descrição + preview de traits fixos) |
 | 3 | `class` | Seleção de classe + **seletor de nível** (`CharacterLevelSelector`) |
 | 5 | `background` | Antecedente + campos de identidade (nome, idade, objetivos) |
-| 6 | `abilities` | Atributos, bônus distribuíveis, revisão de proficiências em perícias |
-| 7 | `equipment` | Equipamento inicial (`StartingEquipmentField`) |
-| 8 | `review` | Moeda manual + prévia de combate (HP / CA / recursos) |
+| 7 | `abilities` | Atributos, bônus distribuíveis, revisão de proficiências em perícias (macro **Finalizar**) |
+| 8 | `equipment` | Equipamento inicial (`StartingEquipmentField`) |
+| 9 | `review` | Moeda manual + prévia de combate (HP / CA / recursos) |
 
 ### 3.3 Etapas condicionais
 
@@ -103,7 +104,7 @@ A subclasse vem **depois** das etapas de truques e magias da **classe** porque a
 2. Para cada nível L1..N: ganhos da classe (HP, recursos, escolhas) — incluindo sub-etapas de truques/magias da classe naquele nível
 3. Subclasse (quando desbloqueada)
 4. Para cada nível aplicável: ganhos da subclasse — incluindo sub-etapas de truques/magias da subclasse
-5. Antecedente → Atributos → Equipamento → Revisão
+5. Antecedente → [Preparar Magias?] → Atributos → Equipamento → Revisão
 
 ---
 
@@ -184,9 +185,9 @@ Cada pendência deve apontar para a **sub-etapa exata** (ex.: `class-level-1-can
 
 ---
 
-## 6. Etapa de Atributos (antes do Equipamento)
+## 6. Etapa de Atributos (macro Finalizar)
 
-Posição: imediatamente antes de Equipamento / Revisão.
+Posição: no grupo **Finalizar**, imediatamente antes de Equipamento / Revisão (e depois de Preparar Magias, quando existir).
 
 ### 6.1 Geração de scores
 
@@ -262,7 +263,8 @@ type CreationStep = {
 
 [`CharacterCreationSidebar`](../apps/web/components/characters/creation/CharacterCreationSidebar.tsx) consome o grafo de `resolveCreationSteps()`:
 
-- Stepper **macro** (Raça, Classe, Subclasse, Antecedente, Atributos, Final) com indicador de sub-etapas pendentes
+- Stepper **macro** (Raça, Classe, Antecedente, Magias, Finalizar) com indicador de sub-etapas pendentes
+- Finalizar agrupa: Atributos, Equipamento, Revisão
 - Ou lista achatada com indentação visual para sub-etapas — decisão de implementação; o grafo suporta ambos
 
 ### 8.3 Roteamento de conteúdo por etapa
