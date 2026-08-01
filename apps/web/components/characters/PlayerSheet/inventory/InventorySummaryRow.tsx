@@ -6,6 +6,9 @@ import { FaBox, FaCoins, FaWeightHanging } from "react-icons/fa6";
 import { countMiscItems } from "@/lib/character/inventoryDisplay";
 import { getTotalCurrency } from "@/lib/character/materializeCurrencyGrants";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
+import { cn } from "@/lib/utils";
+import { OverviewPanel } from "../overview/OverviewPanel";
+import { sheetInset } from "../playerSheetSurfaces";
 
 type InventorySummaryRowProps = {
     stored: StoredCharacter;
@@ -30,40 +33,43 @@ export function InventorySummaryRow({ stored }: InventorySummaryRowProps) {
     );
 
     return (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <section className="flex flex-col gap-2 rounded-2xl border bg-popover p-3">
-                <div className="flex items-center justify-between gap-2">
-                    <h2 className="text-xs font-semibold uppercase text-muted-foreground">
-                        {t("summary.encumbrance")}
-                    </h2>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <OverviewPanel
+                title={t("summary.encumbrance")}
+                headerAction={
                     <FaWeightHanging
                         className="size-4 shrink-0 text-muted-foreground"
                         aria-hidden
                     />
+                }
+            >
+                <div className="flex flex-col gap-2">
+                    <p className="text-lg font-bold tabular-nums">— / —</p>
+                    <div
+                        className={cn(
+                            "h-2 w-full overflow-hidden rounded-full",
+                            sheetInset
+                        )}
+                        role="progressbar"
+                        aria-valuenow={0}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-label={t("summary.encumbrance")}
+                    >
+                        <div className="h-full w-0 rounded-full bg-primary" />
+                    </div>
                 </div>
-                <p className="text-lg font-bold tabular-nums">— / —</p>
-                <div
-                    className="h-2 w-full overflow-hidden rounded-full bg-muted"
-                    role="progressbar"
-                    aria-valuenow={0}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-label={t("summary.encumbrance")}
-                >
-                    <div className="h-full w-0 rounded-full bg-primary" />
-                </div>
-            </section>
+            </OverviewPanel>
 
-            <section className="flex flex-col gap-2 rounded-2xl border bg-popover p-3">
-                <div className="flex items-center justify-between gap-2">
-                    <h2 className="text-xs font-semibold uppercase text-muted-foreground">
-                        {t("summary.currency")}
-                    </h2>
+            <OverviewPanel
+                title={t("summary.currency")}
+                headerAction={
                     <FaCoins
                         className="size-4 shrink-0 text-muted-foreground"
                         aria-hidden
                     />
-                </div>
+                }
+            >
                 {currencyParts.length > 0 ? (
                     <ul className="flex flex-col gap-1 text-sm font-semibold">
                         {currencyParts.map((part) => (
@@ -73,20 +79,19 @@ export function InventorySummaryRow({ stored }: InventorySummaryRowProps) {
                 ) : (
                     <p className="text-sm text-muted-foreground">—</p>
                 )}
-            </section>
+            </OverviewPanel>
 
-            <section className="flex flex-col gap-2 rounded-2xl border bg-popover p-3">
-                <div className="flex items-center justify-between gap-2">
-                    <h2 className="text-xs font-semibold uppercase text-muted-foreground">
-                        {t("summary.miscItems")}
-                    </h2>
+            <OverviewPanel
+                title={t("summary.miscItems")}
+                headerAction={
                     <FaBox
                         className="size-4 shrink-0 text-muted-foreground"
                         aria-hidden
                     />
-                </div>
+                }
+            >
                 <p className="text-3xl font-bold tabular-nums">{miscCount}</p>
-            </section>
+            </OverviewPanel>
         </div>
     );
 }

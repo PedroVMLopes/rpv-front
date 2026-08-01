@@ -14,7 +14,9 @@ import { getItem } from "@rpv/content";
 import type { SystemKey } from "@/presets";
 import { Button } from "@/components/ui/button";
 import type { InventoryDisplayRow } from "@/lib/character/inventoryDisplay";
+import { cn } from "@/lib/utils";
 import { useContentLocale } from "@/store/useContentLocale";
+import { sheetInset } from "../playerSheetSurfaces";
 
 type InventoryItemCardProps = {
     row: InventoryDisplayRow;
@@ -48,14 +50,16 @@ export function InventoryItemCard({ row, system }: InventoryItemCardProps) {
     const Icon = categoryIcon(entry?.category);
 
     return (
-        <article className="flex flex-col gap-2 rounded-2xl border bg-popover p-3">
+        <article
+            className={cn("flex flex-col gap-2 rounded-xl p-3", sheetInset)}
+        >
             <div className="flex items-start justify-between gap-2">
                 <Icon
                     className="mt-0.5 size-4 shrink-0 text-muted-foreground"
                     aria-hidden
                 />
                 {row.equipped ? (
-                    <span className="rounded-md bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
+                    <span className="shrink-0 rounded-md border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                         {t("equippedBadge")}
                     </span>
                 ) : null}

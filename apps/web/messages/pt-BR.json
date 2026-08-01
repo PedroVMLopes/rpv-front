@@ -503,6 +503,7 @@
         "currency": "Moedas",
         "miscItems": "Itens miscelâneos"
       },
+      "itemsTitle": "Itens",
       "filterNavLabel": "Filtros do inventário",
       "filters": {
         "all": "Tudo",

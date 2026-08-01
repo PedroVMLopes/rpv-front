@@ -5,6 +5,8 @@ import { FaPlus } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { InventoryFilterId } from "@/lib/character/inventoryDisplay";
+import { cn } from "@/lib/utils";
+import { sheetInset } from "../playerSheetSurfaces";
 
 type InventoryToolbarProps = {
     activeFilter: InventoryFilterId;
@@ -36,7 +38,10 @@ export function InventoryToolbar({
     return (
         <div className="flex flex-col gap-3">
             <div
-                className="flex flex-wrap gap-1 rounded-xl border bg-popover p-1"
+                className={cn(
+                    "flex flex-wrap gap-1 rounded-xl p-1",
+                    sheetInset
+                )}
                 role="tablist"
                 aria-label={t("filterNavLabel")}
             >
@@ -48,11 +53,12 @@ export function InventoryToolbar({
                             type="button"
                             role="tab"
                             aria-selected={selected}
-                            className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                            className={cn(
+                                "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
                                 selected
-                                    ? "bg-background text-foreground shadow-sm"
-                                    : "text-muted-foreground hover:text-foreground"
-                            }`}
+                                    ? "border border-card-foreground/10 bg-card text-card-foreground shadow-sm"
+                                    : "text-card-foreground/60 hover:text-card-foreground"
+                            )}
                             onClick={() => onFilterChange(filter)}
                         >
                             {t(FILTER_I18N_KEYS[filter])}

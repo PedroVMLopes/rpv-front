@@ -503,6 +503,7 @@
         "currency": "Currency",
         "miscItems": "Misc items"
       },
+      "itemsTitle": "Items",
       "filterNavLabel": "Inventory filters",
       "filters": {
         "all": "All",

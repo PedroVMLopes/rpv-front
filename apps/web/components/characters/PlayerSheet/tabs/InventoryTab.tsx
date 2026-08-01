@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { emptyInventory } from "@rpv/domain";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { sanitizeInventory } from "@/lib/character/inventory";
@@ -12,12 +13,14 @@ import {
 import { InventorySummaryRow } from "../inventory/InventorySummaryRow";
 import { InventoryToolbar } from "../inventory/InventoryToolbar";
 import { InventoryItemGrid } from "../inventory/InventoryItemGrid";
+import { OverviewPanel } from "../overview/OverviewPanel";
 
 type InventoryTabProps = {
     stored: StoredCharacter;
 };
 
 export function InventoryTab({ stored }: InventoryTabProps) {
+    const t = useTranslations("playerSheet.inventory");
     const [activeFilter, setActiveFilter] = useState<InventoryFilterId>("all");
 
     const inventory = useMemo(
@@ -44,15 +47,19 @@ export function InventoryTab({ stored }: InventoryTabProps) {
     return (
         <div className="flex flex-col gap-4">
             <InventorySummaryRow stored={stored} />
-            <InventoryToolbar
-                activeFilter={activeFilter}
-                onFilterChange={setActiveFilter}
-            />
-            <InventoryItemGrid
-                rows={filteredRows}
-                system={stored.system}
-                hasAnyItems={hasAnyItems}
-            />
+            <OverviewPanel title={t("itemsTitle")}>
+                <div className="flex flex-col gap-4">
+                    <InventoryToolbar
+                        activeFilter={activeFilter}
+                        onFilterChange={setActiveFilter}
+                    />
+                    <InventoryItemGrid
+                        rows={filteredRows}
+                        system={stored.system}
+                        hasAnyItems={hasAnyItems}
+                    />
+                </div>
+            </OverviewPanel>
         </div>
     );
 }
