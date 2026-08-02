@@ -261,13 +261,38 @@ in the web pipeline ([`materializeInventoryGrants.ts`](../../apps/web/lib/charac
 }
 ```
 
-#### `inventory_item` — composite bundle option
+#### `inventory_item` — SRD equipment pack (shared bundle)
+
+Equipment packs are **not** `ItemEntry`s. They are named `inventory_bundle`
+options that expand into separate bag stacks (SRD rule: choosing a pack grants
+its listed gear). Shared definitions live in
+[`equipmentPacks.dnd.ts`](src/curation/equipmentPacks.dnd.ts):
+
+```ts
+import {
+  dungeoneersPackBundle,
+  explorersPackBundle,
+} from "./equipmentPacks.dnd";
+
+{
+  grantType: "inventory_item",
+  choose: 1,
+  description: "Adventuring pack",
+  options: [dungeoneersPackBundle, explorersPackBundle],
+}
+```
+
+Add future packs (Burglar, Priest, …) to `dndEquipmentPackBundles` and reuse
+from any class grant. Do **not** author opaque `rpv_*-pack` ItemEntries for
+starting equipment.
+
+#### `inventory_item` — composite bundle option (inline)
 
 ```ts
 {
   grantType: "inventory_item",
   choose: 1,
-  description: "Adventuring pack",
+  description: "Starting loadout",
   options: [
         { optionType: "item", ref: "rpv_pilot-test-pack-a" },
         {
@@ -384,6 +409,8 @@ Currency helpers in [`src/grant/currencyGrants.ts`](src/grant/currencyGrants.ts)
 - **Do not** use `optionType: "proficiency"` with item slugs — use `item` or
   `inventory_bundle`.
 - **Do not** expect `inventory_item` or `currency` to produce `CharacterGrant`s.
+- **Do not** model SRD equipment packs as opaque `ItemEntry`s (`rpv_*-pack`) —
+  use shared bundles in `equipmentPacks.dnd.ts`.
 - **`rpv_pilot-test-*` slugs** are contract fixtures, not SRD content.
 
 ### `inventory_item` grant (starting loot — web)

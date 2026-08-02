@@ -90,7 +90,17 @@ describe("deriveStartingEquipmentFromForm", () => {
                     provenance: "grant:class:fighter:6",
                 }),
                 expect.objectContaining({
-                    slug: "rpv_dungeoneers-pack",
+                    slug: "srd_backpack",
+                    quantity: 1,
+                    provenance: "grant:class:fighter:7",
+                }),
+                expect.objectContaining({
+                    slug: "srd_torch",
+                    quantity: 10,
+                    provenance: "grant:class:fighter:7",
+                }),
+                expect.objectContaining({
+                    slug: "srd_rope-hempen-50-feet",
                     provenance: "grant:class:fighter:7",
                 }),
                 expect.objectContaining({

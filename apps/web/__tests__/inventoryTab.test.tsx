@@ -42,7 +42,7 @@ const storedCharacter: StoredCharacter = {
         inventory: {
             bag: [
                 { slug: "srd_arrow-bow", quantity: 10 },
-                { slug: "rpv_dungeoneers-pack", quantity: 1 },
+                { slug: "rpv_pilot-test-pack-a", quantity: 1 },
             ],
             equipped: { "main-hand": "srd_longbow" },
         },
@@ -94,7 +94,7 @@ describe("InventoryTab", () => {
         renderWithProviders(<InventoryTab stored={storedCharacter} />);
 
         expect(screen.getByText("Arrow (bow)")).toBeInTheDocument();
-        expect(screen.getByText("Dungeoneer's Pack")).toBeInTheDocument();
+        expect(screen.getByText("Pilot Test Pack A")).toBeInTheDocument();
         expect(screen.getByText("Longbow")).toBeInTheDocument();
         expect(screen.getByText("Equipped")).toBeInTheDocument();
     });
@@ -136,11 +136,11 @@ describe("InventoryTab", () => {
         await user.click(within(tablist).getByRole("tab", { name: "Consumables" }));
         expect(screen.getByText("Arrow (bow)")).toBeInTheDocument();
         expect(screen.queryByText("Longbow")).not.toBeInTheDocument();
-        expect(screen.queryByText("Dungeoneer's Pack")).not.toBeInTheDocument();
+        expect(screen.queryByText("Pilot Test Pack A")).not.toBeInTheDocument();
 
         await user.click(within(tablist).getByRole("tab", { name: "Misc / Other" }));
         expect(screen.getByText("Longbow")).toBeInTheDocument();
-        expect(screen.getByText("Dungeoneer's Pack")).toBeInTheDocument();
+        expect(screen.getByText("Pilot Test Pack A")).toBeInTheDocument();
         expect(screen.queryByText("Arrow (bow)")).not.toBeInTheDocument();
     });
 });

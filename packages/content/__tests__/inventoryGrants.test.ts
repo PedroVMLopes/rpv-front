@@ -11,6 +11,10 @@ import {
 } from "../src/grant/inventoryGrants";
 import { fixedGrantsToCharacterGrants } from "../src/grant/grants";
 import type { Grant } from "../src/grant/grant.types";
+import {
+    dungeoneersPackBundle,
+    explorersPackBundle,
+} from "../src/curation/equipmentPacks.dnd";
 
 describe("extractInventoryItemGrants", () => {
     it("extracts fixed inventory_item grants with ref and amount", () => {
@@ -282,6 +286,83 @@ describe("resolveInventoryItemGrants", () => {
             {
                 slug: "rpv_pilot-test-dagger",
                 quantity: 2,
+                grantIndex: 0,
+                provenance: "grant:class:fighter:0",
+            },
+        ]);
+    });
+
+    it("expands SRD dungeoneers pack bundle into component stacks", () => {
+        const grants: Grant[] = [
+            {
+                grantType: "inventory_item",
+                choose: 1,
+                description: "Adventuring pack",
+                options: [dungeoneersPackBundle, explorersPackBundle],
+            },
+        ];
+
+        const key = buildInventoryItemChoiceKey({
+            sourceType: "class",
+            sourceId: "fighter",
+            grantIndex: 0,
+            slot: 0,
+        });
+
+        expect(
+            resolveInventoryItemGrants(grants, { [key]: "0" }, context)
+        ).toEqual([
+            {
+                slug: "srd_backpack",
+                quantity: 1,
+                grantIndex: 0,
+                provenance: "grant:class:fighter:0",
+            },
+            {
+                slug: "srd_crowbar",
+                quantity: 1,
+                grantIndex: 0,
+                provenance: "grant:class:fighter:0",
+            },
+            {
+                slug: "srd_hammer",
+                quantity: 1,
+                grantIndex: 0,
+                provenance: "grant:class:fighter:0",
+            },
+            {
+                slug: "srd_piton",
+                quantity: 10,
+                grantIndex: 0,
+                provenance: "grant:class:fighter:0",
+            },
+            {
+                slug: "srd_torch",
+                quantity: 10,
+                grantIndex: 0,
+                provenance: "grant:class:fighter:0",
+            },
+            {
+                slug: "srd_tinderbox",
+                quantity: 1,
+                grantIndex: 0,
+                provenance: "grant:class:fighter:0",
+            },
+            {
+                slug: "srd_rations-1-day",
+                quantity: 10,
+                grantIndex: 0,
+                provenance: "grant:class:fighter:0",
+            },
+            {
+                slug: "srd_waterskin",
+                quantity: 1,
+                grantIndex: 0,
+                provenance: "grant:class:fighter:0",
+            },
+            {
+                slug: "srd_rope-hempen-50-feet",
+                quantity: 1,
                 grantIndex: 0,
                 provenance: "grant:class:fighter:0",
             },

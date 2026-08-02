@@ -32,7 +32,7 @@ describe("listInventoryRows", () => {
             {
                 bag: [
                     { slug: "srd_arrow-bow", quantity: 5 },
-                    { slug: "rpv_dungeoneers-pack", quantity: 1 },
+                    { slug: "rpv_pilot-test-pack-a", quantity: 1 },
                 ],
                 equipped: { "main-hand": "srd_longbow" },
             },
@@ -46,7 +46,7 @@ describe("listInventoryRows", () => {
             equipped: false,
         });
         expect(rows[1]).toMatchObject({
-            slug: "rpv_dungeoneers-pack",
+            slug: "rpv_pilot-test-pack-a",
             quantity: 1,
             equipped: false,
         });
@@ -70,7 +70,7 @@ describe("countMiscItems", () => {
             countMiscItems(
                 [
                     { slug: "srd_arrow-bow", quantity: 5 },
-                    { slug: "rpv_dungeoneers-pack", quantity: 2 },
+                    { slug: "rpv_pilot-test-pack-a", quantity: 2 },
                 ],
                 "dnd"
             )
@@ -112,7 +112,7 @@ describe("resolveItemFilterCategory", () => {
         expect(
             resolveItemFilterCategory(
                 stubItem({
-                    slug: "rpv_dungeoneers-pack",
+                    slug: "rpv_pilot-test-pack-a",
                     name: "Pack",
                     category: { name: "Equipment Pack", key: "equipment-pack" },
                 })
@@ -128,7 +128,7 @@ describe("filterInventoryRows", () => {
         {
             bag: [
                 { slug: "srd_arrow-bow", quantity: 10 },
-                { slug: "rpv_dungeoneers-pack", quantity: 1 },
+                { slug: "rpv_pilot-test-pack-a", quantity: 1 },
             ],
             equipped: { "main-hand": "srd_longbow" },
         },
@@ -148,7 +148,7 @@ describe("filterInventoryRows", () => {
     it("filters misc for packs, weapons, and unknown slugs", () => {
         const filtered = filterInventoryRows(rows, "misc", "dnd");
         expect(filtered.map((row) => row.slug).sort()).toEqual(
-            ["rpv_dungeoneers-pack", "srd_longbow"].sort()
+            ["rpv_pilot-test-pack-a", "srd_longbow"].sort()
         );
     });
 

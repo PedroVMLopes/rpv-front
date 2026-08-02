@@ -20,9 +20,9 @@ describe("item catalog + overlays", () => {
             "rpv_pilot-test-dagger",
             "rpv_pilot-test-pack-a",
             "rpv_pilot-test-starter-kit",
-            "rpv_dungeoneers-pack",
-            "rpv_explorers-pack",
         ]));
+        expect(getItem("rpv_dungeoneers-pack")).toBeUndefined();
+        expect(getItem("rpv_explorers-pack")).toBeUndefined();
         expect(listItems("dnd").every((entry) => entry.system === "dnd")).toBe(true);
         expect(listItems("dnd").length).toBeGreaterThan(200);
     });

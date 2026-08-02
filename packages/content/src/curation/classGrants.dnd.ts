@@ -3,6 +3,10 @@ import type { Grant } from "../grant/grant.types";
 import type { LevelFeature } from "../grant/levelFeature.types";
 import { resolveLevelFeatures } from "../grant/levelFeatures";
 import { localizeCurationEntry } from "./curationLocale";
+import {
+    dungeoneersPackBundle,
+    explorersPackBundle,
+} from "./equipmentPacks.dnd";
 
 /**
  * How a class treats learned vs castable spells.
@@ -140,10 +144,7 @@ export const dndClasses: ClassEntry[] = [
                 description: "Adventuring pack",
                 exclusiveGroup: "starting-wealth",
                 exclusiveBranch: "equipment",
-                options: [
-                    { optionType: "item", ref: "rpv_dungeoneers-pack" },
-                    { optionType: "item", ref: "rpv_explorers-pack" },
-                ],
+                options: [dungeoneersPackBundle, explorersPackBundle],
             },
             {
                 grantType: "inventory_item",

@@ -30,6 +30,7 @@ export * from "./curation/raceGrants.dnd";
 export * from "./curation/backgroundGrants.dnd";
 export * from "./curation/itemGrants.dnd";
 export * from "./curation/itemOverlays.dnd";
+export * from "./curation/equipmentPacks.dnd";
 export * from "./curation/equipmentSlots.dnd";
 export * from "./curation/classGrants.dnd";
 export * from "./curation/subclassGrants.dnd";
