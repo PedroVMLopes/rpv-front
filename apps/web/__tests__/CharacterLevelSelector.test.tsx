@@ -36,12 +36,14 @@ describe("CharacterLevelSelector", () => {
         expect(screen.getByTestId("level-output")).toHaveTextContent("1");
     });
 
-    it("sets level to 2 when Lv 2 is selected", async () => {
+    it("sets a mid level via custom preset", async () => {
         const user = userEvent.setup();
 
         render(<LevelSelectorHarness defaultValues={{ level: 1 }} />);
 
-        await user.click(screen.getByRole("button", { name: "Lv 2" }));
+        await user.click(screen.getByRole("button", { name: "Custom" }));
+        const input = screen.getByRole("spinbutton", { name: "Custom level" });
+        fireEvent.change(input, { target: { value: "2" } });
         expect(screen.getByTestId("level-output")).toHaveTextContent("2");
     });
 

@@ -7,7 +7,8 @@
   "scripts": {
     "test": "jest",
     "build:catalog": "tsx scripts/buildCatalog.ts",
-    "build:catalog:offline": "tsc -p tsconfig.build.json && CONTENT_PKG_ROOT=\"$PWD\" node dist-tmp/scripts/buildCatalog.js"
+    "build:catalog:offline": "tsc -p tsconfig.build.json && CONTENT_PKG_ROOT=\"$PWD\" node dist-tmp/scripts/buildCatalog.js",
+    "refresh:items": "tsx scripts/refreshOpen5eItems.ts"
   },
   "dependencies": {
     "@rpv/domain": "*"

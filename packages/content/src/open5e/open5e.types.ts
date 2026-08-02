@@ -65,3 +65,66 @@ export interface Open5eSpell {
     document__slug?: string;
     document__title?: string;
 }
+
+/** Open5e API v2 item document reference (partial). */
+export interface Open5eV2DocumentRef {
+    name: string;
+    key: string;
+    type?: string;
+    display_name?: string;
+}
+
+export interface Open5eV2NamedKey {
+    name: string;
+    key: string;
+}
+
+export interface Open5eV2WeaponPropertyAssignment {
+    property: {
+        name: string;
+        type: string | null;
+        desc: string;
+    };
+    detail: string | null;
+}
+
+export interface Open5eV2Weapon {
+    name: string;
+    key: string;
+    damage_type: Open5eV2NamedKey;
+    damage_dice: string;
+    properties: Open5eV2WeaponPropertyAssignment[];
+    is_simple: boolean;
+    is_martial: boolean;
+    is_improvised: boolean;
+    distance_unit?: string | null;
+    range?: number | null;
+    long_range?: number | null;
+}
+
+export interface Open5eV2Armor {
+    name: string;
+    key: string;
+    category: string;
+    ac_base: number;
+    ac_display: string;
+    ac_add_dexmod: boolean;
+    ac_cap_dexmod: number | null;
+    grants_stealth_disadvantage: boolean;
+    strength_score_required: number | null;
+}
+
+/** Open5e API v2 `/items/` entry. */
+export interface Open5eV2Item {
+    key: string;
+    name: string;
+    desc: string;
+    category: Open5eV2NamedKey;
+    weapon: Open5eV2Weapon | null;
+    armor: Open5eV2Armor | null;
+    size?: Open5eV2NamedKey | null;
+    weight: string | null;
+    weight_unit: string | null;
+    cost: string | null;
+    document: Open5eV2DocumentRef;
+}

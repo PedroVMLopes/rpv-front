@@ -91,7 +91,7 @@ export const dndClasses: ClassEntry[] = [
             {
                 grantType: "inventory_item",
                 choose: 0,
-                ref: "longsword",
+                ref: "srd_longsword",
                 amount: 1,
                 description: "Starting martial weapon",
                 exclusiveGroup: "starting-wealth",
@@ -104,14 +104,14 @@ export const dndClasses: ClassEntry[] = [
                 exclusiveGroup: "starting-wealth",
                 exclusiveBranch: "equipment",
                 options: [
-                    { optionType: "item", ref: "chain-mail" },
+                    { optionType: "item", ref: "srd_chain-mail" },
                     {
                         optionType: "inventory_bundle",
                         label: "Leather armor, longbow, and 20 arrows",
                         items: [
-                            { ref: "leather-armor", amount: 1 },
-                            { ref: "longbow", amount: 1 },
-                            { ref: "arrows", amount: 20 },
+                            { ref: "srd_leather-armor", amount: 1 },
+                            { ref: "srd_longbow", amount: 1 },
+                            { ref: "srd_arrow-bow", amount: 20 },
                         ],
                     },
                 ],
@@ -123,13 +123,13 @@ export const dndClasses: ClassEntry[] = [
                 exclusiveGroup: "starting-wealth",
                 exclusiveBranch: "equipment",
                 options: [
-                    { optionType: "item", ref: "shield" },
+                    { optionType: "item", ref: "srd_shield" },
                     {
                         optionType: "inventory_bundle",
                         label: "Two martial weapons",
                         items: [
-                            { ref: "longsword", amount: 1 },
-                            { ref: "handaxe", amount: 1 },
+                            { ref: "srd_longsword", amount: 1 },
+                            { ref: "srd_handaxe", amount: 1 },
                         ],
                     },
                 ],
@@ -141,8 +141,8 @@ export const dndClasses: ClassEntry[] = [
                 exclusiveGroup: "starting-wealth",
                 exclusiveBranch: "equipment",
                 options: [
-                    { optionType: "item", ref: "dungeoneers-pack" },
-                    { optionType: "item", ref: "explorers-pack" },
+                    { optionType: "item", ref: "rpv_dungeoneers-pack" },
+                    { optionType: "item", ref: "rpv_explorers-pack" },
                 ],
             },
             {
@@ -152,8 +152,8 @@ export const dndClasses: ClassEntry[] = [
                 exclusiveGroup: "starting-wealth",
                 exclusiveBranch: "equipment",
                 options: [
-                    { optionType: "item", ref: "crossbow-light" },
-                    { optionType: "item", ref: "handaxe" },
+                    { optionType: "item", ref: "srd_crossbow-light" },
+                    { optionType: "item", ref: "srd_handaxe" },
                 ],
             },
             {

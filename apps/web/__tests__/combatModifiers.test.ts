@@ -39,9 +39,9 @@ const wizardStats: Stats = {
 
 describe("combatModifiers", () => {
     it("computes longsword attack and damage for fighter L1 STR 16", () => {
-        const item = getItem("longsword", "dnd");
+        const item = getItem("srd_longsword", "dnd");
 
-        expect(item?.weaponProfile).toBeDefined();
+        expect(item?.weapon).toBeDefined();
 
         const attackBonus = computeWeaponAttackBonus(
             [martialProficiency],

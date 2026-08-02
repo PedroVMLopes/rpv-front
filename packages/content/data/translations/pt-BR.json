@@ -16,7 +16,7 @@
       "name": "Mísseis Mágicos",
       "shortDescription": "três dardos; cada um causa 1d4+1 de dano de força; acertam automaticamente e podem dividir alvos"
     },
-    "shield": {
+    "srd_shield": {
       "name": "Escudo Mágico",
       "shortDescription": "reação; +5 CA até o seu próximo turno e imunidade a mísseis mágicos"
     },
@@ -118,47 +118,56 @@
     }
   },
   "items": {
-    "scroll-of-fire-bolt": {
+    "rpv_scroll-of-fire-bolt": {
       "name": "Pergaminho de Raio de Fogo"
     },
-    "amulet-of-vitality": {
+    "rpv_amulet-of-vitality": {
       "name": "Amuleto de Vitalidade"
     },
-    "ring-of-hardiness": {
+    "rpv_ring-of-hardiness": {
       "name": "Anel de Robustez"
     },
-    "longsword": {
+    "srd_longsword": {
       "name": "Espada Longa"
     },
-    "leather-armor": {
+    "srd_leather-armor": {
       "name": "Armadura de Couro"
     },
-    "shield": {
+    "srd_shield": {
       "name": "Escudo"
     },
-    "chain-mail": {
+    "srd_chain-mail": {
       "name": "Cota de Malha"
     },
-    "longbow": {
+    "srd_longbow": {
       "name": "Arco Longo"
     },
-    "shortbow": {
+    "srd_shortbow": {
       "name": "Arco Curto"
     },
-    "arrows": {
+    "srd_arrow-bow": {
       "name": "Flechas"
     },
-    "crossbow-light": {
+    "srd_crossbow-light": {
       "name": "Besta Leve"
     },
-    "handaxe": {
+    "srd_handaxe": {
       "name": "Machadinha"
     },
-    "dungeoneers-pack": {
+    "rpv_dungeoneers-pack": {
       "name": "Pacote de Explorador de Masmorras"
     },
-    "explorers-pack": {
+    "rpv_explorers-pack": {
       "name": "Pacote de Explorador"
+    },
+    "rpv_pilot-test-dagger": {
+      "name": "Adaga de Teste"
+    },
+    "rpv_pilot-test-pack-a": {
+      "name": "Pacote de Teste A"
+    },
+    "rpv_pilot-test-starter-kit": {
+      "name": "Kit Inicial de Teste"
     }
   },
   "equipmentSlots": {

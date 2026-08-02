@@ -17,7 +17,7 @@ const itemHpModifier: Modifier = {
     stat: "hitPoints",
     operation: "add",
     value: 5,
-    source: { type: "item", id: "amulet-of-vitality" },
+    source: { type: "item", id: "rpv_amulet-of-vitality" },
     duration: { type: "permanent" },
     stacking: "stack",
     priority: 0,

@@ -10,7 +10,7 @@ Reference implementation (web):
 - Inventory ops + sanitize: [`apps/web/lib/character/inventory.ts`](../apps/web/lib/character/inventory.ts)
 - Rebuild: [`apps/web/lib/character/buildCharacter.ts`](../apps/web/lib/character/buildCharacter.ts) (`rebuildCharacterWithInventory`)
 - Persisted shape: [`apps/web/lib/character/storedCharacter.ts`](../apps/web/lib/character/storedCharacter.ts)
-- Item definitions: [`packages/content/src/curation/itemGrants.dnd.ts`](../packages/content/src/curation/itemGrants.dnd.ts)
+- Item definitions: Open5e catalog + [`packages/content/src/curation/itemOverlays.dnd.ts`](../packages/content/src/curation/itemOverlays.dnd.ts); types in [`packages/content/src/item/item.types.ts`](../packages/content/src/item/item.types.ts)
 
 ---
 
@@ -29,7 +29,7 @@ Reference implementation (web):
 ```mermaid
 flowchart LR
   subgraph contentLayer [Content_Catalog]
-    ItemEntry["ItemEntry\ngrants, allowedSlots"]
+    ItemEntry["ItemEntry\ngrants, weapon, armor"]
   end
   subgraph stateLayer [Character_State]
     Inventory["selections.inventory\nbag + equipped"]
@@ -113,8 +113,8 @@ On load, `normalizeStoredCharacter` → `sanitizeInventory` inside
 
 ```json
 {
-  "bag": [{ "slug": "amulet-of-vitality", "quantity": 1 }],
-  "equipped": { "neck": "amulet-of-vitality" }
+  "bag": [{ "slug": "rpv_amulet-of-vitality", "quantity": 1 }],
+  "equipped": { "neck": "rpv_amulet-of-vitality" }
 }
 ```
 
@@ -134,10 +134,10 @@ before persisting. Behavior matches
 
 | Rule | Server behavior |
 |------|-----------------|
-| Unknown slug for `system` | Removed from bag and equipped slots |
+| Unknown slug for `system` | Removed from bag and equipped slots (includes legacy short IDs like `longsword` that are not Open5e/`rpv_*` keys) |
 | `quantity < 1` | Stack removed |
 | Invalid slot ID for `system` | Equipped entry discarded |
-| Item incompatible with slot (`canEquipItem`) | Slot cleared |
+| Item↔slot type mismatch | Not checked — any known item may occupy any valid slot |
 | Same slug in two slots | Only the first iterated slot kept |
 | Non-stackable item with `quantity > 1` in bag | Clamped to 1 |
 | Duplicate bag stacks (same slug + same provenance) | Merged |
@@ -162,7 +162,7 @@ Content-Type: application/json
 
 {
   "bag": [
-    { "slug": "amulet-of-vitality", "quantity": 1 }
+    { "slug": "rpv_amulet-of-vitality", "quantity": 1 }
   ],
   "equipped": {}
 }
@@ -239,11 +239,13 @@ Returns:
 {
   "items": [
     {
-      "slug": "amulet-of-vitality",
+      "slug": "rpv_amulet-of-vitality",
       "system": "dnd",
       "name": "Amulet of Vitality",
       "description": "...",
-      "allowedSlots": ["neck"],
+      "category": { "name": "Wondrous Item", "key": "wondrous-item" },
+      "weapon": null,
+      "armor": null,
       "stackable": false,
       "grants": [
         {
@@ -314,7 +316,7 @@ GET /characters/char-fighter-1
   "selections": {
     "characterClass": "fighter",
     "inventory": {
-      "bag": [{ "slug": "amulet-of-vitality", "quantity": 1 }],
+      "bag": [{ "slug": "rpv_amulet-of-vitality", "quantity": 1 }],
       "equipped": {}
     }
   },
@@ -333,7 +335,7 @@ Content-Type: application/json
 
 {
   "bag": [],
-  "equipped": { "neck": "amulet-of-vitality" }
+  "equipped": { "neck": "rpv_amulet-of-vitality" }
 }
 ```
 
@@ -346,7 +348,7 @@ Content-Type: application/json
   "selections": {
     "inventory": {
       "bag": [],
-      "equipped": { "neck": "amulet-of-vitality" }
+      "equipped": { "neck": "rpv_amulet-of-vitality" }
     }
   },
   "modifiers": [
@@ -354,7 +356,7 @@ Content-Type: application/json
       "stat": "hitPoints",
       "operation": "add",
       "value": 5,
-      "source": { "type": "item", "id": "amulet-of-vitality" }
+      "source": { "type": "item", "id": "rpv_amulet-of-vitality" }
     }
   ],
   "resources": { "hp": 12 }
@@ -370,7 +372,7 @@ Resolved max HP: **17**. If the character had `hp: 17` at max and unequips,
 PATCH /characters/char-fighter-1/inventory
 
 {
-  "bag": [{ "slug": "amulet-of-vitality", "quantity": 1 }],
+  "bag": [{ "slug": "rpv_amulet-of-vitality", "quantity": 1 }],
   "equipped": {}
 }
 ```

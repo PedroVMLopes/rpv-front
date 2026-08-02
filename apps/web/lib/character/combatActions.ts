@@ -155,11 +155,11 @@ export function listEquippedWeaponActions(
             toHit: formatWeaponToHit(attackModifier),
             damage: damagePreview ?? undefined,
             attackModifier,
-            damageDice: item?.weaponProfile?.damageDice,
+            damageDice: item?.weapon?.damageDice,
             damageFlat: item
                 ? computeWeaponDamageFlat(item, context.resolved, context.system)
                 : undefined,
-            damageType: item?.weaponProfile?.damageType,
+            damageType: item?.weapon?.damageType.key,
         });
     }
 

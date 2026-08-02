@@ -2,8 +2,9 @@ import type { Locale } from "@rpv/domain";
 import { localizeCurationEntry } from "./curationLocale";
 import { dndBackgrounds, type BackgroundEntry } from "./backgroundGrants.dnd";
 import { dndClasses, type ClassEntry } from "./classGrants.dnd";
-import { dndItems, type ItemEntry } from "./itemGrants.dnd";
+import type { ItemEntry } from "../item/item.types";
 import { dndSubclasses, type SubclassEntry } from "./subclassGrants.dnd";
+import * as bundled from "../catalog/bundled";
 
 function localizeClass(entry: ClassEntry, locale?: Locale): ClassEntry {
     return localizeCurationEntry(entry, "classes", locale);
@@ -13,16 +14,8 @@ function localizeBackground(entry: BackgroundEntry): BackgroundEntry {
     return entry;
 }
 
-function localizeItem(entry: ItemEntry, locale?: Locale): ItemEntry {
-    return localizeCurationEntry(entry, "items", locale);
-}
-
 function localizeSubclass(entry: SubclassEntry, locale?: Locale): SubclassEntry {
     return localizeCurationEntry(entry, "subclasses", locale);
-}
-
-function dndItemsOnly(): ItemEntry[] {
-    return dndItems.filter((entry) => entry.system === "dnd");
 }
 
 export function readClass(slug: string, locale?: Locale): ClassEntry | undefined {
@@ -50,15 +43,11 @@ export function readListBackgrounds(): BackgroundEntry[] {
 }
 
 export function readItem(slug: string, locale?: Locale): ItemEntry | undefined {
-    const entry = dndItemsOnly().find((item) => item.slug === slug);
-    if (!entry) {
-        return undefined;
-    }
-    return localizeItem(entry, locale);
+    return bundled.getItem(slug, locale ?? "en");
 }
 
 export function readListItems(locale?: Locale): ItemEntry[] {
-    return dndItemsOnly().map((entry) => localizeItem(entry, locale));
+    return bundled.listItems(locale ?? "en");
 }
 
 export function readSubclass(slug: string, locale?: Locale): SubclassEntry | undefined {

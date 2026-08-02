@@ -1,0 +1,36 @@
+{
+  "key": "srd_basket",
+  "name": "Basket",
+  "desc": "A basket. Capacity: 2 cubic feet/40 pounds of gear.",
+  "category": {
+    "name": "Adventuring Gear",
+    "key": "adventuring-gear"
+  },
+  "weapon": null,
+  "armor": null,
+  "size": {
+    "name": "Tiny",
+    "key": "tiny"
+  },
+  "weight": "2.000",
+  "weight_unit": "lb",
+  "cost": "0.40",
+  "document": {
+    "name": "System Reference Document 5.1",
+    "key": "srd-2014",
+    "type": "SOURCE",
+    "display_name": "5e 2014 Rules",
+    "publisher": {
+      "name": "Wizards of the Coast",
+      "key": "wizards-of-the-coast"
+    },
+    "gamesystem": {
+      "name": "5th Edition 2014",
+      "key": "5e-2014"
+    },
+    "permalink": "https://dnd.wizards.com/resources/systems-reference-document"
+  },
+  "crossreferences": {
+    "to": []
+  }
+}

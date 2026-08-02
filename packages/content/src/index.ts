@@ -18,6 +18,9 @@ export * from "./race/ability";
 export * from "./race/trait.parser";
 export * from "./race/race.mapper";
 
+export * from "./item/item.types";
+export * from "./item/item.mapper";
+
 export * from "./catalog/catalog.types";
 export * from "./catalog/skills.seed";
 export * from "./catalog/savingThrows.seed";
@@ -26,6 +29,7 @@ export * from "./catalog/languages.seed";
 export * from "./curation/raceGrants.dnd";
 export * from "./curation/backgroundGrants.dnd";
 export * from "./curation/itemGrants.dnd";
+export * from "./curation/itemOverlays.dnd";
 export * from "./curation/equipmentSlots.dnd";
 export * from "./curation/classGrants.dnd";
 export * from "./curation/subclassGrants.dnd";

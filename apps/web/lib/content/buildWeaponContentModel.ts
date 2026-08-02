@@ -1,4 +1,4 @@
-import type { ItemEntry, WeaponProperty } from "@rpv/content";
+import type { ItemEntry } from "@rpv/content";
 import type { WeaponAction } from "@/lib/character/combatActions";
 import { buildWeaponAttackRollRequest } from "@/lib/roll/buildRollRequest";
 import { formatRollButtonLabel } from "./formatRollButtonLabel";
@@ -38,21 +38,33 @@ function localizeDamageType(
 }
 
 function localizeProperties(
-    properties: WeaponProperty[] | undefined,
+    item: ItemEntry | undefined,
     formatters: WeaponContentFormatters
 ): string {
+    const properties = item?.weapon?.properties;
     if (!properties || properties.length === 0) {
         return formatters.missingValue;
     }
 
     return properties
         .map((property) => {
-            const key = `properties.${property}`;
-            const localized = formatters.tItems(key);
-
-            return localized === key ? property : localized;
+            const propKey = property.name.toLowerCase().replace(/\s+/g, "-");
+            const key = `properties.${propKey}`;
+            try {
+                const localized = formatters.tItems(key);
+                return localized === key ? property.name : localized;
+            } catch {
+                return property.name;
+            }
         })
         .join(", ");
+}
+
+function versatileDamage(item: ItemEntry | undefined): string | undefined {
+    const versatile = item?.weapon?.properties.find(
+        (property) => property.name.toLowerCase() === "versatile"
+    );
+    return versatile?.detail ?? undefined;
 }
 
 function resolveUseActionSpec(
@@ -97,7 +109,6 @@ export function buildWeaponContentModel(
     formatters: WeaponContentFormatters
 ): WeaponContentModels {
     const { weapon, itemEntry, slotLabel } = input;
-    const weaponProfile = itemEntry?.weaponProfile;
     const useAction = resolveUseActionSpec(weapon);
 
     const detailRows = [
@@ -115,15 +126,18 @@ export function buildWeaponContentModel(
         },
         {
             labelKey: "damageType",
-            value: localizeDamageType(weaponProfile?.damageType, formatters),
+            value: localizeDamageType(
+                itemEntry?.weapon?.damageType.key,
+                formatters
+            ),
         },
         {
             labelKey: "properties",
-            value: localizeProperties(weaponProfile?.properties, formatters),
+            value: localizeProperties(itemEntry, formatters),
         },
         {
             labelKey: "versatileDamage",
-            value: weaponProfile?.versatileDamageDice ?? formatters.missingValue,
+            value: versatileDamage(itemEntry) ?? formatters.missingValue,
         },
     ];
 

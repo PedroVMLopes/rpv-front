@@ -1,0 +1,49 @@
+{
+  "key": "srd_war-pick",
+  "name": "War pick",
+  "desc": "A war pick.",
+  "category": {
+    "name": "Weapon",
+    "key": "weapon"
+  },
+  "weapon": {
+    "name": "War Pick",
+    "key": "srd_war-pick",
+    "damage_type": {
+      "name": "Piercing",
+      "key": "piercing"
+    },
+    "damage_dice": "1d8",
+    "properties": [],
+    "is_simple": false,
+    "is_martial": true,
+    "is_improvised": false,
+    "distance_unit": "feet"
+  },
+  "armor": null,
+  "size": {
+    "name": "Tiny",
+    "key": "tiny"
+  },
+  "weight": "2.000",
+  "weight_unit": "lb",
+  "cost": "5.00",
+  "document": {
+    "name": "System Reference Document 5.1",
+    "key": "srd-2014",
+    "type": "SOURCE",
+    "display_name": "5e 2014 Rules",
+    "publisher": {
+      "name": "Wizards of the Coast",
+      "key": "wizards-of-the-coast"
+    },
+    "gamesystem": {
+      "name": "5th Edition 2014",
+      "key": "5e-2014"
+    },
+    "permalink": "https://dnd.wizards.com/resources/systems-reference-document"
+  },
+  "crossreferences": {
+    "to": []
+  }
+}

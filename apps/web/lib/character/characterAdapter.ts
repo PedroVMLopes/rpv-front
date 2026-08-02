@@ -23,8 +23,10 @@ import { deriveResourceTotals } from "./deriveResourceTotals";
 import { isCharacterInventory, sanitizeInventory } from "./inventory";
 import { readLevelFromForm } from "./level";
 import { sanitizeStartingMaterialization } from "./sanitizeStartingMaterialization";
+import { resolveArmorClassWithEquipment } from "./ac";
 import type { StoredCharacter, CharacterSelections, CharacterChoices } from "./storedCharacter";
 import { STORED_CHARACTER_SCHEMA_VERSION } from "./storedCharacter";
+import type { CharacterInventory } from "@rpv/domain";
 
 function coerceString(value: unknown, fallback: string): string {
     if (typeof value === "string" && value.length > 0) {
@@ -248,9 +250,24 @@ export function characterPropsToDomain(props: CharacterProps): DomainCharacter {
 }
 
 export function getResolvedStatsForCharacter(
-    props: Pick<CharacterProps, "baseStats" | "modifiers">
+    props: Pick<CharacterProps, "baseStats" | "modifiers">,
+    inventory?: CharacterInventory,
+    system?: SystemKey
 ): Stats {
-    return resolveStats(props.baseStats, props.modifiers);
+    const resolved = resolveStats(props.baseStats, props.modifiers);
+    if (!inventory || !system) {
+        return resolved;
+    }
+
+    return {
+        ...resolved,
+        armorClass: resolveArmorClassWithEquipment(
+            props.baseStats,
+            props.modifiers,
+            inventory,
+            system
+        ),
+    };
 }
 
 export function isLegacyStoredCharacter(char: unknown): boolean {

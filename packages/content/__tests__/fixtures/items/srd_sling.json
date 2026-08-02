@@ -1,0 +1,58 @@
+{
+  "key": "srd_sling",
+  "name": "Sling",
+  "desc": "A sling.",
+  "category": {
+    "name": "Weapon",
+    "key": "weapon"
+  },
+  "weapon": {
+    "name": "Sling",
+    "key": "srd_sling",
+    "damage_type": {
+      "name": "Bludgeoning",
+      "key": "bludgeoning"
+    },
+    "damage_dice": "1d4",
+    "properties": [
+      {
+        "property": {
+          "name": "Ammunition",
+          "type": null,
+          "desc": "You can use a weapon that has the ammunition property to make a ranged attack only if you have ammunition to fire from the weapon. Each time you attack with the weapon, you expend one piece of ammunition. Drawing the ammunition from a quiver, case, or other container is part of the attack (you need a free hand to load a one-­‐‑handed weapon). At the end of the battle, you can recover half your expended ammunition by taking a minute to search the battlefield.\n\nIf you use a weapon that has the ammunition property to make a melee attack, you treat the weapon as an improvised weapon (see “Improvised Weapons” later in the section). A sling must be loaded to deal any damage when used in this way."
+        },
+        "detail": "range 80/320"
+      }
+    ],
+    "is_simple": true,
+    "is_martial": false,
+    "is_improvised": false,
+    "distance_unit": "feet"
+  },
+  "armor": null,
+  "size": {
+    "name": "Tiny",
+    "key": "tiny"
+  },
+  "weight": "0.000",
+  "weight_unit": "lb",
+  "cost": "0.10",
+  "document": {
+    "name": "System Reference Document 5.1",
+    "key": "srd-2014",
+    "type": "SOURCE",
+    "display_name": "5e 2014 Rules",
+    "publisher": {
+      "name": "Wizards of the Coast",
+      "key": "wizards-of-the-coast"
+    },
+    "gamesystem": {
+      "name": "5th Edition 2014",
+      "key": "5e-2014"
+    },
+    "permalink": "https://dnd.wizards.com/resources/systems-reference-document"
+  },
+  "crossreferences": {
+    "to": []
+  }
+}

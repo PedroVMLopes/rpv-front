@@ -71,7 +71,7 @@ describe("CatalogSelectionPage", () => {
         expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
         expect(screen.getByTestId("race-value")).toHaveTextContent("elf");
         expect(screen.getByTestId("catalog-card-elf").className).toMatch(
-            /border-primary/
+            /ring-primary/
         );
     });
 
@@ -87,7 +87,7 @@ describe("CatalogSelectionPage", () => {
         expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
         expect(screen.getByTestId("race-value")).toHaveTextContent("dwarf");
         expect(screen.getByTestId("catalog-card-dwarf").className).toMatch(
-            /border-primary/
+            /ring-primary/
         );
         expect(screen.getByTestId("catalog-detail-panel")).toBeInTheDocument();
         expect(screen.getByText("Proficiencies")).toBeInTheDocument();
@@ -156,7 +156,7 @@ describe("CatalogSelectionPage", () => {
         expect(screen.getByTestId("race-value")).toHaveTextContent("elf");
         expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
         expect(screen.getByTestId("catalog-card-elf").className).toMatch(
-            /border-primary/
+            /ring-primary/
         );
     });
 });

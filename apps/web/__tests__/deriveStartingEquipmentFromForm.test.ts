@@ -34,7 +34,7 @@ describe("deriveStartingEquipmentFromForm", () => {
 
         expect(preview.fixedItems).toEqual([
             expect.objectContaining({
-                slug: "scroll-of-fire-bolt",
+                slug: "rpv_scroll-of-fire-bolt",
                 quantity: 1,
                 source: { type: "background", id: "sage" },
             }),
@@ -42,7 +42,7 @@ describe("deriveStartingEquipmentFromForm", () => {
         expect(preview.grantedCurrency).toEqual({ gold: 15 });
         expect(preview.bag).toEqual([
             expect.objectContaining({
-                slug: "scroll-of-fire-bolt",
+                slug: "rpv_scroll-of-fire-bolt",
                 provenance: "grant:background:sage:2",
             }),
         ]);
@@ -65,7 +65,7 @@ describe("deriveStartingEquipmentFromForm", () => {
         expect(preview.exclusiveGroups).toHaveLength(1);
         expect(preview.fixedItems).toEqual([
             expect.objectContaining({
-                slug: "longsword",
+                slug: "srd_longsword",
                 source: { type: "class", id: "fighter" },
             }),
         ]);
@@ -78,23 +78,23 @@ describe("deriveStartingEquipmentFromForm", () => {
         expect(preview.bag).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
-                    slug: "longsword",
+                    slug: "srd_longsword",
                     provenance: "grant:class:fighter:4",
                 }),
                 expect.objectContaining({
-                    slug: "chain-mail",
+                    slug: "srd_chain-mail",
                     provenance: "grant:class:fighter:5",
                 }),
                 expect.objectContaining({
-                    slug: "shield",
+                    slug: "srd_shield",
                     provenance: "grant:class:fighter:6",
                 }),
                 expect.objectContaining({
-                    slug: "dungeoneers-pack",
+                    slug: "rpv_dungeoneers-pack",
                     provenance: "grant:class:fighter:7",
                 }),
                 expect.objectContaining({
-                    slug: "crossbow-light",
+                    slug: "srd_crossbow-light",
                     provenance: "grant:class:fighter:8",
                 }),
             ])

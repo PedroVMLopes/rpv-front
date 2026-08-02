@@ -21,10 +21,10 @@ describe("inventory round-trip", () => {
                 background: undefined,
                 inventory: {
                     bag: [
-                        { slug: "scroll-of-fire-bolt", quantity: 1 },
-                        { slug: "amulet-of-vitality", quantity: 2 },
+                        { slug: "rpv_scroll-of-fire-bolt", quantity: 1 },
+                        { slug: "rpv_amulet-of-vitality", quantity: 2 },
                     ],
-                    equipped: { ring: "ring-of-hardiness" },
+                    equipped: { ring: "rpv_ring-of-hardiness" },
                 },
                 choices: {},
             }
@@ -36,7 +36,7 @@ describe("inventory round-trip", () => {
         expect(flattened).toHaveProperty("inventory");
         expect(rebuilt.selections.inventory.bag).toHaveLength(2);
         expect(rebuilt.selections.inventory.equipped).toEqual({
-            ring: "ring-of-hardiness",
+            ring: "rpv_ring-of-hardiness",
         });
     });
 });

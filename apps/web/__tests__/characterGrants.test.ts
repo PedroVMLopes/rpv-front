@@ -74,7 +74,7 @@ describe("deriveCharacterGrants", () => {
                 background: "sage",
                 inventory: {
                     bag: [],
-                    equipped: { "main-hand": "scroll-of-fire-bolt" },
+                    equipped: { "main-hand": "rpv_scroll-of-fire-bolt" },
                 },
             },
             "en", 1, "dnd"
@@ -90,7 +90,7 @@ describe("deriveCharacterGrants", () => {
                 expect.objectContaining({
                     kind: "spell",
                     ref: "fire-bolt",
-                    source: { type: "item", id: "scroll-of-fire-bolt" },
+                    source: { type: "item", id: "rpv_scroll-of-fire-bolt" },
                 }),
             ])
         );
@@ -406,7 +406,7 @@ describe("buildSelectionsFromForm", () => {
                 subclass: "fighter-champion",
                 background: "sage",
                 inventory: {
-                    bag: [{ slug: "scroll-of-fire-bolt", quantity: 1 }],
+                    bag: [{ slug: "rpv_scroll-of-fire-bolt", quantity: 1 }],
                     equipped: {},
                 },
             })
@@ -417,7 +417,7 @@ describe("buildSelectionsFromForm", () => {
             subclass: "fighter-champion",
             background: "sage",
             inventory: {
-                bag: [{ slug: "scroll-of-fire-bolt", quantity: 1 }],
+                bag: [{ slug: "rpv_scroll-of-fire-bolt", quantity: 1 }],
                 equipped: {},
             },
             choices: {},

@@ -82,15 +82,15 @@ describe("statModifierGrantsToModifiers", () => {
         expect(
             statModifierGrantsToModifiers(grants, {
                 type: "item",
-                id: "amulet-of-vitality",
+                id: "rpv_amulet-of-vitality",
             })
         ).toEqual([
             {
-                id: "item-amulet-of-vitality-stat-hitPoints",
+                id: "item-rpv_amulet-of-vitality-stat-hitPoints",
                 stat: "hitPoints",
                 operation: "add",
                 value: 5,
-                source: { type: "item", id: "amulet-of-vitality" },
+                source: { type: "item", id: "rpv_amulet-of-vitality" },
                 duration: { type: "permanent" },
                 stacking: "stack",
                 priority: 0,
@@ -205,7 +205,7 @@ describe("fixedGrantsToCharacterGrants", () => {
         expect(
             fixedGrantsToCharacterGrants(grants, {
                 type: "item",
-                id: "amulet-of-vitality",
+                id: "rpv_amulet-of-vitality",
             })
         ).toEqual([]);
     });
@@ -492,11 +492,11 @@ describe("resolveGrantPool", () => {
             grantType: "inventory_item",
             choose: 1,
             options: [
-                { optionType: "item", ref: "pilot-test-dagger" },
+                { optionType: "item", ref: "rpv_pilot-test-dagger" },
                 {
                     optionType: "inventory_bundle",
                     label: "Starter kit",
-                    items: [{ ref: "leather-armor" }],
+                    items: [{ ref: "srd_leather-armor" }],
                 },
             ],
         };

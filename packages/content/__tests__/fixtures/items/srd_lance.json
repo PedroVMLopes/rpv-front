@@ -1,0 +1,66 @@
+{
+  "key": "srd_lance",
+  "name": "Lance",
+  "desc": "A lance.\r\n\r\nYou have disadvantage when you use a lance to attack a target within 5 feet of you. Also, a lance requires two hands to wield when you aren't mounted.",
+  "category": {
+    "name": "Weapon",
+    "key": "weapon"
+  },
+  "weapon": {
+    "name": "Lance",
+    "key": "srd_lance",
+    "damage_type": {
+      "name": "Piercing",
+      "key": "piercing"
+    },
+    "damage_dice": "1d12",
+    "properties": [
+      {
+        "property": {
+          "name": "Special (Lance)",
+          "type": null,
+          "desc": "You have disadvantage when you use alance to attack a target within 5 feet of you. Also, a lance requires two hands to wield when you aren’t mounted."
+        },
+        "detail": null
+      },
+      {
+        "property": {
+          "name": "Reach",
+          "type": null,
+          "desc": "This weapon adds 5 feet to your reach when you attack with it, as well as when determining your reach for opportunity attacks with it."
+        },
+        "detail": null
+      }
+    ],
+    "is_simple": false,
+    "is_martial": true,
+    "is_improvised": false,
+    "distance_unit": "feet"
+  },
+  "armor": null,
+  "size": {
+    "name": "Tiny",
+    "key": "tiny"
+  },
+  "weight": "6.000",
+  "weight_unit": "lb",
+  "cost": "10.00",
+  "document": {
+    "name": "System Reference Document 5.1",
+    "key": "srd-2014",
+    "type": "SOURCE",
+    "display_name": "5e 2014 Rules",
+    "publisher": {
+      "name": "Wizards of the Coast",
+      "key": "wizards-of-the-coast"
+    },
+    "gamesystem": {
+      "name": "5th Edition 2014",
+      "key": "5e-2014"
+    },
+    "permalink": "https://dnd.wizards.com/resources/systems-reference-document"
+  },
+  "crossreferences": {
+    "to": []
+  }
+}

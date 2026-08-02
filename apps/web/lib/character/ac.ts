@@ -5,8 +5,10 @@ import { deriveRaceModifiers } from "./raceModifiers";
 import { deriveStatModifiers } from "./characterGrants";
 import { buildBaseStatsFromForm } from "./presetStats";
 import { getSystemRules } from "./systemRules";
-import { resolveStats } from "@rpv/domain";
+import { emptyInventory, resolveStats, type Modifier, type Stats } from "@rpv/domain";
 import type { Locale } from "@rpv/domain";
+import { computeEquippedArmorClass } from "./equippedArmorAc";
+import type { CharacterInventory } from "@rpv/domain";
 
 export function getAcRules(system: SystemKey): AcRules {
     return getSystemRules(system).ac;
@@ -47,12 +49,44 @@ export function deriveBaseAcFromForm(
     system: SystemKey,
     locale: Locale
 ): number | undefined {
-    const ctx = buildAcDerivationContextFromForm(formData, system, locale);
-    return deriveBaseAc(system, ctx);
+    const selections = buildSelectionsFromForm(formData);
+    const dexterity = resolveDexterityFromForm(formData, system, locale);
+    const inventory = selections.inventory ?? emptyInventory();
+
+    return computeEquippedArmorClass(inventory, dexterity, system);
 }
 
 export function isAcEmpty(value: unknown): boolean {
     return value === undefined || value === null || value === "";
+}
+
+/**
+ * Resolve AC using equipped armor formula as the base, then layer AC modifiers
+ * (magic items, etc.) on top.
+ */
+export function resolveArmorClassWithEquipment(
+    baseStats: Stats,
+    modifiers: Modifier[],
+    inventory: CharacterInventory,
+    system: SystemKey
+): number {
+    const nonAcModifiers = modifiers.filter(
+        (modifier) => modifier.stat !== "armorClass"
+    );
+    const acModifiers = modifiers.filter(
+        (modifier) => modifier.stat === "armorClass"
+    );
+    const resolvedWithoutAcMods = resolveStats(baseStats, nonAcModifiers);
+    const formulaAc = computeEquippedArmorClass(
+        inventory,
+        resolvedWithoutAcMods.dexterity,
+        system
+    );
+
+    return resolveStats(
+        { ...resolvedWithoutAcMods, armorClass: formulaAc },
+        acModifiers
+    ).armorClass;
 }
 
 export function resolveAcFromForm(
@@ -67,7 +101,12 @@ export function resolveAcFromForm(
         ...deriveStatModifiers(selections, locale),
     ];
 
-    return resolveStats(baseStats, modifiers).armorClass;
+    return resolveArmorClassWithEquipment(
+        baseStats,
+        modifiers,
+        selections.inventory ?? emptyInventory(),
+        system
+    );
 }
 
 export function formatBaseAcBreakdownFromForm(

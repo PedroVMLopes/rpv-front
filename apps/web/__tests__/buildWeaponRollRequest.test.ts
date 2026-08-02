@@ -39,8 +39,8 @@ const fighterStored: StoredCharacter = {
         characterClass: "fighter",
         choices: {},
         inventory: {
-            bag: [{ slug: "longsword", quantity: 1 }],
-            equipped: { "main-hand": "longsword" },
+            bag: [{ slug: "srd_longsword", quantity: 1 }],
+            equipped: { "main-hand": "srd_longsword" },
         },
     },
     resources: { hp: 10 },
@@ -59,7 +59,7 @@ describe("buildWeaponAttackRollRequest", () => {
 
         expect(weapon).toEqual(
             expect.objectContaining({
-                slug: "longsword",
+                slug: "srd_longsword",
                 attackModifier: 5,
                 damageDice: "1d8",
                 damageFlat: 3,
@@ -92,12 +92,12 @@ describe("buildWeaponAttackRollRequest", () => {
     });
 
     it("returns null when item has no weapon profile", () => {
-        const item = getItem("leather-armor", "dnd");
-        expect(item?.weaponProfile).toBeUndefined();
+        const item = getItem("srd_leather-armor", "dnd");
+        expect(item?.weapon).toBeNull();
 
         const request = buildWeaponAttackRollRequest({
             id: "armor-leather-armor",
-            slug: "leather-armor",
+            slug: "srd_leather-armor",
             name: "Leather Armor",
             slotId: "main-hand",
             attackModifier: null,

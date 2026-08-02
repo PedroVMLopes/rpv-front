@@ -6,6 +6,7 @@ import type {
     CharacterType,
     Stats,
 } from "@rpv/domain";
+import { emptyInventory } from "@rpv/domain";
 import { SystemKey } from "@/presets";
 import {
     flattenStoredToForm,
@@ -202,7 +203,11 @@ export const useCharacterStore = create<CharacterStore>()(
             getResolvedStats: (id) => {
                 const char = get().characters.find((c) => c.id === id);
                 if (!char) return undefined;
-                return getResolvedStatsForCharacter(storedCharacterToProps(char));
+                return getResolvedStatsForCharacter(
+                    storedCharacterToProps(char),
+                    char.selections.inventory ?? emptyInventory(),
+                    char.system
+                );
             },
 
             getCharacterProps: (id) => {

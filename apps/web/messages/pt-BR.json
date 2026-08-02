@@ -585,7 +585,13 @@
       "finesse": "Acuidade",
       "versatile": "Versátil",
       "ranged": "À distância",
-      "two-handed": "Duas mãos"
+      "two-handed": "Duas mãos",
+      "ammunition": "Munição",
+      "light": "Leve",
+      "heavy": "Pesada",
+      "loading": "Carregamento",
+      "reach": "Alcance",
+      "thrown": "Arremesso"
     },
     "damageType": {
       "slashing": "Cortante",

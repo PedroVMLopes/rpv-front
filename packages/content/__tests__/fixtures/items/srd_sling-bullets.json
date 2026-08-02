@@ -1,0 +1,36 @@
+{
+  "key": "srd_sling-bullets",
+  "name": "Sling bullets",
+  "desc": "Technically their cost is 20 for 4cp.",
+  "category": {
+    "name": "Ammunition",
+    "key": "ammunition"
+  },
+  "weapon": null,
+  "armor": null,
+  "size": {
+    "name": "Tiny",
+    "key": "tiny"
+  },
+  "weight": "0.075",
+  "weight_unit": "lb",
+  "cost": "0.01",
+  "document": {
+    "name": "System Reference Document 5.1",
+    "key": "srd-2014",
+    "type": "SOURCE",
+    "display_name": "5e 2014 Rules",
+    "publisher": {
+      "name": "Wizards of the Coast",
+      "key": "wizards-of-the-coast"
+    },
+    "gamesystem": {
+      "name": "5th Edition 2014",
+      "key": "5e-2014"
+    },
+    "permalink": "https://dnd.wizards.com/resources/systems-reference-document"
+  },
+  "crossreferences": {
+    "to": []
+  }
+}

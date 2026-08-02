@@ -9,7 +9,7 @@ import type { Grant } from "../src/grant/grant.types";
 const equipmentGrant: Grant = {
     grantType: "inventory_item",
     choose: 0,
-    ref: "longsword",
+    ref: "srd_longsword",
     exclusiveGroup: "starting-wealth",
     exclusiveBranch: "equipment",
     description: "Standard equipment",
@@ -21,7 +21,7 @@ const sidearmGrant: Grant = {
     exclusiveGroup: "starting-wealth",
     exclusiveBranch: "equipment",
     description: "Sidearm choice",
-    options: [{ optionType: "item", ref: "pilot-test-dagger" }],
+    options: [{ optionType: "item", ref: "rpv_pilot-test-dagger" }],
 };
 
 const goldGrant: Grant = {
@@ -37,7 +37,7 @@ const goldGrant: Grant = {
 const ungroupedGrant: Grant = {
     grantType: "inventory_item",
     choose: 0,
-    ref: "scroll-of-fire-bolt",
+    ref: "rpv_scroll-of-fire-bolt",
 };
 
 const context = { sourceType: "class", sourceId: "fighter" };

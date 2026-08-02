@@ -32,7 +32,7 @@ const formatters: ItemPickContentFormatters = {
 
 describe("buildItemPickContentModel", () => {
     it("builds weapon badges and detail for longsword", () => {
-        const item = getItem("longsword", "dnd");
+        const item = getItem("srd_longsword", "dnd");
         expect(item).toBeDefined();
 
         const { summary, detail } = buildItemPickContentModel(item!, formatters);
@@ -55,13 +55,13 @@ describe("buildItemPickContentModel", () => {
                 (row) => row.labelKey === "versatileDamage"
             )?.value
         ).toBe("1d10");
-        expect(
-            detail.sections[0]?.rows.find((row) => row.labelKey === "slot")?.value
-        ).toBe("Main hand");
+        expect(summary.badges.map((badge) => badge.label)).toEqual(
+            expect.arrayContaining(["weapon"])
+        );
     });
 
-    it("builds non-weapon item with grants and no weapon rows", () => {
-        const item = getItem("leather-armor", "dnd");
+    it("builds non-weapon item with armor display and no weapon rows", () => {
+        const item = getItem("srd_leather-armor", "dnd");
         expect(item).toBeDefined();
 
         const { summary, detail } = buildItemPickContentModel(item!, formatters);
@@ -74,9 +74,12 @@ describe("buildItemPickContentModel", () => {
             detail.sections[0]?.rows.find((row) => row.labelKey === "damage")
         ).toBeUndefined();
         expect(
-            detail.sections[0]?.rows.find((row) => row.labelKey === "grants")
+            detail.sections[0]?.rows.find((row) => row.labelKey === "armorClass")
                 ?.value
-        ).toMatch(/\+1 armorClass/);
+        ).toMatch(/11 \+ Dex/);
+        expect(
+            detail.sections[0]?.rows.find((row) => row.labelKey === "grants")
+        ).toBeUndefined();
     });
 });
 
@@ -88,9 +91,9 @@ describe("buildBundlePickContentModel", () => {
                     optionType: "inventory_bundle",
                     label: "Leather armor, longbow, and 20 arrows",
                     items: [
-                        { ref: "leather-armor", amount: 1 },
-                        { ref: "longbow", amount: 1 },
-                        { ref: "arrows", amount: 20 },
+                        { ref: "srd_leather-armor", amount: 1 },
+                        { ref: "srd_longbow", amount: 1 },
+                        { ref: "srd_arrow-bow", amount: 20 },
                     ],
                 },
                 optionIndex: 1,
@@ -108,6 +111,6 @@ describe("buildBundlePickContentModel", () => {
             detail.sections[0]?.rows.find((row) => row.labelKey === "contents")
                 ?.value
         ).toMatch(/Leather Armor/);
-        expect(detail.description).toMatch(/Arrows ×20/);
+        expect(detail.description).toMatch(/Arrow \(bow\) ×20/);
     });
 });

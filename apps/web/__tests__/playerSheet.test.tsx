@@ -88,12 +88,12 @@ const storedCharacter: StoredCharacter = {
         choices: {},
         inventory: {
             bag: [
-                { slug: "longsword", quantity: 1 },
-                { slug: "leather-armor", quantity: 1 },
+                { slug: "srd_longsword", quantity: 1 },
+                { slug: "srd_leather-armor", quantity: 1 },
             ],
             equipped: {
-                "main-hand": "longsword",
-                armor: "leather-armor",
+                "main-hand": "srd_longsword",
+                armor: "srd_leather-armor",
             },
         },
     },
@@ -183,7 +183,7 @@ describe("PlayerSheet", () => {
             screen.getByRole("heading", { name: /Sheet Hero/i })
         ).toBeInTheDocument();
         expect(screen.getByText(/Level 1 ·/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/AC 16/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/AC 13/i)).toBeInTheDocument();
         expect(
             screen.getByLabelText(/Hit Points 10 \/ 12/i)
         ).toBeInTheDocument();

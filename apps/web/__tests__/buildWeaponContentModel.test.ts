@@ -32,9 +32,9 @@ function makeWeapon(
 
 describe("buildWeaponContentModel", () => {
     it("builds roll use action and combat badges for longsword", () => {
-        const itemEntry = getItem("longsword", "dnd");
+        const itemEntry = getItem("srd_longsword", "dnd");
         const weapon = makeWeapon({
-            slug: "longsword",
+            slug: "srd_longsword",
             name: "Longsword",
             toHit: "+5",
             damage: "1d8+3 slashing",
@@ -76,7 +76,7 @@ describe("buildWeaponContentModel", () => {
 
     it("omits use action when weapon has no combat profile", () => {
         const weapon = makeWeapon({
-            slug: "longbow",
+            slug: "srd_longbow",
             name: "Longbow",
             slotId: "main-hand",
         });
@@ -84,7 +84,7 @@ describe("buildWeaponContentModel", () => {
         const { summary, detail } = buildWeaponContentModel(
             {
                 weapon,
-                itemEntry: getItem("longbow", "dnd"),
+                itemEntry: getItem("srd_longbow", "dnd"),
                 slotLabel: "Main hand",
             },
             formatters

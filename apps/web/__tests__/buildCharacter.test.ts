@@ -41,7 +41,7 @@ describe("buildStoredCharacter", () => {
                 background: "sage",
                 inventory: {
                     bag: [],
-                    equipped: { "main-hand": "scroll-of-fire-bolt" },
+                    equipped: { "main-hand": "rpv_scroll-of-fire-bolt" },
                 },
             },
             "player",
@@ -56,12 +56,12 @@ describe("buildStoredCharacter", () => {
             inventory: {
                 bag: [
                     {
-                        slug: "longsword",
+                        slug: "srd_longsword",
                         quantity: 1,
                         provenance: "grant:class:fighter:4",
                     },
                 ],
-                equipped: { "main-hand": "scroll-of-fire-bolt" },
+                equipped: { "main-hand": "rpv_scroll-of-fire-bolt" },
             },
         });
         expect(character.grants).toEqual(
@@ -69,7 +69,7 @@ describe("buildStoredCharacter", () => {
                 expect.objectContaining({
                     kind: "spell",
                     ref: "fire-bolt",
-                    source: { type: "item", id: "scroll-of-fire-bolt" },
+                    source: { type: "item", id: "rpv_scroll-of-fire-bolt" },
                 }),
                 expect.objectContaining({
                     kind: "proficiency",
@@ -110,7 +110,7 @@ describe("buildStoredCharacter", () => {
             {
                 ...baseFormData,
                 inventory: {
-                    bag: [{ slug: "scroll-of-fire-bolt", quantity: 1 }],
+                    bag: [{ slug: "rpv_scroll-of-fire-bolt", quantity: 1 }],
                     equipped: {},
                 },
             },
@@ -121,9 +121,9 @@ describe("buildStoredCharacter", () => {
 
         expect(character.selections.inventory).toEqual({
             bag: [
-                { slug: "scroll-of-fire-bolt", quantity: 1 },
+                { slug: "rpv_scroll-of-fire-bolt", quantity: 1 },
                 {
-                    slug: "longsword",
+                    slug: "srd_longsword",
                     quantity: 1,
                     provenance: "grant:class:fighter:4",
                 },
@@ -134,7 +134,7 @@ describe("buildStoredCharacter", () => {
             character.grants.some(
                 (grant) =>
                     grant.source.type === "item" &&
-                    grant.source.id === "scroll-of-fire-bolt"
+                    grant.source.id === "rpv_scroll-of-fire-bolt"
             )
         ).toBe(false);
     });
@@ -152,12 +152,12 @@ describe("buildStoredCharacter", () => {
 
         expect(character.selections.inventory?.bag).toEqual([
             {
-                slug: "scroll-of-fire-bolt",
+                slug: "rpv_scroll-of-fire-bolt",
                 quantity: 1,
                 provenance: "grant:background:sage:2",
             },
             {
-                slug: "longsword",
+                slug: "srd_longsword",
                 quantity: 1,
                 provenance: "grant:class:fighter:4",
             },
@@ -167,7 +167,7 @@ describe("buildStoredCharacter", () => {
             character.grants.some(
                 (grant) =>
                     grant.source.type === "item" &&
-                    grant.source.id === "scroll-of-fire-bolt"
+                    grant.source.id === "rpv_scroll-of-fire-bolt"
             )
         ).toBe(false);
     });
@@ -178,7 +178,7 @@ describe("buildStoredCharacter", () => {
                 ...baseFormData,
                 background: "sage",
                 inventory: {
-                    bag: [{ slug: "amulet-of-vitality", quantity: 1 }],
+                    bag: [{ slug: "rpv_amulet-of-vitality", quantity: 1 }],
                     equipped: {},
                 },
             },
@@ -198,14 +198,14 @@ describe("buildStoredCharacter", () => {
         );
 
         expect(rebuilt.selections.inventory?.bag).toEqual([
-            { slug: "amulet-of-vitality", quantity: 1 },
+            { slug: "rpv_amulet-of-vitality", quantity: 1 },
             {
-                slug: "scroll-of-fire-bolt",
+                slug: "rpv_scroll-of-fire-bolt",
                 quantity: 1,
                 provenance: "grant:background:sage:2",
             },
             {
-                slug: "longsword",
+                slug: "srd_longsword",
                 quantity: 1,
                 provenance: "grant:class:fighter:4",
             },
@@ -252,7 +252,7 @@ describe("buildStoredCharacter", () => {
                 ...baseFormData,
                 background: "sage",
                 inventory: {
-                    bag: [{ slug: "amulet-of-vitality", quantity: 1 }],
+                    bag: [{ slug: "rpv_amulet-of-vitality", quantity: 1 }],
                     equipped: {},
                 },
             },
@@ -272,9 +272,9 @@ describe("buildStoredCharacter", () => {
         );
 
         expect(rebuilt.selections.inventory?.bag).toEqual([
-            { slug: "amulet-of-vitality", quantity: 1 },
+            { slug: "rpv_amulet-of-vitality", quantity: 1 },
             {
-                slug: "longsword",
+                slug: "srd_longsword",
                 quantity: 1,
                 provenance: "grant:class:fighter:4",
             },
@@ -320,7 +320,7 @@ describe("buildStoredCharacter", () => {
 
         expect(
             character.selections.inventory?.bag.some(
-                (stack) => stack.slug === "longsword"
+                (stack) => stack.slug === "srd_longsword"
             )
         ).toBe(false);
         expect(character.selections.grantedCurrency).toEqual({
@@ -347,12 +347,12 @@ describe("buildStoredCharacter", () => {
         expect(character.selections.inventory?.bag).toEqual(
             expect.arrayContaining([
                 {
-                    slug: "longsword",
+                    slug: "srd_longsword",
                     quantity: 1,
                     provenance: "grant:class:fighter:4",
                 },
                 {
-                    slug: "crossbow-light",
+                    slug: "srd_crossbow-light",
                     quantity: 1,
                     provenance: "grant:class:fighter:8",
                 },
@@ -397,7 +397,7 @@ describe("buildStoredCharacter", () => {
                 inventory: {
                     bag: [
                         { slug: "not-a-real-item", quantity: 2 },
-                        { slug: "amulet-of-vitality", quantity: 1 },
+                        { slug: "rpv_amulet-of-vitality", quantity: 1 },
                     ],
                     equipped: {},
                 },
@@ -408,9 +408,9 @@ describe("buildStoredCharacter", () => {
         );
 
         expect(character.selections.inventory.bag).toEqual([
-            { slug: "amulet-of-vitality", quantity: 1 },
+            { slug: "rpv_amulet-of-vitality", quantity: 1 },
             {
-                slug: "longsword",
+                slug: "srd_longsword",
                 quantity: 1,
                 provenance: "grant:class:fighter:4",
             },
@@ -422,8 +422,8 @@ describe("buildStoredCharacter", () => {
             {
                 ...baseFormData,
                 inventory: {
-                    bag: [{ slug: "amulet-of-vitality", quantity: 1 }],
-                    equipped: { neck: "amulet-of-vitality" },
+                    bag: [{ slug: "rpv_amulet-of-vitality", quantity: 1 }],
+                    equipped: { neck: "rpv_amulet-of-vitality" },
                 },
             },
             "player",
@@ -447,8 +447,8 @@ describe("buildStoredCharacter", () => {
             {
                 ...baseFormData,
                 inventory: {
-                    bag: [{ slug: "amulet-of-vitality", quantity: 1 }],
-                    equipped: { neck: "amulet-of-vitality" },
+                    bag: [{ slug: "rpv_amulet-of-vitality", quantity: 1 }],
+                    equipped: { neck: "rpv_amulet-of-vitality" },
                 },
             },
             "player",
@@ -535,20 +535,20 @@ describe("buildStoredCharacter", () => {
                 ...baseFormData,
                 inventory: {
                     bag: [
-                        { slug: "scroll-of-fire-bolt", quantity: 1 },
-                        { slug: "amulet-of-vitality", quantity: 1 },
+                        { slug: "rpv_scroll-of-fire-bolt", quantity: 1 },
+                        { slug: "rpv_amulet-of-vitality", quantity: 1 },
                     ],
                     equipped: {
-                        "main-hand": "scroll-of-fire-bolt",
-                        neck: "amulet-of-vitality",
+                        "main-hand": "rpv_scroll-of-fire-bolt",
+                        neck: "rpv_amulet-of-vitality",
                     },
                 },
             },
         });
 
         expect(character.selections.inventory.equipped).toEqual({
-            "main-hand": "scroll-of-fire-bolt",
-            neck: "amulet-of-vitality",
+            "main-hand": "rpv_scroll-of-fire-bolt",
+            neck: "rpv_amulet-of-vitality",
         });
         expect(character.grants).toEqual(
             expect.arrayContaining([
@@ -561,7 +561,7 @@ describe("buildStoredCharacter", () => {
         expect(
             character.modifiers.some(
                 (modifier) =>
-                    modifier.source.id === "amulet-of-vitality" &&
+                    modifier.source.id === "rpv_amulet-of-vitality" &&
                     modifier.stat === "hitPoints"
             )
         ).toBe(true);
@@ -576,7 +576,7 @@ describe("buildStoredCharacter", () => {
             characterClass: "Wizard",
             background: "sage",
             inventory: {
-                bag: [{ slug: "scroll-of-fire-bolt", quantity: 1 }],
+                bag: [{ slug: "rpv_scroll-of-fire-bolt", quantity: 1 }],
                 equipped: {},
             },
             attributes: baseAttributes,
@@ -594,7 +594,7 @@ describe("buildStoredCharacter", () => {
             characterClass: "wizard",
             background: "sage",
             inventory: {
-                bag: [{ slug: "scroll-of-fire-bolt", quantity: 1 }],
+                bag: [{ slug: "rpv_scroll-of-fire-bolt", quantity: 1 }],
                 equipped: {},
             },
         });
@@ -807,7 +807,7 @@ describe("buildStoredCharacter", () => {
             }
 
             if (choice.key === "class:wizard:1:spell:2:1") {
-                grantPicks[choice.key] = "shield";
+                grantPicks[choice.key] = "srd_shield";
             }
         }
 
@@ -837,7 +837,7 @@ describe("buildStoredCharacter", () => {
                 }),
                 expect.objectContaining({
                     kind: "spell",
-                    ref: "shield",
+                    ref: "srd_shield",
                     source: { type: "class", id: "wizard" },
                 }),
             ])

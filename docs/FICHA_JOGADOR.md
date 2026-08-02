@@ -156,7 +156,7 @@ Cada ação tocável na ficha exibe: **rótulo + bônus principal + 1–2 pistas
 | Capacidade | Estado hoje | Necessário para Fase 3 |
 |------------|-------------|------------------------|
 | Perícias, saves, atributos | `computeSkillModifiers`, `computeSavingThrowModifiers` | — |
-| Ataque/dano de armas | [`ItemEntry`](../packages/content/src/curation/itemGrants.dnd.ts) só tem grants genéricos | Metadados de ataque (`toHit`, `damageDice`, tipo de dano) |
+| Ataque/dano de armas | [`ItemEntry.weapon`](../packages/content/src/item/item.types.ts) + combate na web | Metadados de ataque derivados (`toHit`, `damageDice`, tipo de dano) |
 | Spell attack / DC | Spells como grants sem metadados estruturados | Metadados em spell catalog ou curation |
 | Features por tipo de ação | Listadas por origem em `CharacterCardAbilities` | Campo `actionCost` (action / bonus / reaction) nos grants |
 

@@ -142,8 +142,8 @@ const fighterWithLongswordStored: StoredCharacter = {
         characterClass: "fighter",
         choices: {},
         inventory: {
-            bag: [{ slug: "longsword", quantity: 1 }],
-            equipped: { "main-hand": "longsword" },
+            bag: [{ slug: "srd_longsword", quantity: 1 }],
+            equipped: { "main-hand": "srd_longsword" },
         },
     },
 };
@@ -301,7 +301,7 @@ describe("ActionsSection", () => {
         const dialog = screen.getByRole("dialog");
         expect(dialog).toBeInTheDocument();
         expect(
-            within(dialog).getAllByText("A well-balanced martial melee weapon.")
+            within(dialog).getAllByText("A longsword")
         ).not.toHaveLength(0);
         expect(within(dialog).getByText("Versatile")).toBeInTheDocument();
     });

@@ -1,0 +1,36 @@
+{
+  "key": "srd_rowboat",
+  "name": "Rowboat",
+  "desc": "Waterborne vehicle. Speed 1.5mph",
+  "category": {
+    "name": "Waterborne Vehicle",
+    "key": "waterborne-vehicle"
+  },
+  "weapon": null,
+  "armor": null,
+  "size": {
+    "name": "Large",
+    "key": "large"
+  },
+  "weight": "100.000",
+  "weight_unit": "lb",
+  "cost": "50.00",
+  "document": {
+    "name": "System Reference Document 5.1",
+    "key": "srd-2014",
+    "type": "SOURCE",
+    "display_name": "5e 2014 Rules",
+    "publisher": {
+      "name": "Wizards of the Coast",
+      "key": "wizards-of-the-coast"
+    },
+    "gamesystem": {
+      "name": "5th Edition 2014",
+      "key": "5e-2014"
+    },
+    "permalink": "https://dnd.wizards.com/resources/systems-reference-document"
+  },
+  "crossreferences": {
+    "to": []
+  }
+}

@@ -1,18 +1,19 @@
 /**
  * Builds the committed `data/catalog.json` from the committed raw Open5e
  * snapshots in `__tests__/fixtures`. This keeps the build deterministic and
- * offline. The live client (`fetchAllRaces`/`fetchAllSpells`) is available to
- * refresh those snapshots when expanding the catalog.
+ * offline. The live client (`fetchAllRaces`/`fetchAllSpells`/`fetchAllItems`)
+ * is available to refresh those snapshots when expanding the catalog.
  */
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "fs";
 import { dirname, join } from "path";
 import type { Catalog } from "../src/catalog/catalog.types";
 import { dndLanguages } from "../src/catalog/languages.seed";
 import { dndSkills } from "../src/catalog/skills.seed";
-import type { Open5eRace, Open5eSpell } from "../src/open5e/open5e.types";
+import type { Open5eRace, Open5eSpell, Open5eV2Item } from "../src/open5e/open5e.types";
 import { getSpellShortDescription } from "../src/curation/spellShortDescriptions.dnd";
 import { mapOpen5eRace } from "../src/race/race.mapper";
 import { mapOpen5eSpell } from "../src/spell/spell.mapper";
+import { mapOpen5eItem } from "../src/item/item.mapper";
 
 const PACKAGE_ROOT = process.env.CONTENT_PKG_ROOT ?? join(__dirname, "..");
 const FIXTURES = join(PACKAGE_ROOT, "__tests__", "fixtures");
@@ -30,6 +31,7 @@ function bySlug(a: { slug: string }, b: { slug: string }): number {
 
 const rawRaces = readJsonDir<Open5eRace>(join(FIXTURES, "races"));
 const rawSpells = readJsonDir<Open5eSpell>(join(FIXTURES, "spells"));
+const rawItems = readJsonDir<Open5eV2Item>(join(FIXTURES, "items"));
 
 const catalog: Catalog = {
     generatedAt: new Date().toISOString(),
@@ -47,6 +49,7 @@ const catalog: Catalog = {
             };
         })
         .sort(bySlug),
+    items: rawItems.map((raw) => mapOpen5eItem(raw)).sort(bySlug),
     skills: dndSkills,
     languages: dndLanguages,
 };
@@ -55,5 +58,5 @@ mkdirSync(dirname(OUTPUT), { recursive: true });
 writeFileSync(OUTPUT, `${JSON.stringify(catalog, null, 2)}\n`, "utf-8");
 
 console.log(
-    `Wrote ${catalog.races.length} races and ${catalog.spells.length} spells to ${OUTPUT}`
+    `Wrote ${catalog.races.length} races, ${catalog.spells.length} spells, and ${catalog.items.length} items to ${OUTPUT}`
 );

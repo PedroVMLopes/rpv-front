@@ -1,4 +1,5 @@
 import type { Locale } from "@rpv/domain";
+import type { ItemEntry } from "../item/item.types";
 import type { RaceCatalogEntry, SubraceCatalogEntry } from "../race/race.types";
 import type { SpellCatalogEntry } from "../spell/spell.types";
 import type {
@@ -146,4 +147,48 @@ export function getLanguage(
     slug: string
 ): Language | undefined {
     return catalog.languages.find((entry) => entry.slug === slug);
+}
+
+function localizeItem(
+    entry: ItemEntry,
+    translations: CatalogTranslations | undefined,
+    locale: Locale
+): ItemEntry {
+    const translation = translations?.items?.[entry.slug];
+    if (!translation) {
+        return entry;
+    }
+    return {
+        ...entry,
+        name: translation.name ?? entry.name,
+        description: translation.description ?? entry.description,
+    };
+}
+
+export function listItems(
+    catalog: Catalog,
+    locale: Locale = catalog.defaultLocale,
+    translations?: CatalogTranslations
+): ItemEntry[] {
+    const items = catalog.items ?? [];
+    if (locale === catalog.defaultLocale || !translations) {
+        return items;
+    }
+    return items.map((item) => localizeItem(item, translations, locale));
+}
+
+export function getItem(
+    catalog: Catalog,
+    slug: string,
+    locale: Locale = catalog.defaultLocale,
+    translations?: CatalogTranslations
+): ItemEntry | undefined {
+    const item = (catalog.items ?? []).find((entry) => entry.slug === slug);
+    if (!item) {
+        return undefined;
+    }
+    if (locale === catalog.defaultLocale || !translations) {
+        return item;
+    }
+    return localizeItem(item, translations, locale);
 }

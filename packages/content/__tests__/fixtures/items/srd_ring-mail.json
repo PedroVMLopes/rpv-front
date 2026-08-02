@@ -1,0 +1,46 @@
+{
+  "key": "srd_ring-mail",
+  "name": "Ring mail",
+  "desc": "This armor is leather armor with heavy rings sewn into it. The rings help reinforce the armor against blows from swords and axes. Ring mail is inferior to chain mail, and it's usually worn only by those who can't afford better armor.",
+  "category": {
+    "name": "Armor",
+    "key": "armor"
+  },
+  "weapon": null,
+  "armor": {
+    "name": "Ring mail",
+    "key": "srd_ring-mail",
+    "category": "heavy",
+    "ac_base": 14,
+    "ac_display": "14",
+    "ac_add_dexmod": false,
+    "ac_cap_dexmod": null,
+    "grants_stealth_disadvantage": true,
+    "strength_score_required": null
+  },
+  "size": {
+    "name": "Tiny",
+    "key": "tiny"
+  },
+  "weight": "40.000",
+  "weight_unit": "lb",
+  "cost": "30.00",
+  "document": {
+    "name": "System Reference Document 5.1",
+    "key": "srd-2014",
+    "type": "SOURCE",
+    "display_name": "5e 2014 Rules",
+    "publisher": {
+      "name": "Wizards of the Coast",
+      "key": "wizards-of-the-coast"
+    },
+    "gamesystem": {
+      "name": "5th Edition 2014",
+      "key": "5e-2014"
+    },
+    "permalink": "https://dnd.wizards.com/resources/systems-reference-document"
+  },
+  "crossreferences": {
+    "to": []
+  }
+}

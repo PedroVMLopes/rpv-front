@@ -1,0 +1,66 @@
+{
+  "key": "srd_crossbow-heavy",
+  "name": "Crossbow, heavy",
+  "desc": "A heavy crossbow",
+  "category": {
+    "name": "Weapon",
+    "key": "weapon"
+  },
+  "weapon": {
+    "name": "Crossbow, heavy",
+    "key": "srd_crossbow-heavy",
+    "damage_type": {
+      "name": "Piercing",
+      "key": "piercing"
+    },
+    "damage_dice": "1d10",
+    "properties": [
+      {
+        "property": {
+          "name": "Loading",
+          "type": null,
+          "desc": "Because of the time required to load this weapon, you can fire only one piece of ammunition from it when you use an action, bonus action, or reaction to fire it, regardless of the number of attacks you can normally make."
+        },
+        "detail": null
+      },
+      {
+        "property": {
+          "name": "Two-Handed",
+          "type": null,
+          "desc": "This weapon requires two hands when you attack with it."
+        },
+        "detail": null
+      }
+    ],
+    "is_simple": false,
+    "is_martial": true,
+    "is_improvised": false,
+    "distance_unit": "feet"
+  },
+  "armor": null,
+  "size": {
+    "name": "Tiny",
+    "key": "tiny"
+  },
+  "weight": "18.000",
+  "weight_unit": "lb",
+  "cost": "50.00",
+  "document": {
+    "name": "System Reference Document 5.1",
+    "key": "srd-2014",
+    "type": "SOURCE",
+    "display_name": "5e 2014 Rules",
+    "publisher": {
+      "name": "Wizards of the Coast",
+      "key": "wizards-of-the-coast"
+    },
+    "gamesystem": {
+      "name": "5th Edition 2014",
+      "key": "5e-2014"
+    },
+    "permalink": "https://dnd.wizards.com/resources/systems-reference-document"
+  },
+  "crossreferences": {
+    "to": []
+  }
+}

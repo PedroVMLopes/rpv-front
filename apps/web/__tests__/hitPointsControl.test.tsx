@@ -201,6 +201,6 @@ describe("PlayerSheetHeader combat stats", () => {
         expect(screen.getByText("Hit Points")).toBeInTheDocument();
         expect(screen.getByText("Speed")).toBeInTheDocument();
         expect(screen.getByText("30 ft")).toBeInTheDocument();
-        expect(screen.getByLabelText(/AC 14/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/AC 10/i)).toBeInTheDocument();
     });
 });

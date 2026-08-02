@@ -37,8 +37,8 @@ describe("sanitizeInventory", () => {
         const result = sanitizeInventory(
             {
                 bag: [
-                    { slug: "scroll-of-fire-bolt", quantity: 1 },
-                    { slug: "scroll-of-fire-bolt", quantity: 2 },
+                    { slug: "rpv_scroll-of-fire-bolt", quantity: 1 },
+                    { slug: "rpv_scroll-of-fire-bolt", quantity: 2 },
                 ],
                 equipped: {},
             },
@@ -46,7 +46,7 @@ describe("sanitizeInventory", () => {
         );
 
         expect(result.bag).toEqual([
-            { slug: "scroll-of-fire-bolt", quantity: 3 },
+            { slug: "rpv_scroll-of-fire-bolt", quantity: 3 },
         ]);
     });
 
@@ -54,9 +54,9 @@ describe("sanitizeInventory", () => {
         const result = sanitizeInventory(
             {
                 bag: [
-                    { slug: "scroll-of-fire-bolt", quantity: 1 },
+                    { slug: "rpv_scroll-of-fire-bolt", quantity: 1 },
                     {
-                        slug: "scroll-of-fire-bolt",
+                        slug: "rpv_scroll-of-fire-bolt",
                         quantity: 1,
                         provenance: "grant:background:sage:2",
                     },
@@ -67,9 +67,9 @@ describe("sanitizeInventory", () => {
         );
 
         expect(result.bag).toEqual([
-            { slug: "scroll-of-fire-bolt", quantity: 1 },
+            { slug: "rpv_scroll-of-fire-bolt", quantity: 1 },
             {
-                slug: "scroll-of-fire-bolt",
+                slug: "rpv_scroll-of-fire-bolt",
                 quantity: 1,
                 provenance: "grant:background:sage:2",
             },
@@ -79,7 +79,7 @@ describe("sanitizeInventory", () => {
     it("removes stacks with quantity below 1", () => {
         const result = sanitizeInventory(
             {
-                bag: [{ slug: "amulet-of-vitality", quantity: 0 }],
+                bag: [{ slug: "rpv_amulet-of-vitality", quantity: 0 }],
                 equipped: {},
             },
             "dnd"
@@ -91,83 +91,83 @@ describe("sanitizeInventory", () => {
     it("keeps only one equipped slot when the same slug appears twice", () => {
         const result = sanitizeInventory(
             {
-                bag: [{ slug: "ring-of-hardiness", quantity: 2 }],
+                bag: [{ slug: "rpv_ring-of-hardiness", quantity: 2 }],
                 equipped: {
-                    ring: "ring-of-hardiness",
-                    neck: "ring-of-hardiness",
+                    ring: "rpv_ring-of-hardiness",
+                    neck: "rpv_ring-of-hardiness",
                 },
             },
             "dnd"
         );
 
-        expect(result.equipped).toEqual({ ring: "ring-of-hardiness" });
+        expect(result.equipped).toEqual({ ring: "rpv_ring-of-hardiness" });
     });
 
     it("keeps equipped slots when there is no matching bag stock", () => {
         const result = sanitizeInventory(
-            inventoryWithEquipped("amulet-of-vitality", "neck"),
+            inventoryWithEquipped("rpv_amulet-of-vitality", "neck"),
             "dnd"
         );
 
         expect(result).toEqual({
             bag: [],
-            equipped: { neck: "amulet-of-vitality" },
+            equipped: { neck: "rpv_amulet-of-vitality" },
         });
     });
 
     it("decrements bag quantity when an item is equipped with stock", () => {
         const result = sanitizeInventory(
-            inventoryWithEquipped("amulet-of-vitality", "neck", 1),
+            inventoryWithEquipped("rpv_amulet-of-vitality", "neck", 1),
             "dnd"
         );
 
         expect(result).toEqual({
             bag: [],
-            equipped: { neck: "amulet-of-vitality" },
+            equipped: { neck: "rpv_amulet-of-vitality" },
         });
     });
 
     it("keeps valid bag-only items without grants side effects", () => {
         const result = sanitizeInventory(
             {
-                bag: [{ slug: "scroll-of-fire-bolt", quantity: 1 }],
+                bag: [{ slug: "rpv_scroll-of-fire-bolt", quantity: 1 }],
                 equipped: {},
             },
             "dnd"
         );
 
-        expect(result.bag).toEqual([{ slug: "scroll-of-fire-bolt", quantity: 1 }]);
+        expect(result.bag).toEqual([{ slug: "rpv_scroll-of-fire-bolt", quantity: 1 }]);
         expect(result.equipped).toEqual({});
     });
 
     it("removes unknown equipment slots", () => {
         const result = sanitizeInventory(
-            inventoryWithEquipped("scroll-of-fire-bolt", "hand"),
+            inventoryWithEquipped("rpv_scroll-of-fire-bolt", "hand"),
             "dnd"
         );
 
         expect(result.equipped).toEqual({});
     });
 
-    it("removes items equipped in incompatible slots", () => {
+    it("keeps any valid item in a valid equipment slot", () => {
         const result = sanitizeInventory(
-            inventoryWithEquipped("ring-of-hardiness", "neck"),
+            inventoryWithEquipped("rpv_ring-of-hardiness", "neck"),
             "dnd"
         );
 
-        expect(result.equipped).toEqual({});
+        expect(result.equipped).toEqual({ neck: "rpv_ring-of-hardiness" });
     });
 
     it("clamps non-stackable bag quantities to 1", () => {
         const result = sanitizeInventory(
             {
-                bag: [{ slug: "amulet-of-vitality", quantity: 3 }],
+                bag: [{ slug: "rpv_amulet-of-vitality", quantity: 3 }],
                 equipped: {},
             },
             "dnd"
         );
 
-        expect(result.bag).toEqual([{ slug: "amulet-of-vitality", quantity: 1 }]);
+        expect(result.bag).toEqual([{ slug: "rpv_amulet-of-vitality", quantity: 1 }]);
     });
 });
 
@@ -177,44 +177,44 @@ describe("equippedItemSlugs", () => {
             equippedItemSlugs({
                 bag: [],
                 equipped: {
-                    ring: "ring-of-hardiness",
-                    neck: "amulet-of-vitality",
+                    ring: "rpv_ring-of-hardiness",
+                    neck: "rpv_amulet-of-vitality",
                 },
             })
-        ).toEqual(["ring-of-hardiness", "amulet-of-vitality"]);
+        ).toEqual(["rpv_ring-of-hardiness", "rpv_amulet-of-vitality"]);
     });
 });
 
 describe("addToBag", () => {
     it("adds a new stack when the slug is not present", () => {
-        expect(addToBag(emptyInventory(), "amulet-of-vitality", 2)).toEqual({
-            bag: [{ slug: "amulet-of-vitality", quantity: 2 }],
+        expect(addToBag(emptyInventory(), "rpv_amulet-of-vitality", 2)).toEqual({
+            bag: [{ slug: "rpv_amulet-of-vitality", quantity: 2 }],
             equipped: {},
         });
     });
 
     it("increments an existing stack", () => {
-        const inventory = addToBag(emptyInventory(), "amulet-of-vitality", 1);
+        const inventory = addToBag(emptyInventory(), "rpv_amulet-of-vitality", 1);
 
-        expect(addToBag(inventory, "amulet-of-vitality", 2)).toEqual({
-            bag: [{ slug: "amulet-of-vitality", quantity: 3 }],
+        expect(addToBag(inventory, "rpv_amulet-of-vitality", 2)).toEqual({
+            bag: [{ slug: "rpv_amulet-of-vitality", quantity: 3 }],
             equipped: {},
         });
     });
 
     it("keeps manual and granted stacks with the same slug separate", () => {
-        const manual = addToBag(emptyInventory(), "scroll-of-fire-bolt", 1);
+        const manual = addToBag(emptyInventory(), "rpv_scroll-of-fire-bolt", 1);
         const withGranted = addToBag(
             manual,
-            "scroll-of-fire-bolt",
+            "rpv_scroll-of-fire-bolt",
             1,
             "grant:background:sage:2"
         );
 
         expect(withGranted.bag).toEqual([
-            { slug: "scroll-of-fire-bolt", quantity: 1 },
+            { slug: "rpv_scroll-of-fire-bolt", quantity: 1 },
             {
-                slug: "scroll-of-fire-bolt",
+                slug: "rpv_scroll-of-fire-bolt",
                 quantity: 1,
                 provenance: "grant:background:sage:2",
             },
@@ -224,17 +224,17 @@ describe("addToBag", () => {
     it("merges stacks that share slug and provenance", () => {
         const first = addToBag(
             emptyInventory(),
-            "scroll-of-fire-bolt",
+            "rpv_scroll-of-fire-bolt",
             1,
             "grant:background:sage:2"
         );
 
         expect(
-            addToBag(first, "scroll-of-fire-bolt", 2, "grant:background:sage:2")
+            addToBag(first, "rpv_scroll-of-fire-bolt", 2, "grant:background:sage:2")
         ).toEqual({
             bag: [
                 {
-                    slug: "scroll-of-fire-bolt",
+                    slug: "rpv_scroll-of-fire-bolt",
                     quantity: 3,
                     provenance: "grant:background:sage:2",
                 },
@@ -246,76 +246,79 @@ describe("addToBag", () => {
 
 describe("removeFromBag", () => {
     it("removes quantity from an existing stack", () => {
-        const inventory = addToBag(emptyInventory(), "scroll-of-fire-bolt", 3);
+        const inventory = addToBag(emptyInventory(), "rpv_scroll-of-fire-bolt", 3);
 
-        expect(removeFromBag(inventory, "scroll-of-fire-bolt", 2)).toEqual({
-            bag: [{ slug: "scroll-of-fire-bolt", quantity: 1 }],
+        expect(removeFromBag(inventory, "rpv_scroll-of-fire-bolt", 2)).toEqual({
+            bag: [{ slug: "rpv_scroll-of-fire-bolt", quantity: 1 }],
             equipped: {},
         });
     });
 
     it("removes the stack when quantity reaches zero", () => {
-        const inventory = addToBag(emptyInventory(), "scroll-of-fire-bolt", 1);
+        const inventory = addToBag(emptyInventory(), "rpv_scroll-of-fire-bolt", 1);
 
-        expect(removeFromBag(inventory, "scroll-of-fire-bolt", 1)).toEqual({
+        expect(removeFromBag(inventory, "rpv_scroll-of-fire-bolt", 1)).toEqual({
             bag: [],
             equipped: {},
         });
     });
 
     it("returns inventory unchanged when quantity is insufficient", () => {
-        const inventory = addToBag(emptyInventory(), "scroll-of-fire-bolt", 1);
+        const inventory = addToBag(emptyInventory(), "rpv_scroll-of-fire-bolt", 1);
 
-        expect(removeFromBag(inventory, "scroll-of-fire-bolt", 2)).toBe(inventory);
+        expect(removeFromBag(inventory, "rpv_scroll-of-fire-bolt", 2)).toBe(inventory);
     });
 });
 
 describe("equipItem", () => {
     it("moves one item from bag to an empty slot", () => {
-        const inventory = addToBag(emptyInventory(), "amulet-of-vitality", 1);
+        const inventory = addToBag(emptyInventory(), "rpv_amulet-of-vitality", 1);
 
-        expect(equipItem(inventory, "neck", "amulet-of-vitality", "dnd")).toEqual({
+        expect(equipItem(inventory, "neck", "rpv_amulet-of-vitality", "dnd")).toEqual({
             bag: [],
-            equipped: { neck: "amulet-of-vitality" },
+            equipped: { neck: "rpv_amulet-of-vitality" },
         });
     });
 
     it("returns inventory unchanged when bag has no stock", () => {
         const inventory = emptyInventory();
 
-        expect(equipItem(inventory, "neck", "amulet-of-vitality", "dnd")).toBe(inventory);
+        expect(equipItem(inventory, "neck", "rpv_amulet-of-vitality", "dnd")).toBe(inventory);
     });
 
     it("returns inventory unchanged when the slot is occupied", () => {
         const inventory = {
-            bag: [{ slug: "ring-of-hardiness", quantity: 1 }],
-            equipped: { neck: "amulet-of-vitality" },
+            bag: [{ slug: "rpv_ring-of-hardiness", quantity: 1 }],
+            equipped: { neck: "rpv_amulet-of-vitality" },
         };
 
-        expect(equipItem(inventory, "neck", "ring-of-hardiness", "dnd")).toBe(inventory);
+        expect(equipItem(inventory, "neck", "rpv_ring-of-hardiness", "dnd")).toBe(inventory);
     });
 
     it("returns inventory unchanged when the slug is already equipped elsewhere", () => {
         const inventory = {
-            bag: [{ slug: "longsword", quantity: 1 }],
-            equipped: { "main-hand": "longsword" },
+            bag: [{ slug: "srd_longsword", quantity: 1 }],
+            equipped: { "main-hand": "srd_longsword" },
         };
 
-        expect(equipItem(inventory, "off-hand", "longsword", "dnd")).toBe(inventory);
+        expect(equipItem(inventory, "off-hand", "srd_longsword", "dnd")).toBe(inventory);
     });
 
-    it("returns inventory unchanged for incompatible slot and item pairs", () => {
-        const inventory = addToBag(emptyInventory(), "longsword", 1);
+    it("allows equipping any item into a valid slot", () => {
+        const inventory = addToBag(emptyInventory(), "srd_longsword", 1);
 
-        expect(equipItem(inventory, "ring", "longsword", "dnd")).toBe(inventory);
+        expect(equipItem(inventory, "ring", "srd_longsword", "dnd")).toEqual({
+            bag: [],
+            equipped: { ring: "srd_longsword" },
+        });
     });
 });
 
 describe("bagStackReactKey", () => {
     it("uses different keys for manual and granted stacks with the same slug", () => {
-        const manual = { slug: "scroll-of-fire-bolt", quantity: 1 };
+        const manual = { slug: "rpv_scroll-of-fire-bolt", quantity: 1 };
         const granted = {
-            slug: "scroll-of-fire-bolt",
+            slug: "rpv_scroll-of-fire-bolt",
             quantity: 1,
             provenance: "grant:background:sage:2",
         };
@@ -328,11 +331,11 @@ describe("unequipItem", () => {
     it("returns the equipped item to the bag", () => {
         const inventory = {
             bag: [],
-            equipped: { neck: "amulet-of-vitality" },
+            equipped: { neck: "rpv_amulet-of-vitality" },
         };
 
         expect(unequipItem(inventory, "neck", "dnd")).toEqual({
-            bag: [{ slug: "amulet-of-vitality", quantity: 1 }],
+            bag: [{ slug: "rpv_amulet-of-vitality", quantity: 1 }],
             equipped: {},
         });
     });
@@ -346,7 +349,7 @@ describe("unequipItem", () => {
     it("restores provenance when unequipping a background-granted item", () => {
         const inventory = {
             bag: [],
-            equipped: { "main-hand": "scroll-of-fire-bolt" },
+            equipped: { "main-hand": "rpv_scroll-of-fire-bolt" },
         };
 
         expect(
@@ -359,7 +362,7 @@ describe("unequipItem", () => {
         ).toEqual({
             bag: [
                 {
-                    slug: "scroll-of-fire-bolt",
+                    slug: "rpv_scroll-of-fire-bolt",
                     quantity: 1,
                     provenance: "grant:background:sage:2",
                 },

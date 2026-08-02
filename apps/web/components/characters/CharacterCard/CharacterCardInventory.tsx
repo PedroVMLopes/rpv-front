@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { emptyInventory, type CharacterInventory } from "@rpv/domain";
 import {
-    canEquipItem,
     getEquipmentSlots,
     getItem,
     listItems,
@@ -45,7 +44,6 @@ function isEquippedElsewhere(
 function equippableBagSlugs(
     bag: CharacterInventory["bag"],
     slotId: string,
-    system: SystemKey,
     equipped: CharacterInventory["equipped"]
 ): string[] {
     const slugs = new Set<string>();
@@ -53,7 +51,6 @@ function equippableBagSlugs(
     for (const stack of bag) {
         if (
             stack.quantity > 0 &&
-            canEquipItem(stack.slug, slotId, system) &&
             !isEquippedElsewhere(equipped, stack.slug, slotId)
         ) {
             slugs.add(stack.slug);
@@ -93,8 +90,8 @@ function SlotRow({
 
     const equippedSlug = inventory.equipped[slotId];
     const options = useMemo(
-        () => equippableBagSlugs(inventory.bag, slotId, system, inventory.equipped),
-        [inventory.bag, inventory.equipped, slotId, system]
+        () => equippableBagSlugs(inventory.bag, slotId, inventory.equipped),
+        [inventory.bag, inventory.equipped, slotId]
     );
 
     const [selectedSlug, setSelectedSlug] = useState("");

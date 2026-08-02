@@ -23,7 +23,7 @@ describe("materializeInventoryGrants", () => {
 
         expect(bag).toEqual([
             {
-                slug: "scroll-of-fire-bolt",
+                slug: "rpv_scroll-of-fire-bolt",
                 quantity: 1,
                 provenance: "grant:background:sage:2",
             },
@@ -46,7 +46,7 @@ describe("materializeInventoryGrants", () => {
 
         expect(bag).toEqual([
             {
-                slug: "longsword",
+                slug: "srd_longsword",
                 quantity: 1,
                 provenance: "grant:class:fighter:4",
             },
@@ -73,12 +73,12 @@ describe("materializeInventoryGrants", () => {
         expect(bag).toEqual(
             expect.arrayContaining([
                 {
-                    slug: "longsword",
+                    slug: "srd_longsword",
                     quantity: 1,
                     provenance: "grant:class:fighter:4",
                 },
                 {
-                    slug: "crossbow-light",
+                    slug: "srd_crossbow-light",
                     quantity: 1,
                     provenance: "grant:class:fighter:8",
                 },
@@ -100,7 +100,7 @@ describe("materializeInventoryGrants", () => {
                 inventory: {
                     bag: [
                         {
-                            slug: "longsword",
+                            slug: "srd_longsword",
                             quantity: 1,
                             provenance: "grant:class:fighter:4",
                         },
@@ -128,7 +128,7 @@ describe("resolveInventoryGrantProvenance", () => {
                         grantPicks: fighterEquipmentPicks,
                     },
                 },
-                "longsword",
+                "srd_longsword",
                 "en",
                 "dnd",
                 1
@@ -145,9 +145,9 @@ describe("mergeStartingGrants", () => {
                 background: "sage",
                 inventory: {
                     bag: [
-                        { slug: "amulet-of-vitality", quantity: 1 },
+                        { slug: "rpv_amulet-of-vitality", quantity: 1 },
                         {
-                            slug: "scroll-of-fire-bolt",
+                            slug: "rpv_scroll-of-fire-bolt",
                             quantity: 9,
                             provenance: "grant:background:sage:2",
                         },
@@ -161,9 +161,9 @@ describe("mergeStartingGrants", () => {
         );
 
         expect(merged.inventory?.bag).toEqual([
-            { slug: "amulet-of-vitality", quantity: 1 },
+            { slug: "rpv_amulet-of-vitality", quantity: 1 },
             {
-                slug: "scroll-of-fire-bolt",
+                slug: "rpv_scroll-of-fire-bolt",
                 quantity: 1,
                 provenance: "grant:background:sage:2",
             },
@@ -182,8 +182,8 @@ describe("mergeStartingGrants", () => {
                 },
                 inventory: {
                     bag: [
-                        { slug: "scroll-of-fire-bolt", quantity: 1 },
-                        { slug: "longsword", quantity: 1 },
+                        { slug: "rpv_scroll-of-fire-bolt", quantity: 1 },
+                        { slug: "srd_longsword", quantity: 1 },
                     ],
                     equipped: {},
                 },
@@ -195,12 +195,12 @@ describe("mergeStartingGrants", () => {
 
         expect(merged.inventory?.bag).toEqual([
             {
-                slug: "scroll-of-fire-bolt",
+                slug: "rpv_scroll-of-fire-bolt",
                 quantity: 1,
                 provenance: "grant:background:sage:2",
             },
             {
-                slug: "longsword",
+                slug: "srd_longsword",
                 quantity: 1,
                 provenance: "grant:class:fighter:4",
             },
@@ -218,7 +218,7 @@ describe("mergeStartingGrants", () => {
                 },
                 inventory: {
                     bag: [],
-                    equipped: { "main-hand": "scroll-of-fire-bolt" },
+                    equipped: { "main-hand": "rpv_scroll-of-fire-bolt" },
                 },
             },
             "en",
@@ -227,17 +227,17 @@ describe("mergeStartingGrants", () => {
         );
 
         expect(merged.inventory?.equipped).toEqual({
-            "main-hand": "scroll-of-fire-bolt",
+            "main-hand": "rpv_scroll-of-fire-bolt",
         });
         expect(
             merged.inventory?.bag.filter(
-                (stack) => stack.slug === "scroll-of-fire-bolt"
+                (stack) => stack.slug === "rpv_scroll-of-fire-bolt"
             )
         ).toEqual([]);
         expect(merged.inventory?.bag).toEqual(
             expect.arrayContaining([
                 {
-                    slug: "longsword",
+                    slug: "srd_longsword",
                     quantity: 1,
                     provenance: "grant:class:fighter:4",
                 },

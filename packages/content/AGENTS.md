@@ -113,87 +113,79 @@ Add pt-BR names in [`data/translations/pt-BR.json`](data/translations/pt-BR.json
 
 ## Item authoring
 
-Item **definitions** (`grants`, `allowedSlots`) live in content curation files.
+SRD item **definitions** are imported from Open5e v2 (`/v2/items/`, document
+`srd-2014`) into `catalog.json` via fixtures + [`scripts/buildCatalog.ts`](scripts/buildCatalog.ts).
+Refresh fixtures with `npm run refresh:items -w @rpv/content`. RPV-only items and
+overrides live in [`itemOverlays.dnd.ts`](src/curation/itemOverlays.dnd.ts).
+
 Whether a character **owns** or **wears** an item is runtime state in
 `selections.inventory` (bag / equipped) on the web app — see
 [`PROJECT_CONTEXT.md`](../../PROJECT_CONTEXT.md) (Inventory contract). Only
-**equipped** slugs feed `collectGrantSources`; bag-only items do not alter
-stats until equipped.
+**equipped** slugs feed `collectGrantSources` and armor AC formulas; bag-only
+items do not alter stats until equipped. The app does **not** gate which item
+may go in which slot — the player decides.
 
-Pilot catalog: 6 SRD pilot items plus 3 `pilot-test-*` contract fixtures in
-[`itemGrants.dnd.ts`](src/curation/itemGrants.dnd.ts). Full item catalogs arrive
-with Supabase-backed content later.
+### Identity
+
+- Catalog `slug` **===** Open5e `key` (e.g. `srd_longsword`, `srd_leather-armor`).
+- RPV extras use the `rpv_` namespace (e.g. `rpv_amulet-of-vitality`).
+- Persist the field name `slug` on bag/equipped; values are these namespaced keys.
+- Weapon proficiency refs (`longswords`, `martial-weapons`, …) are a separate
+  vocabulary — do not rename them to item keys.
 
 ### `ItemEntry` contract
 
+Aligned with Open5e v2 item shape (camelCase):
+
 ```ts
 interface ItemEntry {
-  slug: string;            // kebab-case, unique within the system
-  system: "dnd";           // namespace; future systems → *.pf2e.ts, etc.
-  name: string;            // default locale (en)
+  slug: string;              // === Open5e key or rpv_*
+  system: "dnd";
+  name: string;
   description: string;
-  grants: Grant[];         // pilot: choose === 0 only
-  allowedSlots?: string[]; // IDs from equipmentSlots.dnd.ts
-  stackable?: boolean;     // default true; false for unique gear
-  category?: string;       // optional; future catalog filters (weapon, armor, pack, …)
-  tags?: string[];         // optional; future catalog filters (martial, ranged, …)
+  category: { name: string; key: string };
+  weapon: ItemWeapon | null;
+  armor: ItemArmor | null;   // body armor or shield profile
+  weight: string | null;
+  weightUnit: string | null;
+  cost: string | null;
+  grants: Grant[];           // usually []; overlay for magic items
+  stackable: boolean;        // false when weapon/armor present
 }
 ```
 
-- `grants` — declarative bonuses/abilities applied when the item is **equipped**
-  (bag-only items do not grant until equipped).
-- `allowedSlots` — slot IDs this item can occupy (validated via
-  [`equipmentSlots.dnd.ts`](src/curation/equipmentSlots.dnd.ts) and `canEquipItem`).
-- `stackable` — defaults to **true** when omitted; set `false` for unique gear
-  (rings, weapons, armor).
+- `weapon` / `armor` — combat and AC data from Open5e (AC uses `acBase` + Dex rules).
+- `grants` — bonuses/abilities when **equipped** (RPV overlays for magic).
+- No `allowedSlots` — any bag item may equip into any valid slot id.
 
-Helpers: `getItem(slug, system?, locale?)`, `listItems(system?, locale?)`,
-`getItemGrants(slug, system?)`, `isItemStackable(entry)`, `canEquipItem(slug, slotId, system?)`.
-Exported from [`src/index.ts`](src/index.ts).
+Helpers: `getItem`, `listItems`, `getItemGrants`, `isItemStackable`,
+`mapOpen5eItem`, `mergeItemCatalog`. Exported from [`src/index.ts`](src/index.ts).
 
-### Authoring checklist — new item
+### Authoring checklist — SRD refresh
 
-1. **Choose a slug** — kebab-case, stable (do not rename after publication).
-2. **Add an entry** to [`itemGrants.dnd.ts`](src/curation/itemGrants.dnd.ts) in the `dndItems` array.
-3. **Set `allowedSlots`** — each ID must exist in [`equipmentSlots.dnd.ts`](src/curation/equipmentSlots.dnd.ts). Pilot slots: `armor`, `main-hand`, `off-hand`, `neck`, `ring`.
-4. **Set `stackable`** — `false` for unique gear; `true` or omit for stackable pilot items (e.g. scrolls).
-5. **Author `grants`** — `choose: 0` only in the pilot. Supported types:
-   - `stat_modifier` — `targetStat` must be a valid `StatKey` (`strength`, `hitPoints`, `armorClass`, …).
-   - `spell` — `options[].ref` must exist in the spell catalog.
-   - `ability` — `description` becomes a fixed ability grant.
-   - **Do not use** in the pilot: `resource`, `language` with `choose > 0`, proficiencies (no end-to-end validation yet).
-6. **New equipment slot** (if needed): add to `equipmentSlots.dnd.ts` and overlay `equipmentSlots` in [`data/translations/pt-BR.json`](data/translations/pt-BR.json). The inventory UI (Etapa 6) consumes these slot IDs.
-7. **pt-BR overlay** — `items.{slug}.name` (and `description` if translated) in [`data/translations/pt-BR.json`](data/translations/pt-BR.json).
-8. **Update tests** — add the slug to the expected list in [`__tests__/itemGrants.test.ts`](__tests__/itemGrants.test.ts) and assert `allowedSlots` / `grants` as appropriate.
-9. **Run tests** — `npm run test:packages` and `npm test -w rpv-front`.
-10. **Manual smoke test** (after Etapa 6 UI): add to bag via store/UI, equip in the correct slot, confirm resolved stats/grants.
+1. Run `npm run refresh:items -w @rpv/content` then `npm run build:catalog -w @rpv/content`.
+2. Confirm new keys appear in `data/catalog.json` `items[]`.
+3. Update starting-equipment grant `ref`s to the Open5e keys if needed.
+4. Add pt-BR overlays under `items.{slug}` when translating.
+5. Run `npm run test:packages` and `npm test -w rpv-front`.
 
-No engine or UI code changes required if existing grant types suffice.
+### Authoring checklist — RPV / magic overlay
 
-### Pilot patterns (reference items)
+1. Choose a `rpv_*` slug (stable).
+2. Add a full `ItemEntry` to `rpvExtraItems` in [`itemOverlays.dnd.ts`](src/curation/itemOverlays.dnd.ts), or an override in `itemEntryOverrides` for an SRD slug.
+3. Author `grants` (`choose: 0`) as needed (`stat_modifier`, `spell`, `ability`).
+4. pt-BR overlay + tests.
+5. Smoke: add to bag, equip, confirm resolved stats/grants/AC.
 
-| Pattern | Pilot item | Notes |
-|---------|------------|-------|
-| HP bonus | `amulet-of-vitality` | `stat_modifier` + `hitPoints` |
-| Spell when equipped | `scroll-of-fire-bolt` | `spell` + ref `fire-bolt` |
-| Weapon | `longsword` | `allowedSlots: ["main-hand"]`, `stackable: false` |
-| Armor / shield | `leather-armor`, `shield` | `armorClass` modifier |
+### Reference patterns
 
-### Minimal example — item
-
-```ts
-{
-  slug: "longsword",
-  system: "dnd",
-  name: "Longsword",
-  description: "A well-balanced blade.",
-  allowedSlots: ["main-hand"],
-  stackable: false,
-  grants: [
-    { grantType: "stat_modifier", choose: 0, targetStat: "strength", amount: 1 },
-  ],
-}
-```
+| Pattern | Slug | Notes |
+|---------|------|-------|
+| HP bonus | `rpv_amulet-of-vitality` | overlay `stat_modifier` + `hitPoints` |
+| Spell when equipped | `rpv_scroll-of-fire-bolt` | overlay spell grant |
+| Weapon | `srd_longsword` | nested `weapon` profile |
+| Armor | `srd_leather-armor` | nested `armor` → AC formula |
+| Shield | `srd_shield` | overlay fills `armor.category: "shield"`, `acBase: 2` |
 
 ### Starting equipment grants (Etapa 1 — data contract)
 
@@ -250,7 +242,7 @@ in the web pipeline ([`materializeInventoryGrants.ts`](../../apps/web/lib/charac
 {
   grantType: "inventory_item",
   choose: 0,
-  ref: "scroll-of-fire-bolt",
+  ref: "rpv_scroll-of-fire-bolt",
   amount: 1,
 }
 ```
@@ -263,8 +255,8 @@ in the web pipeline ([`materializeInventoryGrants.ts`](../../apps/web/lib/charac
   choose: 1,
   description: "Starting weapon",
   options: [
-    { optionType: "item", ref: "pilot-test-dagger" },
-    { optionType: "item", ref: "longsword" },
+                { optionType: "item", ref: "rpv_pilot-test-dagger" },
+                { optionType: "item", ref: "srd_longsword" },
   ],
 }
 ```
@@ -277,15 +269,15 @@ in the web pipeline ([`materializeInventoryGrants.ts`](../../apps/web/lib/charac
   choose: 1,
   description: "Adventuring pack",
   options: [
-    { optionType: "item", ref: "pilot-test-pack-a" },
-    {
-      optionType: "inventory_bundle",
-      label: "Starter kit",
-      items: [
-        { ref: "leather-armor", amount: 1 },
-        { ref: "pilot-test-dagger", amount: 2 },
-      ],
-    },
+        { optionType: "item", ref: "rpv_pilot-test-pack-a" },
+        {
+            optionType: "inventory_bundle",
+            label: "Starter kit",
+            items: [
+                { ref: "srd_leather-armor", amount: 1 },
+                { ref: "rpv_pilot-test-dagger", amount: 2 },
+            ],
+        },
   ],
 }
 ```
@@ -392,7 +384,7 @@ Currency helpers in [`src/grant/currencyGrants.ts`](src/grant/currencyGrants.ts)
 - **Do not** use `optionType: "proficiency"` with item slugs — use `item` or
   `inventory_bundle`.
 - **Do not** expect `inventory_item` or `currency` to produce `CharacterGrant`s.
-- **`pilot-test-*` slugs** are contract fixtures, not SRD content.
+- **`rpv_pilot-test-*` slugs** are contract fixtures, not SRD content.
 
 ### `inventory_item` grant (starting loot — web)
 
@@ -408,15 +400,15 @@ and [`deriveStartingEquipmentFromForm.ts`](../../apps/web/lib/character/deriveSt
 
 ### Rules and anti-patterns
 
-- **Do not** add `if (slug === ...)` branches in the engine or web — express behavior via `Grant[]`.
-- **Do not** assume bag items alter stats; only equipped slugs resolve modifiers/grants.
+- **Do not** add `if (slug === ...)` branches in the engine or web — express behavior via `Grant[]` / item data.
+- **Do not** assume bag items alter stats; only equipped slugs resolve modifiers/grants/AC.
 - **Do not** invent slot IDs (`hand`, `body`) — use IDs from `equipmentSlots.dnd.ts` (e.g. `main-hand`, not `hand`).
+- **Do not** strip Open5e key prefixes for inventory/grant refs — keep `srd_*` / `rpv_*`.
 - **Do not** reference spells that are not in the catalog.
-- Items are **not** included in `buildCatalog` yet; they live in hand-curated `*.dnd.ts` files.
+- SRD items are built into `catalog.json`; RPV extras/overrides stay in `itemOverlays.dnd.ts`.
 
 ### Out of scope (next etapas)
 
-- **SRD item/class/background catalogs** — real content when Supabase is live.
 - **`selectionFilter` item pools** — `itemCategory` / `itemTags` (v2).
 - **Dice-roll UI for starting gold** — optional button; fixed/choice amounts work today.
 - **Weight, attunement, consumable charges**, community publish API, moderation.
@@ -466,7 +458,7 @@ Persist the same JSON shapes as curation/catalog types:
 | Class | `ClassEntry` | `grants`, `featuresByLevel`, `hitDie`, `subclassLevel`, `spellcastingMode` |
 | Subclass | `SubclassEntry` | `classSlug`, `grants`, `featuresByLevel` |
 | Background | `BackgroundEntry` | `grants` |
-| Item | `ItemEntry` | `grants`, slots, `stackable`, `category` |
+| Item | `ItemEntry` | Open5e-shaped; `grants`, weapon/armor, `stackable`, `category` |
 | Race / spell | `RaceCatalogEntry`, `SpellCatalogEntry` | Open5e-mapped catalog rows |
 
 Locale overlays follow the partial-merge strategy in

@@ -19,13 +19,13 @@ describe("sanitizeStartingMaterialization", () => {
                 inventory: {
                     bag: [
                         {
-                            slug: "longsword",
+                            slug: "srd_longsword",
                             quantity: 1,
                             provenance: "grant:class:fighter:4",
                         },
-                        { slug: "amulet-of-vitality", quantity: 1 },
+                        { slug: "rpv_amulet-of-vitality", quantity: 1 },
                     ],
-                    equipped: { "main-hand": "longsword" },
+                    equipped: { "main-hand": "srd_longsword" },
                 },
                 choices: {
                     grantPicks: {
@@ -44,10 +44,10 @@ describe("sanitizeStartingMaterialization", () => {
         });
         expect(result.grantedCurrency).toEqual({ gold: 50 });
         expect(
-            result.inventory.bag.some((stack) => stack.slug === "longsword")
+            result.inventory.bag.some((stack) => stack.slug === "srd_longsword")
         ).toBe(false);
         expect(result.inventory.bag).toEqual([
-            { slug: "amulet-of-vitality", quantity: 1 },
+            { slug: "rpv_amulet-of-vitality", quantity: 1 },
         ]);
         expect(result.inventory.equipped).toEqual({});
     });
@@ -59,14 +59,14 @@ describe("sanitizeStartingMaterialization", () => {
                 characterClass: "fighter",
                 inventory: {
                     bag: [
-                        { slug: "longsword", quantity: 1 },
+                        { slug: "srd_longsword", quantity: 1 },
                         {
-                            slug: "longsword",
+                            slug: "srd_longsword",
                             quantity: 1,
                             provenance: "grant:class:fighter:4",
                         },
                     ],
-                    equipped: { "main-hand": "longsword" },
+                    equipped: { "main-hand": "srd_longsword" },
                 },
                 choices: {
                     grantPicks: {
@@ -81,7 +81,7 @@ describe("sanitizeStartingMaterialization", () => {
         );
 
         expect(result.inventory.bag).toEqual([]);
-        expect(result.inventory.equipped).toEqual({ "main-hand": "longsword" });
+        expect(result.inventory.equipped).toEqual({ "main-hand": "srd_longsword" });
     });
 
     it("materializes equipment branch granted items when switching from gold", () => {
@@ -105,7 +105,7 @@ describe("sanitizeStartingMaterialization", () => {
         expect(
             result.inventory.bag.some(
                 (stack) =>
-                    stack.slug === "longsword" &&
+                    stack.slug === "srd_longsword" &&
                     stack.provenance === "grant:class:fighter:4"
             )
         ).toBe(true);

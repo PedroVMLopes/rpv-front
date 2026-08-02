@@ -55,7 +55,7 @@ describe("extractCurrencyGrants", () => {
             {
                 grantType: "inventory_item",
                 choose: 0,
-                ref: "longsword",
+                ref: "srd_longsword",
             },
         ];
 

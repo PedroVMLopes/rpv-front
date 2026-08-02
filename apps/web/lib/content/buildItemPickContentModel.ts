@@ -1,4 +1,4 @@
-import type { Grant, GrantOption, ItemEntry, WeaponProperty } from "@rpv/content";
+import type { Grant, GrantOption, ItemEntry } from "@rpv/content";
 import {
     flattenGrantOptionToEntries,
     formatInventoryBundleLabel,
@@ -39,19 +39,24 @@ function localizeDamageType(
 }
 
 function localizeProperties(
-    properties: WeaponProperty[] | undefined,
+    item: ItemEntry,
     formatters: ItemPickContentFormatters
 ): string {
+    const properties = item.weapon?.properties;
     if (!properties || properties.length === 0) {
         return formatters.missingValue;
     }
 
     return properties
         .map((property) => {
-            const key = `properties.${property}`;
-            const localized = formatters.tItems(key);
-
-            return localized === key ? property : localized;
+            const propKey = property.name.toLowerCase().replace(/\s+/g, "-");
+            const key = `properties.${propKey}`;
+            try {
+                const localized = formatters.tItems(key);
+                return localized === key ? property.name : localized;
+            } catch {
+                return property.name;
+            }
         })
         .join(", ");
 }
@@ -84,17 +89,10 @@ function formatGrantLine(grant: Grant, formatters: ItemPickContentFormatters): s
     });
 }
 
-function formatSlots(
-    allowedSlots: string[] | undefined,
-    formatters: ItemPickContentFormatters
-): string {
-    if (!allowedSlots || allowedSlots.length === 0) {
-        return formatters.missingValue;
-    }
-
-    return allowedSlots
-        .map((slotId) => formatters.slotLabel?.(slotId) ?? slotId)
-        .join(", ");
+function versatileDamage(item: ItemEntry): string | undefined {
+    return item.weapon?.properties.find(
+        (property) => property.name.toLowerCase() === "versatile"
+    )?.detail ?? undefined;
 }
 
 export function buildItemPickContentModel(
@@ -102,53 +100,55 @@ export function buildItemPickContentModel(
     formatters: ItemPickContentFormatters
 ): ItemPickContentModels {
     const badges: ContentSummaryModel["badges"] = [];
-    const profile = item.weaponProfile;
+    const weapon = item.weapon;
 
-    if (item.category) {
-        badges.push({ label: item.category, variant: "muted" });
+    if (item.category?.key) {
+        badges.push({ label: item.category.key, variant: "muted" });
     }
 
-    if (profile?.damageDice) {
-        const damageType = localizeDamageType(profile.damageType, formatters);
+    if (weapon?.damageDice) {
+        const damageType = localizeDamageType(weapon.damageType.key, formatters);
         badges.push({
-            label: `${profile.damageDice} ${damageType}`,
+            label: `${weapon.damageDice} ${damageType}`,
             variant: "muted",
         });
     }
 
-    if (profile?.properties && profile.properties.length > 0) {
+    if (weapon?.properties && weapon.properties.length > 0) {
         badges.push({
-            label: localizeProperties(profile.properties, formatters),
+            label: localizeProperties(item, formatters),
             variant: "muted",
         });
     }
 
-    const detailRows: ContentDetailRow[] = [
-        {
-            labelKey: "slot",
-            value: formatSlots(item.allowedSlots, formatters),
-        },
-    ];
+    const detailRows: ContentDetailRow[] = [];
 
-    if (profile) {
+    if (weapon) {
         detailRows.push(
             {
                 labelKey: "damage",
-                value: profile.damageDice,
+                value: weapon.damageDice,
             },
             {
                 labelKey: "damageType",
-                value: localizeDamageType(profile.damageType, formatters),
+                value: localizeDamageType(weapon.damageType.key, formatters),
             },
             {
                 labelKey: "properties",
-                value: localizeProperties(profile.properties, formatters),
+                value: localizeProperties(item, formatters),
             },
             {
                 labelKey: "versatileDamage",
-                value: profile.versatileDamageDice ?? formatters.missingValue,
+                value: versatileDamage(item) ?? formatters.missingValue,
             }
         );
+    }
+
+    if (item.armor) {
+        detailRows.push({
+            labelKey: "armorClass",
+            value: item.armor.acDisplay,
+        });
     }
 
     if (item.grants.length > 0) {
@@ -157,6 +157,13 @@ export function buildItemPickContentModel(
             value: item.grants
                 .map((grant) => formatGrantLine(grant, formatters))
                 .join("; "),
+        });
+    }
+
+    if (detailRows.length === 0) {
+        detailRows.push({
+            labelKey: "category",
+            value: item.category?.name ?? formatters.missingValue,
         });
     }
 

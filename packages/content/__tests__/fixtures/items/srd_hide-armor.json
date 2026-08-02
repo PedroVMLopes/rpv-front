@@ -1,0 +1,46 @@
+{
+  "key": "srd_hide-armor",
+  "name": "Hide Armor",
+  "desc": "This crude armor consists of thick furs and pelts. It is commonly worn by barbarian tribes, evil humanoids, and other folk who lack access to the tools and materials needed to create better armor.",
+  "category": {
+    "name": "Armor",
+    "key": "armor"
+  },
+  "weapon": null,
+  "armor": {
+    "name": "Hide",
+    "key": "srd_hide",
+    "category": "medium",
+    "ac_base": 12,
+    "ac_display": "12 + Dex modifier (max 2)",
+    "ac_add_dexmod": true,
+    "ac_cap_dexmod": 2,
+    "grants_stealth_disadvantage": false,
+    "strength_score_required": null
+  },
+  "size": {
+    "name": "Tiny",
+    "key": "tiny"
+  },
+  "weight": "12.000",
+  "weight_unit": "lb",
+  "cost": "10.00",
+  "document": {
+    "name": "System Reference Document 5.1",
+    "key": "srd-2014",
+    "type": "SOURCE",
+    "display_name": "5e 2014 Rules",
+    "publisher": {
+      "name": "Wizards of the Coast",
+      "key": "wizards-of-the-coast"
+    },
+    "gamesystem": {
+      "name": "5th Edition 2014",
+      "key": "5e-2014"
+    },
+    "permalink": "https://dnd.wizards.com/resources/systems-reference-document"
+  },
+  "crossreferences": {
+    "to": []
+  }
+}

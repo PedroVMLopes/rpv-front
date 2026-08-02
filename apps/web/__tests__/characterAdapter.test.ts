@@ -373,7 +373,7 @@ describe("characterAdapter system-agnostic mapping", () => {
         expect(normalized.selections.grantedCurrency).toEqual({ gold: 15 });
         expect(
             normalized.selections.inventory?.bag.some(
-                (stack) => stack.slug === "scroll-of-fire-bolt"
+                (stack) => stack.slug === "rpv_scroll-of-fire-bolt"
             )
         ).toBe(true);
     });
@@ -417,9 +417,9 @@ describe("characterAdapter system-agnostic mapping", () => {
             grants: [],
             resources: { hp: 5 },
             systemData: {
-                startingItem: "scroll-of-fire-bolt",
-                items: ["scroll-of-fire-bolt"],
-                equippedItems: "ring-of-hardiness",
+                startingItem: "rpv_scroll-of-fire-bolt",
+                items: ["rpv_scroll-of-fire-bolt"],
+                equippedItems: "rpv_ring-of-hardiness",
                 inventory: 3,
             },
             selections: {
@@ -444,8 +444,8 @@ describe("characterAdapter system-agnostic mapping", () => {
             {
                 ...formData,
                 inventory: {
-                    bag: [{ slug: "scroll-of-fire-bolt", quantity: 1 }],
-                    equipped: { "main-hand": "longsword" },
+                    bag: [{ slug: "rpv_scroll-of-fire-bolt", quantity: 1 }],
+                    equipped: { "main-hand": "srd_longsword" },
                 },
             },
             "char-inv",

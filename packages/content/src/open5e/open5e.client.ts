@@ -1,6 +1,12 @@
-import type { Open5ePaginated, Open5eRace, Open5eSpell } from "./open5e.types";
+import type {
+    Open5ePaginated,
+    Open5eRace,
+    Open5eSpell,
+    Open5eV2Item,
+} from "./open5e.types";
 
 const OPEN5E_BASE_URL = "https://api.open5e.com/v1";
+const OPEN5E_V2_BASE_URL = "https://api.open5e.com/v2";
 
 async function fetchAllPages<T>(initialUrl: string): Promise<T[]> {
     const results: T[] = [];
@@ -35,5 +41,17 @@ export function fetchAllSpells(
     }
     return fetchAllPages<Open5eSpell>(
         `${OPEN5E_BASE_URL}/spells/?${params.toString()}`
+    );
+}
+
+export function fetchAllItems(
+    options: { documentKey?: string } = {}
+): Promise<Open5eV2Item[]> {
+    const params = new URLSearchParams({ limit: "100" });
+    if (options.documentKey) {
+        params.set("document__key__iexact", options.documentKey);
+    }
+    return fetchAllPages<Open5eV2Item>(
+        `${OPEN5E_V2_BASE_URL}/items/?${params.toString()}`
     );
 }

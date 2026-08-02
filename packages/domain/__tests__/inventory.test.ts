@@ -12,9 +12,9 @@ describe("emptyInventory", () => {
 
 describe("ItemStack", () => {
     it("allows optional provenance on stacks", () => {
-        const manual: ItemStack = { slug: "longsword", quantity: 1 };
+        const manual: ItemStack = { slug: "srd_longsword", quantity: 1 };
         const granted: ItemStack = {
-            slug: "scroll-of-fire-bolt",
+            slug: "rpv_scroll-of-fire-bolt",
             quantity: 1,
             provenance: "grant:background:sage:2",
         };

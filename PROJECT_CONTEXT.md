@@ -46,11 +46,12 @@ Starting loot from class/background grants is materialized on every build via `m
 | Aggregated totals (spell slots, rage, ki) | `resources` | Merged with form HP; derived from grants |
 | Ability scores, AC, free text | `systemData` / `baseStats` | Preset-specific |
 
-Item definitions (`grants`, `allowedSlots`) live in `@rpv/content`; inventory **state** lives in `selections.inventory`.
+Item definitions (Open5e catalog + RPV overlays) live in `@rpv/content`; inventory **state** lives in `selections.inventory`. Item `slug` values are Open5e keys (`srd_*`) or `rpv_*`.
 
 ### Inventory contract
 
-- **Bag** does not alter stats; only **equipped** slugs feed `collectGrantSources`.
+- **Bag** does not alter stats; only **equipped** slugs feed `collectGrantSources` and armor AC.
+- Equipment slots are UI containers only — any owned item may be equipped in any valid slot.
 - `schemaVersion` on the `StoredCharacter` root enables future migrations.
 - No `startingItem`, `items[]`, or numeric `inventory` in the persisted contract — use `selections.inventory` only.
 
@@ -166,8 +167,9 @@ When adding content, run `npm run test:packages` and `npm test -w rpv-front`.
 
 Wizard spell picks (pilot): 3 cantrips + 6 leveled spell choice slots at L5 (reduced from full SRD).
 
-**Pilot items** (D&D): 6 pilot gear items + 3 `pilot-test-*` contract fixtures —
-see [`itemGrants.dnd.ts`](packages/content/src/curation/itemGrants.dnd.ts).
+**Items (D&D):** Open5e v2 SRD 2014 catalog in `catalog.json` plus RPV overlays in
+[`itemOverlays.dnd.ts`](packages/content/src/curation/itemOverlays.dnd.ts)
+(`rpv_*` magic/fixtures). Refresh with `npm run refresh:items -w @rpv/content`.
 
 Full SRD class/background/item catalogs are future work (Supabase-backed content).
 

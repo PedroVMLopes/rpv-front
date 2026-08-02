@@ -1,0 +1,46 @@
+{
+  "key": "srd_studded-leather-armor",
+  "name": "Studded Leather Armor",
+  "desc": "Made from tough but flexible leather, studded leather is reinforced with close-set rivets or spikes.",
+  "category": {
+    "name": "Armor",
+    "key": "armor"
+  },
+  "weapon": null,
+  "armor": {
+    "name": "Studded leather",
+    "key": "srd_studded-leather",
+    "category": "light",
+    "ac_base": 12,
+    "ac_display": "12 + Dex modifier",
+    "ac_add_dexmod": true,
+    "ac_cap_dexmod": null,
+    "grants_stealth_disadvantage": false,
+    "strength_score_required": null
+  },
+  "size": {
+    "name": "Tiny",
+    "key": "tiny"
+  },
+  "weight": "13.000",
+  "weight_unit": "lb",
+  "cost": "45.00",
+  "document": {
+    "name": "System Reference Document 5.1",
+    "key": "srd-2014",
+    "type": "SOURCE",
+    "display_name": "5e 2014 Rules",
+    "publisher": {
+      "name": "Wizards of the Coast",
+      "key": "wizards-of-the-coast"
+    },
+    "gamesystem": {
+      "name": "5th Edition 2014",
+      "key": "5e-2014"
+    },
+    "permalink": "https://dnd.wizards.com/resources/systems-reference-document"
+  },
+  "crossreferences": {
+    "to": []
+  }
+}

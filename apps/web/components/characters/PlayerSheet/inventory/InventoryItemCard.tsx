@@ -9,7 +9,6 @@ import {
     FaKhanda,
     FaShieldHalved,
 } from "react-icons/fa6";
-import type { ItemEntry } from "@rpv/content";
 import { getItem } from "@rpv/content";
 import type { SystemKey } from "@/presets";
 import { Button } from "@/components/ui/button";
@@ -23,16 +22,21 @@ type InventoryItemCardProps = {
     system: SystemKey;
 };
 
-function categoryIcon(category: ItemEntry["category"]) {
-    switch (category) {
+function categoryIcon(categoryKey: string | undefined) {
+    switch (categoryKey) {
         case "weapon":
             return FaKhanda;
         case "armor":
+        case "shield":
             return FaShieldHalved;
         case "consumable":
+        case "potion":
+        case "ammunition":
             return FaBottleWater;
         case "tool":
+        case "tools":
             return FaHammer;
+        case "equipment-pack":
         case "pack":
             return FaBox;
         default:
@@ -47,7 +51,7 @@ export function InventoryItemCard({ row, system }: InventoryItemCardProps) {
     const entry = getItem(row.slug, system, contentLocale);
     const name = entry?.name ?? row.slug;
     const description = entry?.description;
-    const Icon = categoryIcon(entry?.category);
+    const Icon = categoryIcon(entry?.category?.key);
 
     return (
         <article

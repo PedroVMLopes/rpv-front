@@ -6,30 +6,25 @@ import {
     type ItemSystem,
 } from "../src";
 
-describe("itemGrants.dnd", () => {
-    it("lists all curated dnd items", () => {
+describe("item catalog + overlays", () => {
+    it("lists Open5e catalog items merged with rpv extras", () => {
         const slugs = listItems("dnd").map((entry) => entry.slug);
 
-        expect(slugs).toEqual([
-            "scroll-of-fire-bolt",
-            "amulet-of-vitality",
-            "ring-of-hardiness",
-            "longsword",
-            "leather-armor",
-            "shield",
-            "chain-mail",
-            "longbow",
-            "shortbow",
-            "arrows",
-            "crossbow-light",
-            "handaxe",
-            "dungeoneers-pack",
-            "explorers-pack",
-            "pilot-test-dagger",
-            "pilot-test-pack-a",
-            "pilot-test-starter-kit",
-        ]);
+        expect(slugs).toEqual(expect.arrayContaining([
+            "srd_longsword",
+            "srd_leather-armor",
+            "srd_shield",
+            "rpv_scroll-of-fire-bolt",
+            "rpv_amulet-of-vitality",
+            "rpv_ring-of-hardiness",
+            "rpv_pilot-test-dagger",
+            "rpv_pilot-test-pack-a",
+            "rpv_pilot-test-starter-kit",
+            "rpv_dungeoneers-pack",
+            "rpv_explorers-pack",
+        ]));
         expect(listItems("dnd").every((entry) => entry.system === "dnd")).toBe(true);
+        expect(listItems("dnd").length).toBeGreaterThan(200);
     });
 
     it("returns empty list for unknown system", () => {
@@ -39,28 +34,24 @@ describe("itemGrants.dnd", () => {
 
     it("returns undefined for unknown item slug", () => {
         expect(getItem("nonexistent-item")).toBeUndefined();
+        expect(getItem("longsword")).toBeUndefined();
     });
 
-    it("assigns allowedSlots to each pilot item", () => {
-        expect(getItem("scroll-of-fire-bolt")?.allowedSlots).toEqual(["main-hand"]);
-        expect(getItem("amulet-of-vitality")?.allowedSlots).toEqual(["neck"]);
-        expect(getItem("ring-of-hardiness")?.allowedSlots).toEqual(["ring"]);
-        expect(getItem("longsword")?.allowedSlots).toEqual(["main-hand"]);
-        expect(getItem("leather-armor")?.allowedSlots).toEqual(["armor"]);
-        expect(getItem("shield")?.allowedSlots).toEqual(["off-hand"]);
+    it("uses Open5e keys as slugs", () => {
+        expect(getItem("srd_longsword")?.slug).toBe("srd_longsword");
+        expect(getItem("srd_leather-armor")?.slug).toBe("srd_leather-armor");
     });
 
-    it("defaults stackable to true and honors explicit false", () => {
-        expect(isItemStackable(getItem("scroll-of-fire-bolt")!)).toBe(true);
-        expect(isItemStackable(getItem("amulet-of-vitality")!)).toBe(false);
-        expect(isItemStackable(getItem("ring-of-hardiness")!)).toBe(false);
-        expect(isItemStackable(getItem("longsword")!)).toBe(false);
-        expect(isItemStackable(getItem("leather-armor")!)).toBe(false);
-        expect(isItemStackable(getItem("shield")!)).toBe(false);
+    it("defaults stackable from weapon/armor presence and honors overlay", () => {
+        expect(isItemStackable(getItem("rpv_scroll-of-fire-bolt")!)).toBe(true);
+        expect(isItemStackable(getItem("rpv_amulet-of-vitality")!)).toBe(false);
+        expect(isItemStackable(getItem("srd_longsword")!)).toBe(false);
+        expect(isItemStackable(getItem("srd_leather-armor")!)).toBe(false);
+        expect(isItemStackable(getItem("srd_shield")!)).toBe(false);
     });
 
-    it("returns stat_modifier hitPoints grants for amulet of vitality", () => {
-        expect(getItemGrants("amulet-of-vitality")).toEqual([
+    it("returns overlay grants for RPV magic items", () => {
+        expect(getItemGrants("rpv_amulet-of-vitality")).toEqual([
             {
                 grantType: "stat_modifier",
                 choose: 0,
@@ -68,26 +59,14 @@ describe("itemGrants.dnd", () => {
                 amount: 5,
             },
         ]);
-    });
-
-    it("returns stat_modifier hitPoints grants for ring of hardiness", () => {
-        expect(getItem("ring-of-hardiness")).toEqual(
-            expect.objectContaining({
-                slug: "ring-of-hardiness",
-                system: "dnd",
-            })
-        );
-        expect(getItemGrants("ring-of-hardiness")).toEqual([
+        expect(getItemGrants("rpv_ring-of-hardiness")).toEqual([
             expect.objectContaining({
                 grantType: "stat_modifier",
                 targetStat: "hitPoints",
                 amount: 10,
             }),
         ]);
-    });
-
-    it("returns spell grant for scroll of fire bolt", () => {
-        expect(getItemGrants("scroll-of-fire-bolt")).toEqual([
+        expect(getItemGrants("rpv_scroll-of-fire-bolt")).toEqual([
             {
                 grantType: "spell",
                 choose: 0,
@@ -96,66 +75,40 @@ describe("itemGrants.dnd", () => {
         ]);
     });
 
-    it("returns weaponProfile for longsword without stat grants", () => {
-        expect(getItemGrants("longsword")).toEqual([]);
-        expect(getItem("longsword")?.weaponProfile).toEqual({
-            damageDice: "1d8",
-            damageType: "slashing",
-            properties: ["versatile"],
-            versatileDamageDice: "1d10",
-        });
-        expect(getItem("longsword")).toEqual(
+    it("maps weapon nested profile for longsword without stat grants", () => {
+        expect(getItemGrants("srd_longsword")).toEqual([]);
+        expect(getItem("srd_longsword")?.weapon).toEqual(
             expect.objectContaining({
-                category: "weapon",
-                tags: ["martial", "melee"],
+                damageDice: "1d8",
+                damageType: { name: "Slashing", key: "slashing" },
+                isMartial: true,
             })
         );
+        expect(getItem("srd_longsword")?.category.key).toBe("weapon");
     });
 
-    it("returns armorClass modifier grants for leather armor and shield", () => {
-        expect(getItemGrants("leather-armor")).toEqual([
-            {
-                grantType: "stat_modifier",
-                choose: 0,
-                targetStat: "armorClass",
-                amount: 1,
-            },
-        ]);
-        expect(getItemGrants("shield")).toEqual([
-            {
-                grantType: "stat_modifier",
-                choose: 0,
-                targetStat: "armorClass",
-                amount: 1,
-            },
-        ]);
+    it("maps armor profile for leather; no flat AC grants", () => {
+        expect(getItemGrants("srd_leather-armor")).toEqual([]);
+        expect(getItem("srd_leather-armor")?.armor).toEqual(
+            expect.objectContaining({
+                category: "light",
+                acBase: 11,
+                acAddDexmod: true,
+            })
+        );
+        expect(getItemGrants("srd_shield")).toEqual([]);
+        expect(getItem("srd_shield")?.armor).toEqual(
+            expect.objectContaining({
+                category: "shield",
+                acBase: 2,
+            })
+        );
     });
 
     it("localizes item name for pt-BR without changing grants", () => {
-        const localized = getItem("longsword", "dnd", "pt-BR");
+        const localized = getItem("srd_longsword", "dnd", "pt-BR");
 
         expect(localized?.name).toBe("Espada Longa");
-        expect(localized?.grants).toEqual(getItemGrants("longsword"));
-    });
-
-    it("keeps backward-compatible defaults for getItem and listItems", () => {
-        expect(getItem("shield")?.slug).toBe("shield");
-        expect(listItems().length).toBe(17);
-        expect(getItemGrants("shield").length).toBe(1);
-    });
-
-    it("exposes optional category and tags on fixture items", () => {
-        expect(getItem("pilot-test-dagger")).toEqual(
-            expect.objectContaining({
-                category: "weapon",
-                tags: ["simple", "melee"],
-            })
-        );
-        expect(getItem("pilot-test-pack-a")).toEqual(
-            expect.objectContaining({
-                category: "pack",
-                tags: ["adventuring"],
-            })
-        );
+        expect(localized?.grants).toEqual(getItemGrants("srd_longsword"));
     });
 });

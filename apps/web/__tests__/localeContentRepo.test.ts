@@ -7,8 +7,8 @@ describe("content locale resolution", () => {
     });
 
     it("getItem returns default name without locale, localized with pt-BR", () => {
-        expect(contentRepo("dnd").getItem("longsword")?.name).toBe("Longsword");
-        expect(contentRepo("dnd").getItem("longsword", "pt-BR")?.name).toBe(
+        expect(contentRepo("dnd").getItem("srd_longsword")?.name).toBe("Longsword");
+        expect(contentRepo("dnd").getItem("srd_longsword", "pt-BR")?.name).toBe(
             "Espada Longa"
         );
     });

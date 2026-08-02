@@ -11,7 +11,7 @@ describe("deriveStatModifiers", () => {
                 race: "human",
                 inventory: {
                     bag: [],
-                    equipped: { neck: "amulet-of-vitality" },
+                    equipped: { neck: "rpv_amulet-of-vitality" },
                 },
             },
             "en"
@@ -22,7 +22,7 @@ describe("deriveStatModifiers", () => {
                 stat: "hitPoints",
                 value: 5,
                 operation: "add",
-                source: { type: "item", id: "amulet-of-vitality" },
+                source: { type: "item", id: "rpv_amulet-of-vitality" },
             }),
         ]);
     });

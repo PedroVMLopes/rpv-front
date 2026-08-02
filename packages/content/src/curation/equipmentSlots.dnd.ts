@@ -1,5 +1,4 @@
-import type { ItemSystem } from "./itemGrants.dnd";
-import { readItem } from "./curationReaders";
+import type { ItemSystem } from "../item/item.types";
 
 export type EquipmentSlot = {
     id: string;
@@ -27,17 +26,4 @@ export function isValidEquipmentSlot(
     system: ItemSystem = "dnd"
 ): boolean {
     return getEquipmentSlots(system).some((slot) => slot.id === slotId);
-}
-
-export function canEquipItem(
-    itemSlug: string,
-    slotId: string,
-    system: ItemSystem = "dnd"
-): boolean {
-    const item = readItem(itemSlug);
-    if (!item || !isValidEquipmentSlot(slotId, system)) {
-        return false;
-    }
-
-    return item.allowedSlots?.includes(slotId) ?? false;
 }

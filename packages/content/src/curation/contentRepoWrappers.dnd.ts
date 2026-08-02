@@ -2,7 +2,7 @@ import type { Locale } from "@rpv/domain";
 import { getContentRepository } from "../repository/getContentRepository";
 import type { BackgroundEntry } from "./backgroundGrants.dnd";
 import type { ClassEntry } from "./classGrants.dnd";
-import type { ItemEntry, ItemSystem } from "./itemGrants.dnd";
+import type { ItemEntry, ItemSystem } from "../item/item.types";
 import type { SubclassEntry } from "./subclassGrants.dnd";
 
 export function getClass(slug: string, locale?: Locale): ClassEntry | undefined {

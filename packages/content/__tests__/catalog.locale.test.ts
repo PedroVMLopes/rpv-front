@@ -59,6 +59,7 @@ const catalog: Catalog = {
             sourceDocumentTitle: "5e Core Rules",
         },
     ],
+    items: [],
     skills: [],
     languages: [],
 };

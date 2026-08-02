@@ -159,7 +159,7 @@ Sub-etapas separadas (`*-cantrips`, `*-spells`) agrupam picks do mesmo tipo para
 |------------|------------------|
 | `SpellChoiceGrid` | Grid de cards: nome, nível, escola, casting time; seleção única ou N slots |
 | `SpellDetailModal` | Descrição completa de `SpellCatalogEntry` |
-| `ItemChoiceGrid` | Cards com categoria, stats de arma/armadura quando `weaponProfile` existir |
+| `ItemChoiceGrid` | Cards com categoria, stats de arma/armadura quando `weapon` / `armor` existir |
 | `ItemDetailModal` | Descrição de `ItemEntry` + grants concedidos |
 | `GrantChoicePage` | Container: título da escolha, slot N/M, delega ao picker por `grantType` |
 

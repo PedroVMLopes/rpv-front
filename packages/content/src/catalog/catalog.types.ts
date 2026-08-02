@@ -1,4 +1,5 @@
 import type { Locale, StatKey } from "@rpv/domain";
+import type { ItemEntry } from "../item/item.types";
 import type { RaceCatalogEntry } from "../race/race.types";
 import type { SpellCatalogEntry } from "../spell/spell.types";
 
@@ -22,6 +23,7 @@ export interface Catalog {
     defaultLocale: Locale;
     races: RaceCatalogEntry[];
     spells: SpellCatalogEntry[];
+    items: ItemEntry[];
     skills: Skill[];
     languages: Language[];
 }

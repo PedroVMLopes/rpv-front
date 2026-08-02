@@ -585,7 +585,13 @@
       "finesse": "Finesse",
       "versatile": "Versatile",
       "ranged": "Ranged",
-      "two-handed": "Two-handed"
+      "two-handed": "Two-handed",
+      "ammunition": "Ammunition",
+      "light": "Light",
+      "heavy": "Heavy",
+      "loading": "Loading",
+      "reach": "Reach",
+      "thrown": "Thrown"
     },
     "damageType": {
       "slashing": "Slashing",

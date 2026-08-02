@@ -20,11 +20,16 @@ export type InventoryDisplayRow = {
     slotId?: string;
 };
 
+function categoryKey(entry: ItemEntry | undefined): string | undefined {
+    return entry?.category?.key;
+}
+
 function isMiscItem(entry: ItemEntry | undefined): boolean {
     if (!entry) {
         return false;
     }
-    return entry.category === "misc" || entry.tags?.includes("misc") === true;
+    const key = categoryKey(entry);
+    return key === "misc" || key === "equipment-pack" || key === "adventuring-gear";
 }
 
 export function resolveItemFilterCategory(
@@ -34,22 +39,21 @@ export function resolveItemFilterCategory(
         return "misc";
     }
 
-    if (entry.category === "consumable") {
+    const key = categoryKey(entry);
+
+    if (key === "consumable" || key === "ammunition" || key === "potion") {
         return "consumables";
     }
 
-    if (entry.category === "tool" || entry.tags?.includes("tool") === true) {
+    if (key === "tools" || key === "tool") {
         return "tools";
     }
 
-    if (entry.tags?.includes("quest") === true) {
-        return "quest";
-    }
-
     if (
-        entry.category === "misc" ||
-        entry.tags?.includes("misc") === true ||
-        entry.category === "pack"
+        key === "misc" ||
+        key === "equipment-pack" ||
+        key === "adventuring-gear" ||
+        key === "pack"
     ) {
         return "misc";
     }

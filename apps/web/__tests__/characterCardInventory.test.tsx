@@ -61,7 +61,7 @@ describe("CharacterCardInventory", () => {
         act(() => {
             useCharacterStore
                 .getState()
-                .addToBag(character.id, "amulet-of-vitality");
+                .addToBag(character.id, "rpv_amulet-of-vitality");
         });
 
         renderWithProviders(
@@ -74,7 +74,7 @@ describe("CharacterCardInventory", () => {
         expect(screen.getByText("Max HP: 8")).toBeInTheDocument();
 
         const neckEquipSelect = screen.getByLabelText("Equip to Neck");
-        await user.selectOptions(neckEquipSelect, "amulet-of-vitality");
+        await user.selectOptions(neckEquipSelect, "rpv_amulet-of-vitality");
         await user.click(screen.getByRole("button", { name: "Equip Neck" }));
 
         expect(screen.getByText("Max HP: 13")).toBeInTheDocument();

@@ -76,9 +76,9 @@ describe("StartingEquipmentField", () => {
             />
         );
 
-        await user.click(screen.getByRole("button", { name: /Light Crossbow/i }));
+        await user.click(screen.getByRole("button", { name: /Crossbow, light/i }));
 
-        expect(screen.getAllByText(/Light Crossbow/).length).toBeGreaterThan(0);
+        expect(screen.getAllByText(/Crossbow, light/).length).toBeGreaterThan(0);
         expect(screen.getByTestId("choices-output")).toHaveTextContent(
             "class:fighter:base:inventory_item:8:0"
         );

@@ -51,11 +51,11 @@ export class StaticContentRepository implements ContentRepository {
     }
 
     listItems(locale?: Locale) {
-        return curationReaders.readListItems(locale);
+        return bundled.listItems(locale);
     }
 
     getItem(slug: string, locale?: Locale) {
-        return curationReaders.readItem(slug, locale);
+        return bundled.getItem(slug, locale);
     }
 
     listSubclassesForClass(classSlug: string, locale?: Locale) {

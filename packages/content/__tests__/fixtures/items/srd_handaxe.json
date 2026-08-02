@@ -1,0 +1,58 @@
+{
+  "key": "srd_handaxe",
+  "name": "Handaxe",
+  "desc": "A handaxe.",
+  "category": {
+    "name": "Weapon",
+    "key": "weapon"
+  },
+  "weapon": {
+    "name": "Handaxe",
+    "key": "srd_handaxe",
+    "damage_type": {
+      "name": "Slashing",
+      "key": "slashing"
+    },
+    "damage_dice": "1d6",
+    "properties": [
+      {
+        "property": {
+          "name": "Light",
+          "type": null,
+          "desc": "A light weapon is small and easy to handle, making it ideal for use when fighting with two weapons."
+        },
+        "detail": null
+      }
+    ],
+    "is_simple": true,
+    "is_martial": false,
+    "is_improvised": false,
+    "distance_unit": "feet"
+  },
+  "armor": null,
+  "size": {
+    "name": "Tiny",
+    "key": "tiny"
+  },
+  "weight": "2.000",
+  "weight_unit": "lb",
+  "cost": "5.00",
+  "document": {
+    "name": "System Reference Document 5.1",
+    "key": "srd-2014",
+    "type": "SOURCE",
+    "display_name": "5e 2014 Rules",
+    "publisher": {
+      "name": "Wizards of the Coast",
+      "key": "wizards-of-the-coast"
+    },
+    "gamesystem": {
+      "name": "5th Edition 2014",
+      "key": "5e-2014"
+    },
+    "permalink": "https://dnd.wizards.com/resources/systems-reference-document"
+  },
+  "crossreferences": {
+    "to": []
+  }
+}

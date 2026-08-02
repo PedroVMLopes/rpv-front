@@ -18,13 +18,13 @@ describe("extractInventoryItemGrants", () => {
             {
                 grantType: "inventory_item",
                 choose: 0,
-                ref: "scroll-of-fire-bolt",
+                ref: "rpv_scroll-of-fire-bolt",
                 amount: 2,
             },
         ];
 
         expect(extractInventoryItemGrants(grants)).toEqual([
-            { slug: "scroll-of-fire-bolt", quantity: 2, grantIndex: 0 },
+            { slug: "rpv_scroll-of-fire-bolt", quantity: 2, grantIndex: 0 },
         ]);
     });
 
@@ -33,12 +33,12 @@ describe("extractInventoryItemGrants", () => {
             {
                 grantType: "inventory_item",
                 choose: 0,
-                ref: "amulet-of-vitality",
+                ref: "rpv_amulet-of-vitality",
             },
         ];
 
         expect(extractInventoryItemGrants(grants)).toEqual([
-            { slug: "amulet-of-vitality", quantity: 1, grantIndex: 0 },
+            { slug: "rpv_amulet-of-vitality", quantity: 1, grantIndex: 0 },
         ]);
     });
 
@@ -47,7 +47,7 @@ describe("extractInventoryItemGrants", () => {
             {
                 grantType: "inventory_item",
                 choose: 1,
-                options: [{ optionType: "item", ref: "longsword" }],
+                options: [{ optionType: "item", ref: "srd_longsword" }],
             },
         ];
 
@@ -106,7 +106,7 @@ describe("formatInventoryBundleLabel", () => {
             formatInventoryBundleLabel({
                 optionType: "inventory_bundle",
                 label: "Leather armor and longbow",
-                items: [{ ref: "leather-armor" }, { ref: "longbow" }],
+                items: [{ ref: "srd_leather-armor" }, { ref: "srd_longbow" }],
             })
         ).toBe("Leather armor and longbow");
     });
@@ -116,8 +116,8 @@ describe("formatInventoryBundleLabel", () => {
             formatInventoryBundleLabel({
                 optionType: "inventory_bundle",
                 items: [
-                    { ref: "leather-armor", amount: 1 },
-                    { ref: "pilot-test-dagger", amount: 2 },
+                    { ref: "srd_leather-armor", amount: 1 },
+                    { ref: "rpv_pilot-test-dagger", amount: 2 },
                 ],
             })
         ).toBe("Leather Armor + Pilot Test Dagger");
@@ -129,9 +129,9 @@ describe("flattenGrantOptionToEntries", () => {
         expect(
             flattenGrantOptionToEntries({
                 optionType: "item",
-                ref: "pilot-test-dagger",
+                ref: "rpv_pilot-test-dagger",
             })
-        ).toEqual([{ slug: "pilot-test-dagger", quantity: 1 }]);
+        ).toEqual([{ slug: "rpv_pilot-test-dagger", quantity: 1 }]);
     });
 
     it("flattens an inventory bundle option", () => {
@@ -140,13 +140,13 @@ describe("flattenGrantOptionToEntries", () => {
                 optionType: "inventory_bundle",
                 label: "Starter kit",
                 items: [
-                    { ref: "leather-armor", amount: 1 },
-                    { ref: "pilot-test-dagger", amount: 2 },
+                    { ref: "srd_leather-armor", amount: 1 },
+                    { ref: "rpv_pilot-test-dagger", amount: 2 },
                 ],
             })
         ).toEqual([
-            { slug: "leather-armor", quantity: 1 },
-            { slug: "pilot-test-dagger", quantity: 2 },
+            { slug: "srd_leather-armor", quantity: 1 },
+            { slug: "rpv_pilot-test-dagger", quantity: 2 },
         ]);
     });
 });
@@ -157,17 +157,17 @@ describe("resolveInventoryItemPick", () => {
         choose: 1,
         description: "Starting weapon",
         options: [
-            { optionType: "item", ref: "pilot-test-dagger" },
-            { optionType: "item", ref: "longsword" },
+            { optionType: "item", ref: "rpv_pilot-test-dagger" },
+            { optionType: "item", ref: "srd_longsword" },
         ],
     };
 
     it("resolves pick by option index for item options", () => {
         expect(resolveInventoryItemPick(weaponGrant, "0")).toEqual([
-            { slug: "pilot-test-dagger", quantity: 1 },
+            { slug: "rpv_pilot-test-dagger", quantity: 1 },
         ]);
         expect(resolveInventoryItemPick(weaponGrant, "1")).toEqual([
-            { slug: "longsword", quantity: 1 },
+            { slug: "srd_longsword", quantity: 1 },
         ]);
     });
 
@@ -182,8 +182,8 @@ describe("isValidInventoryItemPick", () => {
         grantType: "inventory_item",
         choose: 1,
         options: [
-            { optionType: "item", ref: "pilot-test-dagger" },
-            { optionType: "item", ref: "longsword" },
+            { optionType: "item", ref: "rpv_pilot-test-dagger" },
+            { optionType: "item", ref: "srd_longsword" },
         ],
     };
 
@@ -205,15 +205,15 @@ describe("resolveInventoryItemGrants", () => {
             {
                 grantType: "inventory_item",
                 choose: 0,
-                ref: "shield",
+                ref: "srd_shield",
             },
             {
                 grantType: "inventory_item",
                 choose: 1,
                 description: "Starting weapon",
                 options: [
-                    { optionType: "item", ref: "pilot-test-dagger" },
-                    { optionType: "item", ref: "longsword" },
+                    { optionType: "item", ref: "rpv_pilot-test-dagger" },
+                    { optionType: "item", ref: "srd_longsword" },
                 ],
             },
         ];
@@ -229,13 +229,13 @@ describe("resolveInventoryItemGrants", () => {
             resolveInventoryItemGrants(grants, { [key]: "1" }, context)
         ).toEqual([
             {
-                slug: "shield",
+                slug: "srd_shield",
                 quantity: 1,
                 grantIndex: 0,
                 provenance: "grant:class:fighter:0",
             },
             {
-                slug: "longsword",
+                slug: "srd_longsword",
                 quantity: 1,
                 grantIndex: 1,
                 provenance: "grant:class:fighter:1",
@@ -250,13 +250,13 @@ describe("resolveInventoryItemGrants", () => {
                 choose: 1,
                 description: "Adventuring pack",
                 options: [
-                    { optionType: "item", ref: "pilot-test-pack-a" },
+                    { optionType: "item", ref: "rpv_pilot-test-pack-a" },
                     {
                         optionType: "inventory_bundle",
                         label: "Starter kit",
                         items: [
-                            { ref: "leather-armor", amount: 1 },
-                            { ref: "pilot-test-dagger", amount: 2 },
+                            { ref: "srd_leather-armor", amount: 1 },
+                            { ref: "rpv_pilot-test-dagger", amount: 2 },
                         ],
                     },
                 ],
@@ -274,13 +274,13 @@ describe("resolveInventoryItemGrants", () => {
             resolveInventoryItemGrants(grants, { [key]: "1" }, context)
         ).toEqual([
             {
-                slug: "leather-armor",
+                slug: "srd_leather-armor",
                 quantity: 1,
                 grantIndex: 0,
                 provenance: "grant:class:fighter:0",
             },
             {
-                slug: "pilot-test-dagger",
+                slug: "rpv_pilot-test-dagger",
                 quantity: 2,
                 grantIndex: 0,
                 provenance: "grant:class:fighter:0",
@@ -293,7 +293,7 @@ describe("resolveInventoryItemGrants", () => {
             {
                 grantType: "inventory_item",
                 choose: 1,
-                options: [{ optionType: "item", ref: "longsword" }],
+                options: [{ optionType: "item", ref: "srd_longsword" }],
             },
         ];
 
@@ -309,8 +309,8 @@ describe("collectInventoryItemChoiceGrants", () => {
                 choose: 2,
                 description: "Pick gear",
                 options: [
-                    { optionType: "item", ref: "pilot-test-dagger" },
-                    { optionType: "item", ref: "longsword" },
+                    { optionType: "item", ref: "rpv_pilot-test-dagger" },
+                    { optionType: "item", ref: "srd_longsword" },
                 ],
             },
         ];
@@ -338,7 +338,7 @@ describe("fixedGrantsToCharacterGrants", () => {
             {
                 grantType: "inventory_item",
                 choose: 0,
-                ref: "scroll-of-fire-bolt",
+                ref: "rpv_scroll-of-fire-bolt",
                 amount: 1,
             },
         ];

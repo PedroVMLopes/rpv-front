@@ -41,10 +41,10 @@ const storedCharacter: StoredCharacter = {
         grantedCurrency: { gold: 400 },
         inventory: {
             bag: [
-                { slug: "arrows", quantity: 10 },
-                { slug: "dungeoneers-pack", quantity: 1 },
+                { slug: "srd_arrow-bow", quantity: 10 },
+                { slug: "rpv_dungeoneers-pack", quantity: 1 },
             ],
-            equipped: { "main-hand": "longbow" },
+            equipped: { "main-hand": "srd_longbow" },
         },
     },
     resources: { hp: 12 },
@@ -76,7 +76,7 @@ describe("InventoryTab", () => {
         expect(screen.getByText("452 gold")).toBeInTheDocument();
         expect(screen.getByText("12 silver")).toBeInTheDocument();
         expect(screen.getByText("Misc items")).toBeInTheDocument();
-        expect(screen.getByText("0")).toBeInTheDocument();
+        expect(screen.getByText("1")).toBeInTheDocument();
     });
 
     it("renders cosmetic search and add item controls", () => {
@@ -93,7 +93,7 @@ describe("InventoryTab", () => {
     it("lists bag and equipped items with equipped badge", () => {
         renderWithProviders(<InventoryTab stored={storedCharacter} />);
 
-        expect(screen.getByText("Arrows")).toBeInTheDocument();
+        expect(screen.getByText("Arrow (bow)")).toBeInTheDocument();
         expect(screen.getByText("Dungeoneer's Pack")).toBeInTheDocument();
         expect(screen.getByText("Longbow")).toBeInTheDocument();
         expect(screen.getByText("Equipped")).toBeInTheDocument();
@@ -107,12 +107,12 @@ describe("InventoryTab", () => {
                 ...storedCharacter.selections,
                 inventory: {
                     bag: [
-                        { slug: "longsword", quantity: 1 },
-                        { slug: "leather-armor", quantity: 1 },
+                        { slug: "srd_longsword", quantity: 1 },
+                        { slug: "srd_leather-armor", quantity: 1 },
                     ],
                     equipped: {
-                        "main-hand": "longsword",
-                        armor: "leather-armor",
+                        "main-hand": "srd_longsword",
+                        armor: "srd_leather-armor",
                     },
                 },
             },
@@ -134,14 +134,14 @@ describe("InventoryTab", () => {
         });
 
         await user.click(within(tablist).getByRole("tab", { name: "Consumables" }));
-        expect(screen.getByText("Arrows")).toBeInTheDocument();
+        expect(screen.getByText("Arrow (bow)")).toBeInTheDocument();
         expect(screen.queryByText("Longbow")).not.toBeInTheDocument();
         expect(screen.queryByText("Dungeoneer's Pack")).not.toBeInTheDocument();
 
         await user.click(within(tablist).getByRole("tab", { name: "Misc / Other" }));
         expect(screen.getByText("Longbow")).toBeInTheDocument();
         expect(screen.getByText("Dungeoneer's Pack")).toBeInTheDocument();
-        expect(screen.queryByText("Arrows")).not.toBeInTheDocument();
+        expect(screen.queryByText("Arrow (bow)")).not.toBeInTheDocument();
     });
 });
 

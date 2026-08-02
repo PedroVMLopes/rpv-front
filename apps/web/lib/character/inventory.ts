@@ -1,6 +1,5 @@
 import type { CharacterInventory } from "@rpv/domain";
 import {
-    canEquipItem,
     getItem,
     isItemStackable,
     isValidEquipmentSlot,
@@ -93,7 +92,7 @@ function sanitizeEquipped(
         if (
             !slug ||
             !isValidEquipmentSlot(slotId, system) ||
-            !canEquipItem(slug, slotId, system) ||
+            !isValidItemSlug(slug, system) ||
             seenSlugs.has(slug)
         ) {
             continue;
@@ -310,7 +309,8 @@ export function equipItem(
     const normalizedSlug = coerceSlug(slug);
     if (
         !normalizedSlug ||
-        !canEquipItem(normalizedSlug, slotId, system) ||
+        !isValidEquipmentSlot(slotId, system) ||
+        !isValidItemSlug(normalizedSlug, system) ||
         inventory.equipped[slotId] ||
         isSlugEquippedElsewhere(inventory.equipped, normalizedSlug, slotId) ||
         getBagQuantity(inventory.bag, normalizedSlug) < 1
