@@ -145,6 +145,97 @@ describe("InventoryTab", () => {
     });
 });
 
+describe("InventoryTab equip actions", () => {
+    function InventoryTabLive({ characterId }: { characterId: string }) {
+        const stored = useCharacterStore((state) =>
+            state.characters.find((character) => character.id === characterId)
+        );
+        if (!stored) {
+            return null;
+        }
+        return <InventoryTab stored={stored} />;
+    }
+
+    function cardForName(name: string) {
+        const heading = screen.getByRole("heading", { name });
+        const card = heading.closest("article");
+        if (!card) {
+            throw new Error(`No article for ${name}`);
+        }
+        return card;
+    }
+
+    it("equips a bag item into a free slot from the card menu", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(
+            <InventoryTabLive characterId={storedCharacter.id} />
+        );
+
+        const packCard = cardForName("Pilot Test Pack A");
+        await user.click(
+            within(packCard).getByRole("button", { name: "Item actions" })
+        );
+        await user.click(
+            screen.getByRole("menuitem", { name: "Equip to Neck" })
+        );
+
+        expect(
+            useCharacterStore.getState().characters[0]?.selections.inventory
+                ?.equipped.neck
+        ).toBe("rpv_pilot-test-pack-a");
+        expect(
+            within(cardForName("Pilot Test Pack A")).getByText("Equipped")
+        ).toBeInTheDocument();
+    });
+
+    it("unequips an equipped item from the card menu", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(
+            <InventoryTabLive characterId={storedCharacter.id} />
+        );
+
+        const longbowCard = cardForName("Longbow");
+        await user.click(
+            within(longbowCard).getByRole("button", { name: "Item actions" })
+        );
+        await user.click(screen.getByRole("menuitem", { name: "Unequip" }));
+
+        const inventory =
+            useCharacterStore.getState().characters[0]?.selections.inventory;
+        expect(inventory?.equipped["main-hand"]).toBeUndefined();
+        expect(
+            inventory?.bag.some((stack) => stack.slug === "srd_longbow")
+        ).toBe(true);
+    });
+
+    it("does not equip into an occupied slot", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(
+            <InventoryTabLive characterId={storedCharacter.id} />
+        );
+
+        const packCard = cardForName("Pilot Test Pack A");
+        await user.click(
+            within(packCard).getByRole("button", { name: "Item actions" })
+        );
+
+        const mainHand = screen.getByRole("menuitem", {
+            name: "Equip to Main hand",
+        });
+        expect(mainHand).toHaveAttribute("data-disabled");
+        await user.click(mainHand);
+
+        expect(
+            useCharacterStore.getState().characters[0]?.selections.inventory
+                ?.equipped["main-hand"]
+        ).toBe("srd_longbow");
+        expect(
+            useCharacterStore.getState().characters[0]?.selections.inventory
+                ?.equipped.neck
+        ).toBeUndefined();
+    });
+});
+
 describe("PlayerSheet inventory tab", () => {
     it("opens inventory content instead of coming soon", async () => {
         const user = userEvent.setup();

@@ -57,6 +57,8 @@ export function InventoryTab({ stored }: InventoryTabProps) {
                         rows={filteredRows}
                         system={stored.system}
                         hasAnyItems={hasAnyItems}
+                        characterId={stored.id}
+                        equipped={inventory.equipped}
                     />
                 </div>
             </OverviewPanel>

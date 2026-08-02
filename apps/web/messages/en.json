@@ -517,6 +517,10 @@
       "addItem": "Add item",
       "equippedBadge": "Equipped",
       "quantity": "Qty: {count}",
+      "actions": "Item actions",
+      "equip": "Equip",
+      "unequip": "Unequip",
+      "equipToSlot": "Equip to {slot}",
       "empty": "No items in inventory.",
       "emptyFiltered": "No items match this filter."
     },
