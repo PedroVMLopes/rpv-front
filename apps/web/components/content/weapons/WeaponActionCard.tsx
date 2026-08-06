@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { getItem } from "@rpv/content";
 import type { WeaponAction } from "@/lib/character/combatActions";
@@ -13,8 +13,7 @@ import {
     type WeaponContentFormatters,
 } from "@/lib/content/buildWeaponContentModel";
 import type { ContentUseActionSpec } from "@/lib/content/contentDetail.types";
-import { ContentDetailModal } from "../ContentDetailModal";
-import { ContentSummaryCard } from "../ContentSummaryCard";
+import { ItemContentCard } from "../items/ItemContentCard";
 
 type WeaponActionCardProps = {
     stored: StoredCharacter;
@@ -31,7 +30,6 @@ export function WeaponActionCard({
     const tItems = useTranslations("items");
     const tSlots = useTranslations("equipmentSlots");
     const contentLocale = useContentLocale((state) => state.contentLocale);
-    const [detailOpen, setDetailOpen] = useState(false);
 
     const itemEntry = getItem(weapon.slug, stored.system, contentLocale);
     const slotLabel =
@@ -68,19 +66,11 @@ export function WeaponActionCard({
     };
 
     return (
-        <>
-            <ContentSummaryCard
-                model={summary}
-                expandLabel={tContentDetail("expand", { title: weapon.name })}
-                onExpand={() => setDetailOpen(true)}
-                onUse={summary.useAction ? handleUse : undefined}
-            />
-            <ContentDetailModal
-                model={detail}
-                open={detailOpen}
-                onOpenChange={setDetailOpen}
-                onUse={detail.useAction ? handleUse : undefined}
-            />
-        </>
+        <ItemContentCard
+            summary={summary}
+            detail={detail}
+            expandLabel={tContentDetail("expand", { title: weapon.name })}
+            onUse={summary.useAction ? handleUse : undefined}
+        />
     );
 }

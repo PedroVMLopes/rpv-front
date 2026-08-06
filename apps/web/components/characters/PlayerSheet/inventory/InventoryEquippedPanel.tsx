@@ -4,31 +4,30 @@ import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import type { CharacterInventory } from "@rpv/domain";
 import type { SystemKey } from "@/presets";
+import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { listEquippedRowsByGroup } from "@/lib/character/inventoryDisplay";
 import { cn } from "@/lib/utils";
 import { OverviewPanel } from "../overview/OverviewPanel";
 import { sheetInset } from "../playerSheetSurfaces";
-import { InventoryItemCard } from "./InventoryItemCard";
+import { InventoryItemContentCard } from "./InventoryItemContentCard";
 
 type InventoryEquippedPanelProps = {
     inventory: CharacterInventory;
     system: SystemKey;
-    characterId: string;
+    stored: StoredCharacter;
 };
 
 function EquippedColumn({
     heading,
     rows,
-    system,
-    characterId,
+    stored,
     equipped,
     emptyLabel,
     testId,
 }: {
     heading: string;
     rows: ReturnType<typeof listEquippedRowsByGroup>;
-    system: SystemKey;
-    characterId: string;
+    stored: StoredCharacter;
     equipped: CharacterInventory["equipped"];
     emptyLabel: string;
     testId: string;
@@ -43,11 +42,10 @@ function EquippedColumn({
             ) : (
                 <div className="flex flex-col gap-3">
                     {rows.map((row) => (
-                        <InventoryItemCard
+                        <InventoryItemContentCard
                             key={row.key}
                             row={row}
-                            system={system}
-                            characterId={characterId}
+                            stored={stored}
                             equipped={equipped}
                         />
                     ))}
@@ -60,7 +58,7 @@ function EquippedColumn({
 export function InventoryEquippedPanel({
     inventory,
     system,
-    characterId,
+    stored,
 }: InventoryEquippedPanelProps) {
     const t = useTranslations("playerSheet.inventory");
 
@@ -92,8 +90,7 @@ export function InventoryEquippedPanel({
                     <EquippedColumn
                         heading={t("equippedWearableHeading")}
                         rows={wearableRows}
-                        system={system}
-                        characterId={characterId}
+                        stored={stored}
                         equipped={inventory.equipped}
                         emptyLabel={t("equippedColumnEmpty")}
                         testId="inventory-equipped-wearable"
@@ -101,8 +98,7 @@ export function InventoryEquippedPanel({
                     <EquippedColumn
                         heading={t("equippedUsableHeading")}
                         rows={usableRows}
-                        system={system}
-                        characterId={characterId}
+                        stored={stored}
                         equipped={inventory.equipped}
                         emptyLabel={t("equippedColumnEmpty")}
                         testId="inventory-equipped-usable"

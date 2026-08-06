@@ -2,25 +2,23 @@
 
 import { useTranslations } from "next-intl";
 import type { CharacterInventory } from "@rpv/domain";
-import type { SystemKey } from "@/presets";
 import type { InventoryDisplayRow } from "@/lib/character/inventoryDisplay";
+import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { cn } from "@/lib/utils";
-import { InventoryItemCard } from "./InventoryItemCard";
+import { InventoryItemContentCard } from "./InventoryItemContentCard";
 import { sheetInset } from "../playerSheetSurfaces";
 
 type InventoryItemGridProps = {
     rows: InventoryDisplayRow[];
-    system: SystemKey;
+    stored: StoredCharacter;
     hasAnyItems: boolean;
-    characterId: string;
     equipped: CharacterInventory["equipped"];
 };
 
 export function InventoryItemGrid({
     rows,
-    system,
+    stored,
     hasAnyItems,
-    characterId,
     equipped,
 }: InventoryItemGridProps) {
     const t = useTranslations("playerSheet.inventory");
@@ -41,11 +39,10 @@ export function InventoryItemGrid({
     return (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {rows.map((row) => (
-                <InventoryItemCard
+                <InventoryItemContentCard
                     key={row.key}
                     row={row}
-                    system={system}
-                    characterId={characterId}
+                    stored={stored}
                     equipped={equipped}
                 />
             ))}

@@ -83,6 +83,61 @@ function toCombatContext(
     };
 }
 
+function buildWeaponActionFromContext(
+    context: CombatActionContext,
+    slotId: WeaponSlotId,
+    slug: string
+): WeaponAction {
+    const item = getItem(slug, context.system, context.locale);
+    const attackModifier = item
+        ? computeWeaponAttackBonus(
+              context.grants,
+              item,
+              context.resolved,
+              context.system,
+              context.systemData
+          )
+        : null;
+    const damagePreview = item
+        ? computeWeaponDamagePreview(item, context.resolved, context.system)
+        : null;
+
+    return {
+        id: `${slotId}-${slug}`,
+        slug,
+        name: item?.name ?? slug,
+        slotId,
+        description: item?.description,
+        toHit: formatWeaponToHit(attackModifier),
+        damage: damagePreview ?? undefined,
+        attackModifier,
+        damageDice: item?.weapon?.damageDice,
+        damageFlat: item
+            ? computeWeaponDamageFlat(item, context.resolved, context.system)
+            : undefined,
+        damageType: item?.weapon?.damageType.key,
+    };
+}
+
+export function isWeaponSlotId(slotId: string): slotId is WeaponSlotId {
+    return (WEAPON_SLOTS as readonly string[]).includes(slotId);
+}
+
+/** Build a weapon action for an equipped hand slot when stats are available. */
+export function buildWeaponActionForEquippedSlot(
+    stored: StoredCharacter,
+    resolved: Stats,
+    slotId: WeaponSlotId,
+    slug: string,
+    locale?: Locale
+): WeaponAction {
+    return buildWeaponActionFromContext(
+        toCombatContext(stored, resolved, locale),
+        slotId,
+        slug
+    );
+}
+
 export function listEquippedWeaponActions(
     stored: StoredCharacter,
     resolved: Stats,
@@ -132,35 +187,7 @@ export function listEquippedWeaponActions(
             continue;
         }
 
-        const item = getItem(slug, context.system, context.locale);
-        const attackModifier = item
-            ? computeWeaponAttackBonus(
-                  context.grants,
-                  item,
-                  context.resolved,
-                  context.system,
-                  context.systemData
-              )
-            : null;
-        const damagePreview = item
-            ? computeWeaponDamagePreview(item, context.resolved, context.system)
-            : null;
-
-        result.push({
-            id: `${slotId}-${slug}`,
-            slug,
-            name: item?.name ?? slug,
-            slotId,
-            description: item?.description,
-            toHit: formatWeaponToHit(attackModifier),
-            damage: damagePreview ?? undefined,
-            attackModifier,
-            damageDice: item?.weapon?.damageDice,
-            damageFlat: item
-                ? computeWeaponDamageFlat(item, context.resolved, context.system)
-                : undefined,
-            damageType: item?.weapon?.damageType.key,
-        });
+        result.push(buildWeaponActionFromContext(context, slotId, slug));
     }
 
     return result;

@@ -7,6 +7,7 @@ import userEvent from "@testing-library/user-event";
 import { NextIntlClientProvider } from "next-intl";
 import { InventoryTab } from "../components/characters/PlayerSheet/tabs/InventoryTab";
 import { PlayerSheet } from "../components/characters/PlayerSheet/PlayerSheet";
+import { RollAssistantProvider } from "../components/characters/PlayerSheet/roll/RollAssistantProvider";
 import { useCharacterStore } from "../store/useCharacterStore";
 import type { StoredCharacter } from "../lib/character/storedCharacter";
 import enMessages from "../messages/en.json";
@@ -61,7 +62,7 @@ function renderWithProviders(ui: ReactElement) {
 
     return render(
         <NextIntlClientProvider locale="en" messages={enMessages}>
-            {ui}
+            <RollAssistantProvider>{ui}</RollAssistantProvider>
         </NextIntlClientProvider>
     );
 }
@@ -83,9 +84,11 @@ function bagPanel() {
 
 function cardForName(name: string, scope: HTMLElement = document.body) {
     const heading = within(scope).getByRole("heading", { name });
-    const card = heading.closest("article");
-    if (!card) {
-        throw new Error(`No article for ${name}`);
+    const card =
+        heading.closest("[data-testid^='inventory-card-']") ??
+        heading.closest("div.rounded-lg");
+    if (!card || !(card instanceof HTMLElement)) {
+        throw new Error(`No card for ${name}`);
     }
     return card;
 }
@@ -204,7 +207,7 @@ describe("InventoryTab", () => {
         expect(within(bag).getByText("Arrow (bow)")).toBeInTheDocument();
         expect(within(bag).getByText("Pilot Test Pack A")).toBeInTheDocument();
         expect(within(bag).getByText("Longbow")).toBeInTheDocument();
-        expect(within(bag).getByText("Equipped")).toBeInTheDocument();
+        expect(within(bag).getByText(/Equipped/)).toBeInTheDocument();
     });
 
     it("keeps equipped items visible in both Equipped panel and Bag", () => {
@@ -286,7 +289,7 @@ describe("InventoryTab equip actions", () => {
 
         const packCard = cardForName("Pilot Test Pack A", bagPanel());
         await user.click(
-            within(packCard).getByRole("button", { name: "Item actions" })
+            within(packCard).getByRole("button", { name: "Equip item" })
         );
         expect(
             screen.getByRole("menuitem", { name: "Equip to Usable" })
@@ -301,7 +304,7 @@ describe("InventoryTab equip actions", () => {
 
         const packCard = cardForName("Pilot Test Pack A", bagPanel());
         await user.click(
-            within(packCard).getByRole("button", { name: "Item actions" })
+            within(packCard).getByRole("button", { name: "Equip item" })
         );
         await user.click(
             screen.getByRole("menuitem", { name: "Equip to Neck" })
@@ -318,7 +321,7 @@ describe("InventoryTab equip actions", () => {
         ).toBeInTheDocument();
         expect(
             within(cardForName("Pilot Test Pack A", bagPanel())).getByText(
-                "Equipped"
+                /Equipped/
             )
         ).toBeInTheDocument();
     });
@@ -332,7 +335,7 @@ describe("InventoryTab equip actions", () => {
         const usable = screen.getByTestId("inventory-equipped-usable");
         const longbowCard = cardForName("Longbow", usable);
         await user.click(
-            within(longbowCard).getByRole("button", { name: "Item actions" })
+            within(longbowCard).getByRole("button", { name: "Equip item" })
         );
         await user.click(screen.getByRole("menuitem", { name: "Unequip" }));
 
@@ -352,7 +355,7 @@ describe("InventoryTab equip actions", () => {
 
         const packCard = cardForName("Pilot Test Pack A", bagPanel());
         await user.click(
-            within(packCard).getByRole("button", { name: "Item actions" })
+            within(packCard).getByRole("button", { name: "Equip item" })
         );
 
         const mainHand = screen.getByRole("menuitem", {

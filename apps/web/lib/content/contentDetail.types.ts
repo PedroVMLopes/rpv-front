@@ -47,3 +47,8 @@ export type WeaponContentModels = {
     summary: ContentSummaryModel;
     detail: ContentDetailModel;
 };
+
+export type ItemContentModels = {
+    summary: ContentSummaryModel;
+    detail: ContentDetailModel;
+};

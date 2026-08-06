@@ -51,7 +51,7 @@ export function InventoryTab({ stored }: InventoryTabProps) {
             <InventoryEquippedPanel
                 inventory={inventory}
                 system={stored.system}
-                characterId={stored.id}
+                stored={stored}
             />
             <OverviewPanel title={t("itemsTitle")}>
                 <div className="flex flex-col gap-4">
@@ -61,9 +61,8 @@ export function InventoryTab({ stored }: InventoryTabProps) {
                     />
                     <InventoryItemGrid
                         rows={filteredRows}
-                        system={stored.system}
+                        stored={stored}
                         hasAnyItems={hasAnyItems}
-                        characterId={stored.id}
                         equipped={inventory.equipped}
                     />
                 </div>
