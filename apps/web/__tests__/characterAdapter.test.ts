@@ -445,7 +445,7 @@ describe("characterAdapter system-agnostic mapping", () => {
                 ...formData,
                 inventory: {
                     bag: [{ slug: "rpv_scroll-of-fire-bolt", quantity: 1 }],
-                    equipped: { "main-hand": "srd_longsword" },
+                    equipped: { "melee-main": "srd_longsword" },
                 },
             },
             "char-inv",

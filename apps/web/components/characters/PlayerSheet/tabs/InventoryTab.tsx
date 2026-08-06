@@ -63,7 +63,7 @@ export function InventoryTab({ stored }: InventoryTabProps) {
                         rows={filteredRows}
                         stored={stored}
                         hasAnyItems={hasAnyItems}
-                        equipped={inventory.equipped}
+                        inventory={inventory}
                     />
                 </div>
             </OverviewPanel>

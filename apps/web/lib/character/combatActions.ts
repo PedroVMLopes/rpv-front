@@ -19,7 +19,12 @@ import { buildSpellcastingSystemData } from "./spellcastingContext";
 import { filterCastableSpellGrants } from "./castableSpells";
 import { computePreparedSpellQuotaForStored } from "./preparedSpellQuota";
 
-export const WEAPON_SLOTS = ["main-hand", "off-hand"] as const;
+export const WEAPON_SLOTS = [
+    "melee-main",
+    "melee-off",
+    "ranged-main",
+    "ranged-off",
+] as const;
 export type WeaponSlotId = (typeof WEAPON_SLOTS)[number];
 
 export type WeaponAction = {

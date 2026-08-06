@@ -21,14 +21,14 @@ function EquippedColumn({
     heading,
     rows,
     stored,
-    equipped,
+    inventory,
     emptyLabel,
     testId,
 }: {
     heading: string;
     rows: ReturnType<typeof listEquippedRowsByGroup>;
     stored: StoredCharacter;
-    equipped: CharacterInventory["equipped"];
+    inventory: CharacterInventory;
     emptyLabel: string;
     testId: string;
 }) {
@@ -46,7 +46,7 @@ function EquippedColumn({
                             key={row.key}
                             row={row}
                             stored={stored}
-                            equipped={equipped}
+                            inventory={inventory}
                         />
                     ))}
                 </div>
@@ -70,8 +70,15 @@ export function InventoryEquippedPanel({
         () => listEquippedRowsByGroup(inventory, system, "usable"),
         [inventory, system]
     );
+    const cosmeticRows = useMemo(
+        () => listEquippedRowsByGroup(inventory, system, "cosmetic"),
+        [inventory, system]
+    );
 
-    const isEmpty = wearableRows.length === 0 && usableRows.length === 0;
+    const isEmpty =
+        wearableRows.length === 0 &&
+        usableRows.length === 0 &&
+        cosmeticRows.length === 0;
 
     return (
         <OverviewPanel title={t("equippedTitle")}>
@@ -86,12 +93,12 @@ export function InventoryEquippedPanel({
                     {t("equippedEmpty")}
                 </p>
             ) : (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     <EquippedColumn
                         heading={t("equippedWearableHeading")}
                         rows={wearableRows}
                         stored={stored}
-                        equipped={inventory.equipped}
+                        inventory={inventory}
                         emptyLabel={t("equippedColumnEmpty")}
                         testId="inventory-equipped-wearable"
                     />
@@ -99,9 +106,17 @@ export function InventoryEquippedPanel({
                         heading={t("equippedUsableHeading")}
                         rows={usableRows}
                         stored={stored}
-                        equipped={inventory.equipped}
+                        inventory={inventory}
                         emptyLabel={t("equippedColumnEmpty")}
                         testId="inventory-equipped-usable"
+                    />
+                    <EquippedColumn
+                        heading={t("equippedCosmeticHeading")}
+                        rows={cosmeticRows}
+                        stored={stored}
+                        inventory={inventory}
+                        emptyLabel={t("equippedColumnEmpty")}
+                        testId="inventory-equipped-cosmetic"
                     />
                 </div>
             )}

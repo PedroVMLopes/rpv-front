@@ -33,9 +33,13 @@ export function WeaponActionCard({
 
     const itemEntry = getItem(weapon.slug, stored.system, contentLocale);
     const slotLabel =
-        weapon.slotId === "main-hand"
-            ? tSlots("mainHand")
-            : tSlots("offHand");
+        weapon.slotId === "melee-main"
+            ? tSlots("meleeMain")
+            : weapon.slotId === "melee-off"
+              ? tSlots("meleeOff")
+              : weapon.slotId === "ranged-main"
+                ? tSlots("rangedMain")
+                : tSlots("rangedOff");
 
     const formatters = useMemo<WeaponContentFormatters>(
         () => ({

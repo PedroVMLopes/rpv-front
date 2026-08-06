@@ -17,6 +17,7 @@ function inventoryWithEquipped(
     return {
         bag: bagQty > 0 ? [{ slug, quantity: bagQty }] : [],
         equipped: { [slot]: slug },
+        equippedMulti: {},
     };
 }
 
@@ -26,6 +27,7 @@ describe("sanitizeInventory", () => {
             {
                 bag: [{ slug: "not-a-real-item", quantity: 2 }],
                 equipped: {},
+                equippedMulti: {},
             },
             "dnd"
         );
@@ -41,6 +43,7 @@ describe("sanitizeInventory", () => {
                     { slug: "rpv_scroll-of-fire-bolt", quantity: 2 },
                 ],
                 equipped: {},
+                equippedMulti: {},
             },
             "dnd"
         );
@@ -62,6 +65,7 @@ describe("sanitizeInventory", () => {
                     },
                 ],
                 equipped: {},
+                equippedMulti: {},
             },
             "dnd"
         );
@@ -81,11 +85,53 @@ describe("sanitizeInventory", () => {
             {
                 bag: [{ slug: "rpv_amulet-of-vitality", quantity: 0 }],
                 equipped: {},
+                equippedMulti: {},
             },
             "dnd"
         );
 
         expect(result.bag).toEqual([]);
+    });
+
+    it("migrates legacy slot ids to BG3-style ids", () => {
+        const result = sanitizeInventory(
+            {
+                bag: [
+                    { slug: "srd_leather-armor", quantity: 1 },
+                    { slug: "rpv_amulet-of-vitality", quantity: 1 },
+                    { slug: "srd_longbow", quantity: 1 },
+                    { slug: "srd_longsword", quantity: 1 },
+                ],
+                equipped: {
+                    armor: "srd_leather-armor",
+                    neck: "rpv_amulet-of-vitality",
+                    "main-hand": "srd_longbow",
+                    "off-hand": "srd_longsword",
+                },
+            },
+            "dnd"
+        );
+
+        expect(result.equipped).toEqual({
+            breast: "srd_leather-armor",
+            amulet: "rpv_amulet-of-vitality",
+            "ranged-main": "srd_longbow",
+            "melee-off": "srd_longsword",
+        });
+        expect(result.equippedMulti).toEqual({});
+    });
+
+    it("equips multiple cosmetics without feeding equippedItemSlugs", () => {
+        let inventory = addToBag(emptyInventory(), "rpv_pilot-test-pack-a", 1);
+        inventory = addToBag(inventory, "rpv_scroll-of-fire-bolt", 1);
+        inventory = equipItem(inventory, "cosmetic", "rpv_pilot-test-pack-a", "dnd");
+        inventory = equipItem(inventory, "cosmetic", "rpv_scroll-of-fire-bolt", "dnd");
+
+        expect(inventory.equippedMulti.cosmetic).toEqual([
+            "rpv_pilot-test-pack-a",
+            "rpv_scroll-of-fire-bolt",
+        ]);
+        expect(equippedItemSlugs(inventory)).toEqual([]);
     });
 
     it("keeps only one equipped slot when the same slug appears twice", () => {
@@ -94,8 +140,9 @@ describe("sanitizeInventory", () => {
                 bag: [{ slug: "rpv_ring-of-hardiness", quantity: 2 }],
                 equipped: {
                     ring: "rpv_ring-of-hardiness",
-                    neck: "rpv_ring-of-hardiness",
+                    amulet: "rpv_ring-of-hardiness",
                 },
+                equippedMulti: {},
             },
             "dnd"
         );
@@ -105,25 +152,27 @@ describe("sanitizeInventory", () => {
 
     it("keeps equipped slots when there is no matching bag stock", () => {
         const result = sanitizeInventory(
-            inventoryWithEquipped("rpv_amulet-of-vitality", "neck"),
+            inventoryWithEquipped("rpv_amulet-of-vitality", "amulet"),
             "dnd"
         );
 
         expect(result).toEqual({
             bag: [],
-            equipped: { neck: "rpv_amulet-of-vitality" },
+            equipped: { amulet: "rpv_amulet-of-vitality" },
+            equippedMulti: {},
         });
     });
 
     it("decrements bag quantity when an item is equipped with stock", () => {
         const result = sanitizeInventory(
-            inventoryWithEquipped("rpv_amulet-of-vitality", "neck", 1),
+            inventoryWithEquipped("rpv_amulet-of-vitality", "amulet", 1),
             "dnd"
         );
 
         expect(result).toEqual({
             bag: [],
-            equipped: { neck: "rpv_amulet-of-vitality" },
+            equipped: { amulet: "rpv_amulet-of-vitality" },
+            equippedMulti: {},
         });
     });
 
@@ -132,6 +181,7 @@ describe("sanitizeInventory", () => {
             {
                 bag: [{ slug: "rpv_scroll-of-fire-bolt", quantity: 1 }],
                 equipped: {},
+                equippedMulti: {},
             },
             "dnd"
         );
@@ -151,11 +201,11 @@ describe("sanitizeInventory", () => {
 
     it("keeps any valid item in a valid equipment slot", () => {
         const result = sanitizeInventory(
-            inventoryWithEquipped("rpv_ring-of-hardiness", "neck"),
+            inventoryWithEquipped("rpv_ring-of-hardiness", "amulet"),
             "dnd"
         );
 
-        expect(result.equipped).toEqual({ neck: "rpv_ring-of-hardiness" });
+        expect(result.equipped).toEqual({ amulet: "rpv_ring-of-hardiness" });
     });
 
     it("clamps non-stackable bag quantities to 1", () => {
@@ -163,6 +213,7 @@ describe("sanitizeInventory", () => {
             {
                 bag: [{ slug: "rpv_amulet-of-vitality", quantity: 3 }],
                 equipped: {},
+                equippedMulti: {},
             },
             "dnd"
         );
@@ -178,8 +229,9 @@ describe("equippedItemSlugs", () => {
                 bag: [],
                 equipped: {
                     ring: "rpv_ring-of-hardiness",
-                    neck: "rpv_amulet-of-vitality",
+                    amulet: "rpv_amulet-of-vitality",
                 },
+                equippedMulti: {},
             })
         ).toEqual(["rpv_ring-of-hardiness", "rpv_amulet-of-vitality"]);
     });
@@ -190,6 +242,7 @@ describe("addToBag", () => {
         expect(addToBag(emptyInventory(), "rpv_amulet-of-vitality", 2)).toEqual({
             bag: [{ slug: "rpv_amulet-of-vitality", quantity: 2 }],
             equipped: {},
+            equippedMulti: {},
         });
     });
 
@@ -199,6 +252,7 @@ describe("addToBag", () => {
         expect(addToBag(inventory, "rpv_amulet-of-vitality", 2)).toEqual({
             bag: [{ slug: "rpv_amulet-of-vitality", quantity: 3 }],
             equipped: {},
+            equippedMulti: {},
         });
     });
 
@@ -240,6 +294,7 @@ describe("addToBag", () => {
                 },
             ],
             equipped: {},
+            equippedMulti: {},
         });
     });
 });
@@ -251,6 +306,7 @@ describe("removeFromBag", () => {
         expect(removeFromBag(inventory, "rpv_scroll-of-fire-bolt", 2)).toEqual({
             bag: [{ slug: "rpv_scroll-of-fire-bolt", quantity: 1 }],
             equipped: {},
+            equippedMulti: {},
         });
     });
 
@@ -260,6 +316,7 @@ describe("removeFromBag", () => {
         expect(removeFromBag(inventory, "rpv_scroll-of-fire-bolt", 1)).toEqual({
             bag: [],
             equipped: {},
+            equippedMulti: {},
         });
     });
 
@@ -274,34 +331,37 @@ describe("equipItem", () => {
     it("moves one item from bag to an empty slot", () => {
         const inventory = addToBag(emptyInventory(), "rpv_amulet-of-vitality", 1);
 
-        expect(equipItem(inventory, "neck", "rpv_amulet-of-vitality", "dnd")).toEqual({
+        expect(equipItem(inventory, "amulet", "rpv_amulet-of-vitality", "dnd")).toEqual({
             bag: [],
-            equipped: { neck: "rpv_amulet-of-vitality" },
+            equipped: { amulet: "rpv_amulet-of-vitality" },
+            equippedMulti: {},
         });
     });
 
     it("returns inventory unchanged when bag has no stock", () => {
         const inventory = emptyInventory();
 
-        expect(equipItem(inventory, "neck", "rpv_amulet-of-vitality", "dnd")).toBe(inventory);
+        expect(equipItem(inventory, "amulet", "rpv_amulet-of-vitality", "dnd")).toBe(inventory);
     });
 
     it("returns inventory unchanged when the slot is occupied", () => {
         const inventory = {
             bag: [{ slug: "rpv_ring-of-hardiness", quantity: 1 }],
-            equipped: { neck: "rpv_amulet-of-vitality" },
+            equipped: { amulet: "rpv_amulet-of-vitality" },
+            equippedMulti: {},
         };
 
-        expect(equipItem(inventory, "neck", "rpv_ring-of-hardiness", "dnd")).toBe(inventory);
+        expect(equipItem(inventory, "amulet", "rpv_ring-of-hardiness", "dnd")).toBe(inventory);
     });
 
     it("returns inventory unchanged when the slug is already equipped elsewhere", () => {
         const inventory = {
             bag: [{ slug: "srd_longsword", quantity: 1 }],
-            equipped: { "main-hand": "srd_longsword" },
+            equipped: { "melee-main": "srd_longsword" },
+            equippedMulti: {},
         };
 
-        expect(equipItem(inventory, "off-hand", "srd_longsword", "dnd")).toBe(inventory);
+        expect(equipItem(inventory, "melee-off", "srd_longsword", "dnd")).toBe(inventory);
     });
 
     it("allows equipping any item into a valid slot", () => {
@@ -310,6 +370,7 @@ describe("equipItem", () => {
         expect(equipItem(inventory, "ring", "srd_longsword", "dnd")).toEqual({
             bag: [],
             equipped: { ring: "srd_longsword" },
+            equippedMulti: {},
         });
     });
 });
@@ -331,31 +392,34 @@ describe("unequipItem", () => {
     it("returns the equipped item to the bag", () => {
         const inventory = {
             bag: [],
-            equipped: { neck: "rpv_amulet-of-vitality" },
+            equipped: { amulet: "rpv_amulet-of-vitality" },
+            equippedMulti: {},
         };
 
-        expect(unequipItem(inventory, "neck", "dnd")).toEqual({
+        expect(unequipItem(inventory, "amulet", "dnd")).toEqual({
             bag: [{ slug: "rpv_amulet-of-vitality", quantity: 1 }],
             equipped: {},
+            equippedMulti: {},
         });
     });
 
     it("returns inventory unchanged when the slot is empty", () => {
         const inventory = emptyInventory();
 
-        expect(unequipItem(inventory, "neck", "dnd")).toBe(inventory);
+        expect(unequipItem(inventory, "amulet", "dnd")).toBe(inventory);
     });
 
     it("restores provenance when unequipping a background-granted item", () => {
         const inventory = {
             bag: [],
-            equipped: { "main-hand": "rpv_scroll-of-fire-bolt" },
+            equipped: { "melee-main": "rpv_scroll-of-fire-bolt" },
+            equippedMulti: {},
         };
 
         expect(
             unequipItem(
                 inventory,
-                "main-hand",
+                "melee-main",
                 "dnd",
                 "grant:background:sage:2"
             )
@@ -368,6 +432,7 @@ describe("unequipItem", () => {
                 },
             ],
             equipped: {},
+            equippedMulti: {},
         });
     });
 });

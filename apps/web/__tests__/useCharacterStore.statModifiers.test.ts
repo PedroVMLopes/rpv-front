@@ -34,7 +34,7 @@ describe("useCharacterStore stat modifiers", () => {
                     ...baseFormData,
                     inventory: {
                         bag: [],
-                        equipped: { neck: "rpv_amulet-of-vitality" },
+                        equipped: { amulet: "rpv_amulet-of-vitality" },
                     },
                 },
                 "player",
@@ -82,7 +82,7 @@ describe("useCharacterStore stat modifiers", () => {
                     ...baseFormData,
                     inventory: {
                         bag: [],
-                        equipped: { neck: "rpv_amulet-of-vitality" },
+                        equipped: { amulet: "rpv_amulet-of-vitality" },
                     },
                 },
                 "player",
@@ -120,7 +120,7 @@ describe("useCharacterStore stat modifiers", () => {
                     ...baseFormData,
                     inventory: {
                         bag: [],
-                        equipped: { neck: "rpv_amulet-of-vitality" },
+                        equipped: { amulet: "rpv_amulet-of-vitality" },
                     },
                 },
                 "player",

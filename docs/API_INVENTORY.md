@@ -121,11 +121,15 @@ On load, `normalizeStoredCharacter` → `sanitizeInventory` inside
 | Field | Type | Description |
 |-------|------|-------------|
 | `bag` | `ItemStack[]` | Owned items: `{ slug, quantity, provenance? }` |
-| `equipped` | `Record<string, string>` | `slotId → item slug` |
+| `equipped` | `Record<string, string>` | `slotId → item slug` (single occupancy; feeds grants/AC) |
+| `equippedMulti` | `Record<string, string[]>` | Multi slots (e.g. `cosmetic`); roleplay only |
 
-Pilot D&D slot IDs: `armor`, `main-hand`, `off-hand`, `neck`, `ring`, `usable` (from
-[`equipmentSlots.dnd.ts`](../packages/content/src/curation/equipmentSlots.dnd.ts)).
-Wearable group: `armor`, `neck`, `ring`. Usable group: `main-hand`, `off-hand`, `usable`.
+Pilot D&D slot IDs (from
+[`equipmentSlots.dnd.ts`](../packages/content/src/curation/equipmentSlots.dnd.ts)):
+Wearable: `helmet`, `cloak`, `breast`, `gloves`, `boots`, `amulet`, `ring`, `ring-2`.
+Usable: `melee-main`, `melee-off`, `ranged-main`, `ranged-off`, `usable`.
+Cosmetic multi: `cosmetic`.
+Legacy ids (`armor`, `neck`, `main-hand`, `off-hand`) are migrated on sanitize.
 
 ### Sanitization invariants
 
@@ -281,12 +285,20 @@ Community item publish (`POST /items`) is **out of v1 scope**.
 ```json
 {
   "slots": [
-    { "id": "armor", "labelKey": "equipmentSlots.armor", "group": "wearable" },
-    { "id": "main-hand", "labelKey": "equipmentSlots.mainHand", "group": "usable" },
-    { "id": "off-hand", "labelKey": "equipmentSlots.offHand", "group": "usable" },
-    { "id": "neck", "labelKey": "equipmentSlots.neck", "group": "wearable" },
+    { "id": "helmet", "labelKey": "equipmentSlots.helmet", "group": "wearable" },
+    { "id": "cloak", "labelKey": "equipmentSlots.cloak", "group": "wearable" },
+    { "id": "breast", "labelKey": "equipmentSlots.breast", "group": "wearable" },
+    { "id": "gloves", "labelKey": "equipmentSlots.gloves", "group": "wearable" },
+    { "id": "boots", "labelKey": "equipmentSlots.boots", "group": "wearable" },
+    { "id": "amulet", "labelKey": "equipmentSlots.amulet", "group": "wearable" },
     { "id": "ring", "labelKey": "equipmentSlots.ring", "group": "wearable" },
-    { "id": "usable", "labelKey": "equipmentSlots.usable", "group": "usable" }
+    { "id": "ring-2", "labelKey": "equipmentSlots.ring2", "group": "wearable" },
+    { "id": "melee-main", "labelKey": "equipmentSlots.meleeMain", "group": "usable" },
+    { "id": "melee-off", "labelKey": "equipmentSlots.meleeOff", "group": "usable" },
+    { "id": "ranged-main", "labelKey": "equipmentSlots.rangedMain", "group": "usable" },
+    { "id": "ranged-off", "labelKey": "equipmentSlots.rangedOff", "group": "usable" },
+    { "id": "usable", "labelKey": "equipmentSlots.usable", "group": "usable" },
+    { "id": "cosmetic", "labelKey": "equipmentSlots.cosmetic", "group": "cosmetic", "multi": true }
   ]
 }
 ```
@@ -298,7 +310,7 @@ Clients use `id` in `equipped`; `labelKey` for i18n overlays.
 ## Walkthrough — equip amulet (+5 max HP)
 
 Fixture: fighter L1, CON 14 → base max HP **12**. Equipping
-`amulet-of-vitality` in `neck` → max HP **17**.
+`amulet-of-vitality` in `amulet` → max HP **17**.
 
 Aligned with
 [`useCharacterStore.inventory.test.ts`](../apps/web/__tests__/useCharacterStore.inventory.test.ts)

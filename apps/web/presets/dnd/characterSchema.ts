@@ -13,6 +13,7 @@ const itemStackSchema = z.object({
 const characterInventorySchema = z.object({
     bag: z.array(itemStackSchema),
     equipped: z.record(z.string(), z.string()),
+    equippedMulti: z.record(z.string(), z.array(z.string())).default({}),
 });
 
 export const dndCharacterSchema = {
@@ -41,7 +42,11 @@ export const dndCharacterSchema = {
     race: z.string().optional(),
     subrace: z.string().optional(),
     background: z.string().optional(),
-    inventory: characterInventorySchema.default({ bag: [], equipped: {} }),
+    inventory: characterInventorySchema.default({
+      bag: [],
+      equipped: {},
+      equippedMulti: {},
+    }),
     choices: z
       .object({
         grantPicks: z.record(z.string(), z.string()).optional(),

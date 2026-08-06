@@ -18,6 +18,8 @@ export type InventoryDisplayRow = {
     quantity: number;
     equipped: boolean;
     slotId?: string;
+    /** When set, unequip uses multi-slot path. */
+    multiEquipped?: boolean;
 };
 
 function categoryKey(entry: ItemEntry | undefined): string | undefined {
@@ -85,6 +87,19 @@ export function listInventoryRows(
         });
     }
 
+    for (const [slotId, slugs] of Object.entries(inventory.equippedMulti ?? {})) {
+        slugs.forEach((slug, index) => {
+            rows.push({
+                key: `equipped-multi:${slotId}:${index}:${slug}`,
+                slug,
+                quantity: 1,
+                equipped: true,
+                slotId,
+                multiEquipped: true,
+            });
+        });
+    }
+
     return rows;
 }
 
@@ -97,6 +112,21 @@ export function listEquippedRowsByGroup(
     const rows: InventoryDisplayRow[] = [];
 
     for (const slot of getEquipmentSlotsByGroup(system, group)) {
+        if (slot.multi) {
+            const slugs = inventory.equippedMulti?.[slot.id] ?? [];
+            slugs.forEach((slug, index) => {
+                rows.push({
+                    key: `equipped-multi:${slot.id}:${index}:${slug}`,
+                    slug,
+                    quantity: 1,
+                    equipped: true,
+                    slotId: slot.id,
+                    multiEquipped: true,
+                });
+            });
+            continue;
+        }
+
         const slug = inventory.equipped[slot.id];
         if (!slug) {
             continue;

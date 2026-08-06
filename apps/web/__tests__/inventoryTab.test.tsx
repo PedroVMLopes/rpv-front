@@ -45,7 +45,7 @@ const storedCharacter: StoredCharacter = {
                 { slug: "srd_arrow-bow", quantity: 10 },
                 { slug: "rpv_pilot-test-pack-a", quantity: 1 },
             ],
-            equipped: { "main-hand": "srd_longbow" },
+            equipped: { "ranged-main": "srd_longbow" },
         },
     },
     resources: { hp: 12 },
@@ -133,8 +133,8 @@ describe("InventoryTab", () => {
                     bag: [],
                     equipped: {
                         armor: "srd_leather-armor",
-                        neck: "rpv_amulet-of-vitality",
-                        "main-hand": "srd_longbow",
+                        amulet: "rpv_amulet-of-vitality",
+                        "ranged-main": "srd_longbow",
                         usable: "rpv_scroll-of-fire-bolt",
                     },
                 },
@@ -207,7 +207,9 @@ describe("InventoryTab", () => {
         expect(within(bag).getByText("Arrow (bow)")).toBeInTheDocument();
         expect(within(bag).getByText("Pilot Test Pack A")).toBeInTheDocument();
         expect(within(bag).getByText("Longbow")).toBeInTheDocument();
-        expect(within(bag).getByText(/Equipped/)).toBeInTheDocument();
+        expect(
+            within(bag).getAllByRole("button", { name: "Equipped" }).length
+        ).toBeGreaterThan(0);
     });
 
     it("keeps equipped items visible in both Equipped panel and Bag", () => {
@@ -222,7 +224,7 @@ describe("InventoryTab", () => {
                         { slug: "srd_leather-armor", quantity: 1 },
                     ],
                     equipped: {
-                        "main-hand": "srd_longsword",
+                        "melee-main": "srd_longsword",
                         armor: "srd_leather-armor",
                     },
                 },
@@ -289,7 +291,7 @@ describe("InventoryTab equip actions", () => {
 
         const packCard = cardForName("Pilot Test Pack A", bagPanel());
         await user.click(
-            within(packCard).getByRole("button", { name: "Equip item" })
+            within(packCard).getByRole("button", { name: "Equip" })
         );
         expect(
             screen.getByRole("menuitem", { name: "Equip to Usable" })
@@ -304,15 +306,15 @@ describe("InventoryTab equip actions", () => {
 
         const packCard = cardForName("Pilot Test Pack A", bagPanel());
         await user.click(
-            within(packCard).getByRole("button", { name: "Equip item" })
+            within(packCard).getByRole("button", { name: "Equip" })
         );
         await user.click(
-            screen.getByRole("menuitem", { name: "Equip to Neck" })
+            screen.getByRole("menuitem", { name: "Equip to Amulet" })
         );
 
         expect(
             useCharacterStore.getState().characters[0]?.selections.inventory
-                ?.equipped.neck
+                ?.equipped.amulet
         ).toBe("rpv_pilot-test-pack-a");
 
         const wearable = screen.getByTestId("inventory-equipped-wearable");
@@ -320,8 +322,9 @@ describe("InventoryTab equip actions", () => {
             within(wearable).getByText("Pilot Test Pack A")
         ).toBeInTheDocument();
         expect(
-            within(cardForName("Pilot Test Pack A", bagPanel())).getByText(
-                /Equipped/
+            within(cardForName("Pilot Test Pack A", bagPanel())).getByRole(
+                "button",
+                { name: "Equipped" }
             )
         ).toBeInTheDocument();
     });
@@ -335,13 +338,13 @@ describe("InventoryTab equip actions", () => {
         const usable = screen.getByTestId("inventory-equipped-usable");
         const longbowCard = cardForName("Longbow", usable);
         await user.click(
-            within(longbowCard).getByRole("button", { name: "Equip item" })
+            within(longbowCard).getByRole("button", { name: "Equipped" })
         );
         await user.click(screen.getByRole("menuitem", { name: "Unequip" }));
 
         const inventory =
             useCharacterStore.getState().characters[0]?.selections.inventory;
-        expect(inventory?.equipped["main-hand"]).toBeUndefined();
+        expect(inventory?.equipped["ranged-main"]).toBeUndefined();
         expect(
             inventory?.bag.some((stack) => stack.slug === "srd_longbow")
         ).toBe(true);
@@ -355,22 +358,22 @@ describe("InventoryTab equip actions", () => {
 
         const packCard = cardForName("Pilot Test Pack A", bagPanel());
         await user.click(
-            within(packCard).getByRole("button", { name: "Equip item" })
+            within(packCard).getByRole("button", { name: "Equip" })
         );
 
-        const mainHand = screen.getByRole("menuitem", {
-            name: "Equip to Main hand",
+        const rangedMain = screen.getByRole("menuitem", {
+            name: "Equip to Ranged main",
         });
-        expect(mainHand).toHaveAttribute("data-disabled");
-        await user.click(mainHand);
+        expect(rangedMain).toHaveAttribute("data-disabled");
+        await user.click(rangedMain);
 
         expect(
             useCharacterStore.getState().characters[0]?.selections.inventory
-                ?.equipped["main-hand"]
+                ?.equipped["ranged-main"]
         ).toBe("srd_longbow");
         expect(
             useCharacterStore.getState().characters[0]?.selections.inventory
-                ?.equipped.neck
+                ?.equipped.amulet
         ).toBeUndefined();
     });
 });

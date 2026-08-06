@@ -247,12 +247,20 @@
     }
   },
   "equipmentSlots": {
-    "armor": "Armor",
-    "mainHand": "Main hand",
-    "offHand": "Off hand",
-    "neck": "Neck",
+    "helmet": "Helmet",
+    "cloak": "Cloak",
+    "breast": "Armor",
+    "gloves": "Gloves",
+    "boots": "Boots",
+    "amulet": "Amulet",
     "ring": "Ring",
-    "usable": "Usable"
+    "ring2": "Ring 2",
+    "meleeMain": "Melee main",
+    "meleeOff": "Melee off",
+    "rangedMain": "Ranged main",
+    "rangedOff": "Ranged off",
+    "usable": "Usable",
+    "cosmetic": "Cosmetic"
   },
   "inventory": {
     "bag": "Bag",
@@ -508,6 +516,7 @@
       "equippedTitle": "Equipped",
       "equippedWearableHeading": "Gear",
       "equippedUsableHeading": "Usable",
+      "equippedCosmeticHeading": "Cosmetics",
       "equippedEmpty": "No items equipped.",
       "equippedColumnEmpty": "None equipped",
       "filterNavLabel": "Inventory filters",
@@ -523,6 +532,8 @@
       "addItem": "Add item",
       "equippedBadge": "Equipped",
       "equipActions": "Equip item",
+      "suggestedSlots": "Suggested",
+      "otherSlots": "Other slots",
       "quantity": "Qty: {count}",
       "actions": "Item actions",
       "equip": "Equip",

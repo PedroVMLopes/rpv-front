@@ -12,14 +12,14 @@ type InventoryItemGridProps = {
     rows: InventoryDisplayRow[];
     stored: StoredCharacter;
     hasAnyItems: boolean;
-    equipped: CharacterInventory["equipped"];
+    inventory: CharacterInventory;
 };
 
 export function InventoryItemGrid({
     rows,
     stored,
     hasAnyItems,
-    equipped,
+    inventory,
 }: InventoryItemGridProps) {
     const t = useTranslations("playerSheet.inventory");
 
@@ -43,7 +43,7 @@ export function InventoryItemGrid({
                     key={row.key}
                     row={row}
                     stored={stored}
-                    equipped={equipped}
+                    inventory={inventory}
                 />
             ))}
         </div>

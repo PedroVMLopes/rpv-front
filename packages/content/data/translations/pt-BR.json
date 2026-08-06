@@ -165,23 +165,47 @@
     }
   },
   "equipmentSlots": {
-    "armor": {
+    "helmet": {
+      "name": "Capacete"
+    },
+    "cloak": {
+      "name": "Capa"
+    },
+    "breast": {
       "name": "Armadura"
     },
-    "mainHand": {
-      "name": "Mão principal"
+    "gloves": {
+      "name": "Luvas"
     },
-    "offHand": {
-      "name": "Mão secundária"
+    "boots": {
+      "name": "Botas"
     },
-    "neck": {
-      "name": "Pescoço"
+    "amulet": {
+      "name": "Amuleto"
     },
     "ring": {
       "name": "Anel"
     },
+    "ring2": {
+      "name": "Anel 2"
+    },
+    "meleeMain": {
+      "name": "Corpo a corpo principal"
+    },
+    "meleeOff": {
+      "name": "Corpo a corpo secundária"
+    },
+    "rangedMain": {
+      "name": "À distância principal"
+    },
+    "rangedOff": {
+      "name": "À distância secundária"
+    },
     "usable": {
       "name": "Utilizável"
+    },
+    "cosmetic": {
+      "name": "Cosmético"
     }
   },
   "features": {

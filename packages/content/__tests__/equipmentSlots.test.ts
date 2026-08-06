@@ -1,18 +1,27 @@
 import {
     getEquipmentSlots,
     getEquipmentSlotsByGroup,
+    isMultiEquipmentSlot,
     isValidEquipmentSlot,
 } from "../src";
 
 describe("equipmentSlots.dnd", () => {
-    it("lists pilot dnd slots", () => {
+    it("lists BG3-style dnd slots", () => {
         expect(getEquipmentSlots("dnd").map((slot) => slot.id)).toEqual([
-            "armor",
-            "main-hand",
-            "off-hand",
-            "neck",
+            "helmet",
+            "cloak",
+            "breast",
+            "gloves",
+            "boots",
+            "amulet",
             "ring",
+            "ring-2",
+            "melee-main",
+            "melee-off",
+            "ranged-main",
+            "ranged-off",
             "usable",
+            "cosmetic",
         ]);
     });
 
@@ -21,17 +30,38 @@ describe("equipmentSlots.dnd", () => {
     });
 
     it("validates known slot ids", () => {
-        expect(isValidEquipmentSlot("main-hand")).toBe(true);
-        expect(isValidEquipmentSlot("usable")).toBe(true);
-        expect(isValidEquipmentSlot("hand")).toBe(false);
+        expect(isValidEquipmentSlot("melee-main")).toBe(true);
+        expect(isValidEquipmentSlot("cosmetic")).toBe(true);
+        expect(isValidEquipmentSlot("main-hand")).toBe(false);
+        expect(isValidEquipmentSlot("armor")).toBe(false);
     });
 
-    it("partitions slots by wearable and usable groups", () => {
+    it("partitions slots by group and marks cosmetic as multi", () => {
         expect(
             getEquipmentSlotsByGroup("dnd", "wearable").map((slot) => slot.id)
-        ).toEqual(["armor", "neck", "ring"]);
+        ).toEqual([
+            "helmet",
+            "cloak",
+            "breast",
+            "gloves",
+            "boots",
+            "amulet",
+            "ring",
+            "ring-2",
+        ]);
         expect(
             getEquipmentSlotsByGroup("dnd", "usable").map((slot) => slot.id)
-        ).toEqual(["main-hand", "off-hand", "usable"]);
+        ).toEqual([
+            "melee-main",
+            "melee-off",
+            "ranged-main",
+            "ranged-off",
+            "usable",
+        ]);
+        expect(
+            getEquipmentSlotsByGroup("dnd", "cosmetic").map((slot) => slot.id)
+        ).toEqual(["cosmetic"]);
+        expect(isMultiEquipmentSlot("cosmetic")).toBe(true);
+        expect(isMultiEquipmentSlot("breast")).toBe(false);
     });
 });

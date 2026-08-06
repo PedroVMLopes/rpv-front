@@ -247,12 +247,20 @@
     }
   },
   "equipmentSlots": {
-    "armor": "Armadura",
-    "mainHand": "Mão principal",
-    "offHand": "Mão secundária",
-    "neck": "Pescoço",
+    "helmet": "Capacete",
+    "cloak": "Capa",
+    "breast": "Armadura",
+    "gloves": "Luvas",
+    "boots": "Botas",
+    "amulet": "Amuleto",
     "ring": "Anel",
-    "usable": "Utilizável"
+    "ring2": "Anel 2",
+    "meleeMain": "Corpo a corpo principal",
+    "meleeOff": "Corpo a corpo secundária",
+    "rangedMain": "À distância principal",
+    "rangedOff": "À distância secundária",
+    "usable": "Utilizável",
+    "cosmetic": "Cosmético"
   },
   "inventory": {
     "bag": "Bolsa",
@@ -508,6 +516,7 @@
       "equippedTitle": "Equipados",
       "equippedWearableHeading": "Equipamento",
       "equippedUsableHeading": "Utilizáveis",
+      "equippedCosmeticHeading": "Cosméticos",
       "equippedEmpty": "Nenhum item equipado.",
       "equippedColumnEmpty": "Nenhum equipado",
       "filterNavLabel": "Filtros do inventário",
@@ -523,6 +532,8 @@
       "addItem": "Adicionar item",
       "equippedBadge": "Equipado",
       "equipActions": "Equipar item",
+      "suggestedSlots": "Sugeridos",
+      "otherSlots": "Outros slots",
       "quantity": "Qtd: {count}",
       "actions": "Ações do item",
       "equip": "Equipar",

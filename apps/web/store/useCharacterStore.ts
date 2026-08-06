@@ -26,6 +26,7 @@ import {
     equipItem as equipItemInventory,
     removeFromBag as removeFromBagInventory,
     unequipItem as unequipItemInventory,
+    unequipItemFromMultiSlot as unequipItemFromMultiSlotInventory,
 } from "@/lib/character/inventory";
 import { getResourceMax } from "@/lib/character/presetStats";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
@@ -49,6 +50,11 @@ interface CharacterStore {
     updateCharacter: (id: string, formData: Record<string, unknown>) => void;
     equipItem: (id: string, slotId: string, slug: string) => void;
     unequipItem: (id: string, slotId: string) => void;
+    unequipItemFromMultiSlot: (
+        id: string,
+        slotId: string,
+        slug: string
+    ) => void;
     addToBag: (id: string, slug: string, quantity?: number) => void;
     removeFromBag: (id: string, slug: string, quantity?: number) => void;
     updateResource: (id: string, resourceName: string, delta: number) => void;
@@ -151,6 +157,42 @@ export const useCharacterStore = create<CharacterStore>()(
                         const nextInventory = unequipItemInventory(
                             char.selections.inventory,
                             slotId,
+                            char.system,
+                            provenance
+                        );
+
+                        if (nextInventory === char.selections.inventory) {
+                            return char;
+                        }
+
+                        return rebuildCharacterWithInventory(
+                            char,
+                            nextInventory,
+                            locale
+                        );
+                    }),
+                })),
+
+            unequipItemFromMultiSlot: (id, slotId, slug) =>
+                set((state) => ({
+                    characters: state.characters.map((char) => {
+                        if (char.id !== id) return char;
+
+                        const locale = useContentLocale.getState().contentLocale;
+                        const level = readLevelFromForm(
+                            flattenStoredToForm(char, char.system)
+                        );
+                        const provenance = resolveInventoryGrantProvenance(
+                            char.selections,
+                            slug,
+                            locale,
+                            char.system,
+                            level
+                        );
+                        const nextInventory = unequipItemFromMultiSlotInventory(
+                            char.selections.inventory,
+                            slotId,
+                            slug,
                             char.system,
                             provenance
                         );

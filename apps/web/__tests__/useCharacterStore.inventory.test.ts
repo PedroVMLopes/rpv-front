@@ -41,7 +41,7 @@ describe("useCharacterStore inventory", () => {
             useCharacterStore.getState().addToBag(character.id, "rpv_amulet-of-vitality");
             useCharacterStore
                 .getState()
-                .equipItem(character.id, "neck", "rpv_amulet-of-vitality");
+                .equipItem(character.id, "amulet", "rpv_amulet-of-vitality");
         });
 
         const updated = useCharacterStore
@@ -50,7 +50,8 @@ describe("useCharacterStore inventory", () => {
 
         expect(updated.selections.inventory).toEqual({
             bag: [],
-            equipped: { neck: "rpv_amulet-of-vitality" },
+            equipped: { amulet: "rpv_amulet-of-vitality" },
+            equippedMulti: {},
         });
         expect(
             useCharacterStore.getState().getResolvedStats(updated.id)?.hitPoints
@@ -94,11 +95,11 @@ describe("useCharacterStore inventory", () => {
             useCharacterStore.getState().addToBag(character.id, "rpv_amulet-of-vitality");
             useCharacterStore
                 .getState()
-                .equipItem(character.id, "neck", "rpv_amulet-of-vitality");
+                .equipItem(character.id, "amulet", "rpv_amulet-of-vitality");
         });
 
         act(() => {
-            useCharacterStore.getState().unequipItem(character.id, "neck");
+            useCharacterStore.getState().unequipItem(character.id, "amulet");
         });
 
         const updated = useCharacterStore
@@ -122,7 +123,7 @@ describe("useCharacterStore inventory", () => {
             useCharacterStore.getState().addToBag(character.id, "rpv_amulet-of-vitality");
             useCharacterStore
                 .getState()
-                .equipItem(character.id, "main-hand", "rpv_scroll-of-fire-bolt");
+                .equipItem(character.id, "melee-main", "rpv_scroll-of-fire-bolt");
         });
 
         let updated = useCharacterStore
@@ -142,10 +143,10 @@ describe("useCharacterStore inventory", () => {
         act(() => {
             useCharacterStore
                 .getState()
-                .unequipItem(character.id, "main-hand");
+                .unequipItem(character.id, "melee-main");
             useCharacterStore
                 .getState()
-                .equipItem(character.id, "neck", "rpv_amulet-of-vitality");
+                .equipItem(character.id, "amulet", "rpv_amulet-of-vitality");
         });
 
         updated = useCharacterStore
@@ -174,7 +175,7 @@ describe("useCharacterStore inventory", () => {
         act(() => {
             useCharacterStore
                 .getState()
-                .equipItem(character.id, "neck", "rpv_amulet-of-vitality");
+                .equipItem(character.id, "amulet", "rpv_amulet-of-vitality");
         });
 
         const updated = useCharacterStore
@@ -184,6 +185,7 @@ describe("useCharacterStore inventory", () => {
         expect(updated.selections.inventory).toEqual({
             bag: [],
             equipped: {},
+            equippedMulti: {},
         });
     });
 
@@ -211,10 +213,10 @@ describe("useCharacterStore inventory", () => {
         act(() => {
             useCharacterStore
                 .getState()
-                .equipItem(character.id, "main-hand", "rpv_scroll-of-fire-bolt");
+                .equipItem(character.id, "melee-main", "rpv_scroll-of-fire-bolt");
             useCharacterStore
                 .getState()
-                .unequipItem(character.id, "main-hand");
+                .unequipItem(character.id, "melee-main");
         });
 
         const updated = useCharacterStore
@@ -242,7 +244,7 @@ describe("useCharacterStore inventory", () => {
             useCharacterStore.getState().addToBag(character.id, "rpv_scroll-of-fire-bolt", 2);
             useCharacterStore
                 .getState()
-                .equipItem(character.id, "main-hand", "rpv_scroll-of-fire-bolt");
+                .equipItem(character.id, "melee-main", "rpv_scroll-of-fire-bolt");
             useCharacterStore
                 .getState()
                 .removeFromBag(character.id, "rpv_scroll-of-fire-bolt", 1);
@@ -254,7 +256,7 @@ describe("useCharacterStore inventory", () => {
 
         expect(updated.selections.inventory.bag).toEqual([]);
         expect(updated.selections.inventory.equipped).toEqual({
-            "main-hand": "rpv_scroll-of-fire-bolt",
+            "melee-main": "rpv_scroll-of-fire-bolt",
         });
     });
 });

@@ -40,7 +40,7 @@ const fighterStored: StoredCharacter = {
         choices: {},
         inventory: {
             bag: [{ slug: "srd_longsword", quantity: 1 }],
-            equipped: { "main-hand": "srd_longsword" },
+            equipped: { "melee-main": "srd_longsword" },
         },
     },
     resources: { hp: 10 },
@@ -99,7 +99,7 @@ describe("buildWeaponAttackRollRequest", () => {
             id: "armor-leather-armor",
             slug: "srd_leather-armor",
             name: "Leather Armor",
-            slotId: "main-hand",
+            slotId: "melee-main",
             attackModifier: null,
         });
 

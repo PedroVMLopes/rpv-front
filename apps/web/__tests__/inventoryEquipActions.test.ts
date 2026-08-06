@@ -6,12 +6,12 @@ import {
 describe("canEquipSlugToSlot", () => {
     it("allows equipping into an empty slot when slug is not equipped", () => {
         expect(
-            canEquipSlugToSlot({}, "main-hand", "srd_longsword")
+            canEquipSlugToSlot({}, "melee-main", "srd_longsword")
         ).toBe(true);
         expect(
             canEquipSlugToSlot(
                 { armor: "srd_leather-armor" },
-                "main-hand",
+                "melee-main",
                 "srd_longsword"
             )
         ).toBe(true);
@@ -20,8 +20,8 @@ describe("canEquipSlugToSlot", () => {
     it("rejects occupied slots", () => {
         expect(
             canEquipSlugToSlot(
-                { "main-hand": "srd_longbow" },
-                "main-hand",
+                { "melee-main": "srd_longbow" },
+                "melee-main",
                 "srd_longsword"
             )
         ).toBe(false);
@@ -30,8 +30,8 @@ describe("canEquipSlugToSlot", () => {
     it("rejects when slug is already equipped elsewhere", () => {
         expect(
             canEquipSlugToSlot(
-                { "main-hand": "srd_longsword" },
-                "off-hand",
+                { "melee-main": "srd_longsword" },
+                "melee-off",
                 "srd_longsword"
             )
         ).toBe(false);
@@ -41,10 +41,10 @@ describe("canEquipSlugToSlot", () => {
 describe("isSlugEquipped", () => {
     it("detects equipped slugs case-insensitively", () => {
         expect(
-            isSlugEquipped({ neck: "rpv_amulet-of-vitality" }, "rpv_amulet-of-vitality")
+            isSlugEquipped({ amulet: "rpv_amulet-of-vitality" }, "rpv_amulet-of-vitality")
         ).toBe(true);
         expect(
-            isSlugEquipped({ neck: "rpv_amulet-of-vitality" }, "srd_longsword")
+            isSlugEquipped({ amulet: "rpv_amulet-of-vitality" }, "srd_longsword")
         ).toBe(false);
     });
 });

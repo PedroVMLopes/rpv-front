@@ -53,11 +53,25 @@ export function ItemChoiceGrid({
             missingValue: "—",
             slotLabel: (slotId: string) => {
                 const keyMap: Record<string, string> = {
-                    armor: "armor",
-                    "main-hand": "mainHand",
-                    "off-hand": "offHand",
-                    neck: "neck",
+                    helmet: "helmet",
+                    cloak: "cloak",
+                    breast: "breast",
+                    gloves: "gloves",
+                    boots: "boots",
+                    amulet: "amulet",
                     ring: "ring",
+                    "ring-2": "ring2",
+                    "melee-main": "meleeMain",
+                    "melee-off": "meleeOff",
+                    "ranged-main": "rangedMain",
+                    "ranged-off": "rangedOff",
+                    usable: "usable",
+                    cosmetic: "cosmetic",
+                    // legacy
+                    armor: "breast",
+                    "main-hand": "meleeMain",
+                    "off-hand": "meleeOff",
+                    neck: "amulet",
                 };
                 const msgKey = keyMap[slotId];
                 return msgKey ? tSlots(msgKey as never) : slotId;

@@ -74,7 +74,7 @@ describe("deriveCharacterGrants", () => {
                 background: "sage",
                 inventory: {
                     bag: [],
-                    equipped: { "main-hand": "rpv_scroll-of-fire-bolt" },
+                    equipped: { "melee-main": "rpv_scroll-of-fire-bolt" },
                 },
             },
             "en", 1, "dnd"

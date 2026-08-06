@@ -24,7 +24,7 @@ function makeWeapon(
     return {
         id: `weapon-${overrides.slug}`,
         name: overrides.slug,
-        slotId: "main-hand",
+        slotId: "melee-main",
         attackModifier: null,
         ...overrides,
     };
@@ -78,7 +78,7 @@ describe("buildWeaponContentModel", () => {
         const weapon = makeWeapon({
             slug: "srd_longbow",
             name: "Longbow",
-            slotId: "main-hand",
+            slotId: "melee-main",
         });
 
         const { summary, detail } = buildWeaponContentModel(

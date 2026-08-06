@@ -218,7 +218,7 @@ describe("mergeStartingGrants", () => {
                 },
                 inventory: {
                     bag: [],
-                    equipped: { "main-hand": "rpv_scroll-of-fire-bolt" },
+                    equipped: { "melee-main": "rpv_scroll-of-fire-bolt" },
                 },
             },
             "en",
@@ -227,7 +227,7 @@ describe("mergeStartingGrants", () => {
         );
 
         expect(merged.inventory?.equipped).toEqual({
-            "main-hand": "rpv_scroll-of-fire-bolt",
+            "melee-main": "rpv_scroll-of-fire-bolt",
         });
         expect(
             merged.inventory?.bag.filter(

@@ -35,7 +35,8 @@ describe("listInventoryRows", () => {
                     { slug: "srd_arrow-bow", quantity: 5 },
                     { slug: "rpv_pilot-test-pack-a", quantity: 1 },
                 ],
-                equipped: { "main-hand": "srd_longbow" },
+                equipped: { "ranged-main": "srd_longbow" },
+                equippedMulti: {},
             },
             "dnd"
         );
@@ -52,11 +53,11 @@ describe("listInventoryRows", () => {
             equipped: false,
         });
         expect(rows[2]).toMatchObject({
-            key: "equipped:main-hand",
+            key: "equipped:ranged-main",
             slug: "srd_longbow",
             quantity: 1,
             equipped: true,
-            slotId: "main-hand",
+            slotId: "ranged-main",
         });
     });
 
@@ -69,29 +70,32 @@ describe("listEquippedRowsByGroup", () => {
     const inventory = {
         bag: [],
         equipped: {
-            armor: "srd_leather-armor",
-            neck: "rpv_amulet-of-vitality",
-            "main-hand": "srd_longbow",
+            breast: "srd_leather-armor",
+            amulet: "rpv_amulet-of-vitality",
+            "ranged-main": "srd_longbow",
             usable: "rpv_scroll-of-fire-bolt",
             ring: "",
+        },
+        equippedMulti: {
+            cosmetic: ["rpv_pilot-test-pack-a"],
         },
     };
 
     it("returns filled wearable slots in slot-list order", () => {
         expect(listEquippedRowsByGroup(inventory, "dnd", "wearable")).toEqual([
             {
-                key: "equipped:armor",
+                key: "equipped:breast",
                 slug: "srd_leather-armor",
                 quantity: 1,
                 equipped: true,
-                slotId: "armor",
+                slotId: "breast",
             },
             {
-                key: "equipped:neck",
+                key: "equipped:amulet",
                 slug: "rpv_amulet-of-vitality",
                 quantity: 1,
                 equipped: true,
-                slotId: "neck",
+                slotId: "amulet",
             },
         ]);
     });
@@ -99,11 +103,11 @@ describe("listEquippedRowsByGroup", () => {
     it("returns filled usable slots in slot-list order", () => {
         expect(listEquippedRowsByGroup(inventory, "dnd", "usable")).toEqual([
             {
-                key: "equipped:main-hand",
+                key: "equipped:ranged-main",
                 slug: "srd_longbow",
                 quantity: 1,
                 equipped: true,
-                slotId: "main-hand",
+                slotId: "ranged-main",
             },
             {
                 key: "equipped:usable",
@@ -111,6 +115,19 @@ describe("listEquippedRowsByGroup", () => {
                 quantity: 1,
                 equipped: true,
                 slotId: "usable",
+            },
+        ]);
+    });
+
+    it("returns multi cosmetic rows", () => {
+        expect(listEquippedRowsByGroup(inventory, "dnd", "cosmetic")).toEqual([
+            {
+                key: "equipped-multi:cosmetic:0:rpv_pilot-test-pack-a",
+                slug: "rpv_pilot-test-pack-a",
+                quantity: 1,
+                equipped: true,
+                slotId: "cosmetic",
+                multiEquipped: true,
             },
         ]);
     });
@@ -188,7 +205,8 @@ describe("filterInventoryRows", () => {
                 { slug: "srd_arrow-bow", quantity: 10 },
                 { slug: "rpv_pilot-test-pack-a", quantity: 1 },
             ],
-            equipped: { "main-hand": "srd_longbow" },
+            equipped: { "ranged-main": "srd_longbow" },
+            equippedMulti: {},
         },
         "dnd"
     );

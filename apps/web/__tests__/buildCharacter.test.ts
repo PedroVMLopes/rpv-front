@@ -41,7 +41,7 @@ describe("buildStoredCharacter", () => {
                 background: "sage",
                 inventory: {
                     bag: [],
-                    equipped: { "main-hand": "rpv_scroll-of-fire-bolt" },
+                    equipped: { "melee-main": "rpv_scroll-of-fire-bolt" },
                 },
             },
             "player",
@@ -61,7 +61,7 @@ describe("buildStoredCharacter", () => {
                         provenance: "grant:class:fighter:4",
                     },
                 ],
-                equipped: { "main-hand": "rpv_scroll-of-fire-bolt" },
+                equipped: { "melee-main": "rpv_scroll-of-fire-bolt" },
             },
         });
         expect(character.grants).toEqual(
@@ -112,6 +112,7 @@ describe("buildStoredCharacter", () => {
                 inventory: {
                     bag: [{ slug: "rpv_scroll-of-fire-bolt", quantity: 1 }],
                     equipped: {},
+                    equippedMulti: {},
                 },
             },
             "player",
@@ -129,6 +130,7 @@ describe("buildStoredCharacter", () => {
                 },
             ],
             equipped: {},
+            equippedMulti: {},
         });
         expect(
             character.grants.some(
@@ -180,6 +182,7 @@ describe("buildStoredCharacter", () => {
                 inventory: {
                     bag: [{ slug: "rpv_amulet-of-vitality", quantity: 1 }],
                     equipped: {},
+                    equippedMulti: {},
                 },
             },
             "player",
@@ -229,6 +232,7 @@ describe("buildStoredCharacter", () => {
                 quantity,
             })),
             equipped: {},
+            equippedMulti: {},
         };
 
         const rebuilt = rebuildStoredCharacter(
@@ -254,6 +258,7 @@ describe("buildStoredCharacter", () => {
                 inventory: {
                     bag: [{ slug: "rpv_amulet-of-vitality", quantity: 1 }],
                     equipped: {},
+                    equippedMulti: {},
                 },
             },
             "player",
@@ -400,6 +405,7 @@ describe("buildStoredCharacter", () => {
                         { slug: "rpv_amulet-of-vitality", quantity: 1 },
                     ],
                     equipped: {},
+                    equippedMulti: {},
                 },
             },
             "player",
@@ -423,7 +429,7 @@ describe("buildStoredCharacter", () => {
                 ...baseFormData,
                 inventory: {
                     bag: [{ slug: "rpv_amulet-of-vitality", quantity: 1 }],
-                    equipped: { neck: "rpv_amulet-of-vitality" },
+                    equipped: { amulet: "rpv_amulet-of-vitality" },
                 },
             },
             "player",
@@ -448,7 +454,7 @@ describe("buildStoredCharacter", () => {
                 ...baseFormData,
                 inventory: {
                     bag: [{ slug: "rpv_amulet-of-vitality", quantity: 1 }],
-                    equipped: { neck: "rpv_amulet-of-vitality" },
+                    equipped: { amulet: "rpv_amulet-of-vitality" },
                 },
             },
             "player",
@@ -539,16 +545,16 @@ describe("buildStoredCharacter", () => {
                         { slug: "rpv_amulet-of-vitality", quantity: 1 },
                     ],
                     equipped: {
-                        "main-hand": "rpv_scroll-of-fire-bolt",
-                        neck: "rpv_amulet-of-vitality",
+                        "melee-main": "rpv_scroll-of-fire-bolt",
+                        amulet: "rpv_amulet-of-vitality",
                     },
                 },
             },
         });
 
         expect(character.selections.inventory.equipped).toEqual({
-            "main-hand": "rpv_scroll-of-fire-bolt",
-            neck: "rpv_amulet-of-vitality",
+            "melee-main": "rpv_scroll-of-fire-bolt",
+            amulet: "rpv_amulet-of-vitality",
         });
         expect(character.grants).toEqual(
             expect.arrayContaining([
@@ -578,6 +584,7 @@ describe("buildStoredCharacter", () => {
             inventory: {
                 bag: [{ slug: "rpv_scroll-of-fire-bolt", quantity: 1 }],
                 equipped: {},
+                equippedMulti: {},
             },
             attributes: baseAttributes,
         };
@@ -596,6 +603,7 @@ describe("buildStoredCharacter", () => {
             inventory: {
                 bag: [{ slug: "rpv_scroll-of-fire-bolt", quantity: 1 }],
                 equipped: {},
+                equippedMulti: {},
             },
         });
         expect(stored.systemData).not.toHaveProperty("characterClass");

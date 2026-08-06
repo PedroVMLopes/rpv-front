@@ -25,7 +25,9 @@ export function PortraitSection({ stored }: PortraitSectionProps) {
     const t = useTranslations("playerSheet");
     const contentLocale = useContentLocale((state) => state.contentLocale);
     const avatarUrl = getAvatarUrl(stored.systemData);
-    const armorSlug = stored.selections.inventory?.equipped?.armor;
+    const armorSlug =
+        stored.selections.inventory?.equipped?.breast ??
+        stored.selections.inventory?.equipped?.armor;
     const armorName = armorSlug
         ? (getItem(armorSlug, stored.system, contentLocale)?.name ?? armorSlug)
         : null;

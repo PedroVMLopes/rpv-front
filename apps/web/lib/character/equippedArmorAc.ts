@@ -15,7 +15,7 @@ function resolveBodyArmor(
     inventory: CharacterInventory,
     system: SystemKey
 ): ItemArmor | null {
-    const armorSlotSlug = inventory.equipped?.armor;
+    const armorSlotSlug = inventory.equipped?.breast ?? inventory.equipped?.armor;
     if (armorSlotSlug) {
         const item = getItem(armorSlotSlug, system);
         if (item?.armor && isBodyArmor(item.armor)) {

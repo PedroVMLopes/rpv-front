@@ -73,15 +73,15 @@ describe("CharacterCardInventory", () => {
         ).toBeInTheDocument();
         expect(screen.getByText("Max HP: 8")).toBeInTheDocument();
 
-        const neckEquipSelect = screen.getByLabelText("Equip to Neck");
+        const neckEquipSelect = screen.getByLabelText("Equip to Amulet");
         await user.selectOptions(neckEquipSelect, "rpv_amulet-of-vitality");
-        await user.click(screen.getByRole("button", { name: "Equip Neck" }));
+        await user.click(screen.getByRole("button", { name: "Equip Amulet" }));
 
         expect(screen.getByText("Max HP: 13")).toBeInTheDocument();
         expect(screen.getByText("No items in bag.")).toBeInTheDocument();
-        expect(screen.getByLabelText("Unequip Neck")).toBeInTheDocument();
+        expect(screen.getByLabelText("Unequip Amulet")).toBeInTheDocument();
 
-        await user.click(screen.getByRole("button", { name: "Unequip Neck" }));
+        await user.click(screen.getByRole("button", { name: "Unequip Amulet" }));
 
         expect(screen.getByText("Max HP: 8")).toBeInTheDocument();
         expect(

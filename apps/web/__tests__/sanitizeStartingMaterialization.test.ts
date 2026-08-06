@@ -25,7 +25,7 @@ describe("sanitizeStartingMaterialization", () => {
                         },
                         { slug: "rpv_amulet-of-vitality", quantity: 1 },
                     ],
-                    equipped: { "main-hand": "srd_longsword" },
+                    equipped: { "melee-main": "srd_longsword" },
                 },
                 choices: {
                     grantPicks: {
@@ -66,7 +66,7 @@ describe("sanitizeStartingMaterialization", () => {
                             provenance: "grant:class:fighter:4",
                         },
                     ],
-                    equipped: { "main-hand": "srd_longsword" },
+                    equipped: { "melee-main": "srd_longsword" },
                 },
                 choices: {
                     grantPicks: {
@@ -81,7 +81,7 @@ describe("sanitizeStartingMaterialization", () => {
         );
 
         expect(result.inventory.bag).toEqual([]);
-        expect(result.inventory.equipped).toEqual({ "main-hand": "srd_longsword" });
+        expect(result.inventory.equipped).toEqual({ "melee-main": "srd_longsword" });
     });
 
     it("materializes equipment branch granted items when switching from gold", () => {

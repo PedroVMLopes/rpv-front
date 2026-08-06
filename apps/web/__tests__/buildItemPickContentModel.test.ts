@@ -20,7 +20,7 @@ const formatters: ItemPickContentFormatters = {
     tContentDetail: (key) => key,
     missingValue: "—",
     slotLabel: (slotId) => {
-        if (slotId === "main-hand") {
+        if (slotId === "melee-main") {
             return "Main hand";
         }
         if (slotId === "armor") {

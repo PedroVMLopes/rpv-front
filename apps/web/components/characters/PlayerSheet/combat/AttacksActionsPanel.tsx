@@ -84,8 +84,20 @@ export function AttacksActionsPanel({ stored }: AttacksActionsPanelProps) {
     const hasAny =
         weapons.length > 0 || hasSpells || features.length > 0;
 
-    const slotLabel = (slotId: "main-hand" | "off-hand") =>
-        slotId === "main-hand" ? tSlots("mainHand") : tSlots("offHand");
+    const slotLabel = (slotId: string) => {
+        switch (slotId) {
+            case "melee-main":
+                return tSlots("meleeMain");
+            case "melee-off":
+                return tSlots("meleeOff");
+            case "ranged-main":
+                return tSlots("rangedMain");
+            case "ranged-off":
+                return tSlots("rangedOff");
+            default:
+                return slotId;
+        }
+    };
 
     return (
         <OverviewPanel title={t("combat.attacksActions")}>
