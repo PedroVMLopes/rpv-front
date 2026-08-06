@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { Maximize2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import type {
     ContentSummaryModel,
@@ -17,6 +18,15 @@ type ContentSummaryCardProps = {
     headerActions?: ReactNode;
 };
 
+function resolveUseActions(
+    model: ContentSummaryModel
+): ContentUseActionSpec[] {
+    if (model.useActions && model.useActions.length > 0) {
+        return model.useActions;
+    }
+    return model.useAction ? [model.useAction] : [];
+}
+
 export function ContentSummaryCard({
     model,
     expandLabel,
@@ -24,11 +34,11 @@ export function ContentSummaryCard({
     onUse,
     headerActions,
 }: ContentSummaryCardProps) {
+    const t = useTranslations("contentDetail");
     const subtitle = model.badges.map((badge) => badge.label).join(" · ");
-    const useAction = model.useAction;
-    const showBody = Boolean(
-        (useAction && onUse) || model.shortDescription
-    );
+    const useActions = resolveUseActions(model);
+    const showUse = useActions.length > 0 && Boolean(onUse);
+    const showBody = showUse || Boolean(model.shortDescription);
 
     return (
         <div className="flex h-full flex-col overflow-hidden rounded-lg border-2">
@@ -47,7 +57,7 @@ export function ContentSummaryCard({
                     {headerActions}
                     <Button
                         type="button"
-                        variant="ghost"
+                        variant="outline"
                         className="size-6 cursor-pointer"
                         aria-label={expandLabel}
                         onClick={onExpand}
@@ -58,22 +68,43 @@ export function ContentSummaryCard({
             </div>
 
             {showBody ? (
-                <div className="flex flex-1 flex-col gap-2 bg-accent text-accent-foreground p-2">
+                <div className="flex flex-1 flex-col gap-2 bg-accent text-accent-foreground p-2 pt-0">
                     {model.shortDescription ? (
                         <p className="text-xs leading-snug text-accent-foreground/80">
                             {model.shortDescription}
                         </p>
                     ) : null}
-                    {useAction && onUse ? (
-                        <Button
-                            type="button"
-                            variant="secondary"
-                            size="sm"
-                            className="w-full font-semibold"
-                            onClick={() => onUse(useAction)}
+                    {showUse ? (
+                        <div
+                            className={
+                                useActions.length > 1
+                                    ? "grid grid-cols-2 gap-2"
+                                    : "grid grid-cols-1"
+                            }
                         >
-                            {useAction.label}
-                        </Button>
+                            {useActions.map((action, index) => (
+                                <div
+                                    key={`${action.role ?? action.kind}-${index}`}
+                                    className="flex min-w-0 flex-col gap-0.5"
+                                >
+                                    {action.captionKey ? (
+                                        <span className="pl-1 text-[10px] leading-tight text-accent-foreground/70">
+                                            {t(action.captionKey)}
+                                        </span>
+                                    ) : null}
+                                    <Button
+                                        type="button"
+                                        variant="secondary"
+                                        size="sm"
+                                        className="w-full font-semibold"
+                                        disabled={action.disabled}
+                                        onClick={() => onUse?.(action)}
+                                    >
+                                        {action.label}
+                                    </Button>
+                                </div>
+                            ))}
+                        </div>
                     ) : null}
                 </div>
             ) : null}

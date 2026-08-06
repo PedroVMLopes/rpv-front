@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -25,6 +26,15 @@ type ContentDetailModalProps = {
     footer?: ReactNode;
 };
 
+function resolveUseActions(
+    model: ContentDetailModel
+): ContentUseActionSpec[] {
+    if (model.useActions && model.useActions.length > 0) {
+        return model.useActions;
+    }
+    return model.useAction ? [model.useAction] : [];
+}
+
 export function ContentDetailModal({
     model,
     open,
@@ -33,16 +43,38 @@ export function ContentDetailModal({
     afterContent,
     footer,
 }: ContentDetailModalProps) {
+    const t = useTranslations("contentDetail");
+    const useActions = resolveUseActions(model);
+
     const useActionFooter =
-        !footer && model.useAction && onUse ? (
-            <DialogFooter>
-                <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={() => onUse(model.useAction!)}
-                >
-                    {model.useAction.label}
-                </Button>
+        !footer && useActions.length > 0 && onUse ? (
+            <DialogFooter
+                className={
+                    useActions.length > 1
+                        ? "grid grid-cols-2 gap-2 sm:space-x-0"
+                        : undefined
+                }
+            >
+                {useActions.map((action, index) => (
+                    <div
+                        key={`${action.role ?? action.kind}-${index}`}
+                        className="flex min-w-0 flex-col gap-0.5"
+                    >
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            disabled={action.disabled}
+                            onClick={() => onUse(action)}
+                        >
+                            {action.label}
+                        </Button>
+                        {action.captionKey ? (
+                            <span className="text-center text-[10px] leading-tight text-muted-foreground">
+                                {t(action.captionKey)}
+                            </span>
+                        ) : null}
+                    </div>
+                ))}
             </DialogFooter>
         ) : null;
 

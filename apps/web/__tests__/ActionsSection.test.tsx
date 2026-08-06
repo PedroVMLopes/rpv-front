@@ -292,6 +292,9 @@ describe("ActionsSection", () => {
 
         expect(screen.getByText("Longsword")).toBeInTheDocument();
         expect(screen.getByRole("button", { name: "d20 +5" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /1d8/ })).toBeInTheDocument();
+        expect(screen.getByText("To hit")).toBeInTheDocument();
+        expect(screen.getByText("Damage")).toBeInTheDocument();
         expect(
             screen.getByRole("button", { name: "Expand Longsword" })
         ).toBeInTheDocument();
@@ -306,14 +309,21 @@ describe("ActionsSection", () => {
         expect(within(dialog).getByText("Versatile")).toBeInTheDocument();
     });
 
-    it("opens roll assistant when weapon roll button is clicked", async () => {
+    it("opens attack-only roll when to-hit button is clicked", async () => {
         const user = userEvent.setup();
         renderSection(fighterWithLongswordStored);
 
         await user.click(screen.getByRole("button", { name: "d20 +5" }));
 
-        expect(
-            screen.getByText("Longsword — attack d20 +5")
-        ).toBeInTheDocument();
+        expect(screen.getByText("Longsword — d20 +5")).toBeInTheDocument();
+    });
+
+    it("opens damage-only roll when damage button is clicked", async () => {
+        const user = userEvent.setup();
+        renderSection(fighterWithLongswordStored);
+
+        await user.click(screen.getByRole("button", { name: /1d8/ }));
+
+        expect(screen.getByText(/Longsword — damage/)).toBeInTheDocument();
     });
 });

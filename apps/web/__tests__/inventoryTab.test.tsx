@@ -210,6 +210,11 @@ describe("InventoryTab", () => {
         expect(
             within(bag).getAllByRole("button", { name: "Equipped" }).length
         ).toBeGreaterThan(0);
+
+        const longbowCard = cardForName("Longbow", bag);
+        expect(
+            within(longbowCard).queryByText(/^Equipped ·|· Equipped/)
+        ).not.toBeInTheDocument();
     });
 
     it("keeps equipped items visible in both Equipped panel and Bag", () => {

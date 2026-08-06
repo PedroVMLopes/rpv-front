@@ -556,6 +556,8 @@
     "description": "Description",
     "summary": "Summary",
     "higherLevel": "At higher levels",
+    "toHitCaption": "To hit",
+    "damageCaption": "Damage",
     "yes": "Yes",
     "no": "No",
     "fields": {

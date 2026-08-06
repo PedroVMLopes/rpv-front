@@ -19,6 +19,15 @@ type ItemContentCardProps = {
     "data-testid"?: string;
 };
 
+function hasUseActions(model: {
+    useAction?: ContentUseActionSpec;
+    useActions?: ContentUseActionSpec[];
+}): boolean {
+    return Boolean(
+        (model.useActions && model.useActions.length > 0) || model.useAction
+    );
+}
+
 export function ItemContentCard({
     summary,
     detail,
@@ -36,14 +45,18 @@ export function ItemContentCard({
                 model={summary}
                 expandLabel={expandLabel}
                 onExpand={() => setDetailOpen(true)}
-                onUse={summary.useAction && handleUse ? handleUse : undefined}
+                onUse={
+                    hasUseActions(summary) && handleUse ? handleUse : undefined
+                }
                 headerActions={headerActions}
             />
             <ContentDetailModal
                 model={detail}
                 open={detailOpen}
                 onOpenChange={setDetailOpen}
-                onUse={detail.useAction && handleUse ? handleUse : undefined}
+                onUse={
+                    hasUseActions(detail) && handleUse ? handleUse : undefined
+                }
             />
         </div>
     );

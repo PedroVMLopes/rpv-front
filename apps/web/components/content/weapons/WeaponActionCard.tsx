@@ -4,7 +4,10 @@ import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { getItem } from "@rpv/content";
 import type { WeaponAction } from "@/lib/character/combatActions";
-import { buildWeaponAttackRollRequest } from "@/lib/roll/buildRollRequest";
+import {
+    buildWeaponAttackOnlyRollRequest,
+    buildWeaponDamageRollRequest,
+} from "@/lib/roll/buildRollRequest";
 import type { RollRequest } from "@/lib/roll/rollRequest.types";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useContentLocale } from "@/store/useContentLocale";
@@ -63,18 +66,29 @@ export function WeaponActionCard({
             return;
         }
 
-        const request = buildWeaponAttackRollRequest(weapon);
+        if (useAction.role === "damage") {
+            const request = buildWeaponDamageRollRequest(weapon);
+            if (request) {
+                openRollRequest(request);
+            }
+            return;
+        }
+
+        const request = buildWeaponAttackOnlyRollRequest(weapon);
         if (request) {
             openRollRequest(request);
         }
     };
+
+    const canUse =
+        Boolean(summary.useActions?.length) || Boolean(summary.useAction);
 
     return (
         <ItemContentCard
             summary={summary}
             detail={detail}
             expandLabel={tContentDetail("expand", { title: weapon.name })}
-            onUse={summary.useAction ? handleUse : undefined}
+            onUse={canUse ? handleUse : undefined}
         />
     );
 }

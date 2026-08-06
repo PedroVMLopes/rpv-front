@@ -31,7 +31,7 @@ function makeWeapon(
 }
 
 describe("buildWeaponContentModel", () => {
-    it("builds roll use action and combat badges for longsword", () => {
+    it("builds split attack/damage useActions without damage badge", () => {
         const itemEntry = getItem("srd_longsword", "dnd");
         const weapon = makeWeapon({
             slug: "srd_longsword",
@@ -55,10 +55,24 @@ describe("buildWeaponContentModel", () => {
 
         expect(summary.kind).toBe("item");
         expect(summary.badges.map((badge) => badge.label)).toEqual([
-            "Damage: 1d8+3 slashing",
             "Main hand",
         ]);
-        expect(summary.useAction).toEqual({ kind: "roll", label: "d20 +5" });
+        expect(summary.useActions).toEqual([
+            {
+                kind: "roll",
+                role: "attack",
+                captionKey: "toHitCaption",
+                label: "d20 +5",
+            },
+            {
+                kind: "roll",
+                role: "damage",
+                captionKey: "damageCaption",
+                label: "1d8 +3",
+            },
+        ]);
+        expect(summary.useAction).toEqual(summary.useActions?.[0]);
+        expect(detail.useActions).toEqual(summary.useActions);
         expect(
             detail.sections[0]?.rows.find((row) => row.labelKey === "properties")
                 ?.value
@@ -74,7 +88,60 @@ describe("buildWeaponContentModel", () => {
         ).toBe("1d10");
     });
 
-    it("omits use action when weapon has no combat profile", () => {
+    it("builds attack-only useActions when damage dice are missing", () => {
+        const weapon = makeWeapon({
+            slug: "srd_longsword",
+            name: "Longsword",
+            attackModifier: 4,
+        });
+
+        const { summary } = buildWeaponContentModel(
+            {
+                weapon,
+                itemEntry: getItem("srd_longsword", "dnd"),
+                slotLabel: "Main hand",
+            },
+            formatters
+        );
+
+        expect(summary.useActions).toEqual([
+            {
+                kind: "roll",
+                role: "attack",
+                captionKey: "toHitCaption",
+                label: "d20 +4",
+            },
+        ]);
+    });
+
+    it("builds damage-only useActions when attack modifier is missing", () => {
+        const weapon = makeWeapon({
+            slug: "srd_longsword",
+            name: "Longsword",
+            damageDice: "1d8",
+            damageFlat: 2,
+        });
+
+        const { summary } = buildWeaponContentModel(
+            {
+                weapon,
+                itemEntry: getItem("srd_longsword", "dnd"),
+                slotLabel: "Main hand",
+            },
+            formatters
+        );
+
+        expect(summary.useActions).toEqual([
+            {
+                kind: "roll",
+                role: "damage",
+                captionKey: "damageCaption",
+                label: "1d8 +2",
+            },
+        ]);
+    });
+
+    it("omits use actions when weapon has no combat profile", () => {
         const weapon = makeWeapon({
             slug: "srd_longbow",
             name: "Longbow",
@@ -91,6 +158,7 @@ describe("buildWeaponContentModel", () => {
         );
 
         expect(summary.useAction).toBeUndefined();
+        expect(summary.useActions).toBeUndefined();
         expect(
             detail.sections[0]?.rows.find((row) => row.labelKey === "attackBonus")
                 ?.value

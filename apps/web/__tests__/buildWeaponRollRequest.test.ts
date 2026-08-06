@@ -2,7 +2,9 @@ import { getItem } from "@rpv/content";
 import type { Stats } from "@rpv/domain";
 import { listEquippedWeaponActions } from "../lib/character/combatActions";
 import {
+    buildWeaponAttackOnlyRollRequest,
     buildWeaponAttackRollRequest,
+    buildWeaponDamageRollRequest,
     resolveAttackThenDamageTotal,
 } from "../lib/roll/buildRollRequest";
 import type { StoredCharacter } from "../lib/character/storedCharacter";
@@ -106,3 +108,63 @@ describe("buildWeaponAttackRollRequest", () => {
         expect(request).toBeNull();
     });
 });
+
+describe("buildWeaponAttackOnlyRollRequest", () => {
+    it("builds d20_test from attack modifier", () => {
+        const [weapon] = listEquippedWeaponActions(
+            fighterStored,
+            fighterStats
+        );
+
+        expect(buildWeaponAttackOnlyRollRequest(weapon)).toEqual({
+            kind: "d20_test",
+            id: weapon.id,
+            label: "Longsword",
+            die: 20,
+            modifier: 5,
+        });
+    });
+
+    it("returns null without attack modifier", () => {
+        expect(
+            buildWeaponAttackOnlyRollRequest({
+                id: "weapon-x",
+                slug: "srd_longsword",
+                name: "Longsword",
+                slotId: "melee-main",
+                attackModifier: null,
+                damageDice: "1d8",
+                damageFlat: 3,
+            })
+        ).toBeNull();
+    });
+});
+
+describe("buildWeaponDamageRollRequest", () => {
+    it("builds damage_only from weapon dice and flat", () => {
+        const [weapon] = listEquippedWeaponActions(
+            fighterStored,
+            fighterStats
+        );
+
+        expect(buildWeaponDamageRollRequest(weapon)).toEqual({
+            kind: "damage_only",
+            id: weapon.id,
+            label: "Longsword",
+            steps: [{ sides: 8, flat: 3, damageType: "slashing" }],
+        });
+    });
+
+    it("returns null without damage dice", () => {
+        expect(
+            buildWeaponDamageRollRequest({
+                id: "weapon-x",
+                slug: "srd_longsword",
+                name: "Longsword",
+                slotId: "melee-main",
+                attackModifier: 5,
+            })
+        ).toBeNull();
+    });
+});
+

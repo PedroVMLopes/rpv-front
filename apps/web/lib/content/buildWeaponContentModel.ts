@@ -1,6 +1,5 @@
 import type { ItemEntry } from "@rpv/content";
 import type { WeaponAction } from "@/lib/character/combatActions";
-import { buildWeaponAttackRollRequest } from "@/lib/roll/buildRollRequest";
 import { formatRollButtonLabel } from "./formatRollButtonLabel";
 import type {
     ContentDetailModel,
@@ -67,41 +66,40 @@ function versatileDamage(item: ItemEntry | undefined): string | undefined {
     return versatile?.detail ?? undefined;
 }
 
-function resolveUseActionSpec(
-    weapon: WeaponAction
-): ContentUseActionSpec | undefined {
-    if (!buildWeaponAttackRollRequest(weapon)) {
-        return undefined;
-    }
+function resolveUseActions(weapon: WeaponAction): ContentUseActionSpec[] {
+    const actions: ContentUseActionSpec[] = [];
 
-    return {
-        kind: "roll",
-        label: formatRollButtonLabel({
-            primary: "d20",
-            modifier: weapon.attackModifier,
-        }),
-    };
-}
-
-function buildSummaryBadges(
-    weapon: WeaponAction,
-    slotLabel: string,
-    formatters: WeaponContentFormatters
-): ContentSummaryModel["badges"] {
-    const badges: ContentSummaryModel["badges"] = [];
-
-    if (weapon.damage) {
-        badges.push({
-            label: formatters.tItems("summary.damage", {
-                damage: weapon.damage,
+    if (weapon.attackModifier !== null) {
+        actions.push({
+            kind: "roll",
+            role: "attack",
+            captionKey: "toHitCaption",
+            label: formatRollButtonLabel({
+                primary: "d20",
+                modifier: weapon.attackModifier,
             }),
-            variant: "muted",
         });
     }
 
-    badges.push({ label: slotLabel, variant: "muted" });
+    if (weapon.damageDice) {
+        actions.push({
+            kind: "roll",
+            role: "damage",
+            captionKey: "damageCaption",
+            label: formatRollButtonLabel({
+                primary: weapon.damageDice,
+                modifier: weapon.damageFlat ?? 0,
+            }),
+        });
+    }
 
-    return badges;
+    return actions;
+}
+
+function buildSummaryBadges(
+    slotLabel: string
+): ContentSummaryModel["badges"] {
+    return [{ label: slotLabel, variant: "muted" }];
 }
 
 export function buildWeaponContentModel(
@@ -109,7 +107,8 @@ export function buildWeaponContentModel(
     formatters: WeaponContentFormatters
 ): WeaponContentModels {
     const { weapon, itemEntry, slotLabel } = input;
-    const useAction = resolveUseActionSpec(weapon);
+    const useActions = resolveUseActions(weapon);
+    const useAction = useActions[0];
 
     const detailRows = [
         {
@@ -145,8 +144,9 @@ export function buildWeaponContentModel(
         id: weapon.id,
         kind: "item",
         title: weapon.name,
-        badges: buildSummaryBadges(weapon, slotLabel, formatters),
+        badges: buildSummaryBadges(slotLabel),
         useAction,
+        useActions: useActions.length > 0 ? useActions : undefined,
     };
 
     const detail: ContentDetailModel = {
@@ -156,6 +156,7 @@ export function buildWeaponContentModel(
         sections: [{ rows: detailRows }],
         description: itemEntry?.description ?? weapon.description,
         useAction,
+        useActions: useActions.length > 0 ? useActions : undefined,
     };
 
     return { summary, detail };

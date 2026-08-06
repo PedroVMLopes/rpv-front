@@ -556,6 +556,8 @@
     "description": "Descrição",
     "summary": "Resumo",
     "higherLevel": "Em níveis superiores",
+    "toHitCaption": "Para acertar",
+    "damageCaption": "Dano",
     "yes": "Sim",
     "no": "Não",
     "fields": {

@@ -27,7 +27,10 @@ import {
 } from "@/lib/content/buildWeaponContentModel";
 import type { ContentUseActionSpec } from "@/lib/content/contentDetail.types";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
-import { buildWeaponAttackRollRequest } from "@/lib/roll/buildRollRequest";
+import {
+    buildWeaponAttackOnlyRollRequest,
+    buildWeaponDamageRollRequest,
+} from "@/lib/roll/buildRollRequest";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -147,22 +150,13 @@ export function InventoryItemContentCard({
                 weaponFormatters
             );
             return {
-                summary: {
-                    ...models.summary,
-                    badges: [
-                        { label: t("equippedBadge"), variant: "muted" as const },
-                        ...models.summary.badges,
-                    ],
-                },
+                summary: models.summary,
                 detail: models.detail,
             };
         }
 
         const badges: Array<{ label: string; variant?: "default" | "muted" }> =
             [];
-        if (row.equipped) {
-            badges.push({ label: t("equippedBadge"), variant: "muted" });
-        }
         if (slotLabel) {
             badges.push({ label: slotLabel, variant: "muted" });
         } else if (itemEntry?.category?.name) {
@@ -200,7 +194,16 @@ export function InventoryItemContentCard({
         if (useAction.kind !== "roll" || !weaponAction) {
             return;
         }
-        const request = buildWeaponAttackRollRequest(weaponAction);
+
+        if (useAction.role === "damage") {
+            const request = buildWeaponDamageRollRequest(weaponAction);
+            if (request) {
+                openRollRequest(request);
+            }
+            return;
+        }
+
+        const request = buildWeaponAttackOnlyRollRequest(weaponAction);
         if (request) {
             openRollRequest(request);
         }
@@ -324,7 +327,11 @@ export function InventoryItemContentCard({
             summary={summary}
             detail={detail}
             expandLabel={tContentDetail("expand", { title: summary.title })}
-            onUse={summary.useAction ? handleUse : undefined}
+            onUse={
+                summary.useActions?.length || summary.useAction
+                    ? handleUse
+                    : undefined
+            }
             headerActions={equipMenu}
             data-testid={`inventory-card-${row.key}`}
         />

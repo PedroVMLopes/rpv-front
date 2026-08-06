@@ -95,6 +95,47 @@ export function buildWeaponAttackRollRequest(
     };
 }
 
+/** Attack roll only (d20 + modifier), without chaining into damage. */
+export function buildWeaponAttackOnlyRollRequest(
+    weapon: WeaponAction
+): D20TestRequest | null {
+    if (weapon.attackModifier === null) {
+        return null;
+    }
+
+    return {
+        kind: "d20_test",
+        id: weapon.id,
+        label: weapon.name,
+        die: 20,
+        modifier: weapon.attackModifier,
+    };
+}
+
+/** Damage dice only for a weapon strike. */
+export function buildWeaponDamageRollRequest(
+    weapon: WeaponAction
+): DamageOnlyRequest | null {
+    if (!weapon.damageDice) {
+        return null;
+    }
+
+    const flat = weapon.damageFlat ?? 0;
+    const steps = expandDamageSteps(weapon.damageDice, weapon.damageType);
+
+    if (flat !== 0 && steps.length > 0) {
+        const last = steps.length - 1;
+        steps[last] = { ...steps[last], flat };
+    }
+
+    return {
+        kind: "damage_only",
+        id: weapon.id,
+        label: weapon.name,
+        steps,
+    };
+}
+
 export function buildSpellAttackRollRequest(
     spell: SpellAction
 ): AttackThenDamageRequest | null {

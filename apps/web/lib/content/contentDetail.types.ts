@@ -11,6 +11,10 @@ export type ContentDetailSection = {
 export type ContentUseActionSpec = {
     label: string;
     kind: "roll" | "cast";
+    /** Distinguishes split attack vs damage buttons on item cards. */
+    role?: "attack" | "damage";
+    /** i18n key under contentDetail for caption below the button. */
+    captionKey?: "toHitCaption" | "damageCaption";
     disabled?: boolean;
 };
 
@@ -26,6 +30,7 @@ export type ContentDetailModel = {
     higherLevel?: string;
     source?: string;
     useAction?: ContentUseActionSpec;
+    useActions?: ContentUseActionSpec[];
     catalogGrants?: Grant[];
 };
 
@@ -36,6 +41,7 @@ export type ContentSummaryModel = {
     badges: Array<{ label: string; variant?: "default" | "muted" }>;
     shortDescription?: string;
     useAction?: ContentUseActionSpec;
+    useActions?: ContentUseActionSpec[];
 };
 
 export type SpellContentModels = {
