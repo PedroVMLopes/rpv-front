@@ -1,6 +1,6 @@
 import type { CharacterInventory } from "@rpv/domain";
-import type { ItemEntry } from "@rpv/content";
-import { getItem } from "@rpv/content";
+import type { EquipmentSlotGroup, ItemEntry } from "@rpv/content";
+import { getEquipmentSlotsByGroup, getItem } from "@rpv/content";
 import type { SystemKey } from "@/presets";
 import { bagStackReactKey } from "@/lib/character/inventory";
 
@@ -82,6 +82,31 @@ export function listInventoryRows(
             quantity: 1,
             equipped: true,
             slotId,
+        });
+    }
+
+    return rows;
+}
+
+/** Filled equipped slots only, ordered by the system's slot list for the group. */
+export function listEquippedRowsByGroup(
+    inventory: CharacterInventory,
+    system: SystemKey,
+    group: EquipmentSlotGroup
+): InventoryDisplayRow[] {
+    const rows: InventoryDisplayRow[] = [];
+
+    for (const slot of getEquipmentSlotsByGroup(system, group)) {
+        const slug = inventory.equipped[slot.id];
+        if (!slug) {
+            continue;
+        }
+        rows.push({
+            key: `equipped:${slot.id}`,
+            slug,
+            quantity: 1,
+            equipped: true,
+            slotId: slot.id,
         });
     }
 

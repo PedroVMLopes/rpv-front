@@ -10,6 +10,7 @@ import {
     listInventoryRows,
     type InventoryFilterId,
 } from "@/lib/character/inventoryDisplay";
+import { InventoryEquippedPanel } from "../inventory/InventoryEquippedPanel";
 import { InventorySummaryRow } from "../inventory/InventorySummaryRow";
 import { InventoryToolbar } from "../inventory/InventoryToolbar";
 import { InventoryItemGrid } from "../inventory/InventoryItemGrid";
@@ -47,6 +48,11 @@ export function InventoryTab({ stored }: InventoryTabProps) {
     return (
         <div className="flex flex-col gap-4">
             <InventorySummaryRow stored={stored} />
+            <InventoryEquippedPanel
+                inventory={inventory}
+                system={stored.system}
+                characterId={stored.id}
+            />
             <OverviewPanel title={t("itemsTitle")}>
                 <div className="flex flex-col gap-4">
                     <InventoryToolbar

@@ -3,6 +3,7 @@ import type { ItemEntry } from "@rpv/content";
 import {
     countMiscItems,
     filterInventoryRows,
+    listEquippedRowsByGroup,
     listInventoryRows,
     resolveItemFilterCategory,
 } from "../lib/character/inventoryDisplay";
@@ -61,6 +62,63 @@ describe("listInventoryRows", () => {
 
     it("returns empty list for empty inventory", () => {
         expect(listInventoryRows(emptyInventory(), "dnd")).toEqual([]);
+    });
+});
+
+describe("listEquippedRowsByGroup", () => {
+    const inventory = {
+        bag: [],
+        equipped: {
+            armor: "srd_leather-armor",
+            neck: "rpv_amulet-of-vitality",
+            "main-hand": "srd_longbow",
+            usable: "rpv_scroll-of-fire-bolt",
+            ring: "",
+        },
+    };
+
+    it("returns filled wearable slots in slot-list order", () => {
+        expect(listEquippedRowsByGroup(inventory, "dnd", "wearable")).toEqual([
+            {
+                key: "equipped:armor",
+                slug: "srd_leather-armor",
+                quantity: 1,
+                equipped: true,
+                slotId: "armor",
+            },
+            {
+                key: "equipped:neck",
+                slug: "rpv_amulet-of-vitality",
+                quantity: 1,
+                equipped: true,
+                slotId: "neck",
+            },
+        ]);
+    });
+
+    it("returns filled usable slots in slot-list order", () => {
+        expect(listEquippedRowsByGroup(inventory, "dnd", "usable")).toEqual([
+            {
+                key: "equipped:main-hand",
+                slug: "srd_longbow",
+                quantity: 1,
+                equipped: true,
+                slotId: "main-hand",
+            },
+            {
+                key: "equipped:usable",
+                slug: "rpv_scroll-of-fire-bolt",
+                quantity: 1,
+                equipped: true,
+                slotId: "usable",
+            },
+        ]);
+    });
+
+    it("returns empty when no slots in the group are filled", () => {
+        expect(
+            listEquippedRowsByGroup(emptyInventory(), "dnd", "wearable")
+        ).toEqual([]);
     });
 });
 

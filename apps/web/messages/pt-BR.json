@@ -251,7 +251,8 @@
     "mainHand": "Mão principal",
     "offHand": "Mão secundária",
     "neck": "Pescoço",
-    "ring": "Anel"
+    "ring": "Anel",
+    "usable": "Utilizável"
   },
   "inventory": {
     "bag": "Bolsa",
@@ -503,7 +504,12 @@
         "currency": "Moedas",
         "miscItems": "Itens miscelâneos"
       },
-      "itemsTitle": "Itens",
+      "itemsTitle": "Mochila",
+      "equippedTitle": "Equipados",
+      "equippedWearableHeading": "Equipamento",
+      "equippedUsableHeading": "Utilizáveis",
+      "equippedEmpty": "Nenhum item equipado.",
+      "equippedColumnEmpty": "Nenhum equipado",
       "filterNavLabel": "Filtros do inventário",
       "filters": {
         "all": "Tudo",

@@ -1,16 +1,20 @@
 import type { ItemSystem } from "../item/item.types";
 
+export type EquipmentSlotGroup = "wearable" | "usable";
+
 export type EquipmentSlot = {
     id: string;
     labelKey: string;
+    group: EquipmentSlotGroup;
 };
 
 export const dndEquipmentSlots: EquipmentSlot[] = [
-    { id: "armor", labelKey: "equipmentSlots.armor" },
-    { id: "main-hand", labelKey: "equipmentSlots.mainHand" },
-    { id: "off-hand", labelKey: "equipmentSlots.offHand" },
-    { id: "neck", labelKey: "equipmentSlots.neck" },
-    { id: "ring", labelKey: "equipmentSlots.ring" },
+    { id: "armor", labelKey: "equipmentSlots.armor", group: "wearable" },
+    { id: "main-hand", labelKey: "equipmentSlots.mainHand", group: "usable" },
+    { id: "off-hand", labelKey: "equipmentSlots.offHand", group: "usable" },
+    { id: "neck", labelKey: "equipmentSlots.neck", group: "wearable" },
+    { id: "ring", labelKey: "equipmentSlots.ring", group: "wearable" },
+    { id: "usable", labelKey: "equipmentSlots.usable", group: "usable" },
 ];
 
 export function getEquipmentSlots(system: ItemSystem = "dnd"): EquipmentSlot[] {
@@ -19,6 +23,13 @@ export function getEquipmentSlots(system: ItemSystem = "dnd"): EquipmentSlot[] {
     }
 
     return [];
+}
+
+export function getEquipmentSlotsByGroup(
+    system: ItemSystem = "dnd",
+    group: EquipmentSlotGroup
+): EquipmentSlot[] {
+    return getEquipmentSlots(system).filter((slot) => slot.group === group);
 }
 
 export function isValidEquipmentSlot(

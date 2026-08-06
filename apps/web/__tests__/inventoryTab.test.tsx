@@ -66,6 +66,30 @@ function renderWithProviders(ui: ReactElement) {
     );
 }
 
+function panelByTitle(title: string) {
+    const titleNode = screen.getByText(title, {
+        selector: '[data-slot="card-title"]',
+    });
+    const panel = titleNode.closest('[data-slot="card"]');
+    if (!panel || !(panel instanceof HTMLElement)) {
+        throw new Error(`${title} panel not found`);
+    }
+    return panel;
+}
+
+function bagPanel() {
+    return panelByTitle("Bag");
+}
+
+function cardForName(name: string, scope: HTMLElement = document.body) {
+    const heading = within(scope).getByRole("heading", { name });
+    const card = heading.closest("article");
+    if (!card) {
+        throw new Error(`No article for ${name}`);
+    }
+    return card;
+}
+
 describe("InventoryTab", () => {
     it("shows summary cards with currency and misc count", () => {
         renderWithProviders(<InventoryTab stored={storedCharacter} />);
@@ -79,6 +103,89 @@ describe("InventoryTab", () => {
         expect(screen.getByText("1")).toBeInTheDocument();
     });
 
+    it("places Equipped between summary and Bag", () => {
+        renderWithProviders(<InventoryTab stored={storedCharacter} />);
+
+        const encumbrance = screen.getByText("Encumbrance");
+        const equipped = panelByTitle("Equipped");
+        const bag = panelByTitle("Bag");
+
+        expect(
+            encumbrance.compareDocumentPosition(equipped) &
+                Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy();
+        expect(
+            equipped.compareDocumentPosition(bag) &
+                Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy();
+    });
+
+    it("shows filled equipped slots in wearable vs usable columns", () => {
+        const withBothGroups: StoredCharacter = {
+            ...storedCharacter,
+            id: "char-inventory-groups",
+            selections: {
+                ...storedCharacter.selections,
+                inventory: {
+                    bag: [],
+                    equipped: {
+                        armor: "srd_leather-armor",
+                        neck: "rpv_amulet-of-vitality",
+                        "main-hand": "srd_longbow",
+                        usable: "rpv_scroll-of-fire-bolt",
+                    },
+                },
+            },
+        };
+
+        renderWithProviders(<InventoryTab stored={withBothGroups} />);
+
+        const wearable = screen.getByTestId("inventory-equipped-wearable");
+        const usable = screen.getByTestId("inventory-equipped-usable");
+
+        expect(within(wearable).getByText("Leather Armor")).toBeInTheDocument();
+        expect(
+            within(wearable).getByText("Amulet of Vitality")
+        ).toBeInTheDocument();
+        expect(within(wearable).queryByText("Longbow")).not.toBeInTheDocument();
+
+        expect(within(usable).getByText("Longbow")).toBeInTheDocument();
+        expect(
+            within(usable).getByText("Scroll of Fire Bolt")
+        ).toBeInTheDocument();
+        expect(
+            within(usable).queryByText("Leather Armor")
+        ).not.toBeInTheDocument();
+
+        expect(
+            screen.queryByTestId("inventory-equipped-empty")
+        ).not.toBeInTheDocument();
+        expect(screen.queryByText("Empty")).not.toBeInTheDocument();
+    });
+
+    it("shows empty equipped state when nothing is equipped", () => {
+        const emptyEquipped: StoredCharacter = {
+            ...storedCharacter,
+            id: "char-inventory-empty-eq",
+            selections: {
+                ...storedCharacter.selections,
+                inventory: {
+                    bag: [{ slug: "srd_arrow-bow", quantity: 10 }],
+                    equipped: {},
+                },
+            },
+        };
+
+        renderWithProviders(<InventoryTab stored={emptyEquipped} />);
+
+        expect(
+            screen.getByTestId("inventory-equipped-empty")
+        ).toHaveTextContent("No items equipped.");
+        expect(
+            screen.queryByTestId("inventory-equipped-wearable")
+        ).not.toBeInTheDocument();
+    });
+
     it("renders cosmetic search and add item controls", () => {
         renderWithProviders(<InventoryTab stored={storedCharacter} />);
 
@@ -90,16 +197,17 @@ describe("InventoryTab", () => {
         ).toHaveAttribute("aria-disabled", "true");
     });
 
-    it("lists bag and equipped items with equipped badge", () => {
+    it("lists bag and equipped items with equipped badge in Bag", () => {
         renderWithProviders(<InventoryTab stored={storedCharacter} />);
 
-        expect(screen.getByText("Arrow (bow)")).toBeInTheDocument();
-        expect(screen.getByText("Pilot Test Pack A")).toBeInTheDocument();
-        expect(screen.getByText("Longbow")).toBeInTheDocument();
-        expect(screen.getByText("Equipped")).toBeInTheDocument();
+        const bag = bagPanel();
+        expect(within(bag).getByText("Arrow (bow)")).toBeInTheDocument();
+        expect(within(bag).getByText("Pilot Test Pack A")).toBeInTheDocument();
+        expect(within(bag).getByText("Longbow")).toBeInTheDocument();
+        expect(within(bag).getByText("Equipped")).toBeInTheDocument();
     });
 
-    it("does not duplicate items present in both bag and equipped slots", () => {
+    it("keeps equipped items visible in both Equipped panel and Bag", () => {
         const overlapping: StoredCharacter = {
             ...storedCharacter,
             id: "char-inventory-overlap",
@@ -120,28 +228,42 @@ describe("InventoryTab", () => {
 
         renderWithProviders(<InventoryTab stored={overlapping} />);
 
-        expect(screen.getAllByText("Longsword")).toHaveLength(1);
-        expect(screen.getAllByText("Leather Armor")).toHaveLength(1);
-        expect(screen.getAllByText("Equipped")).toHaveLength(2);
+        // sanitize drops bag copies; panel + bag grid each show the equipped row
+        expect(screen.getAllByText("Longsword")).toHaveLength(2);
+        expect(screen.getAllByText("Leather Armor")).toHaveLength(2);
+
+        const wearable = screen.getByTestId("inventory-equipped-wearable");
+        const usable = screen.getByTestId("inventory-equipped-usable");
+        expect(within(wearable).getByText("Leather Armor")).toBeInTheDocument();
+        expect(within(usable).getByText("Longsword")).toBeInTheDocument();
     });
 
-    it("filters items by category tab", async () => {
+    it("filters Bag items by category tab without hiding Equipped panel", async () => {
         const user = userEvent.setup();
         renderWithProviders(<InventoryTab stored={storedCharacter} />);
 
         const tablist = screen.getByRole("tablist", {
             name: "Inventory filters",
         });
+        const bag = bagPanel();
+        const usable = screen.getByTestId("inventory-equipped-usable");
 
-        await user.click(within(tablist).getByRole("tab", { name: "Consumables" }));
-        expect(screen.getByText("Arrow (bow)")).toBeInTheDocument();
-        expect(screen.queryByText("Longbow")).not.toBeInTheDocument();
-        expect(screen.queryByText("Pilot Test Pack A")).not.toBeInTheDocument();
+        await user.click(
+            within(tablist).getByRole("tab", { name: "Consumables" })
+        );
+        expect(within(bag).getByText("Arrow (bow)")).toBeInTheDocument();
+        expect(within(bag).queryByText("Longbow")).not.toBeInTheDocument();
+        expect(
+            within(bag).queryByText("Pilot Test Pack A")
+        ).not.toBeInTheDocument();
+        expect(within(usable).getByText("Longbow")).toBeInTheDocument();
 
-        await user.click(within(tablist).getByRole("tab", { name: "Misc / Other" }));
-        expect(screen.getByText("Longbow")).toBeInTheDocument();
-        expect(screen.getByText("Pilot Test Pack A")).toBeInTheDocument();
-        expect(screen.queryByText("Arrow (bow)")).not.toBeInTheDocument();
+        await user.click(
+            within(tablist).getByRole("tab", { name: "Misc / Other" })
+        );
+        expect(within(bag).getByText("Longbow")).toBeInTheDocument();
+        expect(within(bag).getByText("Pilot Test Pack A")).toBeInTheDocument();
+        expect(within(bag).queryByText("Arrow (bow)")).not.toBeInTheDocument();
     });
 });
 
@@ -156,14 +278,20 @@ describe("InventoryTab equip actions", () => {
         return <InventoryTab stored={stored} />;
     }
 
-    function cardForName(name: string) {
-        const heading = screen.getByRole("heading", { name });
-        const card = heading.closest("article");
-        if (!card) {
-            throw new Error(`No article for ${name}`);
-        }
-        return card;
-    }
+    it("includes Usable in the equip menu", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(
+            <InventoryTabLive characterId={storedCharacter.id} />
+        );
+
+        const packCard = cardForName("Pilot Test Pack A", bagPanel());
+        await user.click(
+            within(packCard).getByRole("button", { name: "Item actions" })
+        );
+        expect(
+            screen.getByRole("menuitem", { name: "Equip to Usable" })
+        ).toBeInTheDocument();
+    });
 
     it("equips a bag item into a free slot from the card menu", async () => {
         const user = userEvent.setup();
@@ -171,7 +299,7 @@ describe("InventoryTab equip actions", () => {
             <InventoryTabLive characterId={storedCharacter.id} />
         );
 
-        const packCard = cardForName("Pilot Test Pack A");
+        const packCard = cardForName("Pilot Test Pack A", bagPanel());
         await user.click(
             within(packCard).getByRole("button", { name: "Item actions" })
         );
@@ -183,8 +311,15 @@ describe("InventoryTab equip actions", () => {
             useCharacterStore.getState().characters[0]?.selections.inventory
                 ?.equipped.neck
         ).toBe("rpv_pilot-test-pack-a");
+
+        const wearable = screen.getByTestId("inventory-equipped-wearable");
         expect(
-            within(cardForName("Pilot Test Pack A")).getByText("Equipped")
+            within(wearable).getByText("Pilot Test Pack A")
+        ).toBeInTheDocument();
+        expect(
+            within(cardForName("Pilot Test Pack A", bagPanel())).getByText(
+                "Equipped"
+            )
         ).toBeInTheDocument();
     });
 
@@ -194,7 +329,8 @@ describe("InventoryTab equip actions", () => {
             <InventoryTabLive characterId={storedCharacter.id} />
         );
 
-        const longbowCard = cardForName("Longbow");
+        const usable = screen.getByTestId("inventory-equipped-usable");
+        const longbowCard = cardForName("Longbow", usable);
         await user.click(
             within(longbowCard).getByRole("button", { name: "Item actions" })
         );
@@ -214,7 +350,7 @@ describe("InventoryTab equip actions", () => {
             <InventoryTabLive characterId={storedCharacter.id} />
         );
 
-        const packCard = cardForName("Pilot Test Pack A");
+        const packCard = cardForName("Pilot Test Pack A", bagPanel());
         await user.click(
             within(packCard).getByRole("button", { name: "Item actions" })
         );

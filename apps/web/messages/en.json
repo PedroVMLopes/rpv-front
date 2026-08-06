@@ -251,7 +251,8 @@
     "mainHand": "Main hand",
     "offHand": "Off hand",
     "neck": "Neck",
-    "ring": "Ring"
+    "ring": "Ring",
+    "usable": "Usable"
   },
   "inventory": {
     "bag": "Bag",
@@ -503,7 +504,12 @@
         "currency": "Currency",
         "miscItems": "Misc items"
       },
-      "itemsTitle": "Items",
+      "itemsTitle": "Bag",
+      "equippedTitle": "Equipped",
+      "equippedWearableHeading": "Gear",
+      "equippedUsableHeading": "Usable",
+      "equippedEmpty": "No items equipped.",
+      "equippedColumnEmpty": "None equipped",
       "filterNavLabel": "Inventory filters",
       "filters": {
         "all": "All",

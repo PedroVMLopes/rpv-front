@@ -429,7 +429,7 @@ and [`deriveStartingEquipmentFromForm.ts`](../../apps/web/lib/character/deriveSt
 
 - **Do not** add `if (slug === ...)` branches in the engine or web — express behavior via `Grant[]` / item data.
 - **Do not** assume bag items alter stats; only equipped slugs resolve modifiers/grants/AC.
-- **Do not** invent slot IDs (`hand`, `body`) — use IDs from `equipmentSlots.dnd.ts` (e.g. `main-hand`, not `hand`).
+- **Do not** invent slot IDs (`hand`, `body`) — use IDs from `equipmentSlots.dnd.ts` (e.g. `main-hand`, not `hand`). Wearable group: `armor`, `neck`, `ring`. Usable group: `main-hand`, `off-hand`, `usable`.
 - **Do not** strip Open5e key prefixes for inventory/grant refs — keep `srd_*` / `rpv_*`.
 - **Do not** reference spells that are not in the catalog.
 - SRD items are built into `catalog.json`; RPV extras/overrides stay in `itemOverlays.dnd.ts`.

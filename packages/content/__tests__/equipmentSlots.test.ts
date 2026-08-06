@@ -1,5 +1,6 @@
 import {
     getEquipmentSlots,
+    getEquipmentSlotsByGroup,
     isValidEquipmentSlot,
 } from "../src";
 
@@ -11,6 +12,7 @@ describe("equipmentSlots.dnd", () => {
             "off-hand",
             "neck",
             "ring",
+            "usable",
         ]);
     });
 
@@ -20,6 +22,16 @@ describe("equipmentSlots.dnd", () => {
 
     it("validates known slot ids", () => {
         expect(isValidEquipmentSlot("main-hand")).toBe(true);
+        expect(isValidEquipmentSlot("usable")).toBe(true);
         expect(isValidEquipmentSlot("hand")).toBe(false);
+    });
+
+    it("partitions slots by wearable and usable groups", () => {
+        expect(
+            getEquipmentSlotsByGroup("dnd", "wearable").map((slot) => slot.id)
+        ).toEqual(["armor", "neck", "ring"]);
+        expect(
+            getEquipmentSlotsByGroup("dnd", "usable").map((slot) => slot.id)
+        ).toEqual(["main-hand", "off-hand", "usable"]);
     });
 });

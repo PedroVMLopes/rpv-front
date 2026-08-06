@@ -123,8 +123,9 @@ On load, `normalizeStoredCharacter` → `sanitizeInventory` inside
 | `bag` | `ItemStack[]` | Owned items: `{ slug, quantity, provenance? }` |
 | `equipped` | `Record<string, string>` | `slotId → item slug` |
 
-Pilot D&D slot IDs: `armor`, `main-hand`, `off-hand`, `neck`, `ring` (from
+Pilot D&D slot IDs: `armor`, `main-hand`, `off-hand`, `neck`, `ring`, `usable` (from
 [`equipmentSlots.dnd.ts`](../packages/content/src/curation/equipmentSlots.dnd.ts)).
+Wearable group: `armor`, `neck`, `ring`. Usable group: `main-hand`, `off-hand`, `usable`.
 
 ### Sanitization invariants
 
@@ -280,11 +281,12 @@ Community item publish (`POST /items`) is **out of v1 scope**.
 ```json
 {
   "slots": [
-    { "id": "armor", "labelKey": "equipmentSlots.armor" },
-    { "id": "main-hand", "labelKey": "equipmentSlots.mainHand" },
-    { "id": "off-hand", "labelKey": "equipmentSlots.offHand" },
-    { "id": "neck", "labelKey": "equipmentSlots.neck" },
-    { "id": "ring", "labelKey": "equipmentSlots.ring" }
+    { "id": "armor", "labelKey": "equipmentSlots.armor", "group": "wearable" },
+    { "id": "main-hand", "labelKey": "equipmentSlots.mainHand", "group": "usable" },
+    { "id": "off-hand", "labelKey": "equipmentSlots.offHand", "group": "usable" },
+    { "id": "neck", "labelKey": "equipmentSlots.neck", "group": "wearable" },
+    { "id": "ring", "labelKey": "equipmentSlots.ring", "group": "wearable" },
+    { "id": "usable", "labelKey": "equipmentSlots.usable", "group": "usable" }
   ]
 }
 ```

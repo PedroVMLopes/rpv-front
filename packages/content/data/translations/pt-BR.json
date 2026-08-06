@@ -179,6 +179,9 @@
     },
     "ring": {
       "name": "Anel"
+    },
+    "usable": {
+      "name": "Utilizável"
     }
   },
   "features": {
