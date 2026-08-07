@@ -48,14 +48,14 @@ export function ContentDetailPanel({
                                 row.fullWidth ? "sm:col-span-2" : ""
                             }`}
                         >
-                            <dt className="flex items-center gap-2 text-muted-foreground">
+                            <dt className="flex items-center gap-1 text-muted-foreground">
                                 <span>{t(`fields.${row.labelKey}`)}</span>
                                 {row.quantityControls &&
                                 quantityHandlers?.onAdjustQuantity ? (
-                                    <span className="flex shrink-0 items-center gap-0.5">
+                                    <span className="flex shrink-0 items-center gap-0.5 border rounded-md border-border/15">
                                         <Button
                                             type="button"
-                                            variant="outline"
+                                            variant="ghost"
                                             size="sm"
                                             className="size-5 px-0"
                                             aria-label={
@@ -75,9 +75,9 @@ export function ContentDetailPanel({
                                         </Button>
                                         <Button
                                             type="button"
-                                            variant="outline"
+                                            variant="ghost"
                                             size="sm"
-                                            className="size-5 px-0 shadow-none"
+                                            className="size-5 px-0"
                                             aria-label={
                                                 quantityHandlers.increaseLabel
                                             }
