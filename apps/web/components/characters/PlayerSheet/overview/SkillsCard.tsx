@@ -106,6 +106,35 @@ export function SkillsCard({ stored }: SkillsCardProps) {
                 <p className="text-sm text-muted-foreground">{t("noneYet")}</p>
             ) : (
                 <div className="flex flex-col gap-2">
+                    {visibleSaves.length > 0 ? (
+                        <div className="flex flex-col gap-1.5">
+                            <p className="text-xs font-semibold uppercase text-muted-foreground">
+                                {t("proficientSaves")}
+                            </p>
+                            <ul className="flex flex-col gap-1.5">
+                                {visibleSaves.map((save) => (
+                                    <li key={save.stat}>
+                                        <ActionRow
+                                            label={tAbilities(save.stat)}
+                                            modifier={save.modifier}
+                                            proficient={save.proficient}
+                                            abilityHint={`[${tAbilitiesShort(save.stat)}]`}
+                                            className="bg-accent text-accent-foreground border-custom border-background shadow-xs rounded-lg"
+                                            onRoll={() =>
+                                                openRollRequest(
+                                                    buildSavingThrowRollRequest(
+                                                        save,
+                                                        tAbilities(save.stat)
+                                                    )
+                                                )
+                                            }
+                                        />
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ) : null}
+
                     {showAll ? (
                         <SkillsAbilityFilter
                             abilities={abilityOrder}
@@ -122,6 +151,7 @@ export function SkillsCard({ stored }: SkillsCardProps) {
                                         modifier={skill.modifier}
                                         proficient={skill.proficient}
                                         abilityHint={`[${tAbilitiesShort(skill.ability)}]`}
+                                        className="bg-popover text-popover-foreground border-custom border-accent shadow-xs rounded-lg"
                                         onRoll={() =>
                                             openRollRequest(
                                                 buildSkillRollRequest(
@@ -136,33 +166,6 @@ export function SkillsCard({ stored }: SkillsCardProps) {
                         </ul>
                     ) : null}
 
-                    {visibleSaves.length > 0 ? (
-                        <div className="flex flex-col gap-1.5">
-                            <p className="text-xs font-semibold uppercase text-muted-foreground">
-                                {t("proficientSaves")}
-                            </p>
-                            <ul className="flex flex-col gap-1.5">
-                                {visibleSaves.map((save) => (
-                                    <li key={save.stat}>
-                                        <ActionRow
-                                            label={tAbilities(save.stat)}
-                                            modifier={save.modifier}
-                                            proficient={save.proficient}
-                                            abilityHint={`[${tAbilitiesShort(save.stat)}]`}
-                                            onRoll={() =>
-                                                openRollRequest(
-                                                    buildSavingThrowRollRequest(
-                                                        save,
-                                                        tAbilities(save.stat)
-                                                    )
-                                                )
-                                            }
-                                        />
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ) : null}
                 </div>
             )}
         </OverviewPanel>

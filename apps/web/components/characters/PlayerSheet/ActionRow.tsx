@@ -46,7 +46,7 @@ export function ActionRow({
                 ) : null}
                 <span className="truncate font-medium">{label}</span>
                 {abilityHint ? (
-                    <span className="shrink-0 text-xs text-card-foreground/60">
+                    <span className="shrink-0 text-xs text-popover-foreground">
                         {abilityHint}
                     </span>
                 ) : null}

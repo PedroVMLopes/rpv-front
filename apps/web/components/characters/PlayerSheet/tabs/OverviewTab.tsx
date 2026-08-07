@@ -19,17 +19,17 @@ export function OverviewTab({ stored }: OverviewTabProps) {
             <div className="flex flex-col gap-4">
                 <PortraitSection stored={stored} />
                 <AbilitiesSection stored={stored} />
-                <ProficienciesCard stored={stored} />
             </div>
 
             <div className="flex flex-col gap-4">
                 <UnresolvedChoicesBlock stored={stored} panelVariant="nested" />
                 <SkillsCard stored={stored} />
-                <IdentitySection stored={stored} />
             </div>
 
             <div className="flex flex-col gap-4">
-                <ActionsSection stored={stored} />
+                <ProficienciesCard stored={stored} />
+                <IdentitySection stored={stored} />
+                {/* <ActionsSection stored={stored} /> */}
             </div>
         </div>
     );

@@ -20,7 +20,7 @@ export function SkillsAbilityFilter({
 
     return (
         <div
-            className="flex flex-row justify-around gap-1 rounded-xl border bg-popover p-1"
+            className="flex flex-row justify-around gap-1 rounded-xl border-3 bg-popover p-1"
             role="tablist"
             aria-label={t("skillsAbilityFilterLabel")}
         >
@@ -36,8 +36,8 @@ export function SkillsAbilityFilter({
                         className={cn(
                             "rounded-md px-2 py-1 text-xs font-semibold transition-colors",
                             selected
-                                ? "bg-background text-foreground shadow-sm"
-                                : "text-muted-foreground hover:text-foreground"
+                                ? "bg-accent text-accent-foreground shadow-sm"
+                                : "text-popover-foreground hover:text-popover-foreground"
                         )}
                         onClick={() =>
                             onAbilityChange(selected ? null : ability)

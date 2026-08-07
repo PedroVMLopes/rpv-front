@@ -44,12 +44,12 @@ export function SkillsListModeSwitch({
         <div
             role="radiogroup"
             aria-label={t("skillsListModeLabel")}
-            className={cn("relative isolate inline-flex rounded-lg p-0.5", sheetInset)}
+            className={cn("relative isolate inline-flex rounded-lg p-0.5 border-3 border-accent bg-accent text-accent-foreground")}
         >
             {thumbRect ? (
                 <div
                     aria-hidden
-                    className="pointer-events-none absolute inset-y-0.5 z-0 rounded-md border border-card-foreground/10 bg-card shadow-sm transition-[left,width] duration-200"
+                    className="pointer-events-none absolute inset-y-0.5 z-0 rounded-md border border-accent-foreground/10 bg-primary shadow-sm transition-[left,width] duration-200"
                     style={{
                         width: thumbRect.width,
                         left: thumbRect.left,
@@ -65,8 +65,8 @@ export function SkillsListModeSwitch({
                 className={cn(
                     "relative shrink-0 whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
                     value === "proficient"
-                        ? "font-semibold text-card-foreground"
-                        : "text-card-foreground/60 hover:text-card-foreground"
+                        ? "font-semibold text-primary-foreground"
+                        : "text-accent-foreground/60 hover:text-accent-foreground"
                 )}
                 onClick={() => {
                     if (value !== "proficient") {
@@ -85,8 +85,8 @@ export function SkillsListModeSwitch({
                 className={cn(
                     "relative shrink-0 whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
                     value === "all"
-                        ? "font-semibold text-card-foreground"
-                        : "text-card-foreground/60 hover:text-card-foreground"
+                        ? "font-semibold text-primary-foreground"
+                        : "text-accent-foreground/60 hover:text-accent-foreground"
                 )}
                 onClick={() => {
                     if (value !== "all") {
