@@ -2,10 +2,12 @@ import { emptyInventory } from "@rpv/domain";
 import {
     addToBag,
     bagStackReactKey,
+    deleteInventoryItem,
     equipItem,
     equippedItemSlugs,
     removeFromBag,
     sanitizeInventory,
+    setBagQuantity,
     unequipItem,
 } from "../lib/character/inventory";
 
@@ -80,10 +82,25 @@ describe("sanitizeInventory", () => {
         ]);
     });
 
-    it("removes stacks with quantity below 1", () => {
+    it("keeps stacks with quantity 0", () => {
         const result = sanitizeInventory(
             {
                 bag: [{ slug: "rpv_amulet-of-vitality", quantity: 0 }],
+                equipped: {},
+                equippedMulti: {},
+            },
+            "dnd"
+        );
+
+        expect(result.bag).toEqual([
+            { slug: "rpv_amulet-of-vitality", quantity: 0 },
+        ]);
+    });
+
+    it("removes stacks with negative quantity", () => {
+        const result = sanitizeInventory(
+            {
+                bag: [{ slug: "rpv_amulet-of-vitality", quantity: -1 }],
                 equipped: {},
                 equippedMulti: {},
             },
@@ -431,6 +448,78 @@ describe("unequipItem", () => {
                     provenance: "grant:background:sage:2",
                 },
             ],
+            equipped: {},
+            equippedMulti: {},
+        });
+    });
+
+    it("can unequip into the bag with quantity 0", () => {
+        const inventory = {
+            bag: [],
+            equipped: { amulet: "rpv_amulet-of-vitality" },
+            equippedMulti: {},
+        };
+
+        expect(unequipItem(inventory, "amulet", "dnd", undefined, 0)).toEqual({
+            bag: [{ slug: "rpv_amulet-of-vitality", quantity: 0 }],
+            equipped: {},
+            equippedMulti: {},
+        });
+    });
+});
+
+describe("setBagQuantity", () => {
+    it("sets absolute quantity and keeps zero stacks", () => {
+        const inventory = addToBag(emptyInventory(), "srd_arrow-bow", 5);
+
+        expect(setBagQuantity(inventory, "srd_arrow-bow", 0, "dnd")).toEqual({
+            bag: [{ slug: "srd_arrow-bow", quantity: 0 }],
+            equipped: {},
+            equippedMulti: {},
+        });
+    });
+
+    it("clamps non-stackable items to 1", () => {
+        const inventory = addToBag(emptyInventory(), "rpv_amulet-of-vitality", 1);
+
+        expect(
+            setBagQuantity(inventory, "rpv_amulet-of-vitality", 3, "dnd")
+        ).toEqual({
+            bag: [{ slug: "rpv_amulet-of-vitality", quantity: 1 }],
+            equipped: {},
+            equippedMulti: {},
+        });
+    });
+});
+
+describe("deleteInventoryItem", () => {
+    it("removes a bag stack including quantity 0", () => {
+        const inventory = setBagQuantity(
+            emptyInventory(),
+            "srd_arrow-bow",
+            0,
+            "dnd"
+        );
+
+        expect(deleteInventoryItem(inventory, { slug: "srd_arrow-bow" })).toEqual(
+            emptyInventory()
+        );
+    });
+
+    it("clears an equipped slot without restoring to bag", () => {
+        const inventory = {
+            bag: [{ slug: "srd_arrow-bow", quantity: 2 }],
+            equipped: { amulet: "rpv_amulet-of-vitality" },
+            equippedMulti: {},
+        };
+
+        expect(
+            deleteInventoryItem(inventory, {
+                slug: "rpv_amulet-of-vitality",
+                slotId: "amulet",
+            })
+        ).toEqual({
+            bag: [{ slug: "srd_arrow-bow", quantity: 2 }],
             equipped: {},
             equippedMulti: {},
         });

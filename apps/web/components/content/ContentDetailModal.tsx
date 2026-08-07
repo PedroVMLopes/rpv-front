@@ -15,7 +15,10 @@ import type {
     ContentDetailModel,
     ContentUseActionSpec,
 } from "@/lib/content/contentDetail.types";
-import { ContentDetailPanel } from "./ContentDetailPanel";
+import {
+    ContentDetailPanel,
+    type ContentDetailQuantityHandlers,
+} from "./ContentDetailPanel";
 
 type ContentDetailModalProps = {
     model: ContentDetailModel;
@@ -24,6 +27,9 @@ type ContentDetailModalProps = {
     onUse?: (useAction: ContentUseActionSpec) => void;
     afterContent?: ReactNode;
     footer?: ReactNode;
+    quantityHandlers?: ContentDetailQuantityHandlers;
+    onDelete?: () => void;
+    deleteLabel?: string;
 };
 
 function resolveUseActions(
@@ -42,17 +48,20 @@ export function ContentDetailModal({
     onUse,
     afterContent,
     footer,
+    quantityHandlers,
+    onDelete,
+    deleteLabel,
 }: ContentDetailModalProps) {
     const t = useTranslations("contentDetail");
     const useActions = resolveUseActions(model);
 
-    const useActionFooter =
-        !footer && useActions.length > 0 && onUse ? (
-            <DialogFooter
+    const useActionButtons =
+        useActions.length > 0 && onUse ? (
+            <div
                 className={
                     useActions.length > 1
-                        ? "grid grid-cols-2 gap-2 sm:space-x-0"
-                        : undefined
+                        ? "grid grid-cols-2 gap-2"
+                        : "grid grid-cols-1"
                 }
             >
                 {useActions.map((action, index) => (
@@ -75,10 +84,25 @@ export function ContentDetailModal({
                         </Button>
                     </div>
                 ))}
+            </div>
+        ) : null;
+
+    const deleteButton =
+        onDelete && deleteLabel ? (
+            <Button type="button" variant="destructive" onClick={onDelete}>
+                {deleteLabel}
+            </Button>
+        ) : null;
+
+    const composedFooter =
+        !footer && (useActionButtons || deleteButton) ? (
+            <DialogFooter className="flex-col gap-2 sm:flex-col sm:space-x-0">
+                {deleteButton}
+                {useActionButtons}
             </DialogFooter>
         ) : null;
 
-    const resolvedFooter = footer ?? useActionFooter;
+    const resolvedFooter = footer ?? composedFooter;
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -91,7 +115,10 @@ export function ContentDetailModal({
                                 {model.description ?? model.title}
                             </DialogDescription>
                         </DialogHeader>
-                        <ContentDetailPanel model={model} />
+                        <ContentDetailPanel
+                            model={model}
+                            quantityHandlers={quantityHandlers}
+                        />
                         {afterContent}
                     </div>
                 </div>

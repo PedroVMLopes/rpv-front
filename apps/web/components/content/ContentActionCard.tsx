@@ -7,6 +7,7 @@ import type {
     ContentUseActionSpec,
 } from "@/lib/content/contentDetail.types";
 import { ContentDetailModal } from "./ContentDetailModal";
+import type { ContentDetailQuantityHandlers } from "./ContentDetailPanel";
 import { ContentSummaryCard } from "./ContentSummaryCard";
 
 export type ContentActionCardProps = {
@@ -15,6 +16,9 @@ export type ContentActionCardProps = {
     expandLabel: string;
     onUse?: (useAction: ContentUseActionSpec) => void;
     headerActions?: ReactNode;
+    quantityHandlers?: ContentDetailQuantityHandlers;
+    onDelete?: () => void;
+    deleteLabel?: string;
     /** Optional test id wrapper attribute on the summary root. */
     "data-testid"?: string;
 };
@@ -34,10 +38,20 @@ export function ContentActionCard({
     expandLabel,
     onUse,
     headerActions,
+    quantityHandlers,
+    onDelete,
+    deleteLabel,
     "data-testid": testId,
 }: ContentActionCardProps) {
     const [detailOpen, setDetailOpen] = useState(false);
     const handleUse = onUse;
+
+    const handleDelete = onDelete
+        ? () => {
+              onDelete();
+              setDetailOpen(false);
+          }
+        : undefined;
 
     return (
         <div data-testid={testId} className="min-w-0">
@@ -57,6 +71,9 @@ export function ContentActionCard({
                 onUse={
                     hasUseActions(detail) && handleUse ? handleUse : undefined
                 }
+                quantityHandlers={quantityHandlers}
+                onDelete={handleDelete}
+                deleteLabel={deleteLabel}
             />
         </div>
     );

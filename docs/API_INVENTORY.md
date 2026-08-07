@@ -140,7 +140,8 @@ before persisting. Behavior matches
 | Rule | Server behavior |
 |------|-----------------|
 | Unknown slug for `system` | Removed from bag and equipped slots (includes legacy short IDs like `longsword` that are not Open5e/`rpv_*` keys) |
-| `quantity < 1` | Stack removed |
+| `quantity < 0` | Stack removed |
+| `quantity === 0` | Kept in bag until explicitly deleted |
 | Invalid slot ID for `system` | Equipped entry discarded |
 | Item↔slot type mismatch | Not checked — any known item may occupy any valid slot |
 | Same slug in two slots | Only the first iterated slot kept |

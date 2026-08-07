@@ -22,6 +22,16 @@ export type InventoryDisplayRow = {
     multiEquipped?: boolean;
 };
 
+export function formatInventoryItemTitle(
+    name: string,
+    quantity: number
+): string {
+    if (quantity === 1) {
+        return name;
+    }
+    return `${name} (${quantity})`;
+}
+
 function categoryKey(entry: ItemEntry | undefined): string | undefined {
     return entry?.category?.key;
 }

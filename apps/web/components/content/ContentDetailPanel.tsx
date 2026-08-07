@@ -1,13 +1,26 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
 import type { ContentDetailModel } from "@/lib/content/contentDetail.types";
+
+export type ContentDetailQuantityHandlers = {
+    onAdjustQuantity?: (delta: -1 | 1) => void;
+    canIncrementQuantity?: boolean;
+    canDecrementQuantity?: boolean;
+    decreaseLabel?: string;
+    increaseLabel?: string;
+};
 
 type ContentDetailPanelProps = {
     model: ContentDetailModel;
+    quantityHandlers?: ContentDetailQuantityHandlers;
 };
 
-export function ContentDetailPanel({ model }: ContentDetailPanelProps) {
+export function ContentDetailPanel({
+    model,
+    quantityHandlers,
+}: ContentDetailPanelProps) {
     const t = useTranslations("contentDetail");
 
     return (
@@ -35,8 +48,53 @@ export function ContentDetailPanel({ model }: ContentDetailPanelProps) {
                                 row.fullWidth ? "sm:col-span-2" : ""
                             }`}
                         >
-                            <dt className="text-muted-foreground">
-                                {t(`fields.${row.labelKey}`)}
+                            <dt className="flex items-center gap-2 text-muted-foreground">
+                                <span>{t(`fields.${row.labelKey}`)}</span>
+                                {row.quantityControls &&
+                                quantityHandlers?.onAdjustQuantity ? (
+                                    <span className="flex shrink-0 items-center gap-0.5">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            className="size-5 px-0"
+                                            aria-label={
+                                                quantityHandlers.decreaseLabel
+                                            }
+                                            disabled={
+                                                quantityHandlers.canDecrementQuantity ===
+                                                false
+                                            }
+                                            onClick={() =>
+                                                quantityHandlers.onAdjustQuantity?.(
+                                                    -1
+                                                )
+                                            }
+                                        >
+                                            −
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            className="size-5 px-0"
+                                            aria-label={
+                                                quantityHandlers.increaseLabel
+                                            }
+                                            disabled={
+                                                quantityHandlers.canIncrementQuantity ===
+                                                false
+                                            }
+                                            onClick={() =>
+                                                quantityHandlers.onAdjustQuantity?.(
+                                                    1
+                                                )
+                                            }
+                                        >
+                                            +
+                                        </Button>
+                                    </span>
+                                ) : null}
                             </dt>
                             <dd className="font-medium">{row.value}</dd>
                         </div>

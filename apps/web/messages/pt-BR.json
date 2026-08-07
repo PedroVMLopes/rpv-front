@@ -539,6 +539,9 @@
       "equip": "Equipar",
       "unequip": "Desequipar",
       "equipToSlot": "Equipar em {slot}",
+      "deleteItem": "Excluir",
+      "increaseQuantity": "Aumentar quantidade",
+      "decreaseQuantity": "Diminuir quantidade",
       "empty": "Nenhum item no inventário.",
       "emptyFiltered": "Nenhum item corresponde a este filtro."
     },

@@ -50,6 +50,10 @@ describe("buildItemContentModel", () => {
                 ?.value
         ).toBe("3");
         expect(
+            detail.sections[0]?.rows.find((row) => row.labelKey === "quantity")
+                ?.quantityControls
+        ).toBe(true);
+        expect(
             detail.sections[0]?.rows.find((row) => row.labelKey === "category")
                 ?.value
         ).toBe("—");

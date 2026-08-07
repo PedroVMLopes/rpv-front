@@ -204,7 +204,7 @@ describe("InventoryTab", () => {
         renderWithProviders(<InventoryTab stored={storedCharacter} />);
 
         const bag = bagPanel();
-        expect(within(bag).getByText("Arrow (bow)")).toBeInTheDocument();
+        expect(within(bag).getByText("Arrow (bow) (10)")).toBeInTheDocument();
         expect(within(bag).getByText("Pilot Test Pack A")).toBeInTheDocument();
         expect(within(bag).getByText("Longbow")).toBeInTheDocument();
         expect(
@@ -261,7 +261,7 @@ describe("InventoryTab", () => {
         await user.click(
             within(tablist).getByRole("tab", { name: "Consumables" })
         );
-        expect(within(bag).getByText("Arrow (bow)")).toBeInTheDocument();
+        expect(within(bag).getByText("Arrow (bow) (10)")).toBeInTheDocument();
         expect(within(bag).queryByText("Longbow")).not.toBeInTheDocument();
         expect(
             within(bag).queryByText("Pilot Test Pack A")
@@ -273,7 +273,7 @@ describe("InventoryTab", () => {
         );
         expect(within(bag).getByText("Longbow")).toBeInTheDocument();
         expect(within(bag).getByText("Pilot Test Pack A")).toBeInTheDocument();
-        expect(within(bag).queryByText("Arrow (bow)")).not.toBeInTheDocument();
+        expect(within(bag).queryByText("Arrow (bow) (10)")).not.toBeInTheDocument();
     });
 });
 
@@ -380,6 +380,99 @@ describe("InventoryTab equip actions", () => {
             useCharacterStore.getState().characters[0]?.selections.inventory
                 ?.equipped.amulet
         ).toBeUndefined();
+    });
+
+    it("shows quantity suffix and adjusts bag quantity from the detail modal", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(
+            <InventoryTabLive characterId={storedCharacter.id} />
+        );
+
+        const arrowCard = cardForName("Arrow (bow) (10)", bagPanel());
+        await user.click(
+            within(arrowCard).getByRole("button", {
+                name: "Expand Arrow (bow) (10)",
+            })
+        );
+
+        const dialog = screen.getByRole("dialog");
+        expect(within(dialog).getByText("10")).toBeInTheDocument();
+
+        await user.click(
+            within(dialog).getByRole("button", { name: "Decrease quantity" })
+        );
+
+        expect(
+            useCharacterStore.getState().characters[0]?.selections.inventory?.bag
+        ).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    slug: "srd_arrow-bow",
+                    quantity: 9,
+                }),
+            ])
+        );
+    });
+
+    it("deletes a bag item from the detail modal", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(
+            <InventoryTabLive characterId={storedCharacter.id} />
+        );
+
+        const packCard = cardForName("Pilot Test Pack A", bagPanel());
+        await user.click(
+            within(packCard).getByRole("button", {
+                name: "Expand Pilot Test Pack A",
+            })
+        );
+
+        await user.click(screen.getByRole("button", { name: "Delete" }));
+
+        expect(
+            useCharacterStore
+                .getState()
+                .characters[0]?.selections.inventory?.bag.some(
+                    (stack) => stack.slug === "rpv_pilot-test-pack-a"
+                )
+        ).toBe(false);
+    });
+
+    it("unequips to bag quantity 0 when decreasing equipped quantity", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(
+            <InventoryTabLive characterId={storedCharacter.id} />
+        );
+
+        const usable = screen.getByTestId("inventory-equipped-usable");
+        const longbowCard = cardForName("Longbow", usable);
+        await user.click(
+            within(longbowCard).getByRole("button", {
+                name: "Expand Longbow",
+            })
+        );
+
+        const dialog = screen.getByRole("dialog");
+        expect(
+            within(dialog).getByRole("button", { name: "Increase quantity" })
+        ).toBeDisabled();
+
+        await user.click(
+            within(dialog).getByRole("button", { name: "Decrease quantity" })
+        );
+
+        const inventory =
+            useCharacterStore.getState().characters[0]?.selections.inventory;
+        expect(inventory?.equipped["ranged-main"]).toBeUndefined();
+        expect(inventory?.bag).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    slug: "srd_longbow",
+                    quantity: 0,
+                }),
+            ])
+        );
+        expect(screen.getByText("Longbow (0)")).toBeInTheDocument();
     });
 });
 

@@ -2,6 +2,8 @@ export type ContentDetailRow = {
     labelKey: string;
     value: string;
     fullWidth?: boolean;
+    /** When true, panel may render +/- next to the quantity label. */
+    quantityControls?: boolean;
 };
 
 export type ContentDetailSection = {

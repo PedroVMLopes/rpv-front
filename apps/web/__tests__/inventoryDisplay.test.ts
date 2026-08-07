@@ -3,6 +3,7 @@ import type { ItemEntry } from "@rpv/content";
 import {
     countMiscItems,
     filterInventoryRows,
+    formatInventoryItemTitle,
     listEquippedRowsByGroup,
     listInventoryRows,
     resolveItemFilterCategory,
@@ -231,5 +232,16 @@ describe("filterInventoryRows", () => {
     it("returns empty when no rows match", () => {
         expect(filterInventoryRows(rows, "tools", "dnd")).toEqual([]);
         expect(filterInventoryRows(rows, "quest", "dnd")).toEqual([]);
+    });
+});
+
+describe("formatInventoryItemTitle", () => {
+    it("omits suffix for quantity 1", () => {
+        expect(formatInventoryItemTitle("Torch", 1)).toBe("Torch");
+    });
+
+    it("appends quantity when not 1", () => {
+        expect(formatInventoryItemTitle("Piton", 10)).toBe("Piton (10)");
+        expect(formatInventoryItemTitle("Torch", 0)).toBe("Torch (0)");
     });
 });

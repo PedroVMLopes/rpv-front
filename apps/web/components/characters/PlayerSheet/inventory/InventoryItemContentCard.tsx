@@ -6,13 +6,17 @@ import {
     getEquipmentSlots,
     getItem,
     getSuggestedEquipmentSlotIds,
+    isItemStackable,
 } from "@rpv/content";
 import type { CharacterInventory } from "@rpv/domain";
 import {
     buildWeaponActionForEquippedSlot,
     isWeaponSlotId,
 } from "@/lib/character/combatActions";
-import type { InventoryDisplayRow } from "@/lib/character/inventoryDisplay";
+import {
+    formatInventoryItemTitle,
+    type InventoryDisplayRow,
+} from "@/lib/character/inventoryDisplay";
 import {
     canEquipSlugToSlot,
     isSlugEquipped,
@@ -67,6 +71,13 @@ export function InventoryItemContentCard({
     const unequipItemFromMultiSlot = useCharacterStore(
         (state) => state.unequipItemFromMultiSlot
     );
+    const setBagQuantity = useCharacterStore((state) => state.setBagQuantity);
+    const deleteInventoryItem = useCharacterStore(
+        (state) => state.deleteInventoryItem
+    );
+    const unequipItemToBag = useCharacterStore(
+        (state) => state.unequipItemToBag
+    );
     const getResolvedStats = useCharacterStore((state) => state.getResolvedStats);
     const { openRollRequest } = useRollAssistant();
 
@@ -80,6 +91,8 @@ export function InventoryItemContentCard({
         equippedMulti
     );
     const resolved = getResolvedStats(stored.id);
+    const displayQuantity = row.quantity;
+    const stackable = itemEntry ? isItemStackable(itemEntry) : true;
 
     const itemFormatters = useMemo<ItemContentFormatters>(
         () => ({ missingValue: "—" }),
@@ -132,6 +145,9 @@ export function InventoryItemContentCard({
     ]);
 
     const { summary, detail } = useMemo(() => {
+        const titled = (name: string) =>
+            formatInventoryItemTitle(name, displayQuantity);
+
         if (weaponAction) {
             const handLabel =
                 weaponAction.slotId === "melee-main"
@@ -149,9 +165,23 @@ export function InventoryItemContentCard({
                 },
                 weaponFormatters
             );
+            const title = titled(models.summary.title);
+            const quantityRow = {
+                labelKey: "quantity",
+                value: String(displayQuantity),
+                quantityControls: true as const,
+            };
+            const detailRows = [
+                ...(models.detail.sections[0]?.rows ?? []),
+                quantityRow,
+            ];
             return {
-                summary: models.summary,
-                detail: models.detail,
+                summary: { ...models.summary, title },
+                detail: {
+                    ...models.detail,
+                    title,
+                    sections: [{ rows: detailRows }],
+                },
             };
         }
 
@@ -166,22 +196,26 @@ export function InventoryItemContentCard({
             });
         }
 
-        return buildItemContentModel(
+        const models = buildItemContentModel(
             {
                 id: row.key,
                 itemEntry,
                 fallbackTitle: row.slug,
                 badges,
-                quantity: row.equipped ? undefined : row.quantity,
+                quantity: displayQuantity,
             },
             itemFormatters
         );
+        const title = titled(models.summary.title);
+        return {
+            summary: { ...models.summary, title },
+            detail: { ...models.detail, title },
+        };
     }, [
+        displayQuantity,
         itemEntry,
         itemFormatters,
-        row.equipped,
         row.key,
-        row.quantity,
         row.slug,
         slotLabel,
         tSlots,
@@ -206,6 +240,38 @@ export function InventoryItemContentCard({
         if (request) {
             openRollRequest(request);
         }
+    };
+
+    const handleAdjustQuantity = (delta: -1 | 1) => {
+        if (row.equipped && row.slotId) {
+            if (delta === -1) {
+                unequipItemToBag(
+                    stored.id,
+                    row.slotId,
+                    0,
+                    row.multiEquipped ? row.slug : undefined
+                );
+            }
+            return;
+        }
+
+        const next = Math.max(0, displayQuantity + delta);
+        if (!stackable && next > 1) {
+            return;
+        }
+        setBagQuantity(stored.id, row.slug, next);
+    };
+
+    const handleDelete = () => {
+        if (row.equipped && row.slotId) {
+            deleteInventoryItem(stored.id, {
+                slug: row.slug,
+                slotId: row.slotId,
+                multiEquipped: row.multiEquipped,
+            });
+            return;
+        }
+        deleteInventoryItem(stored.id, { slug: row.slug });
     };
 
     const orderedSlots = useMemo(() => {
@@ -332,6 +398,17 @@ export function InventoryItemContentCard({
                     : undefined
             }
             headerActions={equipMenu}
+            quantityHandlers={{
+                onAdjustQuantity: handleAdjustQuantity,
+                canDecrementQuantity: true,
+                canIncrementQuantity: row.equipped
+                    ? false
+                    : stackable || displayQuantity < 1,
+                decreaseLabel: t("decreaseQuantity"),
+                increaseLabel: t("increaseQuantity"),
+            }}
+            onDelete={handleDelete}
+            deleteLabel={t("deleteItem")}
             data-testid={`inventory-card-${row.key}`}
         />
     );

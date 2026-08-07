@@ -23,8 +23,11 @@ import { readLevelFromForm } from "@/lib/character/level";
 import { resolveInventoryGrantProvenance } from "@/lib/character/materializeInventoryGrants";
 import {
     addToBag as addToBagInventory,
+    deleteInventoryItem as deleteInventoryItemInventory,
+    type DeleteInventoryItemInput,
     equipItem as equipItemInventory,
     removeFromBag as removeFromBagInventory,
+    setBagQuantity as setBagQuantityInventory,
     unequipItem as unequipItemInventory,
     unequipItemFromMultiSlot as unequipItemFromMultiSlotInventory,
 } from "@/lib/character/inventory";
@@ -57,6 +60,14 @@ interface CharacterStore {
     ) => void;
     addToBag: (id: string, slug: string, quantity?: number) => void;
     removeFromBag: (id: string, slug: string, quantity?: number) => void;
+    setBagQuantity: (id: string, slug: string, quantity: number) => void;
+    deleteInventoryItem: (id: string, input: DeleteInventoryItemInput) => void;
+    unequipItemToBag: (
+        id: string,
+        slotId: string,
+        restoredQuantity?: number,
+        multiSlug?: string
+    ) => void;
     updateResource: (id: string, resourceName: string, delta: number) => void;
     getResolvedStats: (id: string) => Stats | undefined;
     getCharacterProps: (id: string) => CharacterProps | undefined;
@@ -218,6 +229,67 @@ export const useCharacterStore = create<CharacterStore>()(
                 updateCharacterInventory(set, get, id, (inventory) =>
                     removeFromBagInventory(inventory, slug, quantity)
                 ),
+
+            setBagQuantity: (id, slug, quantity) =>
+                updateCharacterInventory(set, get, id, (inventory, system) =>
+                    setBagQuantityInventory(inventory, slug, quantity, system)
+                ),
+
+            deleteInventoryItem: (id, input) =>
+                updateCharacterInventory(set, get, id, (inventory) =>
+                    deleteInventoryItemInventory(inventory, input)
+                ),
+
+            unequipItemToBag: (id, slotId, restoredQuantity = 1, multiSlug) =>
+                set((state) => ({
+                    characters: state.characters.map((char) => {
+                        if (char.id !== id) return char;
+
+                        const locale = useContentLocale.getState().contentLocale;
+                        const level = readLevelFromForm(
+                            flattenStoredToForm(char, char.system)
+                        );
+                        const slug =
+                            multiSlug ??
+                            char.selections.inventory.equipped[slotId];
+                        const provenance = slug
+                            ? resolveInventoryGrantProvenance(
+                                  char.selections,
+                                  slug,
+                                  locale,
+                                  char.system,
+                                  level
+                              )
+                            : undefined;
+
+                        const nextInventory = multiSlug
+                            ? unequipItemFromMultiSlotInventory(
+                                  char.selections.inventory,
+                                  slotId,
+                                  multiSlug,
+                                  char.system,
+                                  provenance,
+                                  restoredQuantity
+                              )
+                            : unequipItemInventory(
+                                  char.selections.inventory,
+                                  slotId,
+                                  char.system,
+                                  provenance,
+                                  restoredQuantity
+                              );
+
+                        if (nextInventory === char.selections.inventory) {
+                            return char;
+                        }
+
+                        return rebuildCharacterWithInventory(
+                            char,
+                            nextInventory,
+                            locale
+                        );
+                    }),
+                })),
 
             updateResource: (id, resourceName, delta) =>
                 set((state) => ({

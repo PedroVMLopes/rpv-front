@@ -55,6 +55,7 @@ export function buildItemContentModel(
         rows.push({
             labelKey: "quantity",
             value: String(quantity),
+            quantityControls: true,
         });
     }
 

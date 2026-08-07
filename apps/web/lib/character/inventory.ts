@@ -60,7 +60,7 @@ function sanitizeBag(
 ): CharacterInventory["bag"] {
     const validStacks = bag.flatMap((stack) => {
         const slug = coerceSlug(stack.slug);
-        if (!slug || stack.quantity < 1 || !isValidItemSlug(slug, system)) {
+        if (!slug || stack.quantity < 0 || !isValidItemSlug(slug, system)) {
             return [];
         }
 
@@ -219,7 +219,13 @@ function reconcileEquippedWithBag(
         }
     }
 
-    const nextBag = remainingBag.filter((stack) => stack.quantity > 0);
+    const equippedSlugs = new Set(equippedCounts.keys());
+    // Keep intentional qty-0 stacks; drop zeros left after consuming for equipped.
+    const nextBag = remainingBag.filter(
+        (stack) =>
+            stack.quantity > 0 ||
+            (stack.quantity === 0 && !equippedSlugs.has(stack.slug))
+    );
 
     return { bag: nextBag, equipped, equippedMulti };
 }
@@ -338,7 +344,7 @@ export function addToBag(
     provenance?: string
 ): CharacterInventory {
     const normalizedSlug = coerceSlug(slug);
-    if (!normalizedSlug || quantity < 1) {
+    if (!normalizedSlug || quantity < 0) {
         return inventory;
     }
 
@@ -348,6 +354,9 @@ export function addToBag(
         provenance
     );
     if (existingIndex >= 0) {
+        if (quantity === 0) {
+            return inventory;
+        }
         return {
             ...inventory,
             bag: inventory.bag.map((stack, index) =>
@@ -369,6 +378,110 @@ export function addToBag(
             },
         ],
     };
+}
+
+/** Set absolute bag quantity for a slug. Keeps the stack when quantity is 0. */
+export function setBagQuantity(
+    inventory: CharacterInventory,
+    slug: string,
+    quantity: number,
+    system: SystemKey
+): CharacterInventory {
+    const normalizedSlug = coerceSlug(slug);
+    if (!normalizedSlug || quantity < 0 || !isValidItemSlug(normalizedSlug, system)) {
+        return inventory;
+    }
+
+    const entry = getItem(normalizedSlug, system);
+    const nextQuantity =
+        entry && !isItemStackable(entry) ? Math.min(quantity, 1) : quantity;
+
+    const stackIndex = findRemovableBagStackIndex(inventory.bag, normalizedSlug);
+    if (stackIndex < 0) {
+        return {
+            ...inventory,
+            bag: [
+                ...inventory.bag,
+                { slug: normalizedSlug, quantity: nextQuantity },
+            ],
+        };
+    }
+
+    return {
+        ...inventory,
+        bag: inventory.bag.map((stack, index) =>
+            index === stackIndex
+                ? { ...stack, quantity: nextQuantity }
+                : stack
+        ),
+    };
+}
+
+/** Remove all bag stacks for a slug (including quantity 0). */
+export function deleteFromBag(
+    inventory: CharacterInventory,
+    slug: string
+): CharacterInventory {
+    const normalizedSlug = coerceSlug(slug);
+    if (!normalizedSlug) {
+        return inventory;
+    }
+
+    const nextBag = inventory.bag.filter((stack) => stack.slug !== normalizedSlug);
+    if (nextBag.length === inventory.bag.length) {
+        return inventory;
+    }
+
+    return { ...inventory, bag: nextBag };
+}
+
+export type DeleteInventoryItemInput = {
+    slug: string;
+    slotId?: string;
+    multiEquipped?: boolean;
+};
+
+/** Remove from bag and/or clear an equipped slot without restoring to bag. */
+export function deleteInventoryItem(
+    inventory: CharacterInventory,
+    input: DeleteInventoryItemInput
+): CharacterInventory {
+    const normalizedSlug = coerceSlug(input.slug);
+    if (!normalizedSlug) {
+        return inventory;
+    }
+
+    const withMulti = {
+        ...inventory,
+        equippedMulti: inventory.equippedMulti ?? {},
+    };
+
+    if (input.slotId && input.multiEquipped) {
+        const list = withMulti.equippedMulti[input.slotId];
+        if (!list?.includes(normalizedSlug)) {
+            return inventory;
+        }
+        const nextList = [...list];
+        nextList.splice(nextList.indexOf(normalizedSlug), 1);
+        const nextMulti = { ...withMulti.equippedMulti };
+        if (nextList.length === 0) {
+            delete nextMulti[input.slotId];
+        } else {
+            nextMulti[input.slotId] = nextList;
+        }
+        return { ...withMulti, equippedMulti: nextMulti };
+    }
+
+    if (input.slotId) {
+        if (withMulti.equipped[input.slotId] !== normalizedSlug) {
+            return inventory;
+        }
+        const { [input.slotId]: _removed, ...remainingEquipped } =
+            withMulti.equipped;
+        return { ...withMulti, equipped: remainingEquipped };
+    }
+
+    return deleteFromBag(withMulti, normalizedSlug);
 }
 
 export function removeFromBag(
@@ -490,14 +603,15 @@ export function unequipItem(
     inventory: CharacterInventory,
     slotId: string,
     _system: SystemKey,
-    restoredProvenance?: string
+    restoredProvenance?: string,
+    restoredQuantity = 1
 ): CharacterInventory {
     const withMulti = {
         ...inventory,
         equippedMulti: inventory.equippedMulti ?? {},
     };
     const slug = withMulti.equipped[slotId];
-    if (!slug) {
+    if (!slug || restoredQuantity < 0) {
         return inventory;
     }
 
@@ -509,7 +623,7 @@ export function unequipItem(
             equipped: remainingEquipped,
         },
         slug,
-        1,
+        restoredQuantity,
         restoredProvenance
     );
 }
@@ -519,7 +633,8 @@ export function unequipItemFromMultiSlot(
     slotId: string,
     slug: string,
     _system: SystemKey,
-    restoredProvenance?: string
+    restoredProvenance?: string,
+    restoredQuantity = 1
 ): CharacterInventory {
     const withMulti = {
         ...inventory,
@@ -527,7 +642,11 @@ export function unequipItemFromMultiSlot(
     };
     const normalizedSlug = coerceSlug(slug);
     const list = withMulti.equippedMulti[slotId];
-    if (!normalizedSlug || !list?.includes(normalizedSlug)) {
+    if (
+        !normalizedSlug ||
+        !list?.includes(normalizedSlug) ||
+        restoredQuantity < 0
+    ) {
         return inventory;
     }
 
@@ -548,7 +667,7 @@ export function unequipItemFromMultiSlot(
             equippedMulti: nextMulti,
         },
         normalizedSlug,
-        1,
+        restoredQuantity,
         restoredProvenance
     );
 }
