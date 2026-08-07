@@ -4,5 +4,5 @@ import { SheetPanel } from "@/components/characters/SheetPanel";
 type OverviewPanelProps = Omit<ComponentProps<typeof SheetPanel>, "variant">;
 
 export function OverviewPanel(props: OverviewPanelProps) {
-    return <SheetPanel variant="nested" {...props} className="border-3" />;
+    return <SheetPanel variant="nested" {...props} className="border-custom" />;
 }

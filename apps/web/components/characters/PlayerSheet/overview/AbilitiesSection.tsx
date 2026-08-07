@@ -1,8 +1,15 @@
 "use client";
 
-import { useMemo } from "react";
-import Link from "next/link";
+import { useMemo, type ComponentType } from "react";
 import { useTranslations } from "next-intl";
+import {
+    GiBrain,
+    GiConversation,
+    GiCrystalBall,
+    GiHeartBeats,
+    GiMuscleUp,
+    GiWalkingBoot,
+} from "react-icons/gi";
 import {
     computeSkillModifiers,
     formatModifier,
@@ -16,10 +23,19 @@ import { getResolvedStatDisplay } from "@/lib/character/presetStats";
 import { getSystemRules } from "@/lib/character/systemRules";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useCharacterStore } from "@/store/useCharacterStore";
-import { Button } from "@/components/ui/button";
 import { OverviewPanel } from "./OverviewPanel";
-import { sheetInset } from "../playerSheetSurfaces";
 import { cn } from "@/lib/utils";
+
+type AbilityIcon = ComponentType<{ className?: string }>;
+
+const ABILITY_ICONS: Record<string, AbilityIcon> = {
+    strength: GiMuscleUp,
+    dexterity: GiWalkingBoot,
+    constitution: GiHeartBeats,
+    intelligence: GiBrain,
+    wisdom: GiCrystalBall,
+    charisma: GiConversation,
+};
 
 type AbilitiesSectionProps = {
     stored: StoredCharacter;
@@ -61,54 +77,59 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
 
     return (
         <OverviewPanel>
-            {level < 20 ? (
-                <Button asChild className="mb-2 w-full">
-                    <Link
-                        href={`/characters/player/edit/${stored.id}?mode=level-up&from=${level}`}
-                    >
-                        {t("playerSheet.levelUp")}
-                    </Link>
-                </Button>
-            ) : null}
             <div className="grid gap-2 grid-cols-3">
                 {display.abilities.map((ability) => {
                     const mod = abilityModifier(ability.resolved);
+                    const Icon = ABILITY_ICONS[ability.name];
+                    const label = ability.labelKey
+                        ? t(ability.labelKey)
+                        : (ability.label ?? ability.name);
+
                     return (
                         <div
                             key={ability.name}
                             className={cn(
-                                "flex flex-col items-center rounded-xl p-1.5 bg-popover text-popover-foreground border border-border/50 shadow-xs"
+                                "flex flex-col items-center rounded-xl gap-1 py-2 px-1.5 bg-accent text-accent-foreground shadow-xs border-custom border-background"
                             )}
                         >
-                            <span className="text-xs font-semibold uppercase text-popover-foreground/60">
-                                {ability.shortLabelKey
-                                    ? t(ability.shortLabelKey)
-                                    : ability.shortLabel ?? ability.name}
-                            </span>
-                            <span className="text-lg font-bold tabular-nums">
-                                {ability.resolved}
-                            </span>
-                            <span className="text-sm font-semibold tabular-nums text-popover-foreground/60">
-                                {formatModifier(mod)}
+                            <div className="flex flex-col items-center gap-1">
+                                {Icon ? (
+                                    <Icon
+                                        className="size-8 shrink-0 text-accent-foreground/50"
+                                        aria-hidden
+                                    />
+                                ) : null}
+                                <div className="flex flex-row items-center leading-none gap-2">
+                                    <span className="font-semibold tabular-nums text-accent-foreground/70">
+                                        {ability.resolved}
+                                    </span>
+                                    <span className="font-bold tabular-nums">
+                                        {formatModifier(mod)}
+                                    </span>
+                                </div>
+                            </div>
+                            <span className="text-xs font-semibold text-center text-primary">
+                                {label}
                             </span>
                         </div>
                     );
                 })}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm mt-2">
-                <div className={cn("rounded-lg p-2 flex flex-row gap-1.5 bg-popover text-popover-foreground border border-border/50")}>
-                    <span className="text-popover-foreground/70">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-sm mt-2">
+                <div className={cn("rounded-lg p-2 flex flex-row gap-1.5 bg-accent text-accent-foreground border-custom border-background shadow-xs")}>
+                    <span className="text-accent-foreground/70">
                         {t("character.proficiencyBonus")}{" "}
                     </span>
                     <span className="font-bold">{formatModifier(profBonus)}</span>
                 </div>
-                <div className={cn("rounded-lg p-2 flex flex-row gap-1.5 bg-popover text-popover-foreground border border-border/50")}>
+                {/* <div className={cn("rounded-lg p-2 flex flex-row gap-1.5 bg-popover text-popover-foreground border-2 border-border/50")}>
                     <span className="text-popover-foreground/70">
                         {t("character.passivePerception")}{" "}
                     </span>
                     <span className="font-bold">{passivePerception}</span>
-                </div>
+                </div> */}
+           
             </div>
         </OverviewPanel>
     );
