@@ -41,14 +41,14 @@ export function ContentSummaryCard({
     const showBody = showUse || Boolean(model.shortDescription);
 
     return (
-        <div className="flex h-full flex-col overflow-hidden rounded-lg border-2">
-            <div className="flex items-start justify-between bg-accent text-accent-foreground p-2">
+        <div className="flex h-full flex-col overflow-hidden rounded-lg border-custom shadow-xs bg-popover text-popover-foreground">
+            <div className="flex items-start justify-between p-2">
                 <div className="flex min-w-0 flex-col">
-                    <h3 className="min-w-0 flex-1 font-serif text-base font-semibold leading-tight">
+                    <h3 className="min-w-0 flex-1 text-base font-semibold leading-tight">
                         {model.title}
                     </h3>
                     {subtitle ? (
-                        <span className="text-xs text-accent-foreground/70">
+                        <span className="text-xs text-popover-foreground/70">
                             {subtitle}
                         </span>
                     ) : null}
@@ -57,7 +57,7 @@ export function ContentSummaryCard({
                     {headerActions}
                     <Button
                         type="button"
-                        variant="outline"
+                        variant="ghost"
                         className="size-6 cursor-pointer"
                         aria-label={expandLabel}
                         onClick={onExpand}
@@ -68,9 +68,9 @@ export function ContentSummaryCard({
             </div>
 
             {showBody ? (
-                <div className="flex flex-1 flex-col gap-2 bg-accent text-accent-foreground p-2 pt-0">
+                <div className="flex flex-1 flex-col gap-2 p-2 pt-0 text-popover-foreground">
                     {model.shortDescription ? (
-                        <p className="text-xs leading-snug text-accent-foreground/80">
+                        <p className="text-xs leading-snug">
                             {model.shortDescription}
                         </p>
                     ) : null}
@@ -88,7 +88,7 @@ export function ContentSummaryCard({
                                     className="flex min-w-0 flex-col gap-0.5"
                                 >
                                     {action.captionKey ? (
-                                        <span className="pl-1 text-[10px] leading-tight text-accent-foreground/70">
+                                        <span className="pl-1 text-[10px] leading-tight">
                                             {t(action.captionKey)}
                                         </span>
                                     ) : null}

@@ -19,6 +19,7 @@ import {
     ContentDetailPanel,
     type ContentDetailQuantityHandlers,
 } from "./ContentDetailPanel";
+import { Separator } from "../ui/separator";
 
 type ContentDetailModalProps = {
     model: ContentDetailModel;
@@ -107,7 +108,6 @@ export function ContentDetailModal({
     const composedFooter =
         !footer && (useActionButtons || primaryActions) ? (
             <DialogFooter className="flex-col gap-2 sm:flex-col sm:space-x-0">
-                {primaryActions}
                 {useActionButtons}
             </DialogFooter>
         ) : null;
@@ -130,10 +130,11 @@ export function ContentDetailModal({
                             quantityHandlers={quantityHandlers}
                         />
                         {afterContent}
+                        {primaryActions}
                     </div>
                 </div>
                 {resolvedFooter ? (
-                    <div className="shrink-0 border-t bg-background px-6 py-4">
+                    <div className="shrink-0 px-6 py-4">
                         {resolvedFooter}
                     </div>
                 ) : null}

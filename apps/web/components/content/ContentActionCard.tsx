@@ -56,7 +56,7 @@ export function ContentActionCard({
         : undefined;
 
     return (
-        <div data-testid={testId} className="min-w-0">
+        <div data-testid={testId} className="min-w-0 h-fit">
             <ContentSummaryCard
                 model={summary}
                 expandLabel={expandLabel}

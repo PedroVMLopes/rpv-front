@@ -73,11 +73,11 @@ export function InventoryEquipMenu({
             <DropdownMenuTrigger asChild>
                 <Button
                     type="button"
-                    variant={row.equipped ? "link" : "outline"}
+                    variant={row.equipped ? "link" : "ghost"}
                     size="sm"
                     className={
                         size === "footer"
-                            ? "h-9 shrink-0 px-3 text-sm font-semibold text-popover"
+                            ? "h-9 shrink-0 px-3 text-sm font-semibold"
                             : "h-6 shrink-0 px-1.5 text-xs font-semibold"
                     }
                     aria-label={
