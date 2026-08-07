@@ -65,6 +65,40 @@ describe("listInventoryRows", () => {
     it("returns empty list for empty inventory", () => {
         expect(listInventoryRows(emptyInventory(), "dnd")).toEqual([]);
     });
+
+    it("omits bag remainder when the same slug is equipped", () => {
+        const rows = listInventoryRows(
+            {
+                bag: [
+                    { slug: "srd_torch", quantity: 9 },
+                    { slug: "srd_arrow-bow", quantity: 20 },
+                ],
+                equipped: {},
+                equippedMulti: { usable: ["srd_torch"] },
+            },
+            "dnd"
+        );
+
+        expect(rows.filter((row) => row.slug === "srd_torch")).toEqual([
+            {
+                key: "equipped-multi:usable:0:srd_torch",
+                slug: "srd_torch",
+                quantity: 1,
+                equipped: true,
+                slotId: "usable",
+                multiEquipped: true,
+            },
+        ]);
+        expect(rows).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    slug: "srd_arrow-bow",
+                    quantity: 20,
+                    equipped: false,
+                }),
+            ])
+        );
+    });
 });
 
 describe("listEquippedRowsByGroup", () => {

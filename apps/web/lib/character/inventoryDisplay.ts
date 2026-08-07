@@ -77,12 +77,28 @@ export function listInventoryRows(
     inventory: CharacterInventory,
     system: SystemKey
 ): InventoryDisplayRow[] {
-    const rows: InventoryDisplayRow[] = inventory.bag.map((stack) => ({
-        key: bagStackReactKey(stack),
-        slug: stack.slug,
-        quantity: stack.quantity,
-        equipped: false,
-    }));
+    const equippedSlugs = new Set<string>();
+    for (const slug of Object.values(inventory.equipped)) {
+        if (slug) {
+            equippedSlugs.add(slug);
+        }
+    }
+    for (const slugs of Object.values(inventory.equippedMulti ?? {})) {
+        for (const slug of slugs) {
+            equippedSlugs.add(slug);
+        }
+    }
+
+    // Bag remainder for an equipped slug is shown on the equipped card (owned
+    // total). Listing both would duplicate the item in the bag grid.
+    const rows: InventoryDisplayRow[] = inventory.bag
+        .filter((stack) => !equippedSlugs.has(stack.slug))
+        .map((stack) => ({
+            key: bagStackReactKey(stack),
+            slug: stack.slug,
+            quantity: stack.quantity,
+            equipped: false,
+        }));
 
     for (const [slotId, slug] of Object.entries(inventory.equipped)) {
         if (!slug) {

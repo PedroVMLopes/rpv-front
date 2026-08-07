@@ -286,6 +286,36 @@ describe("InventoryTab equip actions", () => {
         return <InventoryTab stored={stored} />;
     }
 
+    it("does not duplicate stackable items in Bag when partially equipped", () => {
+        const partial: StoredCharacter = {
+            ...storedCharacter,
+            id: "char-torch-partial",
+            selections: {
+                ...storedCharacter.selections,
+                inventory: {
+                    bag: [{ slug: "srd_torch", quantity: 9 }],
+                    equipped: {},
+                    equippedMulti: { usable: ["srd_torch"] },
+                },
+            },
+        };
+
+        renderWithProviders(<InventoryTab stored={partial} />);
+
+        const bag = bagPanel();
+        expect(within(bag).getAllByText(/Torch/).length).toBe(1);
+        expect(
+            within(cardForName("Torch (10)", bag)).getByRole("button", {
+                name: "Equipped",
+            })
+        ).toBeInTheDocument();
+        expect(
+            within(screen.getByTestId("inventory-equipped-usable")).getByText(
+                /Torch/
+            )
+        ).toBeInTheDocument();
+    });
+
     it("includes Usable in the equip menu", async () => {
         const user = userEvent.setup();
         renderWithProviders(
