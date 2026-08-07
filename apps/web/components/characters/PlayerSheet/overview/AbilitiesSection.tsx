@@ -103,12 +103,12 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
                                     <span className="font-semibold tabular-nums text-accent-foreground/70">
                                         {ability.resolved}
                                     </span>
-                                    <span className="font-bold tabular-nums">
+                                    <span className="font-bold tabular-nums text-primary">
                                         {formatModifier(mod)}
                                     </span>
                                 </div>
                             </div>
-                            <span className="text-xs font-semibold text-center text-primary">
+                            <span className="text-xs sm:text-sm font-semibold text-center">
                                 {label}
                             </span>
                         </div>
