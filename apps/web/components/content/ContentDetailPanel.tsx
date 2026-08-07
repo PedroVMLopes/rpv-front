@@ -77,7 +77,7 @@ export function ContentDetailPanel({
                                             type="button"
                                             variant="outline"
                                             size="sm"
-                                            className="size-5 px-0"
+                                            className="size-5 px-0 shadow-none"
                                             aria-label={
                                                 quantityHandlers.increaseLabel
                                             }
