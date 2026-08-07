@@ -70,18 +70,17 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
                     </Link>
                 </Button>
             ) : null}
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            <div className="grid gap-2 grid-cols-3">
                 {display.abilities.map((ability) => {
                     const mod = abilityModifier(ability.resolved);
                     return (
                         <div
                             key={ability.name}
                             className={cn(
-                                "flex flex-col items-center rounded-xl p-2",
-                                sheetInset
+                                "flex flex-col items-center rounded-xl p-1.5 bg-popover text-popover-foreground border border-border/50 shadow-xs"
                             )}
                         >
-                            <span className="text-xs font-semibold uppercase text-card-foreground/60">
+                            <span className="text-xs font-semibold uppercase text-popover-foreground/60">
                                 {ability.shortLabelKey
                                     ? t(ability.shortLabelKey)
                                     : ability.shortLabel ?? ability.name}
@@ -89,7 +88,7 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
                             <span className="text-lg font-bold tabular-nums">
                                 {ability.resolved}
                             </span>
-                            <span className="text-sm font-semibold tabular-nums text-card-foreground/60">
+                            <span className="text-sm font-semibold tabular-nums text-popover-foreground/60">
                                 {formatModifier(mod)}
                             </span>
                         </div>
@@ -97,15 +96,15 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
                 })}
             </div>
 
-            <div className="grid grid-cols-2 gap-2 text-sm mt-2">
-                <div className={cn("rounded-lg p-2", sheetInset)}>
-                    <span className="text-card-foreground/60">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm mt-2">
+                <div className={cn("rounded-lg p-2 flex flex-row gap-1.5 bg-popover text-popover-foreground border border-border/50")}>
+                    <span className="text-popover-foreground/70">
                         {t("character.proficiencyBonus")}{" "}
                     </span>
                     <span className="font-bold">{formatModifier(profBonus)}</span>
                 </div>
-                <div className={cn("rounded-lg p-2", sheetInset)}>
-                    <span className="text-card-foreground/60">
+                <div className={cn("rounded-lg p-2 flex flex-row gap-1.5 bg-popover text-popover-foreground border border-border/50")}>
+                    <span className="text-popover-foreground/70">
                         {t("character.passivePerception")}{" "}
                     </span>
                     <span className="font-bold">{passivePerception}</span>
