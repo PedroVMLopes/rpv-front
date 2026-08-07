@@ -95,7 +95,7 @@ export function PlayerSheetHeader({
 
                     <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                            <h1 className="truncate text-2xl font-bold sm:text-3xl font-serif">
+                            <h1 className="truncate text-lg font-bold sm:text-3xl font-serif">
                                 {stored.name}
                             </h1>
                             <Button

@@ -4,7 +4,7 @@ import type { ComponentType } from "react";
 import { useTranslations } from "next-intl";
 import {
     FaBook,
-    FaKhanda,
+    FaHandFist,
     FaPenToSquare,
     FaSuitcase,
     FaWandMagicSparkles,
@@ -32,7 +32,7 @@ const TAB_ICONS: Record<
     ComponentType<{ className?: string; "aria-hidden"?: boolean }>
 > = {
     overview: FaBook,
-    combat: FaKhanda,
+    combat: FaHandFist,
     inventory: FaSuitcase,
     magic: FaWandMagicSparkles,
     notes: FaPenToSquare,
