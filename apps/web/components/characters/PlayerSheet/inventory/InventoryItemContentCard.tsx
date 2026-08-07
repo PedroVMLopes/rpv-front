@@ -222,7 +222,7 @@ export function InventoryItemContentCard({
             <DropdownMenuTrigger asChild>
                 <Button
                     type="button"
-                    variant="ghost"
+                    variant={row.equipped ? "ghost" : "outline"}
                     size="sm"
                     className="h-6 shrink-0 px-1.5 text-xs font-semibold"
                     aria-label={

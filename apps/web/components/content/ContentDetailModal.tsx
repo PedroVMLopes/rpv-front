@@ -60,6 +60,11 @@ export function ContentDetailModal({
                         key={`${action.role ?? action.kind}-${index}`}
                         className="flex min-w-0 flex-col gap-0.5"
                     >
+                        {action.captionKey ? (
+                            <span className="pl-1 text-[10px] leading-tight text-muted-foreground">
+                                {t(action.captionKey)}
+                            </span>
+                        ) : null}
                         <Button
                             type="button"
                             variant="secondary"
@@ -68,11 +73,6 @@ export function ContentDetailModal({
                         >
                             {action.label}
                         </Button>
-                        {action.captionKey ? (
-                            <span className="text-center text-[10px] leading-tight text-muted-foreground">
-                                {t(action.captionKey)}
-                            </span>
-                        ) : null}
                     </div>
                 ))}
             </DialogFooter>
