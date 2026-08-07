@@ -474,6 +474,68 @@ describe("InventoryTab equip actions", () => {
         );
         expect(screen.getByText("Longbow (0)")).toBeInTheDocument();
     });
+
+    it("adjusts bag quantity from the modal without equipping", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(
+            <InventoryTabLive characterId={storedCharacter.id} />
+        );
+
+        const arrowCard = cardForName("Arrow (bow) (10)", bagPanel());
+        await user.click(
+            within(arrowCard).getByRole("button", {
+                name: "Expand Arrow (bow) (10)",
+            })
+        );
+
+        const dialog = screen.getByRole("dialog");
+        await user.click(
+            within(dialog).getByRole("button", { name: "Increase quantity" })
+        );
+
+        expect(
+            useCharacterStore
+                .getState()
+                .characters[0]?.selections.inventory?.bag.find(
+                    (stack) => stack.slug === "srd_arrow-bow"
+                )?.quantity
+        ).toBe(11);
+
+        await user.click(
+            within(dialog).getByRole("button", { name: "Decrease quantity" })
+        );
+
+        expect(
+            useCharacterStore
+                .getState()
+                .characters[0]?.selections.inventory?.bag.find(
+                    (stack) => stack.slug === "srd_arrow-bow"
+                )?.quantity
+        ).toBe(10);
+    });
+
+    it("shows Equip next to Delete in the item modal footer", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(
+            <InventoryTabLive characterId={storedCharacter.id} />
+        );
+
+        const packCard = cardForName("Pilot Test Pack A", bagPanel());
+        await user.click(
+            within(packCard).getByRole("button", {
+                name: "Expand Pilot Test Pack A",
+            })
+        );
+
+        const dialog = screen.getByRole("dialog");
+        expect(
+            within(dialog).getByRole("button", { name: "Delete" })
+        ).toBeInTheDocument();
+        await user.click(within(dialog).getByRole("button", { name: "Equip" }));
+        expect(
+            screen.getByRole("menuitem", { name: "Equip to Amulet" })
+        ).toBeInTheDocument();
+    });
 });
 
 describe("PlayerSheet inventory tab", () => {

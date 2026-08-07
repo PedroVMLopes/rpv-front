@@ -127,9 +127,10 @@ On load, `normalizeStoredCharacter` → `sanitizeInventory` inside
 Pilot D&D slot IDs (from
 [`equipmentSlots.dnd.ts`](../packages/content/src/curation/equipmentSlots.dnd.ts)):
 Wearable: `helmet`, `cloak`, `breast`, `gloves`, `boots`, `amulet`, `ring`, `ring-2`.
-Usable: `melee-main`, `melee-off`, `ranged-main`, `ranged-off`, `usable`.
+Usable: `melee-main`, `melee-off`, `ranged-main`, `ranged-off`; multi `usable`.
 Cosmetic multi: `cosmetic`.
 Legacy ids (`armor`, `neck`, `main-hand`, `off-hand`) are migrated on sanitize.
+Legacy single `equipped.usable` is migrated into `equippedMulti.usable`.
 
 ### Sanitization invariants
 
@@ -298,7 +299,7 @@ Community item publish (`POST /items`) is **out of v1 scope**.
     { "id": "melee-off", "labelKey": "equipmentSlots.meleeOff", "group": "usable" },
     { "id": "ranged-main", "labelKey": "equipmentSlots.rangedMain", "group": "usable" },
     { "id": "ranged-off", "labelKey": "equipmentSlots.rangedOff", "group": "usable" },
-    { "id": "usable", "labelKey": "equipmentSlots.usable", "group": "usable" },
+    { "id": "usable", "labelKey": "equipmentSlots.usable", "group": "usable", "multi": true },
     { "id": "cosmetic", "labelKey": "equipmentSlots.cosmetic", "group": "cosmetic", "multi": true }
   ]
 }

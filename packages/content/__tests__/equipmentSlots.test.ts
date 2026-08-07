@@ -62,6 +62,8 @@ describe("equipmentSlots.dnd", () => {
             getEquipmentSlotsByGroup("dnd", "cosmetic").map((slot) => slot.id)
         ).toEqual(["cosmetic"]);
         expect(isMultiEquipmentSlot("cosmetic")).toBe(true);
+        expect(isMultiEquipmentSlot("usable")).toBe(true);
         expect(isMultiEquipmentSlot("breast")).toBe(false);
+        expect(isMultiEquipmentSlot("melee-main")).toBe(false);
     });
 });

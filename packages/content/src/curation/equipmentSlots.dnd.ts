@@ -31,7 +31,7 @@ export const dndEquipmentSlots: EquipmentSlot[] = [
         labelKey: "equipmentSlots.rangedOff",
         group: "usable",
     },
-    { id: "usable", labelKey: "equipmentSlots.usable", group: "usable" },
+    { id: "usable", labelKey: "equipmentSlots.usable", group: "usable", multi: true },
     {
         id: "cosmetic",
         labelKey: "equipmentSlots.cosmetic",

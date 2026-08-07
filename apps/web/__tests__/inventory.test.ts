@@ -138,6 +138,44 @@ describe("sanitizeInventory", () => {
         expect(result.equippedMulti).toEqual({});
     });
 
+    it("migrates legacy single usable into equippedMulti", () => {
+        const result = sanitizeInventory(
+            {
+                bag: [{ slug: "rpv_scroll-of-fire-bolt", quantity: 1 }],
+                equipped: { usable: "rpv_scroll-of-fire-bolt" },
+                equippedMulti: {},
+            },
+            "dnd"
+        );
+
+        expect(result.equipped).toEqual({});
+        expect(result.equippedMulti).toEqual({
+            usable: ["rpv_scroll-of-fire-bolt"],
+        });
+    });
+
+    it("equips multiple distinct items into usable without a cap", () => {
+        let inventory = addToBag(emptyInventory(), "rpv_scroll-of-fire-bolt", 1);
+        inventory = addToBag(inventory, "rpv_pilot-test-pack-a", 1);
+        inventory = equipItem(
+            inventory,
+            "usable",
+            "rpv_scroll-of-fire-bolt",
+            "dnd"
+        );
+        inventory = equipItem(
+            inventory,
+            "usable",
+            "rpv_pilot-test-pack-a",
+            "dnd"
+        );
+
+        expect(inventory.equippedMulti.usable).toEqual([
+            "rpv_scroll-of-fire-bolt",
+            "rpv_pilot-test-pack-a",
+        ]);
+    });
+
     it("equips multiple cosmetics without feeding equippedItemSlugs", () => {
         let inventory = addToBag(emptyInventory(), "rpv_pilot-test-pack-a", 1);
         inventory = addToBag(inventory, "rpv_scroll-of-fire-bolt", 1);

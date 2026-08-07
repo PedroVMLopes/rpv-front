@@ -74,10 +74,10 @@ describe("listEquippedRowsByGroup", () => {
             breast: "srd_leather-armor",
             amulet: "rpv_amulet-of-vitality",
             "ranged-main": "srd_longbow",
-            usable: "rpv_scroll-of-fire-bolt",
             ring: "",
         },
         equippedMulti: {
+            usable: ["rpv_scroll-of-fire-bolt"],
             cosmetic: ["rpv_pilot-test-pack-a"],
         },
     };
@@ -111,11 +111,12 @@ describe("listEquippedRowsByGroup", () => {
                 slotId: "ranged-main",
             },
             {
-                key: "equipped:usable",
+                key: "equipped-multi:usable:0:rpv_scroll-of-fire-bolt",
                 slug: "rpv_scroll-of-fire-bolt",
                 quantity: 1,
                 equipped: true,
                 slotId: "usable",
+                multiEquipped: true,
             },
         ]);
     });

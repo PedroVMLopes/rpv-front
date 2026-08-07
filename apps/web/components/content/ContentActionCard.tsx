@@ -19,6 +19,7 @@ export type ContentActionCardProps = {
     quantityHandlers?: ContentDetailQuantityHandlers;
     onDelete?: () => void;
     deleteLabel?: string;
+    equipActions?: ReactNode;
     /** Optional test id wrapper attribute on the summary root. */
     "data-testid"?: string;
 };
@@ -41,6 +42,7 @@ export function ContentActionCard({
     quantityHandlers,
     onDelete,
     deleteLabel,
+    equipActions,
     "data-testid": testId,
 }: ContentActionCardProps) {
     const [detailOpen, setDetailOpen] = useState(false);
@@ -74,6 +76,7 @@ export function ContentActionCard({
                 quantityHandlers={quantityHandlers}
                 onDelete={handleDelete}
                 deleteLabel={deleteLabel}
+                equipActions={equipActions}
             />
         </div>
     );

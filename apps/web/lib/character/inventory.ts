@@ -115,6 +115,40 @@ export function migrateLegacyEquippedSlots(
     return next;
 }
 
+/** Move single-map entries that are now multi slots into equippedMulti. */
+export function migrateSingleToMultiSlots(
+    equipped: Record<string, string>,
+    equippedMulti: CharacterInventory["equippedMulti"] | undefined,
+    system: SystemKey
+): {
+    equipped: Record<string, string>;
+    equippedMulti: CharacterInventory["equippedMulti"];
+} {
+    const nextEquipped: Record<string, string> = {};
+    const nextMulti: CharacterInventory["equippedMulti"] = {
+        ...(equippedMulti ?? {}),
+    };
+
+    for (const [slotId, rawSlug] of Object.entries(equipped)) {
+        const slug = coerceSlug(rawSlug);
+        if (!slug) {
+            continue;
+        }
+
+        if (isMultiEquipmentSlot(slotId, system)) {
+            const existing = nextMulti[slotId] ?? [];
+            if (!existing.includes(slug)) {
+                nextMulti[slotId] = [...existing, slug];
+            }
+            continue;
+        }
+
+        nextEquipped[slotId] = slug;
+    }
+
+    return { equipped: nextEquipped, equippedMulti: nextMulti };
+}
+
 function sanitizeEquipped(
     equipped: CharacterInventory["equipped"],
     system: SystemKey
@@ -322,13 +356,19 @@ export function sanitizeInventory(
     system: SystemKey
 ): CharacterInventory {
     const bag = sanitizeBag(inventory.bag ?? [], system);
-    const equipped = sanitizeEquipped(inventory.equipped ?? {}, system);
-    const reserved = new Set(Object.values(equipped));
-    const equippedMulti = sanitizeEquippedMulti(
-        inventory.equippedMulti,
-        system,
-        reserved
+    const legacyMigrated = migrateLegacyEquippedSlots(
+        inventory.equipped ?? {},
+        system
     );
+    const { equipped: singleEquipped, equippedMulti: mergedMulti } =
+        migrateSingleToMultiSlots(
+            legacyMigrated,
+            inventory.equippedMulti,
+            system
+        );
+    const equipped = sanitizeEquipped(singleEquipped, system);
+    const reserved = new Set(Object.values(equipped));
+    const equippedMulti = sanitizeEquippedMulti(mergedMulti, system, reserved);
 
     return reconcileEquippedWithBag(bag, equipped, equippedMulti);
 }

@@ -30,6 +30,7 @@ type ContentDetailModalProps = {
     quantityHandlers?: ContentDetailQuantityHandlers;
     onDelete?: () => void;
     deleteLabel?: string;
+    equipActions?: ReactNode;
 };
 
 function resolveUseActions(
@@ -51,6 +52,7 @@ export function ContentDetailModal({
     quantityHandlers,
     onDelete,
     deleteLabel,
+    equipActions,
 }: ContentDetailModalProps) {
     const t = useTranslations("contentDetail");
     const useActions = resolveUseActions(model);
@@ -94,10 +96,18 @@ export function ContentDetailModal({
             </Button>
         ) : null;
 
-    const composedFooter =
-        !footer && (useActionButtons || deleteButton) ? (
-            <DialogFooter className="flex-col gap-2 sm:flex-col sm:space-x-0">
+    const primaryActions =
+        deleteButton || equipActions ? (
+            <div className="flex flex-wrap items-center gap-2">
                 {deleteButton}
+                {equipActions}
+            </div>
+        ) : null;
+
+    const composedFooter =
+        !footer && (useActionButtons || primaryActions) ? (
+            <DialogFooter className="flex-col gap-2 sm:flex-col sm:space-x-0">
+                {primaryActions}
                 {useActionButtons}
             </DialogFooter>
         ) : null;
