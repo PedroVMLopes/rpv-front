@@ -2,6 +2,7 @@ import type { Stats } from "@rpv/domain";
 import { listSpellActions } from "../lib/character/combatActions";
 import type { StoredCharacter } from "../lib/character/storedCharacter";
 import {
+    buildSpellAttackOnlyRollRequest,
     buildSpellAttackRollRequest,
     buildSpellDamageRollRequest,
     resolveAttackThenDamageTotal,
@@ -181,7 +182,7 @@ describe("buildSpellRollRequest", () => {
         ).toBe(12);
     });
 
-    it("returns null builders for fighter without spellcasting", () => {
+    it("returns null attack builders for fighter without spellcasting but allows attack damage", () => {
         const { cantrips } = listSpellActions(
             fighterWithSpellStored,
             fighterStats
@@ -190,6 +191,37 @@ describe("buildSpellRollRequest", () => {
 
         expect(fireBolt.attackModifier).toBeNull();
         expect(buildSpellAttackRollRequest(fireBolt)).toBeNull();
-        expect(buildSpellDamageRollRequest(fireBolt)).toBeNull();
+        expect(buildSpellAttackOnlyRollRequest(fireBolt)).toBeNull();
+        expect(buildSpellDamageRollRequest(fireBolt)).toEqual({
+            kind: "damage_only",
+            id: fireBolt.id,
+            label: "Fire Bolt",
+            steps: [{ sides: 10, damageType: "fire" }],
+        });
+    });
+
+    it("builds d20_test attack-only for fire-bolt", () => {
+        const { cantrips } = listSpellActions(wizardStored, wizardStats);
+        const fireBolt = cantrips.find((spell) => spell.slug === "fire-bolt")!;
+
+        expect(buildSpellAttackOnlyRollRequest(fireBolt)).toEqual({
+            kind: "d20_test",
+            id: fireBolt.id,
+            label: "Fire Bolt",
+            die: 20,
+            modifier: 5,
+        });
+    });
+
+    it("builds damage_only from attack profile for fire-bolt", () => {
+        const { cantrips } = listSpellActions(wizardStored, wizardStats);
+        const fireBolt = cantrips.find((spell) => spell.slug === "fire-bolt")!;
+
+        expect(buildSpellDamageRollRequest(fireBolt)).toEqual({
+            kind: "damage_only",
+            id: fireBolt.id,
+            label: "Fire Bolt",
+            steps: [{ sides: 10, damageType: "fire" }],
+        });
     });
 });

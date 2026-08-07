@@ -48,7 +48,7 @@ function makeSpell(overrides: Partial<SpellAction> & Pick<SpellAction, "slug">):
 }
 
 describe("buildSpellContentModel", () => {
-    it("builds a roll use action for fire-bolt with single target badge", () => {
+    it("builds split attack/damage useActions for fire-bolt", () => {
         const catalogEntry = getSpell("fire-bolt");
         const spell = makeSpell({
             slug: "fire-bolt",
@@ -72,7 +72,22 @@ describe("buildSpellContentModel", () => {
         );
 
         expect(summary.badges[0]?.label).toBe("Single target");
-        expect(summary.useAction).toEqual({ kind: "roll", label: "d20 +5" });
+        expect(summary.useActions).toEqual([
+            {
+                kind: "roll",
+                role: "attack",
+                captionKey: "toHitCaption",
+                label: "d20 +5",
+            },
+            {
+                kind: "roll",
+                role: "damage",
+                captionKey: "damageCaption",
+                label: "1d10",
+            },
+        ]);
+        expect(summary.useAction).toEqual(summary.useActions?.[0]);
+        expect(detail.useActions).toEqual(summary.useActions);
         expect(summary.shortDescription).toContain("ranged spell attack");
         expect(detail.sections[0]?.rows.find((row) => row.labelKey === "usage")?.value).toBe(
             "At will"
@@ -85,6 +100,72 @@ describe("buildSpellContentModel", () => {
                 ?.value
         ).toBe("1 action");
         expect(detail.source).toBe("5e Core Rules · phb 242");
+    });
+
+    it("builds a single damage useAction in useActions for burning-hands", () => {
+        const catalogEntry = getSpell("burning-hands");
+        const spell = makeSpell({
+            slug: "burning-hands",
+            name: "Burning Hands",
+            levelInt: 1,
+            rollProfile: {
+                mode: "save",
+                saveAbility: "dexterity",
+                damageDice: "3d6",
+                damageType: "fire",
+            },
+            saveDcValue: 13,
+        });
+
+        const { summary } = buildSpellContentModel(
+            {
+                spell,
+                catalogEntry,
+                spellcastingAbility: "intelligence",
+            },
+            formatters
+        );
+
+        expect(summary.useActions).toEqual([
+            {
+                kind: "roll",
+                captionKey: "damageCaption",
+                label: "3d6",
+            },
+        ]);
+        expect(summary.useAction).toEqual(summary.useActions?.[0]);
+    });
+
+    it("builds a single damage useActions entry for magic-missile", () => {
+        const catalogEntry = getSpell("magic-missile");
+        const spell = makeSpell({
+            slug: "magic-missile",
+            name: "Magic Missile",
+            levelInt: 1,
+            rollProfile: {
+                mode: "damage_only",
+                damageDice: "3d4",
+                damageType: "force",
+                flatPerDie: 1,
+            },
+        });
+
+        const { summary } = buildSpellContentModel(
+            {
+                spell,
+                catalogEntry,
+                spellcastingAbility: "intelligence",
+            },
+            formatters
+        );
+
+        expect(summary.useActions).toEqual([
+            {
+                kind: "roll",
+                captionKey: "damageCaption",
+                label: "3d4+1",
+            },
+        ]);
     });
 
     it("builds a cast use action for detect-magic without roll profile", () => {
@@ -105,6 +186,7 @@ describe("buildSpellContentModel", () => {
         );
 
         expect(summary.useAction).toEqual({ kind: "cast", label: "Use" });
+        expect(summary.useActions).toBeUndefined();
     });
 
     it("omits use action for mage-hand cantrip without roll or slot consumption", () => {
@@ -125,6 +207,7 @@ describe("buildSpellContentModel", () => {
         );
 
         expect(summary.useAction).toBeUndefined();
+        expect(summary.useActions).toBeUndefined();
     });
 
     it("includes enriched detail rows and short description for burning-hands", () => {

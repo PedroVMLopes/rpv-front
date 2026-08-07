@@ -145,26 +145,73 @@ function resolveSpellRollButtonLabel(
     });
 }
 
-function resolveUseActionSpec(
+function resolveUseActions(
     spell: SpellAction,
     catalogEntry: SpellCatalogEntry | undefined,
     formatters: SpellContentFormatters
-): ContentUseActionSpec | undefined {
-    if (hasSpellRollAction(spell) && spell.rollProfile) {
-        return {
+): {
+    useAction?: ContentUseActionSpec;
+    useActions?: ContentUseActionSpec[];
+} {
+    const profile = spell.rollProfile;
+
+    if (profile?.mode === "attack") {
+        const actions: ContentUseActionSpec[] = [];
+
+        if (spell.attackModifier !== null) {
+            actions.push({
+                kind: "roll",
+                role: "attack",
+                captionKey: "toHitCaption",
+                label: formatRollButtonLabel({
+                    primary: "d20",
+                    modifier: spell.attackModifier,
+                }),
+            });
+        }
+
+        actions.push({
             kind: "roll",
-            label: resolveSpellRollButtonLabel(spell, spell.rollProfile),
+            role: "damage",
+            captionKey: "damageCaption",
+            label: formatRollButtonLabel({
+                primary: getSpellRollUseLabel(profile),
+                modifier: null,
+            }),
+        });
+
+        return {
+            useAction: actions[0],
+            useActions: actions,
+        };
+    }
+
+    if (
+        profile &&
+        (profile.mode === "save" || profile.mode === "damage_only") &&
+        hasSpellRollAction(spell)
+    ) {
+        const action: ContentUseActionSpec = {
+            kind: "roll",
+            captionKey: "damageCaption",
+            label: resolveSpellRollButtonLabel(spell, profile),
+        };
+        return {
+            useAction: action,
+            useActions: [action],
         };
     }
 
     if (consumesSpellSlot(spell, catalogEntry)) {
         return {
-            kind: "cast",
-            label: formatters.tUse(),
+            useAction: {
+                kind: "cast",
+                label: formatters.tUse(),
+            },
         };
     }
 
-    return undefined;
+    return {};
 }
 
 export function getSpellUseLabel(profile: SpellRollProfile): string {
@@ -176,7 +223,11 @@ export function buildSpellContentModel(
     formatters: SpellContentFormatters
 ): SpellContentModels {
     const { spell, catalogEntry, spellcastingAbility } = input;
-    const useAction = resolveUseActionSpec(spell, catalogEntry, formatters);
+    const { useAction, useActions } = resolveUseActions(
+        spell,
+        catalogEntry,
+        formatters
+    );
     const targetLabel = resolveTargetLabel(spell, formatters);
 
     const badges: ContentSummaryModel["badges"] = [];
@@ -240,6 +291,7 @@ export function buildSpellContentModel(
         badges,
         shortDescription,
         useAction,
+        useActions,
     };
 
     const detail: ContentDetailModel = {
@@ -252,6 +304,7 @@ export function buildSpellContentModel(
         higherLevel: catalogEntry?.higherLevel || undefined,
         source,
         useAction,
+        useActions,
     };
 
     return { summary, detail };

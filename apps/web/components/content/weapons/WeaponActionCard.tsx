@@ -16,7 +16,7 @@ import {
     type WeaponContentFormatters,
 } from "@/lib/content/buildWeaponContentModel";
 import type { ContentUseActionSpec } from "@/lib/content/contentDetail.types";
-import { ItemContentCard } from "../items/ItemContentCard";
+import { ContentActionCard } from "../ContentActionCard";
 
 type WeaponActionCardProps = {
     stored: StoredCharacter;
@@ -84,7 +84,7 @@ export function WeaponActionCard({
         Boolean(summary.useActions?.length) || Boolean(summary.useAction);
 
     return (
-        <ItemContentCard
+        <ContentActionCard
             summary={summary}
             detail={detail}
             expandLabel={tContentDetail("expand", { title: weapon.name })}

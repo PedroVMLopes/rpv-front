@@ -162,6 +162,26 @@ export function buildSpellAttackRollRequest(
     };
 }
 
+/** Attack roll only (d20 + modifier), without chaining into damage. */
+export function buildSpellAttackOnlyRollRequest(
+    spell: SpellAction
+): D20TestRequest | null {
+    if (
+        spell.rollProfile?.mode !== "attack" ||
+        spell.attackModifier === null
+    ) {
+        return null;
+    }
+
+    return {
+        kind: "d20_test",
+        id: spell.id,
+        label: spell.name,
+        die: 20,
+        modifier: spell.attackModifier,
+    };
+}
+
 export function buildSpellDamageRollRequest(
     spell: SpellAction
 ): DamageOnlyRequest | null {
@@ -169,6 +189,18 @@ export function buildSpellDamageRollRequest(
 
     if (!profile) {
         return null;
+    }
+
+    if (profile.mode === "attack") {
+        return {
+            kind: "damage_only",
+            id: spell.id,
+            label: spell.name,
+            steps: expandDamageSteps(
+                profile.damageDice,
+                profile.damageType
+            ),
+        };
     }
 
     if (profile.mode === "save") {
@@ -212,7 +244,7 @@ export function buildSpellDamageRollRequest(
 
 export function hasSpellRollAction(spell: SpellAction): boolean {
     return (
-        buildSpellAttackRollRequest(spell) !== null ||
+        buildSpellAttackOnlyRollRequest(spell) !== null ||
         buildSpellDamageRollRequest(spell) !== null
     );
 }

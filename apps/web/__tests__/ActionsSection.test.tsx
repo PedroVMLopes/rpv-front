@@ -202,9 +202,32 @@ describe("ActionsSection", () => {
             screen.getByRole("button", { name: "Expand Fire Bolt" })
         ).toBeInTheDocument();
         expect(screen.getByRole("button", { name: "d20 +5" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "1d10" })).toBeInTheDocument();
+        expect(screen.getByText("To hit")).toBeInTheDocument();
+        expect(screen.getByText("Damage")).toBeInTheDocument();
         expect(
             screen.queryByRole("button", { name: "Use", hidden: true })
         ).not.toBeInTheDocument();
+    });
+
+    it("opens attack-only roll when spell to-hit button is clicked", async () => {
+        const user = userEvent.setup();
+        renderSection(wizardStored);
+
+        await user.click(screen.getByRole("button", { name: "Expand Cantrips" }));
+        await user.click(screen.getByRole("button", { name: "d20 +5" }));
+
+        expect(screen.getByText("Fire Bolt — d20 +5")).toBeInTheDocument();
+    });
+
+    it("opens damage-only roll when spell damage button is clicked", async () => {
+        const user = userEvent.setup();
+        renderSection(wizardStored);
+
+        await user.click(screen.getByRole("button", { name: "Expand Cantrips" }));
+        await user.click(screen.getByRole("button", { name: "1d10" }));
+
+        expect(screen.getByText(/Fire Bolt — damage/)).toBeInTheDocument();
     });
 
     it("opens spell detail modal from expand button", async () => {
@@ -229,6 +252,7 @@ describe("ActionsSection", () => {
 
         expect(screen.getByText("Burning Hands")).toBeInTheDocument();
         expect(screen.getByRole("button", { name: "3d6" })).toBeInTheDocument();
+        expect(screen.getByText("Damage")).toBeInTheDocument();
         expect(
             screen.getByRole("button", { name: "Expand Detect Magic" })
         ).toBeInTheDocument();

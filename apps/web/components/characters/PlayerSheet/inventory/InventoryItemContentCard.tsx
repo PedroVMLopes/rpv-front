@@ -40,7 +40,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ItemContentCard } from "@/components/content/items/ItemContentCard";
+import { ContentActionCard } from "@/components/content/ContentActionCard";
 import { useRollAssistant } from "../roll/RollAssistantProvider";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { useContentLocale } from "@/store/useContentLocale";
@@ -323,7 +323,7 @@ export function InventoryItemContentCard({
     );
 
     return (
-        <ItemContentCard
+        <ContentActionCard
             summary={summary}
             detail={detail}
             expandLabel={tContentDetail("expand", { title: summary.title })}

@@ -6,10 +6,10 @@ import type {
     ContentSummaryModel,
     ContentUseActionSpec,
 } from "@/lib/content/contentDetail.types";
-import { ContentDetailModal } from "../ContentDetailModal";
-import { ContentSummaryCard } from "../ContentSummaryCard";
+import { ContentDetailModal } from "./ContentDetailModal";
+import { ContentSummaryCard } from "./ContentSummaryCard";
 
-type ItemContentCardProps = {
+export type ContentActionCardProps = {
     summary: ContentSummaryModel;
     detail: ContentDetailModel;
     expandLabel: string;
@@ -28,14 +28,14 @@ function hasUseActions(model: {
     );
 }
 
-export function ItemContentCard({
+export function ContentActionCard({
     summary,
     detail,
     expandLabel,
     onUse,
     headerActions,
     "data-testid": testId,
-}: ItemContentCardProps) {
+}: ContentActionCardProps) {
     const [detailOpen, setDetailOpen] = useState(false);
     const handleUse = onUse;
 

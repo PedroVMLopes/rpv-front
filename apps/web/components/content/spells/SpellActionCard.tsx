@@ -1,13 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import type { StatKey } from "@rpv/domain";
 import { contentRepo } from "@/lib/content/contentRepository";
 import type { SpellAction } from "@/lib/character/combatActions";
 import {
-    buildSpellAttackRollRequest,
+    buildSpellAttackOnlyRollRequest,
     buildSpellDamageRollRequest,
 } from "@/lib/roll/buildRollRequest";
 import type { RollRequest } from "@/lib/roll/rollRequest.types";
@@ -18,8 +18,7 @@ import {
     type SpellContentFormatters,
 } from "@/lib/content/buildSpellContentModel";
 import type { ContentUseActionSpec } from "@/lib/content/contentDetail.types";
-import { ContentDetailModal } from "../ContentDetailModal";
-import { ContentSummaryCard } from "../ContentSummaryCard";
+import { ContentActionCard } from "../ContentActionCard";
 
 type SpellActionCardProps = {
     stored: StoredCharacter;
@@ -27,23 +26,6 @@ type SpellActionCardProps = {
     spellcastingAbility?: StatKey | null;
     openRollRequest: (request: RollRequest) => void;
 };
-
-function openSpellRoll(
-    spell: SpellAction,
-    openRollRequest: SpellActionCardProps["openRollRequest"]
-) {
-    const request =
-        spell.rollProfile?.mode === "attack"
-            ? buildSpellAttackRollRequest(spell)
-            : spell.rollProfile?.mode === "save" ||
-                spell.rollProfile?.mode === "damage_only"
-              ? buildSpellDamageRollRequest(spell)
-              : null;
-
-    if (request) {
-        openRollRequest(request);
-    }
-}
 
 export function SpellActionCard({
     stored,
@@ -56,7 +38,6 @@ export function SpellActionCard({
     const tAbilities = useTranslations("abilities");
     const tCombat = useTranslations("playerSheet.combat");
     const contentLocale = useContentLocale((state) => state.contentLocale);
-    const [detailOpen, setDetailOpen] = useState(false);
 
     const catalogEntry = contentRepo(stored.system).getSpell(
         spell.slug,
@@ -84,28 +65,38 @@ export function SpellActionCard({
     );
 
     const handleUse = (useAction: ContentUseActionSpec) => {
-        if (useAction.kind === "roll") {
-            openSpellRoll(spell, openRollRequest);
+        if (useAction.kind === "cast") {
+            toast(`${spell.name}`);
             return;
         }
 
-        toast(`${spell.name}`);
+        if (useAction.kind !== "roll") {
+            return;
+        }
+
+        if (useAction.role === "attack") {
+            const request = buildSpellAttackOnlyRollRequest(spell);
+            if (request) {
+                openRollRequest(request);
+            }
+            return;
+        }
+
+        const request = buildSpellDamageRollRequest(spell);
+        if (request) {
+            openRollRequest(request);
+        }
     };
 
+    const canUse =
+        Boolean(summary.useActions?.length) || Boolean(summary.useAction);
+
     return (
-        <>
-            <ContentSummaryCard
-                model={summary}
-                expandLabel={tContentDetail("expand", { title: spell.name })}
-                onExpand={() => setDetailOpen(true)}
-                onUse={summary.useAction ? handleUse : undefined}
-            />
-            <ContentDetailModal
-                model={detail}
-                open={detailOpen}
-                onOpenChange={setDetailOpen}
-                onUse={detail.useAction ? handleUse : undefined}
-            />
-        </>
+        <ContentActionCard
+            summary={summary}
+            detail={detail}
+            expandLabel={tContentDetail("expand", { title: spell.name })}
+            onUse={canUse ? handleUse : undefined}
+        />
     );
 }
