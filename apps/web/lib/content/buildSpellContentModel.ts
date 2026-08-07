@@ -128,17 +128,7 @@ function consumesSpellSlot(spell: SpellAction, catalogEntry?: SpellCatalogEntry)
     return levelInt !== null && levelInt > 0;
 }
 
-function resolveSpellRollButtonLabel(
-    spell: SpellAction,
-    profile: SpellRollProfile
-): string {
-    if (profile.mode === "attack") {
-        return formatRollButtonLabel({
-            primary: "d20",
-            modifier: spell.attackModifier,
-        });
-    }
-
+function resolveSpellDamageButtonLabel(profile: SpellRollProfile): string {
     return formatRollButtonLabel({
         primary: getSpellRollUseLabel(profile),
         modifier: null,
@@ -174,10 +164,7 @@ function resolveUseActions(
             kind: "roll",
             role: "damage",
             captionKey: "damageCaption",
-            label: formatRollButtonLabel({
-                primary: getSpellRollUseLabel(profile),
-                modifier: null,
-            }),
+            label: resolveSpellDamageButtonLabel(profile),
         });
 
         return {
@@ -194,7 +181,7 @@ function resolveUseActions(
         const action: ContentUseActionSpec = {
             kind: "roll",
             captionKey: "damageCaption",
-            label: resolveSpellRollButtonLabel(spell, profile),
+            label: resolveSpellDamageButtonLabel(profile),
         };
         return {
             useAction: action,
@@ -212,10 +199,6 @@ function resolveUseActions(
     }
 
     return {};
-}
-
-export function getSpellUseLabel(profile: SpellRollProfile): string {
-    return getSpellRollUseLabel(profile);
 }
 
 export function buildSpellContentModel(

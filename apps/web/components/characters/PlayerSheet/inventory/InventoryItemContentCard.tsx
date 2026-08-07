@@ -184,7 +184,6 @@ export function InventoryItemContentCard({
         row.quantity,
         row.slug,
         slotLabel,
-        t,
         tSlots,
         weaponAction,
         weaponFormatters,

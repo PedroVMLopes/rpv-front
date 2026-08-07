@@ -598,9 +598,6 @@
     }
   },
   "items": {
-    "summary": {
-      "damage": "Damage: {damage}"
-    },
     "pick": {
       "bundleBadge": "Bundle",
       "bundleItemCount": "{count} items",

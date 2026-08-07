@@ -6,11 +6,10 @@ import {
 } from "@/lib/content/buildWeaponContentModel";
 
 const formatters: WeaponContentFormatters = {
-    tItems: (key, values) => {
+    tItems: (key) => {
         const table: Record<string, string> = {
             "properties.versatile": "Versatile",
             "damageType.slashing": "Slashing",
-            "summary.damage": `Damage: ${values?.damage ?? ""}`,
         };
 
         return table[key] ?? key;
