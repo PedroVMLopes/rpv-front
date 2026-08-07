@@ -138,7 +138,7 @@ describe("resolveInventoryGrantProvenance", () => {
 });
 
 describe("mergeStartingGrants", () => {
-    it("preserves manual stacks and replaces granted stacks", () => {
+    it("preserves manual stacks and keeps edited granted quantities", () => {
         const merged = mergeStartingGrants(
             {
                 ...emptyCharacterSelections(),
@@ -164,11 +164,52 @@ describe("mergeStartingGrants", () => {
             { slug: "rpv_amulet-of-vitality", quantity: 1 },
             {
                 slug: "rpv_scroll-of-fire-bolt",
-                quantity: 1,
+                quantity: 9,
                 provenance: "grant:background:sage:2",
             },
         ]);
         expect(merged.grantedCurrency).toEqual({ gold: 15 });
+    });
+
+    it("preserves owned totals across rematerialize when a granted item is equipped", () => {
+        const merged = mergeStartingGrants(
+            {
+                ...emptyCharacterSelections(),
+                characterClass: "fighter",
+                choices: {
+                    grantPicks: {
+                        ...fighterEquipmentPicks,
+                        "class:fighter:base:inventory_item:5:0": "0",
+                        "class:fighter:base:inventory_item:6:0": "0",
+                        "class:fighter:base:inventory_item:7:0": "0",
+                        "class:fighter:base:inventory_item:8:0": "0",
+                    },
+                },
+                inventory: {
+                    bag: [
+                        {
+                            slug: "srd_piton",
+                            quantity: 9,
+                            provenance: "grant:class:fighter:7",
+                        },
+                    ],
+                    equipped: {},
+                    equippedMulti: { usable: ["srd_piton"] },
+                },
+            },
+            "en",
+            "dnd",
+            1
+        );
+
+        expect(
+            merged.inventory?.bag.find((stack) => stack.slug === "srd_piton")
+        ).toEqual({
+            slug: "srd_piton",
+            quantity: 9,
+            provenance: "grant:class:fighter:7",
+        });
+        expect(merged.inventory?.equippedMulti?.usable).toEqual(["srd_piton"]);
     });
 
     it("drops manual bag copies when the same slug is still granted", () => {

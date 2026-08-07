@@ -353,7 +353,8 @@ function isSlugEquippedAnywhere(
 
 export function sanitizeInventory(
     inventory: CharacterInventory | (Partial<CharacterInventory> & { bag?: CharacterInventory["bag"]; equipped?: CharacterInventory["equipped"] }),
-    system: SystemKey
+    system: SystemKey,
+    options?: { reconcileEquipped?: boolean }
 ): CharacterInventory {
     const bag = sanitizeBag(inventory.bag ?? [], system);
     const legacyMigrated = migrateLegacyEquippedSlots(
@@ -369,6 +370,13 @@ export function sanitizeInventory(
     const equipped = sanitizeEquipped(singleEquipped, system);
     const reserved = new Set(Object.values(equipped));
     const equippedMulti = sanitizeEquippedMulti(mergedMulti, system, reserved);
+    const validated = { bag, equipped, equippedMulti };
+
+    // Bag stacks are stored as post-reconcile remainders. Re-running reconcile
+    // on an already-reconciled bag subtracts equipped units again.
+    if (options?.reconcileEquipped === false) {
+        return validated;
+    }
 
     return reconcileEquippedWithBag(bag, equipped, equippedMulti);
 }

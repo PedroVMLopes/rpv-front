@@ -148,7 +148,8 @@ export function normalizeCharacterSelections(
 
     const inventory = sanitizeInventory(
         selections?.inventory ?? emptyInventory(),
-        system
+        system,
+        { reconcileEquipped: false }
     );
 
     return {

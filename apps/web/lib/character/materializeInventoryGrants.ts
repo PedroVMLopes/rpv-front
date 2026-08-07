@@ -140,6 +140,56 @@ function splitManualBagStacks(
     );
 }
 
+function countEquippedBySlug(
+    equipped: CharacterInventory["equipped"],
+    equippedMulti: CharacterInventory["equippedMulti"] | undefined
+): Map<string, number> {
+    const counts = new Map<string, number>();
+
+    for (const slug of Object.values(equipped)) {
+        counts.set(slug, (counts.get(slug) ?? 0) + 1);
+    }
+
+    for (const slugs of Object.values(equippedMulti ?? {})) {
+        for (const slug of slugs) {
+            counts.set(slug, (counts.get(slug) ?? 0) + 1);
+        }
+    }
+
+    return counts;
+}
+
+/**
+ * Bag stacks are stored post-reconcile (remainder after equipped units).
+ * Rematerializing grants must restore owned totals so sanitize/reconcile can
+ * subtract equipped again without wiping quantity edits or double-decrementing.
+ */
+function withPreservedGrantedQuantities(
+    previousBag: CharacterInventory["bag"],
+    grantedBag: CharacterInventory["bag"],
+    equipped: CharacterInventory["equipped"],
+    equippedMulti: CharacterInventory["equippedMulti"] | undefined
+): CharacterInventory["bag"] {
+    const equippedCounts = countEquippedBySlug(equipped, equippedMulti);
+
+    return grantedBag.map((granted) => {
+        const previous = previousBag.find(
+            (stack) =>
+                stack.slug === granted.slug &&
+                stack.provenance === granted.provenance
+        ) ?? previousBag.find((stack) => stack.slug === granted.slug);
+        if (!previous) {
+            return granted;
+        }
+
+        const equippedCount = equippedCounts.get(granted.slug) ?? 0;
+        return {
+            ...granted,
+            quantity: previous.quantity + equippedCount,
+        };
+    });
+}
+
 export function mergeStartingGrants(
     selections: CharacterSelections,
     locale: Locale,
@@ -147,6 +197,8 @@ export function mergeStartingGrants(
     characterLevel: number
 ): CharacterSelections {
     const previousBag = selections.inventory?.bag ?? [];
+    const previousEquipped = selections.inventory?.equipped ?? {};
+    const previousEquippedMulti = selections.inventory?.equippedMulti;
     const grantedBag = materializeInventoryGrants(
         selections,
         locale,
@@ -159,7 +211,13 @@ export function mergeStartingGrants(
         locale,
         characterLevel
     );
-    const mergedBag = [...manualBag, ...grantedBag];
+    const preservedGranted = withPreservedGrantedQuantities(
+        previousBag,
+        grantedBag,
+        previousEquipped,
+        previousEquippedMulti
+    );
+    const mergedBag = [...manualBag, ...preservedGranted];
 
     const inventory = sanitizeInventory(
         {
@@ -167,7 +225,7 @@ export function mergeStartingGrants(
             bag: mergedBag,
             equipped: pruneOrphanedGrantEquipped(
                 mergedBag,
-                selections.inventory?.equipped ?? {},
+                previousEquipped,
                 previousBag,
                 grantedBag
             ),

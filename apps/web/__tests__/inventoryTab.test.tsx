@@ -224,13 +224,11 @@ describe("InventoryTab", () => {
             selections: {
                 ...storedCharacter.selections,
                 inventory: {
-                    bag: [
-                        { slug: "srd_longsword", quantity: 1 },
-                        { slug: "srd_leather-armor", quantity: 1 },
-                    ],
+                    // Store inventory is post-reconcile (no bag copies of equipped slugs).
+                    bag: [],
                     equipped: {
                         "melee-main": "srd_longsword",
-                        armor: "srd_leather-armor",
+                        breast: "srd_leather-armor",
                     },
                 },
             },
@@ -238,7 +236,7 @@ describe("InventoryTab", () => {
 
         renderWithProviders(<InventoryTab stored={overlapping} />);
 
-        // sanitize drops bag copies; panel + bag grid each show the equipped row
+        // Equipped panel + bag grid each show the equipped row
         expect(screen.getAllByText("Longsword")).toHaveLength(2);
         expect(screen.getAllByText("Leather Armor")).toHaveLength(2);
 

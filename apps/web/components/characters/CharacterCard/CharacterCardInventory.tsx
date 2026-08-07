@@ -201,7 +201,8 @@ export default function CharacterCardInventory({
         () =>
             sanitizeInventory(
                 stored.selections.inventory ?? emptyInventory(),
-                stored.system
+                stored.system,
+                { reconcileEquipped: false }
             ),
         [stored.selections.inventory, stored.system]
     );

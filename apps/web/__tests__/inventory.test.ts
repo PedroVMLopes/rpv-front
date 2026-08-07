@@ -275,6 +275,31 @@ describe("sanitizeInventory", () => {
 
         expect(result.bag).toEqual([{ slug: "rpv_amulet-of-vitality", quantity: 1 }]);
     });
+
+    it("does not re-subtract equipped units when reconcileEquipped is false", () => {
+        const remainder = sanitizeInventory(
+            {
+                bag: [{ slug: "srd_piton", quantity: 10 }],
+                equipped: {},
+                equippedMulti: { usable: ["srd_piton"] },
+            },
+            "dnd"
+        );
+
+        expect(remainder.bag).toEqual([
+            { slug: "srd_piton", quantity: 9 },
+        ]);
+
+        const again = sanitizeInventory(remainder, "dnd", {
+            reconcileEquipped: false,
+        });
+        expect(again.bag).toEqual([{ slug: "srd_piton", quantity: 9 }]);
+
+        const doubleReconcile = sanitizeInventory(remainder, "dnd");
+        expect(doubleReconcile.bag).toEqual([
+            { slug: "srd_piton", quantity: 8 },
+        ]);
+    });
 });
 
 describe("equippedItemSlugs", () => {

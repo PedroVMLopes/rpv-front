@@ -61,7 +61,21 @@ export function InventoryItemContentCard({
 
     const itemEntry = getItem(row.slug, stored.system, contentLocale);
     const resolved = getResolvedStats(stored.id);
-    const displayQuantity = row.quantity;
+    const bagQuantity = inventory.bag
+        .filter((stack) => stack.slug === row.slug)
+        .reduce((total, stack) => total + stack.quantity, 0);
+    const equippedCount =
+        Object.values(inventory.equipped).filter((slug) => slug === row.slug)
+            .length +
+        Object.values(inventory.equippedMulti ?? {}).reduce(
+            (total, slugs) =>
+                total + slugs.filter((slug) => slug === row.slug).length,
+            0
+        );
+    // Equipped rows are stored as qty 1 per slot; show owned total (bag + equipped).
+    const displayQuantity = row.equipped
+        ? bagQuantity + equippedCount
+        : row.quantity;
     const stackable = itemEntry ? isItemStackable(itemEntry) : true;
 
     const itemFormatters = useMemo<ItemContentFormatters>(
@@ -215,23 +229,25 @@ export function InventoryItemContentCard({
     };
 
     const handleAdjustQuantity = (delta: -1 | 1) => {
-        if (row.equipped && row.slotId) {
-            if (delta === -1) {
-                unequipItemToBag(
-                    stored.id,
-                    row.slotId,
-                    0,
-                    row.multiEquipped ? row.slug : undefined
-                );
-            }
+        const nextOwned = Math.max(0, displayQuantity + delta);
+        if (!stackable && nextOwned > 1) {
             return;
         }
 
-        const next = Math.max(0, displayQuantity + delta);
-        if (!stackable && next > 1) {
+        if (row.equipped && row.slotId && nextOwned < equippedCount) {
+            unequipItemToBag(
+                stored.id,
+                row.slotId,
+                nextOwned,
+                row.multiEquipped ? row.slug : undefined
+            );
             return;
         }
-        setBagQuantity(stored.id, row.slug, next);
+
+        const nextBag = row.equipped
+            ? Math.max(0, nextOwned - equippedCount)
+            : nextOwned;
+        setBagQuantity(stored.id, row.slug, nextBag);
     };
 
     const handleDelete = () => {
@@ -276,12 +292,8 @@ export function InventoryItemContentCard({
             headerActions={equipMenuCard}
             quantityHandlers={{
                 onAdjustQuantity: handleAdjustQuantity,
-                canDecrementQuantity: row.equipped
-                    ? true
-                    : displayQuantity > 0,
-                canIncrementQuantity: row.equipped
-                    ? false
-                    : stackable || displayQuantity < 1,
+                canDecrementQuantity: displayQuantity > 0,
+                canIncrementQuantity: stackable || displayQuantity < 1,
                 decreaseLabel: t("decreaseQuantity"),
                 increaseLabel: t("increaseQuantity"),
             }}

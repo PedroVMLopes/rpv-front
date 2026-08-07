@@ -168,7 +168,11 @@ export function sanitizeSelections(
 ): CharacterSelections {
     let next: CharacterSelections = {
         ...selections,
-        inventory: sanitizeInventory(selections.inventory ?? emptyInventory(), system),
+        inventory: sanitizeInventory(
+            selections.inventory ?? emptyInventory(),
+            system,
+            { reconcileEquipped: false }
+        ),
     };
 
     if (
@@ -211,7 +215,11 @@ export function sanitizeSelectionsWithStartingMaterialization(
 ): CharacterSelections {
     let next: CharacterSelections = {
         ...selections,
-        inventory: sanitizeInventory(selections.inventory ?? emptyInventory(), system),
+        inventory: sanitizeInventory(
+            selections.inventory ?? emptyInventory(),
+            system,
+            { reconcileEquipped: false }
+        ),
     };
 
     if (
