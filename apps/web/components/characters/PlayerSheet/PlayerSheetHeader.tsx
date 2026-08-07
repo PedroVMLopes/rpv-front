@@ -1,9 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import { ChevronDown, LucideHeart } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { FaArrowLeft, FaGear, FaShield } from "react-icons/fa6";
+import { FaArrowLeft, FaGear, FaShieldHalved } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { HitPointsControl } from "@/components/characters/HitPointsControl";
 import { contentRepo } from "@/lib/content/contentRepository";
 import { getCharacterWalkSpeed } from "@/lib/character/characterSpeed";
@@ -13,10 +20,13 @@ import { getRaceLineFromSelections } from "@/lib/character/raceDisplay";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { useContentLocale } from "@/store/useContentLocale";
+import { cn } from "@/lib/utils";
 import {
     PlayerSheetTabBar,
     type PlayerSheetTabId,
 } from "./PlayerSheetTabBar";
+
+const HP_RESOURCE = "hp";
 
 function formatLevel(level: unknown): number | undefined {
     if (typeof level === "number" && !Number.isNaN(level)) {
@@ -27,6 +37,85 @@ function formatLevel(level: unknown): number | undefined {
         return Number.isNaN(parsed) ? undefined : parsed;
     }
     return undefined;
+}
+
+type CombatStatsBlockProps = {
+    characterId: string;
+    ac: number;
+    initiative: number;
+    walkSpeed: number | undefined;
+    className?: string;
+};
+
+function CombatStatsBlock({
+    characterId,
+    ac,
+    initiative,
+    walkSpeed,
+    className,
+}: CombatStatsBlockProps) {
+    const t = useTranslations("playerSheet");
+    const tCharacter = useTranslations("character");
+    const tCombat = useTranslations("combat");
+
+    return (
+        <div
+            className={cn(
+                "flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-stretch",
+                className
+            )}
+        >
+            <HitPointsControl
+                characterId={characterId}
+                className="w-full sm:w-auto"
+            />
+
+            <div className="flex w-full flex-col justify-center gap-2 sm:w-auto">
+                <div className="flex w-full items-stretch gap-2">
+                    <div
+                        className="flex min-w-0 flex-1 flex-row items-center justify-center gap-1 rounded-2xl border-3 bg-accent text-accent-foreground px-3 py-2 sm:min-w-16 sm:flex-none"
+                        aria-label={`${tCombat("ac")} ${ac}`}
+                    >
+                        <span className="flex items-center gap-1 text-xs font-semibold uppercase">
+                            <FaShieldHalved
+                                className="size-4 text-secondary"
+                                aria-hidden
+                            />
+                        </span>
+                        <span className="font-bold tabular-nums">
+                            <p>{ac}</p>
+                        </span>
+                    </div>
+
+                    <div
+                        className="flex min-w-0 flex-1 flex-row items-center justify-center gap-1 rounded-2xl border-3 bg-accent text-accent-foreground px-3 py-2 sm:min-w-16 sm:flex-none"
+                        aria-label={`${tCharacter("initiative")} ${formatModifier(initiative)}`}
+                    >
+                        <span className="text-sm font-semibold font-serif">
+                            {tCharacter("initiative")}
+                        </span>
+                        <span className="font-bold tabular-nums">
+                            {formatModifier(initiative)}
+                        </span>
+                    </div>
+                </div>
+
+                {walkSpeed !== undefined ? (
+                    <div
+                        className="flex w-full flex-row items-center justify-center rounded-2xl border-3 bg-accent text-accent-foreground px-3 py-2 gap-1"
+                        aria-label={`${t("speed")} ${t("speedValue", { speed: walkSpeed })}`}
+                    >
+                        <span className="text-sm font-semibold font-serif">
+                            {t("speed")}
+                        </span>
+                        <span className="font-bold tabular-nums">
+                            {t("speedValue", { speed: walkSpeed })}
+                        </span>
+                    </div>
+                ) : null}
+            </div>
+        </div>
+    );
 }
 
 type PlayerSheetHeaderProps = {
@@ -45,15 +134,24 @@ export function PlayerSheetHeader({
     const tCombat = useTranslations("combat");
     const contentLocale = useContentLocale((state) => state.contentLocale);
     const getResolvedStats = useCharacterStore((state) => state.getResolvedStats);
+    const currentHp = useCharacterStore(
+        (state) =>
+            state.characters.find((c) => c.id === stored.id)?.resources[
+                HP_RESOURCE
+            ] ?? 0
+    );
     const resolved = getResolvedStats(stored.id);
+    const [combatOpen, setCombatOpen] = useState(false);
 
     const systemData = stored.systemData;
     const levelNum = formatLevel(systemData.level);
     const ac = resolved?.armorClass ?? 0;
+    const maxHp = resolved?.hitPoints ?? 0;
     const initiative = resolved
         ? computeInitiative(stored.system, resolved)
         : 0;
     const walkSpeed = getCharacterWalkSpeed(stored.selections, contentLocale);
+    const initiativeLabel = formatModifier(initiative);
 
     const raceLine = getRaceLineFromSelections(
         stored.selections,
@@ -86,7 +184,7 @@ export function PlayerSheetHeader({
     return (
         <header className="sticky top-0 z-10 pt-3 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
             <div className="flex flex-col gap-3">
-                <div className="flex flex-wrap items-start gap-3">
+                <div className="flex flex-wrap items-start gap-2">
                     <Button asChild size="icon" variant="ghost" aria-label={t("back")}>
                         <Link href="/characters/player">
                             <FaArrowLeft />
@@ -112,61 +210,91 @@ export function PlayerSheetHeader({
                             </Button>
                         </div>
                         {levelLine ? (
-                            <p className="truncate text-sm font-medium">
+                            <p className="truncate text-xs sm:text-sm font-medium">
                                 {levelLine}
                             </p>
                         ) : null}
                     </div>
 
-                    <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-stretch">
-                        <HitPointsControl
-                            characterId={stored.id}
-                            className="w-full sm:w-auto"
-                        />
-
-                        <div className="flex w-full flex-col justify-center gap-2 sm:w-auto">
-                            <div className="flex w-full items-stretch gap-2">
-                                
-                                <div
-                                    className="flex min-w-0 flex-1 flex-row items-center justify-center gap-1 rounded-2xl border-3 bg-accent text-accent-foreground px-3 py-2 sm:min-w-16 sm:flex-none"
-                                    aria-label={`${tCombat("ac")} ${ac}`}
-                                >
-                                    <span className="flex items-center gap-1 text-xs font-semibold uppercase">
-                                        <FaShield className="size-4 text-secondary" aria-hidden />
+                    <Collapsible
+                        open={combatOpen}
+                        onOpenChange={setCombatOpen}
+                        className="w-full sm:hidden"
+                    >
+                        {!combatOpen ? (
+                            <CollapsibleTrigger
+                                className="flex w-full items-center justify-between gap-2 rounded-lg px-1 py-1 text-sm"
+                                aria-label={t("toggleCombatStats")}
+                            >
+                                <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1">
+                                    <span
+                                        className="inline-flex items-center gap-1 font-semibold tabular-nums"
+                                        aria-label={`${t("hitPoints")} ${currentHp} / ${maxHp}`}
+                                    >
+                                        <LucideHeart
+                                            className="size-4 text-primary"
+                                            aria-hidden
+                                        />
+                                        {currentHp}
+                                        <span className="opacity-50">
+                                            /{maxHp}
+                                        </span>
                                     </span>
-                                    <span className="font-bold tabular-nums">
-                                        <p>{ac}</p>
+                                    <span
+                                        className="inline-flex items-center gap-1 font-semibold tabular-nums"
+                                        aria-label={`${tCombat("ac")} ${ac}`}
+                                    >
+                                        <FaShieldHalved
+                                            className="size-3.5 text-primary"
+                                            aria-hidden
+                                        />
+                                        {ac}
+                                    </span>
+                                    <span
+                                        className="font-medium tabular-nums"
+                                        aria-label={`${tCharacter("initiative")} ${initiativeLabel}`}
+                                    >
+                                        {tCharacter("initiative")}:{" "}
+                                        {initiativeLabel}
                                     </span>
                                 </div>
+                                <ChevronDown
+                                    className="size-4 shrink-0 bg-primary text-primary-foreground rounded"
+                                    aria-hidden
+                                />
+                            </CollapsibleTrigger>
+                        ) : null}
 
-                                <div
-                                    className="flex min-w-0 flex-1 flex-row items-center justify-center gap-1 rounded-2xl border-3 bg-accent text-accent-foreground px-3 py-2 sm:min-w-16 sm:flex-none"
-                                    aria-label={`${tCharacter("initiative")} ${formatModifier(initiative)}`}
-                                >
-                                    <span className="text-sm font-semibold font-serif">
-                                        {tCharacter("initiative")}
-                                    </span>
-                                    <span className="font-bold tabular-nums">
-                                        {formatModifier(initiative)}
-                                    </span>
+                        <CollapsibleContent className="data-[state=closed]:hidden">
+                            <div className="flex flex-col gap-2">
+                                <div className="flex justify-end">
+                                    <CollapsibleTrigger
+                                        className="inline-flex items-center justify-center rounded-md p-1"
+                                        aria-label={t("toggleCombatStats")}
+                                    >
+                                        <ChevronDown
+                                            className="size-4 rotate-180 transition-transform bg-primary text-primary-foreground rounded"
+                                            aria-hidden
+                                        />
+                                    </CollapsibleTrigger>
                                 </div>
+                                <CombatStatsBlock
+                                    characterId={stored.id}
+                                    ac={ac}
+                                    initiative={initiative}
+                                    walkSpeed={walkSpeed}
+                                />
                             </div>
+                        </CollapsibleContent>
+                    </Collapsible>
 
-                            {walkSpeed !== undefined ? (
-                                <div
-                                    className="flex w-full flex-row items-center justify-center rounded-2xl border-3 bg-accent text-accent-foreground px-3 py-2 gap-1"
-                                    aria-label={`${t("speed")} ${t("speedValue", { speed: walkSpeed })}`}
-                                >
-                                    <span className="text-sm font-semibold font-serif">
-                                        {t("speed")}
-                                    </span>
-                                    <span className="font-bold tabular-nums">
-                                        {t("speedValue", { speed: walkSpeed })}
-                                    </span>
-                                </div>
-                            ) : null}
-                        </div>
-                    </div>
+                    <CombatStatsBlock
+                        characterId={stored.id}
+                        ac={ac}
+                        initiative={initiative}
+                        walkSpeed={walkSpeed}
+                        className="hidden sm:flex"
+                    />
                 </div>
 
                 <PlayerSheetTabBar

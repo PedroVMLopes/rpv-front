@@ -482,6 +482,7 @@
     "noSpellsAtLevel": "No spells at this level.",
     "expandSection": "Expand {title}",
     "collapseSection": "Collapse {title}",
+    "toggleCombatStats": "Show combat stats",
     "hitPoints": "Hit Points",
     "damage": "DMG",
     "heal": "HEAL",

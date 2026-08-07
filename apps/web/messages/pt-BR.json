@@ -482,6 +482,7 @@
     "noSpellsAtLevel": "Nenhuma magia neste nível.",
     "expandSection": "Expandir {title}",
     "collapseSection": "Recolher {title}",
+    "toggleCombatStats": "Mostrar estatísticas de combate",
     "hitPoints": "Pontos de Vida",
     "damage": "DANO",
     "heal": "CURAR",
