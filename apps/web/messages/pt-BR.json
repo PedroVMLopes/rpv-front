@@ -361,7 +361,10 @@
     "combatPreviewTitle": "Prévia de combate",
     "flavorTable": {
       "custom": "Personalizado",
-      "slot": "{label} ({current}/{total})"
+      "slot": "{label} ({current}/{total})",
+      "tables": {
+        "guild-business": "Negócio da guilda"
+      }
     },
     "level": {
       "label": "Nível do personagem",
@@ -601,6 +604,7 @@
       "presenceTitle": "Presença",
       "dispositionTitle": "Disposição",
       "notesBlockTitle": "Anotações",
+      "backgroundDetailsTitle": "Detalhes do antecedente",
       "presenceFields": {
         "build": "Porte",
         "attire": "Vestimenta",

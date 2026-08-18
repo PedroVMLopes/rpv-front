@@ -94,6 +94,27 @@ describe("characterAdapter system-agnostic mapping", () => {
         );
     });
 
+    it("round-trips backgroundDetails through systemData", () => {
+        const stored = formDataToStoredCharacter(
+            {
+                ...formData,
+                background: "guild-artisan",
+                backgroundDetails: { "guild-business": "Alchemists" },
+            },
+            "char-1",
+            "player",
+            "dnd",
+            []
+        );
+
+        expect(stored.systemData.backgroundDetails).toEqual({
+            "guild-business": "Alchemists",
+        });
+        expect(flattenStoredToForm(stored, "dnd").backgroundDetails).toEqual({
+            "guild-business": "Alchemists",
+        });
+    });
+
     it("defaults new characters to the English content language", () => {
         const stored = formDataToStoredCharacter(
             formData,

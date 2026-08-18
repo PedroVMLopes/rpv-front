@@ -48,6 +48,7 @@ describe("characterCreationSteps navigation helpers", () => {
         expect(mapFieldToStep("personalityTraits")).toBe("background");
         expect(mapFieldToStep("bonds")).toBe("background");
         expect(mapFieldToStep("flaws")).toBe("background");
+        expect(mapFieldToStep("backgroundDetails")).toBe("background");
     });
 
     it("builds a dynamic graph for wizard level 3", () => {

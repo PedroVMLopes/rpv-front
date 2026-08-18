@@ -361,7 +361,10 @@
     "combatPreviewTitle": "Combat preview",
     "flavorTable": {
       "custom": "Custom",
-      "slot": "{label} ({current}/{total})"
+      "slot": "{label} ({current}/{total})",
+      "tables": {
+        "guild-business": "Guild business"
+      }
     },
     "level": {
       "label": "Character level",
@@ -601,6 +604,7 @@
       "presenceTitle": "Presence",
       "dispositionTitle": "Disposition",
       "notesBlockTitle": "Notes",
+      "backgroundDetailsTitle": "Background details",
       "presenceFields": {
         "build": "Build",
         "attire": "Attire",

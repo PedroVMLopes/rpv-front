@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { Slider } from "@/components/ui/slider";
 import { OverviewPanel } from "@/components/characters/PlayerSheet/overview/OverviewPanel";
 import { sheetInset } from "@/components/characters/PlayerSheet/playerSheetSurfaces";
+import { listFilledBackgroundDetails } from "@/lib/character/flavorTables";
 import {
     listPersonaPersonalityFields,
     readSystemDataString,
@@ -144,6 +145,33 @@ function PersonalityCard({ stored }: PersonaCardProps) {
     );
 }
 
+function BackgroundDetailsCard({ stored }: PersonaCardProps) {
+    const tPersona = useTranslations("playerSheet.persona");
+    const tTables = useTranslations("characterCreation.flavorTable.tables");
+    const details = listFilledBackgroundDetails(stored.systemData);
+
+    if (details.length === 0) {
+        return null;
+    }
+
+    return (
+        <OverviewPanel title={tPersona("backgroundDetailsTitle")}>
+            <div className="flex flex-col gap-3">
+                {details.map((detail) => (
+                    <div key={detail.slug}>
+                        <p className="mb-1 text-xs font-semibold uppercase text-muted-foreground">
+                            {tTables.has(detail.slug)
+                                ? tTables(detail.slug)
+                                : detail.slug}
+                        </p>
+                        <p className="text-sm">{detail.value}</p>
+                    </div>
+                ))}
+            </div>
+        </OverviewPanel>
+    );
+}
+
 type PersonaSectionProps = {
     stored: StoredCharacter;
 };
@@ -156,6 +184,7 @@ export function PersonaSection({ stored }: PersonaSectionProps) {
                 <DispositionCard />
             </div>
             <PersonalityCard stored={stored} />
+            <BackgroundDetailsCard stored={stored} />
         </div>
     );
 }

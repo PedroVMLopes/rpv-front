@@ -142,6 +142,7 @@ export function resolveCreationSteps(
         createStep("background", "selection", "background", {
             fieldNames: [
                 "background",
+                "backgroundDetails",
                 ...BACKGROUND_STEP_IDENTITY_FIELD_NAMES,
             ],
         })

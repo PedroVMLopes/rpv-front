@@ -120,6 +120,40 @@ describe("getBackgroundGrants", () => {
             )
         ).toBe(false);
     });
+
+    it("authors guild-artisan skills, a tool pick, a language pick, and Guild Membership without loot", () => {
+        const grants = getBackgroundGrants("guild-artisan");
+
+        expect(grants[0]).toMatchObject({
+            grantType: "skill_proficiency",
+            choose: 0,
+            options: [
+                { optionType: "skill", ref: "insight" },
+                { optionType: "skill", ref: "persuasion" },
+            ],
+        });
+        expect(grants[1]).toMatchObject({
+            grantType: "tool_proficiency",
+            choose: 1,
+        });
+        expect(grants[1]?.options).toHaveLength(17);
+        expect(grants[2]).toMatchObject({
+            grantType: "language",
+            choose: 1,
+        });
+        expect(grants.at(-1)).toMatchObject({
+            grantType: "ability",
+            choose: 0,
+            description: "Guild Membership",
+        });
+        expect(
+            grants.some(
+                (grant) =>
+                    grant.grantType === "inventory_item" ||
+                    grant.grantType === "currency"
+            )
+        ).toBe(false);
+    });
 });
 
 describe("acolyte flavorTables", () => {
@@ -168,6 +202,62 @@ describe("acolyte flavorTables", () => {
 
         expect(localized.name).toBe("Acólito");
         expect(localized.description).toMatch(/templo/i);
+        expect(localized.flavorTables).toEqual(tables);
+    });
+});
+
+describe("guild-artisan flavorTables", () => {
+    it("authors four bound tables and one unbound guild-business table", () => {
+        const artisan = getBackground("guild-artisan");
+        expect(artisan?.slug).toBe("guild-artisan");
+        expect(artisan?.flavorTables).toHaveLength(5);
+
+        const slugs = artisan?.flavorTables?.map((table) => table.slug);
+        expect(slugs).toEqual([
+            "personality-traits",
+            "ideals",
+            "bonds",
+            "flaws",
+            "guild-business",
+        ]);
+
+        const bound = artisan?.flavorTables?.filter((table) => table.bindTo);
+        for (const table of bound ?? []) {
+            const expected = expectedTableBindTo[table.slug];
+            expect(table.bindTo).toBe(expected.bindTo);
+            expect(table.pickCount).toBe(expected.pickCount);
+            expect(table.allowCustom).toBe(true);
+            expect(table.roll).toBeUndefined();
+            expect(table.options.length).toBeGreaterThanOrEqual(2);
+        }
+
+        const business = artisan?.flavorTables?.find(
+            (table) => table.slug === "guild-business"
+        );
+        expect(business?.bindTo).toBeUndefined();
+        expect(business?.pickCount).toBe(1);
+        expect(business?.roll).toBe("d20");
+        expect(business?.allowCustom).toBe(true);
+        expect(business?.options).toHaveLength(20);
+        expect(business?.options[0]).toMatchObject({
+            slug: "guild-business-01",
+            label: "Alchemists",
+        });
+    });
+
+    it("preserves flavorTables when localizing guild-artisan name and description", () => {
+        const artisan = getBackground("guild-artisan");
+        expect(artisan).toBeDefined();
+        const tables = artisan!.flavorTables;
+
+        const localized = localizeCurationEntry(
+            artisan!,
+            "backgrounds",
+            "pt-BR"
+        );
+
+        expect(localized.name).toBe("Artesão de Guilda");
+        expect(localized.description).toMatch(/guilda/i);
         expect(localized.flavorTables).toEqual(tables);
     });
 });

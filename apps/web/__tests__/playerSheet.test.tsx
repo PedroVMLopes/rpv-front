@@ -612,6 +612,54 @@ describe("PlayerSheet", () => {
         expect(screen.getAllByText("—")).toHaveLength(10);
     });
 
+    it("shows filled background details on notes and hides the block when empty", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(
+            <PlayerSheet
+                stored={{
+                    ...storedCharacter,
+                    id: "char-sheet-guild-details",
+                    selections: {
+                        ...storedCharacter.selections,
+                        background: "guild-artisan",
+                    },
+                    systemData: {
+                        ...storedCharacter.systemData,
+                        background: "guild-artisan",
+                        backgroundDetails: { "guild-business": "Alchemists" },
+                    },
+                }}
+            />
+        );
+
+        await user.click(screen.getByRole("tab", { name: "Notes" }));
+
+        expect(screen.getByText("Background details")).toBeInTheDocument();
+        expect(screen.getByText("Guild business")).toBeInTheDocument();
+        expect(screen.getByText("Alchemists")).toBeInTheDocument();
+    });
+
+    it("omits background details on notes when the object is empty", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(
+            <PlayerSheet
+                stored={{
+                    ...storedCharacter,
+                    id: "char-sheet-empty-details",
+                    systemData: {
+                        ...storedCharacter.systemData,
+                        backgroundDetails: {},
+                    },
+                }}
+            />
+        );
+
+        await user.click(screen.getByRole("tab", { name: "Notes" }));
+
+        expect(screen.queryByText("Background details")).not.toBeInTheDocument();
+        expect(screen.queryByText("Guild business")).not.toBeInTheDocument();
+    });
+
     it("uses inverted tab surfaces and a background-colored tab panel", () => {
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 

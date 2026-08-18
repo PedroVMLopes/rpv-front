@@ -2,10 +2,14 @@ import type { FlavorTable } from "@rpv/content";
 import {
     boundFlavorTables,
     flavorFieldMatchesTable,
+    flavorTableFormPath,
     joinFlavorSlots,
+    listFilledBackgroundDetails,
     parseFlavorSlots,
     sanitizeFlavorFieldsOnBackgroundChange,
     selectValueForFlavorSlot,
+    unboundFlavorTables,
+    BACKGROUND_DETAILS_KEY,
     FLAVOR_CUSTOM_SENTINEL,
 } from "../lib/character/flavorTables";
 
@@ -43,6 +47,49 @@ describe("boundFlavorTables", () => {
                 ],
             }).map((entry) => entry.slug)
         ).toEqual(["ideals"]);
+    });
+});
+
+describe("unboundFlavorTables / flavorTableFormPath", () => {
+    const unbound: FlavorTable = {
+        slug: "guild-business",
+        pickCount: 1,
+        allowCustom: true,
+        options: [{ slug: "guild-business-01", label: "Alchemists" }],
+    };
+
+    it("keeps tables without bindTo", () => {
+        expect(
+            unboundFlavorTables({
+                flavorTables: [
+                    table,
+                    unbound,
+                    { ...table, slug: "blank", bindTo: "  " },
+                ],
+            }).map((entry) => entry.slug)
+        ).toEqual(["guild-business", "blank"]);
+    });
+
+    it("uses bindTo for bound tables and backgroundDetails.slug otherwise", () => {
+        expect(flavorTableFormPath(table)).toBe("ideals");
+        expect(flavorTableFormPath(unbound)).toBe(
+            `${BACKGROUND_DETAILS_KEY}.guild-business`
+        );
+    });
+});
+
+describe("listFilledBackgroundDetails", () => {
+    it("returns only non-empty string entries", () => {
+        expect(
+            listFilledBackgroundDetails({
+                [BACKGROUND_DETAILS_KEY]: {
+                    "guild-business": "Alchemists",
+                    empty: "  ",
+                    missing: undefined,
+                },
+            })
+        ).toEqual([{ slug: "guild-business", value: "Alchemists" }]);
+        expect(listFilledBackgroundDetails({})).toEqual([]);
     });
 });
 
@@ -115,6 +162,7 @@ describe("sanitizeFlavorFieldsOnBackgroundChange", () => {
         ).toEqual({
             ideals: "",
             personalityTraits: "",
+            [BACKGROUND_DETAILS_KEY]: {},
         });
     });
 
@@ -126,9 +174,12 @@ describe("sanitizeFlavorFieldsOnBackgroundChange", () => {
                 values: {
                     ideals: "I wrote this myself.",
                     personalityTraits: "I annotate everything.\nAlso my words.",
+                    [BACKGROUND_DETAILS_KEY]: { "guild-business": "Alchemists" },
                 },
             })
-        ).toEqual({});
+        ).toEqual({
+            [BACKGROUND_DETAILS_KEY]: {},
+        });
     });
 });
 

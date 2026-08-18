@@ -42,6 +42,7 @@ function BackgroundPageHarness({
                 {JSON.stringify({
                     ideals: form.watch("ideals"),
                     personalityTraits: form.watch("personalityTraits"),
+                    backgroundDetails: form.watch("backgroundDetails"),
                     name: form.watch("name"),
                     age: form.watch("age"),
                     goals: form.watch("goals"),
@@ -78,6 +79,9 @@ describe("BackgroundSelectionPage flavor pickers", () => {
         expect(screen.getByRole("combobox", { name: "Apparent Age" })).toBeInTheDocument();
         expect(screen.getByRole("textbox", { name: "Goals" })).toBeInTheDocument();
         expect(screen.queryByRole("textbox", { name: "Ideals" })).not.toBeInTheDocument();
+        expect(
+            screen.queryByRole("combobox", { name: "Guild business" })
+        ).not.toBeInTheDocument();
         expect(screen.getByTestId("form-output")).toHaveTextContent("Elara");
         expect(screen.getByTestId("form-output")).toHaveTextContent("Adult");
         expect(screen.getByTestId("form-output")).toHaveTextContent("Map the archive");
@@ -173,5 +177,34 @@ describe("BackgroundSelectionPage flavor pickers", () => {
         expect(screen.getByTestId("form-output")).toHaveTextContent(
             ACOLYTE_IDEAL_02
         );
+        expect(
+            screen.queryByRole("combobox", { name: "Guild business" })
+        ).not.toBeInTheDocument();
+    });
+
+    it("shows the guild business picker for Guild Artisan and writes the label", async () => {
+        const user = userEvent.setup();
+        render(
+            <BackgroundPageHarness
+                defaultValues={{ background: "guild-artisan" }}
+            />
+        );
+
+        expect(
+            screen.getByRole("combobox", { name: "Guild business" })
+        ).toBeInTheDocument();
+        expect(screen.getByRole("combobox", { name: "Ideals" })).toBeInTheDocument();
+
+        await user.selectOptions(
+            screen.getByRole("combobox", { name: "Guild business" }),
+            "guild-business-01"
+        );
+
+        expect(JSON.parse(screen.getByTestId("form-output").textContent ?? "{}"))
+            .toEqual(
+                expect.objectContaining({
+                    backgroundDetails: { "guild-business": "Alchemists" },
+                })
+            );
     });
 });

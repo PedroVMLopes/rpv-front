@@ -97,6 +97,10 @@
     "acolyte": {
       "name": "Acólito",
       "description": "Você passou a vida a serviço de um templo, como intermediário entre o sagrado e o mundo mortal. Você conhece dois idiomas adicionais à sua escolha."
+    },
+    "guild-artisan": {
+      "name": "Artesão de Guilda",
+      "description": "Você é membro de uma guilda de ofício, com banca, sede e uma marca que outras lojas reconhecem. Você conhece um idioma adicional à sua escolha."
     }
   },
   "classes": {
@@ -275,6 +279,9 @@
     },
     "shelter-of-the-faithful": {
       "description": "Quem compartilha sua fé o respeita. Você e seus companheiros podem receber cura e cuidados gratuitos em um templo da sua fé, e você tem laços com um templo específico ao qual pode pedir ajuda que não seja perigosa."
+    },
+    "guild-membership": {
+      "description": "Os membros da sua guilda tratam você como um dos seus. Numa cidade com sede, você encontra pouso simples, apresentações e ajuda que não seja crime."
     }
   }
 }

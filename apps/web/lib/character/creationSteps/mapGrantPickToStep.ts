@@ -13,6 +13,7 @@ const BACKGROUND_FORM_FIELDS = new Set([
     "background",
     "name",
     "age",
+    "backgroundDetails",
     ...OVERVIEW_PERSONALITY_FIELD_KEYS,
 ]);
 

@@ -75,4 +75,23 @@ describe("getAbilityFeatureDescription", () => {
             )
         ).toContain("cura e cuidados gratuitos");
     });
+
+    it("returns curated guild artisan feature description in English", () => {
+        expect(
+            getAbilityFeatureDescription("Guild Membership", {
+                type: "background",
+                id: "guild-artisan",
+            })
+        ).toContain("chapter hall");
+    });
+
+    it("returns localized guild artisan feature description for pt-BR", () => {
+        expect(
+            getAbilityFeatureDescription(
+                "Guild Membership",
+                { type: "background", id: "guild-artisan" },
+                "pt-BR"
+            )
+        ).toContain("sede");
+    });
 });

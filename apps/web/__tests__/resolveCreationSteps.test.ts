@@ -283,4 +283,24 @@ describe("resolveCreationSteps", () => {
             true
         );
     });
+
+    it("includes background-choices for guild-artisan tool and language picks", () => {
+        const graph = resolveCreationSteps({
+            formValues: {
+                race: "human",
+                characterClass: "fighter",
+                level: 1,
+                background: "guild-artisan",
+            },
+            system: "dnd",
+            contentLocale: "en",
+        });
+
+        expect(graph.steps.some((step) => step.id === "background-choices")).toBe(
+            true
+        );
+        expect(graph.getStep("background")?.fieldNames).toEqual(
+            expect.arrayContaining(["backgroundDetails"])
+        );
+    });
 });

@@ -2,6 +2,7 @@ import type { FlavorTable } from "@rpv/content";
 
 export const FLAVOR_SLOT_SEPARATOR = "\n";
 export const FLAVOR_CUSTOM_SENTINEL = "__custom__";
+export const BACKGROUND_DETAILS_KEY = "backgroundDetails";
 
 export type BoundFlavorTable = FlavorTable & { bindTo: string };
 
@@ -19,6 +20,46 @@ export function boundFlavorTables(
     entry: FlavorTableSource | undefined
 ): BoundFlavorTable[] {
     return (entry?.flavorTables ?? []).filter(isBoundFlavorTable);
+}
+
+export function unboundFlavorTables(
+    entry: FlavorTableSource | undefined
+): FlavorTable[] {
+    return (entry?.flavorTables ?? []).filter(
+        (table) => !isBoundFlavorTable(table)
+    );
+}
+
+export function flavorTableFormPath(table: FlavorTable): string {
+    if (isBoundFlavorTable(table)) {
+        return table.bindTo;
+    }
+
+    return `${BACKGROUND_DETAILS_KEY}.${table.slug}`;
+}
+
+export function listFilledBackgroundDetails(
+    source: Record<string, unknown> | undefined
+): Array<{ slug: string; value: string }> {
+    const raw = source?.[BACKGROUND_DETAILS_KEY];
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+        return [];
+    }
+
+    return Object.entries(raw as Record<string, unknown>).flatMap(
+        ([slug, value]) => {
+            if (typeof value !== "string") {
+                return [];
+            }
+
+            const trimmed = value.trim();
+            if (trimmed === "") {
+                return [];
+            }
+
+            return [{ slug, value: trimmed }];
+        }
+    );
 }
 
 export function joinFlavorSlots(slots: string[]): string {
@@ -75,8 +116,10 @@ export function sanitizeFlavorFieldsOnBackgroundChange({
     previous?: FlavorTableSource;
     next?: FlavorTableSource;
     values: Record<string, unknown>;
-}): Record<string, string> {
-    const patch: Record<string, string> = {};
+}): Record<string, unknown> {
+    const patch: Record<string, unknown> = {
+        [BACKGROUND_DETAILS_KEY]: {},
+    };
 
     for (const table of boundFlavorTables(previous)) {
         const current = values[table.bindTo];

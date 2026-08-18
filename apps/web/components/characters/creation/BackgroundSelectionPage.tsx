@@ -13,6 +13,7 @@ import { FlavorTableField } from "@/components/characters/creation/FlavorTableFi
 import { BACKGROUND_STEP_IDENTITY_FIELD_NAMES } from "@/lib/character/overviewIdentity";
 import {
     boundFlavorTables,
+    isBoundFlavorTable,
     sanitizeFlavorFieldsOnBackgroundChange,
 } from "@/lib/character/flavorTables";
 import { contentRepo } from "@/lib/content/contentRepository";
@@ -37,6 +38,7 @@ export function BackgroundSelectionPage({
 }: BackgroundSelectionPageProps) {
     const t = useTranslations();
     const tFields = useTranslations("fields");
+    const tFlavorTables = useTranslations("characterCreation.flavorTable.tables");
     const backgroundSlug = readBackgroundSlug(form.watch("background"));
     const previousSlugRef = useRef<string | undefined>(undefined);
     const didInitRef = useRef(false);
@@ -49,14 +51,14 @@ export function BackgroundSelectionPage({
         [backgroundSlug, contentLocale, system]
     );
 
-    const flavorTables = useMemo(
-        () => boundFlavorTables(backgroundEntry),
-        [backgroundEntry]
-    );
+    const flavorTables = backgroundEntry?.flavorTables ?? [];
 
     const coveredBindTos = useMemo(
-        () => new Set(flavorTables.map((table) => table.bindTo)),
-        [flavorTables]
+        () =>
+            new Set(
+                boundFlavorTables(backgroundEntry).map((table) => table.bindTo)
+            ),
+        [backgroundEntry]
     );
 
     const filteredIdentityFields = useMemo(
@@ -103,15 +105,21 @@ export function BackgroundSelectionPage({
         previousSlugRef.current = backgroundSlug;
     }, [backgroundSlug, contentLocale, form, system]);
 
-    const resolveFieldLabel = (bindTo: string): string => {
-        const field = identityFields.find((item) => item.name === bindTo);
+    const resolveFieldLabel = (table: (typeof flavorTables)[number]): string => {
+        if (!isBoundFlavorTable(table)) {
+            return tFlavorTables.has(table.slug)
+                ? tFlavorTables(table.slug)
+                : table.slug;
+        }
+
+        const field = identityFields.find((item) => item.name === table.bindTo);
         if (field?.labelKey) {
             return t(field.labelKey);
         }
         if (field?.label) {
             return field.label;
         }
-        return tFields.has(bindTo) ? tFields(bindTo) : bindTo;
+        return tFields.has(table.bindTo) ? tFields(table.bindTo) : table.bindTo;
     };
 
     return (
@@ -126,10 +134,10 @@ export function BackgroundSelectionPage({
                 <div className="flex flex-col gap-6">
                     {flavorTables.map((table) => (
                         <FlavorTableField
-                            key={`${table.slug}:${table.bindTo}`}
+                            key={`${table.slug}:${table.bindTo ?? "unbound"}`}
                             form={form}
                             table={table}
-                            fieldLabel={resolveFieldLabel(table.bindTo)}
+                            fieldLabel={resolveFieldLabel(table)}
                         />
                     ))}
                 </div>

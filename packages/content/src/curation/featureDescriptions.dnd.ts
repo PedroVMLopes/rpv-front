@@ -49,6 +49,8 @@ const dndFeatureDescriptions: Record<string, string> = {
         "When a question of lore comes up, you know which books, people, or halls to consult. If the answer is not at hand, you can usually find a scholar or archive willing to help you look.",
     "shelter-of-the-faithful":
         "Those who share your faith respect you. You and your companions can receive free healing and care at a temple of your faith, and you have ties to a specific temple you can call on for aid that is not hazardous.",
+    "guild-membership":
+        "Fellow members of your guild treat you as one of their own. In a town with a chapter hall, you can find modest lodging, introductions, and help that is not a crime.",
 };
 
 function localizedCuratedDescription(

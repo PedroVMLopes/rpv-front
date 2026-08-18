@@ -306,6 +306,167 @@ export const dndBackgrounds: BackgroundEntry[] = [
             },
         ],
     },
+    {
+        slug: "guild-artisan",
+        name: "Guild Artisan",
+        description:
+            "You are a member of a craft guild, with a stall, a hall, and a mark that other shops recognize. You know one additional language of your choice.",
+        grants: [
+            {
+                grantType: "skill_proficiency",
+                choose: 0,
+                options: [
+                    { optionType: "skill", ref: "insight" },
+                    { optionType: "skill", ref: "persuasion" },
+                ],
+            },
+            {
+                grantType: "tool_proficiency",
+                choose: 1,
+                description: "One set of artisan's tools.",
+                options: [
+                    { optionType: "proficiency", ref: "alchemists-supplies" },
+                    { optionType: "proficiency", ref: "brewers-supplies" },
+                    { optionType: "proficiency", ref: "calligraphers-supplies" },
+                    { optionType: "proficiency", ref: "carpenters-tools" },
+                    { optionType: "proficiency", ref: "cartographers-tools" },
+                    { optionType: "proficiency", ref: "cobblers-tools" },
+                    { optionType: "proficiency", ref: "cooks-utensils" },
+                    { optionType: "proficiency", ref: "glassblowers-tools" },
+                    { optionType: "proficiency", ref: "jewelers-tools" },
+                    { optionType: "proficiency", ref: "leatherworkers-tools" },
+                    { optionType: "proficiency", ref: "masons-tools" },
+                    { optionType: "proficiency", ref: "painters-supplies" },
+                    { optionType: "proficiency", ref: "potters-tools" },
+                    { optionType: "proficiency", ref: "smiths-tools" },
+                    { optionType: "proficiency", ref: "tinkers-tools" },
+                    { optionType: "proficiency", ref: "weavers-tools" },
+                    { optionType: "proficiency", ref: "woodcarvers-tools" },
+                ],
+            },
+            {
+                grantType: "language",
+                choose: 1,
+                selectionFilter: { any: true },
+                description: "One language of your choice.",
+            },
+            {
+                grantType: "ability",
+                choose: 0,
+                description: "Guild Membership",
+            },
+        ],
+        flavorTables: [
+            {
+                slug: "personality-traits",
+                bindTo: "personalityTraits",
+                pickCount: 2,
+                allowCustom: true,
+                options: [
+                    {
+                        slug: "guild-artisan-trait-01",
+                        label: "I price a job by the grain of the wood before I hear the customer's name.",
+                    },
+                    {
+                        slug: "guild-artisan-trait-02",
+                        label: "I keep a scrap of every guild stamp I have ever earned.",
+                    },
+                    {
+                        slug: "guild-artisan-trait-03",
+                        label: "I talk with my hands as if I were already at the bench.",
+                    },
+                ],
+            },
+            {
+                slug: "ideals",
+                bindTo: "ideals",
+                pickCount: 1,
+                allowCustom: true,
+                options: [
+                    {
+                        slug: "guild-artisan-ideal-01",
+                        label: "Fair measure: a short count cheats the whole street.",
+                    },
+                    {
+                        slug: "guild-artisan-ideal-02",
+                        label: "Make it last: cheap work is a second job waiting to happen.",
+                    },
+                    {
+                        slug: "guild-artisan-ideal-03",
+                        label: "The hall first: my guild's name rides on every piece I sell.",
+                    },
+                ],
+            },
+            {
+                slug: "bonds",
+                bindTo: "bonds",
+                pickCount: 1,
+                allowCustom: true,
+                options: [
+                    {
+                        slug: "guild-artisan-bond-01",
+                        label: "The master who signed my papers still has a bench I refuse to disappoint.",
+                    },
+                    {
+                        slug: "guild-artisan-bond-02",
+                        label: "I owe a season's wages to the hall that hid me during a bad winter.",
+                    },
+                    {
+                        slug: "guild-artisan-bond-03",
+                        label: "A rival shop copied my mark; I will see it taken down.",
+                    },
+                ],
+            },
+            {
+                slug: "flaws",
+                bindTo: "flaws",
+                pickCount: 1,
+                allowCustom: true,
+                options: [
+                    {
+                        slug: "guild-artisan-flaw-01",
+                        label: "I cannot walk past crooked joinery without commenting.",
+                    },
+                    {
+                        slug: "guild-artisan-flaw-02",
+                        label: "I undercharge friends until my own ledger bleeds.",
+                    },
+                    {
+                        slug: "guild-artisan-flaw-03",
+                        label: "I hoard leftover stock for a better job that never comes.",
+                    },
+                ],
+            },
+            {
+                slug: "guild-business",
+                pickCount: 1,
+                roll: "d20",
+                allowCustom: true,
+                options: [
+                    { slug: "guild-business-01", label: "Alchemists" },
+                    { slug: "guild-business-02", label: "Brewers" },
+                    { slug: "guild-business-03", label: "Calligraphers" },
+                    { slug: "guild-business-04", label: "Carpenters" },
+                    { slug: "guild-business-05", label: "Cartographers" },
+                    { slug: "guild-business-06", label: "Cobblers" },
+                    { slug: "guild-business-07", label: "Cooks" },
+                    { slug: "guild-business-08", label: "Glassblowers" },
+                    { slug: "guild-business-09", label: "Jewelers" },
+                    { slug: "guild-business-10", label: "Leatherworkers" },
+                    { slug: "guild-business-11", label: "Masons" },
+                    { slug: "guild-business-12", label: "Painters" },
+                    { slug: "guild-business-13", label: "Potters" },
+                    { slug: "guild-business-14", label: "Smiths" },
+                    { slug: "guild-business-15", label: "Tinkers" },
+                    { slug: "guild-business-16", label: "Weavers" },
+                    { slug: "guild-business-17", label: "Woodcarvers" },
+                    { slug: "guild-business-18", label: "Armorers" },
+                    { slug: "guild-business-19", label: "Shipwrights" },
+                    { slug: "guild-business-20", label: "Wheelwrights" },
+                ],
+            },
+        ],
+    },
 ];
 
 function resolveBackground(slug: string): BackgroundEntry | undefined {

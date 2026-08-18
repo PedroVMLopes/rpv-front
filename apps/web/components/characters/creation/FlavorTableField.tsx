@@ -5,13 +5,14 @@ import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import type { FlavorTable } from "@rpv/content";
 import {
     FLAVOR_CUSTOM_SENTINEL,
     flavorSlotTextFromSelect,
+    flavorTableFormPath,
     joinFlavorSlots,
     parseFlavorSlots,
     selectValueForFlavorSlot,
-    type BoundFlavorTable,
 } from "@/lib/character/flavorTables";
 
 const SELECT_CLASS_NAME =
@@ -24,7 +25,7 @@ const TEXTAREA_CLASS_NAME = cn(
 
 type FlavorTableFieldProps = {
     form: UseFormReturn<Record<string, unknown>>;
-    table: BoundFlavorTable;
+    table: FlavorTable;
     fieldLabel: string;
 };
 
@@ -36,7 +37,8 @@ export function FlavorTableField({
     const t = useTranslations("characterCreation.flavorTable");
     const tForms = useTranslations("forms");
     const fieldId = useId();
-    const boundValue = form.watch(table.bindTo);
+    const formPath = flavorTableFormPath(table);
+    const boundValue = form.watch(formPath);
     const slots = parseFlavorSlots(boundValue, table.pickCount);
     const [customModeFlags, setCustomModeFlags] = useState<boolean[]>(() =>
         slots.map(
@@ -47,7 +49,7 @@ export function FlavorTableField({
 
     useEffect(() => {
         const nextSlots = parseFlavorSlots(
-            form.getValues(table.bindTo),
+            form.getValues(formPath),
             table.pickCount
         );
         setCustomModeFlags(
@@ -57,10 +59,10 @@ export function FlavorTableField({
                     FLAVOR_CUSTOM_SENTINEL
             )
         );
-    }, [form, table, table.slug, table.bindTo, table.pickCount]);
+    }, [form, formPath, table, table.slug, table.pickCount]);
 
     const commitSlots = (nextSlots: string[]) => {
-        form.setValue(table.bindTo, joinFlavorSlots(nextSlots), {
+        form.setValue(formPath, joinFlavorSlots(nextSlots), {
             shouldDirty: true,
             shouldValidate: true,
         });
@@ -102,7 +104,7 @@ export function FlavorTableField({
                     <div
                         key={`${table.slug}-${index}`}
                         className="grid gap-2"
-                        data-testid={`flavor-slot-${table.bindTo}-${index}`}
+                        data-testid={`flavor-slot-${table.slug}-${index}`}
                     >
                         <Label htmlFor={selectId}>{slotLabel}</Label>
                         <select
