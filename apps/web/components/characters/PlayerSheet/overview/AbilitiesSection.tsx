@@ -1,15 +1,7 @@
 "use client";
 
-import { useMemo, type ComponentType } from "react";
+import { useMemo } from "react";
 import { useTranslations } from "next-intl";
-import {
-    GiBrain,
-    GiConversation,
-    GiCrystalBall,
-    GiHeartBeats,
-    GiMuscleUp,
-    GiWalkingBoot,
-} from "react-icons/gi";
 import {
     computeSkillModifiers,
     formatModifier,
@@ -25,17 +17,6 @@ import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { OverviewPanel } from "./OverviewPanel";
 import { cn } from "@/lib/utils";
-
-type AbilityIcon = ComponentType<{ className?: string }>;
-
-const ABILITY_ICONS: Record<string, AbilityIcon> = {
-    strength: GiMuscleUp,
-    dexterity: GiWalkingBoot,
-    constitution: GiHeartBeats,
-    intelligence: GiBrain,
-    wisdom: GiCrystalBall,
-    charisma: GiConversation,
-};
 
 type AbilitiesSectionProps = {
     stored: StoredCharacter;
@@ -76,48 +57,49 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
     );
 
     return (
-        <OverviewPanel>
-            <div className="grid gap-2 grid-cols-3">
+        <OverviewPanel contentClassName="overflow-visible">
+            <div className="grid grid-cols-3 gap-x-2 gap-y-3 pt-1">
                 {display.abilities.map((ability) => {
                     const mod = abilityModifier(ability.resolved);
-                    const Icon = ABILITY_ICONS[ability.name];
                     const label = ability.labelKey
                         ? t(ability.labelKey)
                         : (ability.label ?? ability.name);
 
                     return (
-                        <div
-                            key={ability.name}
-                            className={cn(
-                                "flex flex-col items-center rounded-xl gap-1 py-2 px-1.5 bg-accent text-accent-foreground shadow-xs border-custom border-background"
-                            )}
-                        >
-                            <div className="flex flex-col items-center gap-1">
-                                {Icon ? (
-                                    <Icon
-                                        className="size-8 shrink-0 text-accent-foreground/50"
-                                        aria-hidden
-                                    />
-                                ) : null}
-                                <div className="flex flex-row items-center leading-none gap-2">
-                                    <span className="font-semibold tabular-nums text-accent-foreground/70">
-                                        {ability.resolved}
-                                    </span>
-                                    <span className="font-bold tabular-nums text-primary">
-                                        {formatModifier(mod)}
-                                    </span>
-                                </div>
+                        <div key={ability.name} className="pt-3">
+                            <div
+                                className={cn(
+                                    "relative flex min-h-24 flex-col items-center rounded-xl bg-accent px-1.5 pb-2 pt-3 text-accent-foreground shadow-xs border-custom border-background"
+                                )}
+                                aria-label={`${label} ${ability.resolved} ${formatModifier(mod)}`}
+                            >
+                                <span
+                                    className={cn(
+                                        "absolute left-1/2 top-0 z-10 -translate-x-1/2 -translate-y-1/2",
+                                        "rounded-lg bg-primary px-2 py-0.5 font-semibold tabular-nums leading-none",
+                                        "border-2"
+                                    )}
+                                >
+                                    {ability.resolved}
+                                </span>
+                                <span className="flex flex-1 items-center text-2xl font-bold font-serif tracking-wide leading-none sm:text-3xl">
+                                    {formatModifier(mod)}
+                                </span>
+                                <span className="text-center text-sm font-semibold leading-tight">
+                                    {label}
+                                </span>
                             </div>
-                            <span className="text-xs sm:text-sm font-semibold text-center">
-                                {label}
-                            </span>
                         </div>
                     );
                 })}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-sm mt-2">
-                <div className={cn("rounded-lg p-2 flex flex-row gap-1.5 bg-accent text-accent-foreground border-custom border-background shadow-xs")}>
+            <div className="mt-2 grid grid-cols-1 gap-1 text-sm sm:grid-cols-2">
+                <div
+                    className={cn(
+                        "flex flex-row gap-1.5 rounded-lg bg-accent p-2 text-accent-foreground shadow-xs border-custom border-background"
+                    )}
+                >
                     <span className="text-accent-foreground/70">
                         {t("character.proficiencyBonus")}{" "}
                     </span>
@@ -129,7 +111,6 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
                     </span>
                     <span className="font-bold">{passivePerception}</span>
                 </div> */}
-           
             </div>
         </OverviewPanel>
     );
