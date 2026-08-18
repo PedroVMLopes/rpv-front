@@ -419,7 +419,6 @@ describe("PlayerSheet", () => {
     it("does not list combat actions on overview", () => {
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
-        expect(screen.queryByText("Attacks & Actions")).not.toBeInTheDocument();
         expect(screen.queryByText(/Melee main/)).not.toBeInTheDocument();
         expect(
             screen.queryByRole("button", { name: "Roll Longsword" })
@@ -430,7 +429,7 @@ describe("PlayerSheet", () => {
         const user = userEvent.setup();
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
-        await user.click(screen.getByRole("tab", { name: "Combat" }));
+        await user.click(screen.getByRole("tab", { name: "Actions" }));
         await user.click(screen.getByRole("button", { name: "Roll Longsword" }));
 
         expect(
@@ -451,8 +450,8 @@ describe("PlayerSheet", () => {
         const user = userEvent.setup();
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
-        await user.click(screen.getByRole("tab", { name: "Combat" }));
-        expect(screen.getByText("Attacks & Actions")).toBeInTheDocument();
+        await user.click(screen.getByRole("tab", { name: "Actions" }));
+        expect(screen.getAllByText("Actions").length).toBeGreaterThan(0);
         expect(screen.queryByText("Coming soon")).not.toBeInTheDocument();
 
         await user.click(screen.getByRole("tab", { name: "Inventory" }));
@@ -470,7 +469,7 @@ describe("PlayerSheet", () => {
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
         const overviewTab = screen.getByRole("tab", { name: "Overview" });
-        const combatTab = screen.getByRole("tab", { name: "Combat" });
+        const combatTab = screen.getByRole("tab", { name: "Actions" });
 
         expect(overviewTab).toHaveClass("bg-muted");
         expect(overviewTab).toHaveClass("border-b-0");

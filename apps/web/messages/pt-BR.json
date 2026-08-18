@@ -512,7 +512,7 @@
     "speed": "Deslocamento",
     "speedValue": "{speed} pés",
     "combat": {
-      "attacksActions": "Ataques e Ações",
+      "attacksActions": "Ações",
       "classResources": "Recursos de Classe",
       "defenseSaves": "Defesa e Resistências",
       "stat": "Atributo",
@@ -525,7 +525,22 @@
       "roll": "Rolar",
       "use": "Usar",
       "noActions": "Nenhuma ação disponível",
-      "noResources": "Nenhum recurso de classe"
+      "noResources": "Nenhum recurso de classe",
+      "filtersLabel": "Filtros de ações",
+      "filters": {
+        "all": "Todas",
+        "weapons": "Armas",
+        "spells": "Magias",
+        "features": "Características",
+        "available": "Disponíveis agora"
+      },
+      "group": {
+        "action": "Ação",
+        "bonus": "Ação bônus",
+        "reaction": "Reação",
+        "special": "Especial / Livre",
+        "passive": "Lembretes passivos"
+      }
     },
     "inventory": {
       "summary": {
@@ -569,7 +584,7 @@
     "tabs": {
       "navLabel": "Seções da ficha",
       "overview": "Visão geral",
-      "combat": "Combate",
+      "combat": "Ações",
       "inventory": "Inventário",
       "magic": "Magia",
       "notes": "Anotações"

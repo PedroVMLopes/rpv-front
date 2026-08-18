@@ -152,7 +152,9 @@ describe("CombatTab", () => {
             <CombatTabConnected characterId={storedCharacter.id} />
         );
 
-        expect(screen.getByText("Attacks & Actions")).toBeInTheDocument();
+        expect(screen.getAllByText("Actions").length).toBeGreaterThan(0);
+        expect(screen.getByLabelText("Hit Points 18/20")).toBeInTheDocument();
+        expect(screen.getByText("Lv1 2/2")).toBeInTheDocument();
         expect(screen.getByText("Longsword")).toBeInTheDocument();
         expect(screen.getByText("Fire Bolt")).toBeInTheDocument();
         expect(screen.getByText("Second Wind")).toBeInTheDocument();
@@ -167,32 +169,14 @@ describe("CombatTab", () => {
         ).toBeInTheDocument();
     });
 
-    it("decrements class resources without going below zero", async () => {
-        const user = userEvent.setup();
-
+    it("shows the turn status rail with current hp and resource summary", () => {
         renderWithProviders(
             <CombatTabConnected characterId={storedCharacter.id} />
         );
 
-        expect(screen.getByText("2 / 2")).toBeInTheDocument();
-
-        await user.click(screen.getByRole("button", { name: /Level 1 −/i }));
-        expect(
-            useCharacterStore.getState().characters[0]?.resources[
-                "spell-slots-1"
-            ]
-        ).toBe(1);
-
-        await user.click(screen.getByRole("button", { name: /Level 1 −/i }));
-        expect(
-            useCharacterStore.getState().characters[0]?.resources[
-                "spell-slots-1"
-            ]
-        ).toBe(0);
-
-        expect(
-            screen.getByRole("button", { name: /Level 1 −/i })
-        ).toBeDisabled();
+        expect(screen.getByLabelText("Hit Points 18/20")).toBeInTheDocument();
+        expect(screen.getByLabelText(/AC \d+/)).toBeInTheDocument();
+        expect(screen.getByText("Lv1 2/2")).toBeInTheDocument();
     });
 });
 
@@ -205,8 +189,8 @@ describe("PlayerSheet combat tab", () => {
         const user = userEvent.setup();
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
-        await user.click(screen.getByRole("tab", { name: "Combat" }));
-        expect(screen.getByText("Attacks & Actions")).toBeInTheDocument();
+        await user.click(screen.getByRole("tab", { name: "Actions" }));
+        expect(screen.getAllByText("Actions").length).toBeGreaterThan(0);
         expect(screen.queryByText("Coming soon")).not.toBeInTheDocument();
     });
 });

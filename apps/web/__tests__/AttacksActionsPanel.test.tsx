@@ -128,6 +128,7 @@ describe("AttacksActionsPanel roll integration", () => {
     it("shows longsword attack preview for fighter", () => {
         renderPanel(fighterStored);
 
+        expect(screen.getByText("Action")).toBeInTheDocument();
         expect(screen.getByText("Longsword")).toBeInTheDocument();
         expect(screen.getByText(/\+5/)).toBeInTheDocument();
         expect(screen.getByText(/1d8\+3 slashing/)).toBeInTheDocument();
@@ -190,5 +191,35 @@ describe("AttacksActionsPanel roll integration", () => {
         await user.click(screen.getByRole("button", { name: "6" }));
 
         expect(toastMock).toHaveBeenCalledWith("Burning Hands: 12 damage");
+    });
+
+    it("filters the surface down to spell actions", async () => {
+        const user = userEvent.setup();
+        renderPanel({
+            ...wizardStored,
+            selections: {
+                ...wizardStored.selections,
+                inventory: {
+                    bag: [{ slug: "srd_longsword", quantity: 1 }],
+                    equipped: { "melee-main": "srd_longsword" },
+                },
+            },
+            grants: [
+                ...wizardStored.grants,
+                {
+                    id: "class-fighter-ability-second-wind",
+                    kind: "ability",
+                    ref: "Second Wind",
+                    name: "Second Wind",
+                    source: { type: "class", id: "fighter" },
+                },
+            ],
+        });
+
+        await user.click(screen.getByRole("tab", { name: "Spells" }));
+
+        expect(screen.getByText("Fire Bolt")).toBeInTheDocument();
+        expect(screen.queryByText("Longsword")).not.toBeInTheDocument();
+        expect(screen.queryByText("Second Wind")).not.toBeInTheDocument();
     });
 });

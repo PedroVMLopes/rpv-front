@@ -1,14 +1,15 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
-    listEquippedWeaponActions,
-    listFeatureActions,
-    listSpellActions,
-    type SpellAction,
-    type WeaponAction,
-} from "@/lib/character/combatActions";
+    buildDisplayActions,
+    filterDisplayActions,
+    groupDisplayActions,
+    type ActionCost,
+    type ActionFilterId,
+    type DisplayAction,
+} from "@/lib/character/actionDisplay";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import {
     buildSpellAttackRollRequest,
@@ -25,30 +26,49 @@ type AttacksActionsPanelProps = {
     stored: StoredCharacter;
 };
 
-function openWeaponRoll(
-    weapon: WeaponAction,
-    openRollRequest: ReturnType<typeof useRollAssistant>["openRollRequest"]
-) {
-    const request = buildWeaponAttackRollRequest(weapon);
-    if (request) {
-        openRollRequest(request);
+const FILTERS: ActionFilterId[] = [
+    "all",
+    "weapons",
+    "spells",
+    "features",
+    "available",
+];
+
+function groupTitle(cost: ActionCost, t: ReturnType<typeof useTranslations>) {
+    switch (cost) {
+        case "action":
+            return t("combat.group.action");
+        case "bonus":
+            return t("combat.group.bonus");
+        case "reaction":
+            return t("combat.group.reaction");
+        case "special":
+            return t("combat.group.special");
+        case "passive":
+            return t("combat.group.passive");
     }
 }
 
-function openSpellRoll(
-    spell: SpellAction,
-    openRollRequest: ReturnType<typeof useRollAssistant>["openRollRequest"]
+function filterLabel(
+    filter: ActionFilterId,
+    t: ReturnType<typeof useTranslations>
 ) {
-    const request =
-        spell.rollProfile?.mode === "attack"
-            ? buildSpellAttackRollRequest(spell)
-            : spell.rollProfile?.mode === "save"
-              ? buildSpellDamageRollRequest(spell)
-              : null;
-
-    if (request) {
-        openRollRequest(request);
+    switch (filter) {
+        case "all":
+            return t("combat.filters.all");
+        case "weapons":
+            return t("combat.filters.weapons");
+        case "spells":
+            return t("combat.filters.spells");
+        case "features":
+            return t("combat.filters.features");
+        case "available":
+            return t("combat.filters.available");
     }
+}
+
+function actionButtonLabel(action: DisplayAction) {
+    return action.actionLabel;
 }
 
 export function AttacksActionsPanel({ stored }: AttacksActionsPanelProps) {
@@ -58,46 +78,32 @@ export function AttacksActionsPanel({ stored }: AttacksActionsPanelProps) {
     const getResolvedStats = useCharacterStore((state) => state.getResolvedStats);
     const { openRollRequest } = useRollAssistant();
     const resolved = getResolvedStats(stored.id);
+    const [activeFilter, setActiveFilter] = useState<ActionFilterId>("all");
 
-    const weapons = useMemo(() => {
+    const actions = useMemo(() => {
         if (!resolved) {
             return [];
         }
 
-        return listEquippedWeaponActions(stored, resolved, contentLocale);
-    }, [contentLocale, resolved, stored]);
+        return buildDisplayActions(
+            stored,
+            resolved,
+            contentLocale,
+            (key) => tSlots(key)
+        );
+    }, [contentLocale, resolved, stored, tSlots]);
 
-    const { cantrips, spells } = useMemo(() => {
-        if (!resolved) {
-            return { cantrips: [], spells: [] };
-        }
-
-        return listSpellActions(stored, resolved, contentLocale);
-    }, [contentLocale, resolved, stored]);
-
-    const features = useMemo(
-        () => listFeatureActions(stored.grants ?? [], contentLocale),
-        [contentLocale, stored.grants]
+    const visibleActions = useMemo(
+        () => filterDisplayActions(actions, activeFilter),
+        [actions, activeFilter]
     );
 
-    const hasSpells = cantrips.length > 0 || spells.length > 0;
-    const hasAny =
-        weapons.length > 0 || hasSpells || features.length > 0;
+    const groups = useMemo(
+        () => groupDisplayActions(visibleActions),
+        [visibleActions]
+    );
 
-    const slotLabel = (slotId: string) => {
-        switch (slotId) {
-            case "melee-main":
-                return tSlots("meleeMain");
-            case "melee-off":
-                return tSlots("meleeOff");
-            case "ranged-main":
-                return tSlots("rangedMain");
-            case "ranged-off":
-                return tSlots("rangedOff");
-            default:
-                return slotId;
-        }
-    };
+    const hasAny = groups.length > 0;
 
     return (
         <OverviewPanel title={t("combat.attacksActions")}>
@@ -107,98 +113,58 @@ export function AttacksActionsPanel({ stored }: AttacksActionsPanelProps) {
                 </p>
             ) : (
                 <div className="flex flex-col gap-4">
-                    {weapons.length > 0 ? (
-                        <div className="flex flex-col gap-2">
-                            <p className="text-xs font-semibold uppercase text-muted-foreground">
-                                {t("weaponsEquipped")}
-                            </p>
-                            <ul className="flex flex-col gap-2">
-                                {weapons.map((weapon) => (
-                                    <li key={weapon.id}>
-                                        <CombatActionCard
-                                            title={weapon.name}
-                                            badge={slotLabel(weapon.slotId)}
-                                            details={
-                                                [
-                                                    weapon.toHit,
-                                                    weapon.damage,
-                                                ].filter(Boolean) as string[]
-                                            }
-                                            description={weapon.description}
-                                            actionKind="roll"
-                                            onRoll={
-                                                buildWeaponAttackRollRequest(weapon)
-                                                    ? () =>
-                                                          openWeaponRoll(
-                                                              weapon,
-                                                              openRollRequest
-                                                          )
-                                                    : undefined
-                                            }
-                                        />
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ) : null}
+                    <div
+                        className="flex flex-wrap gap-2"
+                        role="tablist"
+                        aria-label={t("combat.filtersLabel")}
+                    >
+                        {FILTERS.map((filter) => (
+                            <button
+                                key={filter}
+                                type="button"
+                                role="tab"
+                                aria-selected={activeFilter === filter}
+                                className="rounded-full border px-3 py-1 text-xs font-semibold"
+                                onClick={() => setActiveFilter(filter)}
+                            >
+                                {filterLabel(filter, t)}
+                            </button>
+                        ))}
+                    </div>
 
-                    {hasSpells ? (
-                        <div className="flex flex-col gap-2">
+                    {groups.map((group) => (
+                        <div key={group.cost} className="flex flex-col gap-2">
                             <p className="text-xs font-semibold uppercase text-muted-foreground">
-                                {t("spells")}
+                                {groupTitle(group.cost, t)}
                             </p>
                             <ul className="flex flex-col gap-2">
-                                {cantrips.map((spell) => (
-                                    <li key={spell.id}>
+                                {group.actions.map((action) => (
+                                    <li key={action.id}>
                                         <CombatActionCard
-                                            title={spell.name}
-                                            badge={t("cantripBadge")}
-                                            details={
-                                                [
-                                                    spell.attackBonus,
-                                                    spell.saveDc,
-                                                ].filter(Boolean) as string[]
-                                            }
-                                            description={spell.description}
-                                            actionKind="roll"
-                                            onRoll={
-                                                buildSpellAttackRollRequest(spell) ||
-                                                buildSpellDamageRollRequest(spell)
-                                                    ? () =>
-                                                          openSpellRoll(
-                                                              spell,
-                                                              openRollRequest
-                                                          )
+                                            title={action.title}
+                                            badges={action.badges}
+                                            details={action.summary}
+                                            description={action.description}
+                                            actionKind={actionButtonLabel(action)}
+                                            availability={action.availability}
+                                            resourceLabel={
+                                                action.resource
+                                                    ? `${action.resource.label}${
+                                                          action.resource.current !==
+                                                              undefined &&
+                                                          action.resource.max !==
+                                                              undefined
+                                                              ? ` ${action.resource.current}/${action.resource.max}`
+                                                              : ""
+                                                      }`
                                                     : undefined
                                             }
-                                        />
-                                    </li>
-                                ))}
-                                {spells.map((spell) => (
-                                    <li key={spell.id}>
-                                        <CombatActionCard
-                                            title={spell.name}
-                                            details={
-                                                [
-                                                    spell.levelInt !== null &&
-                                                    spell.levelInt > 0
-                                                        ? t("spellLevel", {
-                                                              level: spell.levelInt,
-                                                          })
-                                                        : null,
-                                                    spell.attackBonus,
-                                                    spell.saveDc,
-                                                ].filter(Boolean) as string[]
-                                            }
-                                            description={spell.description}
-                                            actionKind="roll"
+                                            stateTags={action.stateTags}
                                             onRoll={
-                                                buildSpellAttackRollRequest(spell) ||
-                                                buildSpellDamageRollRequest(spell)
+                                                action.rollRequest
                                                     ? () =>
-                                                          openSpellRoll(
-                                                              spell,
-                                                              openRollRequest
+                                                          openRollRequest(
+                                                              action.rollRequest!
                                                           )
                                                     : undefined
                                             }
@@ -207,26 +173,7 @@ export function AttacksActionsPanel({ stored }: AttacksActionsPanelProps) {
                                 ))}
                             </ul>
                         </div>
-                    ) : null}
-
-                    {features.length > 0 ? (
-                        <div className="flex flex-col gap-2">
-                            <p className="text-xs font-semibold uppercase text-muted-foreground">
-                                {t("combat.features")}
-                            </p>
-                            <ul className="flex flex-col gap-2">
-                                {features.map((feature) => (
-                                    <li key={feature.id}>
-                                        <CombatActionCard
-                                            title={feature.name}
-                                            description={feature.description}
-                                            actionKind="use"
-                                        />
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ) : null}
+                    ))}
                 </div>
             )}
         </OverviewPanel>

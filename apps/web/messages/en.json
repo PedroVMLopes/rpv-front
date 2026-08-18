@@ -512,7 +512,7 @@
     "speed": "Speed",
     "speedValue": "{speed} ft",
     "combat": {
-      "attacksActions": "Attacks & Actions",
+      "attacksActions": "Actions",
       "classResources": "Class Resources",
       "defenseSaves": "Defense & Saves",
       "stat": "Stat",
@@ -525,7 +525,22 @@
       "roll": "Roll",
       "use": "Use",
       "noActions": "No actions available",
-      "noResources": "No class resources"
+      "noResources": "No class resources",
+      "filtersLabel": "Action filters",
+      "filters": {
+        "all": "All",
+        "weapons": "Weapons",
+        "spells": "Spells",
+        "features": "Features",
+        "available": "Available now"
+      },
+      "group": {
+        "action": "Action",
+        "bonus": "Bonus Action",
+        "reaction": "Reaction",
+        "special": "Special / Free",
+        "passive": "Passive Reminders"
+      }
     },
     "inventory": {
       "summary": {
@@ -569,7 +584,7 @@
     "tabs": {
       "navLabel": "Character sheet sections",
       "overview": "Overview",
-      "combat": "Combat",
+      "combat": "Actions",
       "inventory": "Inventory",
       "magic": "Magic",
       "notes": "Notes"
