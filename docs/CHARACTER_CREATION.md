@@ -71,7 +71,7 @@ flowchart TD
 |---|-------------|----------|
 | 1 | `race` | Seleção de raça (cards com descrição + preview de traits fixos) |
 | 3 | `class` | Seleção de classe + **seletor de nível** (`CharacterLevelSelector`) |
-| 5 | `background` | Antecedente + campos de identidade (nome, idade, objetivos) |
+| 5 | `background` | Antecedente + tabelas de sabor (`FlavorTable`) + campos de identidade (nome, idade, objetivos) |
 | 7 | `abilities` | Atributos, bônus distribuíveis, revisão de proficiências em perícias (macro **Finalizar**) |
 | 8 | `equipment` | Equipamento inicial (`StartingEquipmentField`) |
 | 9 | `review` | Moeda manual + prévia de combate (HP / CA / recursos) |
@@ -105,6 +105,18 @@ A subclasse vem **depois** das etapas de truques e magias da **classe** porque a
 3. Subclasse (quando desbloqueada)
 4. Para cada nível aplicável: ganhos da subclasse — incluindo sub-etapas de truques/magias da subclasse
 5. Antecedente → [Preparar Magias?] → Atributos → Equipamento → Revisão
+
+### 3.6 Tabelas de sabor do antecedente (`FlavorTable`)
+
+A etapa `background` combina seleção de antecedente, pickers de sabor e campos de identidade (nome, idade, objetivos).
+
+- `FlavorTable` **não é um Grant**: opções não geram `CharacterGrant` nem `grantPicks`. Texto bound (`personalityTraits`, `ideals`, `bonds`, `flaws`) e detalhes unbound (`backgroundDetails.{slug}`) persistem em `systemData`.
+- O picker genérico é [`FlavorTableField`](../apps/web/components/characters/creation/FlavorTableField.tsx) em [`BackgroundSelectionPage`](../apps/web/components/characters/creation/BackgroundSelectionPage.tsx).
+- `table.roll` (`d8`, `d6`, `d20`, …) é só hint de UI. O botão **Rolar** preenche todos os slots de uma vez com opções distintas; o motor (`@rpv/domain`) **não** resolve dado. Sem `roll` válido, o botão não aparece.
+- Ao mudar `background`:
+  - `backgroundDetails` é apagado por completo (`{}`);
+  - campos bound só são limpos se **todas** as linhas não vazias forem labels da tabela **anterior**; texto custom permanece.
+- Essa higiene vive em [`sanitizeFlavorFieldsOnBackgroundChange`](../apps/web/lib/character/flavorTables.ts), **não** em `grantPickSanitize`.
 
 ---
 
@@ -349,8 +361,8 @@ Extensões em `@rpv/content` só se um primitive genuinamente novo for necessár
 
 ## 12. Testes
 
-- Unit: `resolveCreationSteps`, `mapGrantPickToStep`, `buildItemPickContentModel`
-- Component: `SpellChoiceGrid`, `ItemChoiceGrid`, `StartingEquipmentField`
+- Unit: `resolveCreationSteps`, `mapGrantPickToStep`, `buildItemPickContentModel`, `flavorTables`
+- Component: `SpellChoiceGrid`, `ItemChoiceGrid`, `StartingEquipmentField`, `BackgroundSelectionPage`
 - Integração: High Elf → Wizard; Half-Elf ASI; Fighter L3 equipment; pending `?step=&focus=`
 - Regressão: `choiceValidation`, `grantPickSanitize`, pipeline `buildStoredCharacter`
 
@@ -379,5 +391,6 @@ Ao adicionar raça, classe, subclasse ou antecedente em curation:
 5. Features por nível em `featuresByLevel` com `level` correto para a progressão nível a nível.
 6. Subclasse: definir `subclassLevel` na classe; grants da subclasse em `subclassGrants.{system}.ts`.
 7. Não adicionar lógica na web — se a UI não suporta um novo `grantType`, estender o roteador de `GrantChoicePage` genericamente.
+8. Antecedente com sabor: declarar `flavorTables` no `BackgroundEntry`. Bound usam `bindTo` nos campos de persona; unbound vão para `backgroundDetails.{slug}`. `roll` é opcional e só aciona o botão Rolar na UI.
 
 Ver também [`packages/content/AGENTS.md`](../packages/content/AGENTS.md).

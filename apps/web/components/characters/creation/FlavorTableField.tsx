@@ -3,6 +3,7 @@
 import { useEffect, useId, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import type { FlavorTable } from "@rpv/content";
@@ -11,7 +12,9 @@ import {
     flavorSlotTextFromSelect,
     flavorTableFormPath,
     joinFlavorSlots,
+    parseFlavorDie,
     parseFlavorSlots,
+    rollFlavorTableSlots,
     selectValueForFlavorSlot,
 } from "@/lib/character/flavorTables";
 
@@ -40,6 +43,7 @@ export function FlavorTableField({
     const formPath = flavorTableFormPath(table);
     const boundValue = form.watch(formPath);
     const slots = parseFlavorSlots(boundValue, table.pickCount);
+    const canRoll = parseFlavorDie(table.roll) !== undefined;
     const [customModeFlags, setCustomModeFlags] = useState<boolean[]>(() =>
         slots.map(
             (slotText) =>
@@ -79,8 +83,43 @@ export function FlavorTableField({
         });
     };
 
+    const rollAllSlots = () => {
+        const rolled = rollFlavorTableSlots(table);
+        if (!rolled) {
+            return;
+        }
+
+        const nextSlots = Array.from(
+            { length: table.pickCount },
+            (_, index) => rolled[index] ?? ""
+        );
+        setCustomModeFlags(
+            Array.from({ length: table.pickCount }, () => false)
+        );
+        commitSlots(nextSlots);
+    };
+
+    const rollButton = canRoll ? (
+        <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={rollAllSlots}
+            aria-label={t("rollAria", { label: fieldLabel })}
+            data-testid={`flavor-roll-${table.slug}`}
+        >
+            {t("roll")}
+        </Button>
+    ) : null;
+
     return (
         <div className="space-y-4">
+            {table.pickCount > 1 ? (
+                <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-medium leading-none">{fieldLabel}</p>
+                    {rollButton}
+                </div>
+            ) : null}
             {slots.map((slotText, index) => {
                 const derivedSelect = selectValueForFlavorSlot(slotText, table);
                 const isCustom =
@@ -106,7 +145,10 @@ export function FlavorTableField({
                         className="grid gap-2"
                         data-testid={`flavor-slot-${table.slug}-${index}`}
                     >
-                        <Label htmlFor={selectId}>{slotLabel}</Label>
+                        <div className="flex items-center justify-between gap-2">
+                            <Label htmlFor={selectId}>{slotLabel}</Label>
+                            {table.pickCount === 1 ? rollButton : null}
+                        </div>
                         <select
                             id={selectId}
                             value={selectValue}

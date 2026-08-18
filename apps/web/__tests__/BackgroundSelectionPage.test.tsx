@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
 import { NextIntlClientProvider } from "next-intl";
@@ -20,6 +20,10 @@ const SAGE_TRAIT_01 =
 const SAGE_TRAIT_02 = "Silence makes me restless; I fill it with a question.";
 const ACOLYTE_IDEAL_02 =
     "Charity. I always try to help those in need, regardless of what it costs me. (Good)";
+const ACOLYTE_TRAIT_01 =
+    "I idolize a particular hero of my faith, and constantly refer to that person's deeds and example.";
+const ACOLYTE_TRAIT_02 =
+    "I can find common ground between the fiercest enemies, empathizing with them and always working toward peace.";
 
 const identityFields = dndCharacterFields.common as FieldConfig[];
 
@@ -48,6 +52,13 @@ function BackgroundPageHarness({
                     goals: form.watch("goals"),
                 })}
             </pre>
+            <button
+                type="button"
+                data-testid="switch-to-sage"
+                onClick={() => form.setValue("background", "sage")}
+            >
+                Switch to Sage
+            </button>
         </NextIntlClientProvider>
     );
 }
@@ -206,5 +217,96 @@ describe("BackgroundSelectionPage flavor pickers", () => {
                     backgroundDetails: { "guild-business": "Alchemists" },
                 })
             );
+    });
+
+    it("does not show roll buttons on Sage tables", () => {
+        render(
+            <BackgroundPageHarness defaultValues={{ background: "sage" }} />
+        );
+
+        expect(
+            screen.queryByTestId("flavor-roll-personality-traits")
+        ).not.toBeInTheDocument();
+        expect(screen.queryByTestId("flavor-roll-ideals")).not.toBeInTheDocument();
+        expect(screen.queryByTestId("flavor-roll-bonds")).not.toBeInTheDocument();
+        expect(screen.queryByTestId("flavor-roll-flaws")).not.toBeInTheDocument();
+    });
+
+    it("fills both Acolyte personality trait slots from one roll", async () => {
+        const random = jest.spyOn(Math, "random").mockReturnValue(0);
+        const user = userEvent.setup();
+
+        try {
+            render(
+                <BackgroundPageHarness defaultValues={{ background: "acolyte" }} />
+            );
+
+            expect(
+                screen.getByTestId("flavor-roll-personality-traits")
+            ).toBeInTheDocument();
+
+            await user.click(
+                screen.getByTestId("flavor-roll-personality-traits")
+            );
+
+            expect(
+                JSON.parse(screen.getByTestId("form-output").textContent ?? "{}")
+            ).toEqual(
+                expect.objectContaining({
+                    personalityTraits: `${ACOLYTE_TRAIT_01}\n${ACOLYTE_TRAIT_02}`,
+                })
+            );
+        } finally {
+            random.mockRestore();
+        }
+    });
+
+    it("shows a roll button for Guild Artisan guild business", () => {
+        render(
+            <BackgroundPageHarness
+                defaultValues={{ background: "guild-artisan" }}
+            />
+        );
+
+        expect(
+            screen.getByTestId("flavor-roll-guild-business")
+        ).toBeInTheDocument();
+        expect(
+            screen.queryByTestId("flavor-roll-personality-traits")
+        ).not.toBeInTheDocument();
+    });
+
+    it("clears backgroundDetails when leaving Guild Artisan for Sage", async () => {
+        const user = userEvent.setup();
+        render(
+            <BackgroundPageHarness
+                defaultValues={{
+                    background: "guild-artisan",
+                    backgroundDetails: { "guild-business": "Alchemists" },
+                }}
+            />
+        );
+
+        expect(JSON.parse(screen.getByTestId("form-output").textContent ?? "{}"))
+            .toEqual(
+                expect.objectContaining({
+                    backgroundDetails: { "guild-business": "Alchemists" },
+                })
+            );
+
+        await user.click(screen.getByTestId("switch-to-sage"));
+
+        await waitFor(() => {
+            expect(
+                JSON.parse(screen.getByTestId("form-output").textContent ?? "{}")
+            ).toEqual(
+                expect.objectContaining({
+                    backgroundDetails: {},
+                })
+            );
+        });
+        expect(
+            screen.queryByRole("combobox", { name: "Guild business" })
+        ).not.toBeInTheDocument();
     });
 });

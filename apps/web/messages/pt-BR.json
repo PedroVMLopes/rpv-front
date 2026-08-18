@@ -361,6 +361,8 @@
     "combatPreviewTitle": "Prévia de combate",
     "flavorTable": {
       "custom": "Personalizado",
+      "roll": "Rolar",
+      "rollAria": "Rolar {label}",
       "slot": "{label} ({current}/{total})",
       "tables": {
         "guild-business": "Negócio da guilda"

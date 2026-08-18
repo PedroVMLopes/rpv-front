@@ -159,3 +159,51 @@ export function flavorSlotTextFromSelect(
 
     return table.options.find((option) => option.slug === selectValue)?.label ?? "";
 }
+
+const FLAVOR_DIE_PATTERN = /^d(\d+)$/i;
+
+export function parseFlavorDie(roll?: string): number | undefined {
+    if (typeof roll !== "string") {
+        return undefined;
+    }
+
+    const match = FLAVOR_DIE_PATTERN.exec(roll.trim());
+    if (!match) {
+        return undefined;
+    }
+
+    const sides = Number(match[1]);
+    if (!Number.isInteger(sides) || sides < 1) {
+        return undefined;
+    }
+
+    return sides;
+}
+
+export function rollFlavorTableSlots(
+    table: FlavorTable,
+    rng: () => number = Math.random
+): string[] | undefined {
+    const sides = parseFlavorDie(table.roll);
+    if (sides === undefined || table.options.length === 0) {
+        return undefined;
+    }
+
+    const poolSize = Math.min(sides, table.options.length);
+    const count = Math.min(Math.max(table.pickCount, 1), poolSize);
+    const indices = Array.from({ length: poolSize }, (_, index) => index);
+
+    for (let i = 0; i < count; i += 1) {
+        const j = i + Math.floor(rng() * (poolSize - i));
+        const current = indices[i];
+        indices[i] = indices[j] ?? current;
+        indices[j] = current ?? indices[j];
+    }
+
+    return indices
+        .slice(0, count)
+        .flatMap((index) => {
+            const label = table.options[index]?.label;
+            return typeof label === "string" ? [label] : [];
+        });
+}

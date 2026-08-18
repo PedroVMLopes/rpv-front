@@ -5,7 +5,9 @@ import {
     flavorTableFormPath,
     joinFlavorSlots,
     listFilledBackgroundDetails,
+    parseFlavorDie,
     parseFlavorSlots,
+    rollFlavorTableSlots,
     sanitizeFlavorFieldsOnBackgroundChange,
     selectValueForFlavorSlot,
     unboundFlavorTables,
@@ -188,5 +190,56 @@ describe("selectValueForFlavorSlot", () => {
         expect(selectValueForFlavorSlot("Truth first.", table)).toBe("ideal-01");
         expect(selectValueForFlavorSlot("Mine.", table)).toBe(FLAVOR_CUSTOM_SENTINEL);
         expect(selectValueForFlavorSlot("", table)).toBe("");
+    });
+});
+
+describe("parseFlavorDie", () => {
+    it("parses dN case-insensitively and rejects invalid hints", () => {
+        expect(parseFlavorDie("d8")).toBe(8);
+        expect(parseFlavorDie("D20")).toBe(20);
+        expect(parseFlavorDie(" d6 ")).toBe(6);
+        expect(parseFlavorDie(undefined)).toBeUndefined();
+        expect(parseFlavorDie("2d6")).toBeUndefined();
+        expect(parseFlavorDie("roll")).toBeUndefined();
+        expect(parseFlavorDie("d0")).toBeUndefined();
+    });
+});
+
+describe("rollFlavorTableSlots", () => {
+    const rolledTraits: FlavorTable = {
+        ...traitsTable,
+        roll: "d8",
+    };
+
+    it("returns undefined when roll is missing or the table has no options", () => {
+        expect(rollFlavorTableSlots(traitsTable, () => 0)).toBeUndefined();
+        expect(
+            rollFlavorTableSlots(
+                { ...rolledTraits, options: [] },
+                () => 0
+            )
+        ).toBeUndefined();
+    });
+
+    it("picks distinct labels without replacement for pickCount 2", () => {
+        expect(rollFlavorTableSlots(rolledTraits, () => 0)).toEqual([
+            "I annotate everything.",
+            "Silence makes me restless.",
+        ]);
+        expect(rollFlavorTableSlots(rolledTraits, () => 0.99)).toEqual([
+            "I trust a diagram.",
+            "I annotate everything.",
+        ]);
+    });
+
+    it("never includes the custom sentinel among rolled labels", () => {
+        const rolled = rollFlavorTableSlots(rolledTraits, () => 0.4);
+        expect(rolled).toBeDefined();
+        expect(rolled?.includes(FLAVOR_CUSTOM_SENTINEL)).toBe(false);
+        expect(
+            rolled?.every((label) =>
+                rolledTraits.options.some((option) => option.label === label)
+            )
+        ).toBe(true);
     });
 });

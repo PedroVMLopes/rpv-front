@@ -361,6 +361,8 @@
     "combatPreviewTitle": "Combat preview",
     "flavorTable": {
       "custom": "Custom",
+      "roll": "Roll",
+      "rollAria": "Roll {label}",
       "slot": "{label} ({current}/{total})",
       "tables": {
         "guild-business": "Guild business"
