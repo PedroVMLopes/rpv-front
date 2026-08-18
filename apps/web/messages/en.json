@@ -511,6 +511,10 @@
     "amountLabel": "Amount",
     "speed": "Speed",
     "speedValue": "{speed} ft",
+    "size": "Size",
+    "hitDie": "Hit die",
+    "darkvision": "Darkvision",
+    "darkvisionValue": "{range} ft",
     "combat": {
       "attacksActions": "Actions",
       "classResources": "Class Resources",

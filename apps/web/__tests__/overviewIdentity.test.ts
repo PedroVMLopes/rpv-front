@@ -1,6 +1,7 @@
 import { emptyInventory } from "@rpv/domain";
 import type { StoredCharacter } from "../lib/character/storedCharacter";
 import {
+    listOverviewOriginFacts,
     listOverviewPersonalityFields,
     resolveOverviewBackground,
 } from "../lib/character/overviewIdentity";
@@ -80,5 +81,38 @@ describe("listOverviewPersonalityFields", () => {
             { key: "bonds", value: "My crew" },
             { key: "goals", value: "See the ocean" },
         ]);
+    });
+});
+
+describe("listOverviewOriginFacts", () => {
+    it("lists background, size, darkvision, and hit die from catalog data", () => {
+        const facts = listOverviewOriginFacts(
+            baseStored({
+                selections: {
+                    race: "dwarf",
+                    characterClass: "fighter",
+                    background: "sage",
+                    choices: {},
+                    inventory: emptyInventory(),
+                },
+            })
+        );
+
+        expect(facts).toEqual([
+            { key: "background", value: "Sage" },
+            { key: "size", value: "Medium" },
+            { key: "darkvision", rangeFeet: 60 },
+            { key: "hitDie", die: 10 },
+        ]);
+    });
+
+    it("omits age and skips missing catalog facts", () => {
+        const facts = listOverviewOriginFacts(
+            baseStored({
+                systemData: { age: "Adult", background: "Soldier" },
+            })
+        );
+
+        expect(facts).toEqual([{ key: "background", value: "Soldier" }]);
     });
 });

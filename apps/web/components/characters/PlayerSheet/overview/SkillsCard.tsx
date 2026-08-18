@@ -8,13 +8,9 @@ import {
     readCharacterLevel,
     sortSkillModifiersByAbilityOrder,
 } from "@/lib/character/skillModifiers";
-import { computeSavingThrowModifiers } from "@/lib/character/savingThrowModifiers";
 import { getSystemRules } from "@/lib/character/systemRules";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
-import {
-    buildSavingThrowRollRequest,
-    buildSkillRollRequest,
-} from "@/lib/roll/buildRollRequest";
+import { buildSkillRollRequest } from "@/lib/roll/buildRollRequest";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { ActionRow } from "../ActionRow";
 import { useRollAssistant } from "../roll/RollAssistantProvider";
@@ -29,7 +25,6 @@ type SkillsCardProps = {
 export function SkillsCard({ stored }: SkillsCardProps) {
     const t = useTranslations("playerSheet");
     const tSkills = useTranslations("skills");
-    const tAbilities = useTranslations("abilities");
     const tAbilitiesShort = useTranslations("abilitiesShort");
     const getResolvedStats = useCharacterStore((state) => state.getResolvedStats);
     const { openRollRequest } = useRollAssistant();
@@ -44,28 +39,17 @@ export function SkillsCard({ stored }: SkillsCardProps) {
         [stored.system]
     );
 
-    const { allSkills, allSaves } = useMemo(() => {
+    const allSkills = useMemo(() => {
         if (!resolved) {
-            return { allSkills: [], allSaves: [] };
+            return [];
         }
 
-        const level = readCharacterLevel(stored.systemData);
-        const grants = stored.grants ?? [];
-
-        return {
-            allSkills: computeSkillModifiers(
-                stored.system,
-                resolved,
-                grants,
-                level
-            ),
-            allSaves: computeSavingThrowModifiers(
-                stored.system,
-                resolved,
-                grants,
-                level
-            ),
-        };
+        return computeSkillModifiers(
+            stored.system,
+            resolved,
+            stored.grants ?? [],
+            readCharacterLevel(stored.systemData)
+        );
     }, [resolved, stored.grants, stored.system, stored.systemData]);
 
     const visibleSkills = useMemo(() => {
@@ -81,11 +65,8 @@ export function SkillsCard({ stored }: SkillsCardProps) {
 
         return sortSkillModifiersByAbilityOrder(stored.system, skills);
     }, [activeAbilityFilter, allSkills, showAll, stored.system]);
-    const visibleSaves = showAll
-        ? allSaves
-        : allSaves.filter((save) => save.proficient);
 
-    const isEmpty = !showAll && visibleSkills.length === 0 && visibleSaves.length === 0;
+    const isEmpty = !showAll && visibleSkills.length === 0;
 
     return (
         <OverviewPanel
@@ -106,35 +87,6 @@ export function SkillsCard({ stored }: SkillsCardProps) {
                 <p className="text-sm text-muted-foreground">{t("noneYet")}</p>
             ) : (
                 <div className="flex flex-col gap-2">
-                    {visibleSaves.length > 0 ? (
-                        <div className="flex flex-col gap-1.5">
-                            <p className="text-xs font-semibold uppercase text-muted-foreground">
-                                {t("proficientSaves")}
-                            </p>
-                            <ul className="flex flex-col gap-1.5">
-                                {visibleSaves.map((save) => (
-                                    <li key={save.stat}>
-                                        <ActionRow
-                                            label={tAbilities(save.stat)}
-                                            modifier={save.modifier}
-                                            proficient={save.proficient}
-                                            abilityHint={`[${tAbilitiesShort(save.stat)}]`}
-                                            className="bg-accent text-accent-foreground border-custom border-background shadow-xs rounded-lg"
-                                            onRoll={() =>
-                                                openRollRequest(
-                                                    buildSavingThrowRollRequest(
-                                                        save,
-                                                        tAbilities(save.stat)
-                                                    )
-                                                )
-                                            }
-                                        />
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ) : null}
-
                     {showAll ? (
                         <SkillsAbilityFilter
                             abilities={abilityOrder}
@@ -165,7 +117,6 @@ export function SkillsCard({ stored }: SkillsCardProps) {
                             ))}
                         </ul>
                     ) : null}
-
                 </div>
             )}
         </OverviewPanel>

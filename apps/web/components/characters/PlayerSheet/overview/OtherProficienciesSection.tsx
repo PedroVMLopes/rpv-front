@@ -58,6 +58,8 @@ export function OtherProficienciesSection({
     }, [stored.grants, stored.system]);
 
     const sections = [
+        { title: t("weapons"), items: partitioned.weapons },
+        { title: t("armor"), items: partitioned.armor },
         { title: t("tools"), items: partitioned.tools },
         { title: t("languages"), items: partitioned.languages },
         { title: t("otherProficiencies"), items: partitioned.other },

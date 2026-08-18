@@ -198,7 +198,7 @@ describe("PlayerSheet", () => {
         );
     });
 
-    it("shows only proficient skills and saves in the skills card", () => {
+    it("shows only proficient skills in the skills card", () => {
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
         expect(screen.getByText("Skills")).toBeInTheDocument();
@@ -216,15 +216,11 @@ describe("PlayerSheet", () => {
         expect(screen.getByText("Athletics")).toBeInTheDocument();
         expect(screen.queryByText("Stealth")).not.toBeInTheDocument();
         expect(screen.queryByText("Arcana")).not.toBeInTheDocument();
-
-        const strengthButtons = screen.getAllByRole("button", {
-            name: /Strength/i,
-        });
-        expect(strengthButtons.length).toBeGreaterThanOrEqual(1);
+        expect(screen.queryByText("Saving throws")).not.toBeInTheDocument();
         expect(screen.queryByText("Dexterity")).not.toBeInTheDocument();
     });
 
-    it("shows all skills and saving throws when the skills toggle is enabled", async () => {
+    it("shows all skills when the skills toggle is enabled", async () => {
         const user = userEvent.setup();
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
@@ -240,7 +236,8 @@ describe("PlayerSheet", () => {
         );
         expect(screen.getByText("Stealth")).toBeInTheDocument();
         expect(screen.getByText("Arcana")).toBeInTheDocument();
-        expect(screen.getByText("Dexterity")).toBeInTheDocument();
+        expect(screen.queryByText("Saving throws")).not.toBeInTheDocument();
+        expect(screen.queryByText("Dexterity")).not.toBeInTheDocument();
 
         const athleticsLabel = screen.getByText("Athletics");
         const acrobaticsLabel = screen.getByText("Acrobatics");
@@ -305,7 +302,7 @@ describe("PlayerSheet", () => {
         expect(screen.queryByText("Stealth")).not.toBeInTheDocument();
     });
 
-    it("returns to proficient-only skills and saves when the toggle is disabled", async () => {
+    it("returns to proficient-only skills when the toggle is disabled", async () => {
         const user = userEvent.setup();
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
@@ -327,32 +324,34 @@ describe("PlayerSheet", () => {
         expect(screen.queryByText("Dexterity")).not.toBeInTheDocument();
     });
 
-    it("shows tool and language proficiencies without weapons or armor", () => {
+    it("shows weapon, armor, tool, and language proficiencies", () => {
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
         expect(screen.getByText("Proficiencies")).toBeInTheDocument();
         expect(screen.getByText("Smith's Tools")).toBeInTheDocument();
         expect(screen.getByText("Elvish")).toBeInTheDocument();
-        expect(screen.queryByText("Martial Weapons")).not.toBeInTheDocument();
-        expect(screen.queryByText("Light Armor")).not.toBeInTheDocument();
+        expect(screen.getByText("Martial Weapons")).toBeInTheDocument();
+        expect(screen.getByText("Light Armor")).toBeInTheDocument();
     });
 
-    it("shows identity, personality, and passive scores on overview", () => {
+    it("shows mechanical origin facts and passives without personality text", () => {
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
-        expect(screen.getByText("Adult")).toBeInTheDocument();
         expect(screen.getByText("Soldier")).toBeInTheDocument();
-        expect(screen.getByText("Protect the realm")).toBeInTheDocument();
-        expect(screen.getByText("I face danger head-on.")).toBeInTheDocument();
-        expect(screen.getByText("Honor")).toBeInTheDocument();
-        expect(screen.getByText("My squad")).toBeInTheDocument();
-        expect(screen.getByText("I never back down.")).toBeInTheDocument();
+        expect(screen.getByText("Hit die")).toBeInTheDocument();
+        expect(screen.getByText("d10")).toBeInTheDocument();
+        expect(screen.queryByText("Adult")).not.toBeInTheDocument();
+        expect(screen.queryByText("Protect the realm")).not.toBeInTheDocument();
+        expect(screen.queryByText("I face danger head-on.")).not.toBeInTheDocument();
+        expect(screen.queryByText("Honor")).not.toBeInTheDocument();
+        expect(screen.queryByText("My squad")).not.toBeInTheDocument();
+        expect(screen.queryByText("I never back down.")).not.toBeInTheDocument();
         expect(screen.getByText("Passive Perception")).toBeInTheDocument();
         expect(screen.getByText("Passive Insight")).toBeInTheDocument();
         expect(screen.getByText("Passive Investigation")).toBeInTheDocument();
     });
 
-    it("resolves catalog background name and description from selections", () => {
+    it("resolves catalog background name without description from selections", () => {
         renderWithProviders(
             <PlayerSheet
                 stored={{
@@ -372,9 +371,57 @@ describe("PlayerSheet", () => {
 
         expect(screen.getByText("Sage")).toBeInTheDocument();
         expect(
-            screen.getByText(/lore of the multiverse/i)
-        ).toBeInTheDocument();
+            screen.queryByText(/lore of the multiverse/i)
+        ).not.toBeInTheDocument();
         expect(screen.queryByText("Soldier")).not.toBeInTheDocument();
+    });
+
+    it("shows spell save DC and attack on overview for a caster", () => {
+        renderWithCharacters(
+            <PlayerSheet stored={wizardCombatCharacter} />,
+            [wizardCombatCharacter]
+        );
+
+        expect(screen.getByText("Spell save DC")).toBeInTheDocument();
+        expect(
+            screen.getByText("Spell save DC").closest("div")?.querySelector("dd")
+        ).toHaveTextContent("13");
+        expect(screen.getByText("Spell attack")).toBeInTheDocument();
+        expect(screen.getByText("+5")).toBeInTheDocument();
+        expect(screen.getByText("Casting ability")).toBeInTheDocument();
+        expect(screen.getByText("Intelligence")).toBeInTheDocument();
+    });
+
+    it("shows class resources on overview when the character has uses", () => {
+        const barbarian: StoredCharacter = {
+            ...storedCharacter,
+            id: "char-sheet-rage",
+            selections: {
+                ...storedCharacter.selections,
+                characterClass: "barbarian",
+            },
+            grants: [
+                ...storedCharacter.grants,
+                {
+                    id: "class-barbarian-resource-rage-uses",
+                    kind: "resource",
+                    ref: "rage-uses",
+                    amount: 2,
+                    source: { type: "class", id: "barbarian" },
+                },
+            ],
+            resources: { hp: 10, "rage-uses": 2 },
+            systemData: {
+                ...storedCharacter.systemData,
+                characterClass: "barbarian",
+            },
+        };
+
+        renderWithCharacters(<PlayerSheet stored={barbarian} />, [barbarian]);
+
+        expect(screen.getByText("Class Resources")).toBeInTheDocument();
+        expect(screen.getByText("Rage Uses")).toBeInTheDocument();
+        expect(screen.getByText("2 / 2")).toBeInTheDocument();
     });
 
     it("lists class features as reminders without a use action", () => {

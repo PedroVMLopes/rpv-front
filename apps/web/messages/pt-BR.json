@@ -511,6 +511,10 @@
     "amountLabel": "Quantidade",
     "speed": "Deslocamento",
     "speedValue": "{speed} pés",
+    "size": "Tamanho",
+    "hitDie": "Dado de vida",
+    "darkvision": "Visão no escuro",
+    "darkvisionValue": "{range} pés",
     "combat": {
       "attacksActions": "Ações",
       "classResources": "Recursos de Classe",

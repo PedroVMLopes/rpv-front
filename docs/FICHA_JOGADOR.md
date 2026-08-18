@@ -106,14 +106,14 @@ Recursos de classe reutilizam a lógica de [`DerivedResourcesDisplay`](../apps/w
 
 | Aba | Foco | Conteúdo principal | Componentes existentes a reutilizar |
 |-----|------|-------------------|-------------------------------------|
-| **Visão geral** | Roleplay + "o que domino" | Identidade (raça, background, traits), atributos compactos, **só proficiências** (skills, saves, armas, ferramentas, idiomas proficientes), objetivos | [`CharacterCardInfoBlocks`](../apps/web/components/characters/CharacterCard/CharacterCardInfoBlocks.tsx), [`CharacterCardGameInfo`](../apps/web/components/characters/CharacterCard/CharacterCardGameInfo.tsx) (filtrado) |
+| **Visão geral** | Gameplay — o que o personagem sabe e pode (fora da economia de ataque) | Retrato, atributos + testes, passivas, CD/ataque de magia, recursos de classe, perícias (proficientes por padrão), fatos mecânicos (antecedente, tamanho, sentidos, dado de vida), proficiências (armas, armaduras, ferramentas, idiomas), características | [`OverviewTab`](../apps/web/components/characters/PlayerSheet/tabs/OverviewTab.tsx), [`AbilitiesSection`](../apps/web/components/characters/PlayerSheet/overview/AbilitiesSection.tsx), [`SkillsCard`](../apps/web/components/characters/PlayerSheet/overview/SkillsCard.tsx), [`ClassResourcesPanel`](../apps/web/components/characters/PlayerSheet/combat/ClassResourcesPanel.tsx) |
 | **Combate** | Economia de ação | Ataques, ações/bônus/reações, magias, recursos — agrupados por **tipo de ação**, não por origem (classe vs item) | [`CharacterCardAbilities`](../apps/web/components/characters/CharacterCard/CharacterCardAbilities.tsx) (reestruturado) |
 | **Mochila** | Posse e equipamento | Equipado + bag + moeda | [`CharacterCardInventory`](../apps/web/components/characters/CharacterCard/CharacterCardInventory.tsx) |
 | **Anotações** | Memória de sessão | **Escopo adiado** — aba reservada; modelo de dados TBD | — |
 
 #### Decisões de UX
 
-- **Visão geral** não lista as 18 perícias por padrão — apenas as **proficientes**, destacadas para jogadores menos experientes. Toggle "ver todas as perícias" fica como extensão futura (Fase 4).
+- **Visão geral** não lista as 18 perícias por padrão — apenas as **proficientes**. Toggle "todas" já está na ficha. Saves completos ficam na aba Ações. Personalidade, idade e prosa de antecedente saíram da Overview (aba Anotações / Persona, TBD).
 - **Combate** é adaptativo: seção Magia oculta se o personagem não tiver spell grants.
 - **Anotações:** aba existe na navegação; formato de conteúdo e persistência serão definidos posteriormente.
 
@@ -308,7 +308,6 @@ Helpers relevantes:
 
 ### Fase 4 — Polish — Residual
 
-- Toggle "ver todas as perícias" na Visão geral
 - Header colapsável em mobile
 - Aba Anotações (quando modelo de dados for definido)
 - Condições temporárias no header (Bless, etc.) — extensão futura

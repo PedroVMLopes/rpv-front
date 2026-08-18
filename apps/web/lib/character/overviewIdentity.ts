@@ -1,4 +1,9 @@
+import type { Locale } from "@rpv/domain";
 import { contentRepo } from "@/lib/content/contentRepository";
+import {
+    hasDarkvision,
+    parseDarkvisionRangeFeet,
+} from "@/lib/character/creation/raceCatalogResourceChips";
 import type { StoredCharacter } from "./storedCharacter";
 
 export const OVERVIEW_PERSONALITY_FIELD_KEYS = [
@@ -82,4 +87,49 @@ export function listOverviewPersonalityFields(
 
         return [{ key, value }];
     });
+}
+
+export type OverviewOriginFact =
+    | { key: "background"; value: string }
+    | { key: "size"; value: string }
+    | { key: "darkvision"; rangeFeet: number | null }
+    | { key: "hitDie"; die: number };
+
+export function listOverviewOriginFacts(
+    stored: StoredCharacter,
+    locale?: Locale
+): OverviewOriginFact[] {
+    const facts: OverviewOriginFact[] = [];
+    const background = resolveOverviewBackground(stored);
+    if (background) {
+        facts.push({ key: "background", value: background.name });
+    }
+
+    const raceSlug = stored.selections.race?.trim();
+    const race = raceSlug
+        ? contentRepo(stored.system).getRace(raceSlug, locale)
+        : undefined;
+
+    const size = race?.size?.trim();
+    if (size) {
+        facts.push({ key: "size", value: size });
+    }
+
+    const visionDesc = race?.visionDesc;
+    if (hasDarkvision(visionDesc)) {
+        facts.push({
+            key: "darkvision",
+            rangeFeet: parseDarkvisionRangeFeet(visionDesc) ?? null,
+        });
+    }
+
+    const classSlug = stored.selections.characterClass?.trim();
+    const hitDie = classSlug
+        ? contentRepo(stored.system).getClass(classSlug, locale)?.hitDie
+        : undefined;
+    if (hitDie !== undefined && hitDie > 0) {
+        facts.push({ key: "hitDie", die: hitDie });
+    }
+
+    return facts;
 }
