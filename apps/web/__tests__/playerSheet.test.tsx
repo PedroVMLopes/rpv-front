@@ -463,6 +463,35 @@ describe("PlayerSheet", () => {
         ).not.toBeInTheDocument();
     });
 
+    it("lists background features grouped by origin", () => {
+        renderWithProviders(
+            <PlayerSheet
+                stored={{
+                    ...storedCharacter,
+                    id: "char-sheet-background-trait",
+                    selections: {
+                        ...storedCharacter.selections,
+                        background: "sage",
+                    },
+                    grants: [
+                        ...storedCharacter.grants,
+                        {
+                            id: "background-sage-base-ability-Researcher",
+                            kind: "ability",
+                            ref: "Researcher",
+                            name: "Researcher",
+                            source: { type: "background", id: "sage" },
+                        },
+                    ],
+                }}
+            />
+        );
+
+        expect(screen.getByText("Features & Traits")).toBeInTheDocument();
+        expect(screen.getByText("Researcher")).toBeInTheDocument();
+        expect(screen.getByText("Background")).toBeInTheDocument();
+    });
+
     it("does not list combat actions on overview", () => {
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 

@@ -45,6 +45,8 @@ const dndFeatureDescriptions: Record<string, string> = {
         "You can manipulate your enemy's ki when you hit them with melee weapon attacks.",
     "second-wind":
         "On your turn, you can use a bonus action to regain hit points equal to 1d10 + your fighter level.",
+    researcher:
+        "When a question of lore comes up, you know which books, people, or halls to consult. If the answer is not at hand, you can usually find a scholar or archive willing to help you look.",
 };
 
 function localizedCuratedDescription(

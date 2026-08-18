@@ -37,4 +37,23 @@ describe("getAbilityFeatureDescription", () => {
             })
         ).toBeUndefined();
     });
+
+    it("returns curated background feature description in English", () => {
+        expect(
+            getAbilityFeatureDescription("Researcher", {
+                type: "background",
+                id: "sage",
+            })
+        ).toContain("scholar or archive");
+    });
+
+    it("returns localized background feature description for pt-BR", () => {
+        expect(
+            getAbilityFeatureDescription(
+                "Researcher",
+                { type: "background", id: "sage" },
+                "pt-BR"
+            )
+        ).toContain("estudioso ou arquivo");
+    });
 });

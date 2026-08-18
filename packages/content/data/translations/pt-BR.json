@@ -265,6 +265,9 @@
     },
     "second-wind": {
       "description": "No seu turno, você pode usar uma ação bônus para recuperar pontos de vida iguais a 1d10 + seu nível de guerreiro."
+    },
+    "researcher": {
+      "description": "Quando surge uma questão de saber, você sabe quais livros, pessoas ou arquivos consultar. Se a resposta não estiver à mão, em geral encontra um estudioso ou arquivo disposto a ajudar na busca."
     }
   }
 }
