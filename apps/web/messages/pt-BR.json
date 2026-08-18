@@ -359,6 +359,10 @@
       "fixErrors": "Corrija escolhas de concessão inválidas antes de salvar."
     },
     "combatPreviewTitle": "Prévia de combate",
+    "flavorTable": {
+      "custom": "Personalizado",
+      "slot": "{label} ({current}/{total})"
+    },
     "level": {
       "label": "Nível do personagem",
       "lv1": "Nv 1",

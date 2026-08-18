@@ -9,6 +9,18 @@ describe("resolveCreationSteps", () => {
         });
 
         expect(graph.steps[0]?.id).toBe("race");
+        expect(graph.getStep("background")?.fieldNames).toEqual(
+            expect.arrayContaining([
+                "name",
+                "age",
+                "goals",
+                "background",
+                "personalityTraits",
+                "ideals",
+                "bonds",
+                "flaws",
+            ])
+        );
         expect(graph.steps.at(-1)?.id).toBe("review");
         expect(graph.steps.map((step) => step.id).slice(-2)).toEqual([
             "equipment",

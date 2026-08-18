@@ -359,6 +359,10 @@
       "fixErrors": "Fix invalid grant picks before saving."
     },
     "combatPreviewTitle": "Combat preview",
+    "flavorTable": {
+      "custom": "Custom",
+      "slot": "{label} ({current}/{total})"
+    },
     "level": {
       "label": "Character level",
       "lv1": "Lv 1",

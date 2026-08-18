@@ -1,4 +1,5 @@
 import type { Grant } from "@rpv/content";
+import { OVERVIEW_PERSONALITY_FIELD_KEYS } from "@/lib/character/overviewIdentity";
 import type { CreationStepGraph } from "./creationStep.types";
 import {
     featureLevelFromGrantPickKey,
@@ -7,6 +8,13 @@ import {
     isLeveledSpellGrant,
     parseGrantPickKey,
 } from "./grantPickKey";
+
+const BACKGROUND_FORM_FIELDS = new Set([
+    "background",
+    "name",
+    "age",
+    ...OVERVIEW_PERSONALITY_FIELD_KEYS,
+]);
 
 function levelPrefix(sourceType: string, level: number): string {
     return sourceType === "subclass"
@@ -88,6 +96,10 @@ export function mapGrantPickToStep(
 }
 
 export function mapFieldToStep(fieldName: string): string {
+    if (BACKGROUND_FORM_FIELDS.has(fieldName)) {
+        return "background";
+    }
+
     switch (fieldName) {
         case "race":
         case "subrace":
@@ -97,11 +109,6 @@ export function mapFieldToStep(fieldName: string): string {
             return "class";
         case "subclass":
             return "subclass";
-        case "background":
-        case "name":
-        case "age":
-        case "goals":
-            return "background";
         case "attributes":
         case "abilityScoreMethod":
         case "abilityScoreRolls":

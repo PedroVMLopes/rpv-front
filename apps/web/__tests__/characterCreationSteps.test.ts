@@ -2,6 +2,7 @@ import {
     getFirstErrorStepId,
     resolveCreationGraph,
 } from "../lib/character/characterCreationSteps";
+import { mapFieldToStep } from "../lib/character/creationSteps/mapGrantPickToStep";
 import { dndStatConfig } from "../presets/dnd/characterStats";
 
 describe("characterCreationSteps navigation helpers", () => {
@@ -40,6 +41,13 @@ describe("characterCreationSteps navigation helpers", () => {
         );
 
         expect(stepId).toBe("background");
+    });
+
+    it("maps personality fields to the background step", () => {
+        expect(mapFieldToStep("ideals")).toBe("background");
+        expect(mapFieldToStep("personalityTraits")).toBe("background");
+        expect(mapFieldToStep("bonds")).toBe("background");
+        expect(mapFieldToStep("flaws")).toBe("background");
     });
 
     it("builds a dynamic graph for wizard level 3", () => {

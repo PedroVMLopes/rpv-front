@@ -2,6 +2,7 @@ import { getClassSubclassLevel } from "@rpv/content";
 import type { Locale } from "@rpv/domain";
 import type { SystemKey } from "@/presets";
 import { listSubraceOptions } from "@/lib/catalog/raceCatalog";
+import { BACKGROUND_STEP_IDENTITY_FIELD_NAMES } from "@/lib/character/overviewIdentity";
 import { buildSelectionsFromForm } from "@/lib/character/characterAdapter";
 import { readLevelFromForm } from "@/lib/character/level";
 import {
@@ -139,7 +140,10 @@ export function resolveCreationSteps(
 
     steps.push(
         createStep("background", "selection", "background", {
-            fieldNames: ["name", "age", "goals", "background"],
+            fieldNames: [
+                "background",
+                ...BACKGROUND_STEP_IDENTITY_FIELD_NAMES,
+            ],
         })
     );
 
