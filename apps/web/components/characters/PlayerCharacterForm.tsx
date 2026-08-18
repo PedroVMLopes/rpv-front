@@ -352,6 +352,7 @@ export function PlayerCharacterForm({
 
         await form.handleSubmit((data) => {
             onSave({
+                ...form.getValues(),
                 ...data,
                 name: resolveCharacterNameForSave(data.name, contentLocale),
                 choices: form.getValues("choices"),
