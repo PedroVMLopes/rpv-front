@@ -94,4 +94,42 @@ describe("getAbilityFeatureDescription", () => {
             )
         ).toContain("sede");
     });
+
+    it("returns curated charlatan feature description in English", () => {
+        expect(
+            getAbilityFeatureDescription("False Identity", {
+                type: "background",
+                id: "charlatan",
+            })
+        ).toContain("second, fully prepared identity");
+    });
+
+    it("returns localized charlatan feature description for pt-BR", () => {
+        expect(
+            getAbilityFeatureDescription(
+                "False Identity",
+                { type: "background", id: "charlatan" },
+                "pt-BR"
+            )
+        ).toContain("segunda identidade");
+    });
+
+    it("returns curated hermit feature description in English", () => {
+        expect(
+            getAbilityFeatureDescription("Discovery", {
+                type: "background",
+                id: "hermit",
+            })
+        ).toContain("settled world still argues");
+    });
+
+    it("returns localized hermit feature description for pt-BR", () => {
+        expect(
+            getAbilityFeatureDescription(
+                "Discovery",
+                { type: "background", id: "hermit" },
+                "pt-BR"
+            )
+        ).toContain("mundo povoado");
+    });
 });

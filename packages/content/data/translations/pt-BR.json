@@ -229,6 +229,88 @@
           }
         }
       }
+    },
+    "charlatan": {
+      "name": "Charlatão",
+      "description": "Você vive de nomes inventados e confiança emprestada. Sabe parecer outra pessoa o bastante para sair antes que as perguntas cheguem.",
+      "flavorTables": {
+        "personality-traits": {
+          "options": {
+            "charlatan-trait-01": "Inventei um nome antes de inventar um motivo para estar na sala.",
+            "charlatan-trait-02": "Nunca corrijo um rumor que me deixa mais interessante.",
+            "charlatan-trait-03": "Olho as mãos primeiro, os rostos depois."
+          }
+        },
+        "ideals": {
+          "options": {
+            "charlatan-ideal-01": "A história vende a verdade, não o contrário.",
+            "charlatan-ideal-02": "Todo mundo merece uma versão mais bonita de si.",
+            "charlatan-ideal-03": "Nunca deixe uma marca que não possa ser explicada como sorte."
+          }
+        },
+        "bonds": {
+          "options": {
+            "charlatan-bond-01": "Uma carta forjada ainda mantém alguém que amo fora da cela.",
+            "charlatan-bond-02": "Devo a um receptador que me ensinou quais selos copiar.",
+            "charlatan-bond-03": "A primeira identidade que roubei ainda responde cartas numa cidade a que não posso voltar."
+          }
+        },
+        "flaws": {
+          "options": {
+            "charlatan-flaw-01": "Não resisto a uma gaveta fechada.",
+            "charlatan-flaw-02": "Confio mais num bom figurino do que num bom plano.",
+            "charlatan-flaw-03": "Falo até a mentira ter cômodos demais."
+          }
+        },
+        "favorite-scheme": {
+          "options": {
+            "charlatan-scheme-01": "Um herdeiro distante que precisa de um empréstimo modesto para reivindicar uma fortuna.",
+            "charlatan-scheme-02": "Um tônico milagroso misturado com temperos de cozinha e confiança.",
+            "charlatan-scheme-03": "Uma relíquia perdida que por acaso acabei de encontrar esta manhã."
+          }
+        }
+      }
+    },
+    "hermit": {
+      "name": "Eremita",
+      "description": "Você passou anos longe de vilas e relógios. Você conhece um idioma adicional à sua escolha.",
+      "flavorTables": {
+        "personality-traits": {
+          "options": {
+            "hermit-trait-01": "Respondo perguntas com uma pausa longa o bastante para deixar as pessoas inquietas.",
+            "hermit-trait-02": "Guardo um pedaço de casca no bolso e o roço quando preciso falar.",
+            "hermit-trait-03": "Conto os dias pelo tempo, não por calendários."
+          }
+        },
+        "ideals": {
+          "options": {
+            "hermit-ideal-01": "O silêncio é um tipo de honestidade.",
+            "hermit-ideal-02": "O que cresce sem nome ainda merece cuidado.",
+            "hermit-ideal-03": "O mundo é barulhento; não vou somar a ele sem motivo."
+          }
+        },
+        "bonds": {
+          "options": {
+            "hermit-bond-01": "Uma caverna que me abrigou num inverno ainda tem minhas marcas na parede.",
+            "hermit-bond-02": "Deixei uma pergunta enterrada sob uma pedra e ainda não terminei de respondê-la.",
+            "hermit-bond-03": "Alguém da vila ainda deixa comida na orla da floresta."
+          }
+        },
+        "flaws": {
+          "options": {
+            "hermit-flaw-01": "Esqueço que as pessoas esperam respostas no mesmo dia.",
+            "hermit-flaw-02": "Acumulo silêncio até ele ficar cruel.",
+            "hermit-flaw-03": "Trato cada multidão como uma tempestade que preciso esperar passar."
+          }
+        },
+        "life-of-seclusion": {
+          "options": {
+            "hermit-seclusion-01": "Um voto de vigiar um bosque até um sinal prometido chegar.",
+            "hermit-seclusion-02": "Uma doença que fez vilas parecerem bocas demais.",
+            "hermit-seclusion-03": "Um segredo que me pediram para guardar longe de quem o usaria."
+          }
+        }
+      }
     }
   },
   "classes": {
@@ -410,6 +492,12 @@
     },
     "guild-membership": {
       "description": "Os membros da sua guilda tratam você como um dos seus. Numa cidade com sede, você encontra pouso simples, apresentações e ajuda que não seja crime."
+    },
+    "false-identity": {
+      "description": "Você mantém uma segunda identidade pronta: papéis, hábitos e pessoas que atestam o nome. Se precisar, entra nessa vida como se ela sempre tivesse sido sua."
+    },
+    "discovery": {
+      "description": "Anos sozinho lhe ensinaram algo sobre o que o mundo povoado ainda discute. Você sabe onde esse saber vive, e quem preferiria que ele continuasse enterrado."
     }
   }
 }

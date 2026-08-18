@@ -230,6 +230,76 @@ describe("getBackgroundGrants", () => {
             )
         ).toBe(false);
     });
+
+    it("authors charlatan skills, fixed kits, and False Identity without loot or language picks", () => {
+        const grants = getBackgroundGrants("charlatan");
+
+        expect(grants[0]).toMatchObject({
+            grantType: "skill_proficiency",
+            choose: 0,
+            options: [
+                { optionType: "skill", ref: "deception" },
+                { optionType: "skill", ref: "sleight-of-hand" },
+            ],
+        });
+        expect(grants[1]).toMatchObject({
+            grantType: "tool_proficiency",
+            choose: 0,
+            options: [
+                { optionType: "proficiency", ref: "disguise-kit" },
+                { optionType: "proficiency", ref: "forgery-kit" },
+            ],
+        });
+        expect(grants.at(-1)).toMatchObject({
+            grantType: "ability",
+            choose: 0,
+            description: "False Identity",
+        });
+        expect(grants.some((grant) => grant.grantType === "language")).toBe(
+            false
+        );
+        expect(
+            grants.some(
+                (grant) =>
+                    grant.grantType === "inventory_item" ||
+                    grant.grantType === "currency"
+            )
+        ).toBe(false);
+    });
+
+    it("authors hermit skills, herbalism kit, a language pick, and Discovery without loot", () => {
+        const grants = getBackgroundGrants("hermit");
+
+        expect(grants[0]).toMatchObject({
+            grantType: "skill_proficiency",
+            choose: 0,
+            options: [
+                { optionType: "skill", ref: "medicine" },
+                { optionType: "skill", ref: "religion" },
+            ],
+        });
+        expect(grants[1]).toMatchObject({
+            grantType: "tool_proficiency",
+            choose: 0,
+            options: [{ optionType: "proficiency", ref: "herbalism-kit" }],
+        });
+        expect(grants[2]).toMatchObject({
+            grantType: "language",
+            choose: 1,
+        });
+        expect(grants.at(-1)).toMatchObject({
+            grantType: "ability",
+            choose: 0,
+            description: "Discovery",
+        });
+        expect(
+            grants.some(
+                (grant) =>
+                    grant.grantType === "inventory_item" ||
+                    grant.grantType === "currency"
+            )
+        ).toBe(false);
+    });
 });
 
 describe("acolyte flavorTables", () => {
@@ -367,5 +437,134 @@ describe("guild-artisan flavorTables", () => {
         expect(
             flavorOptionLabel(artisan, "guild-business", "guild-business-01")
         ).toBe(englishBusiness);
+    });
+});
+
+describe("charlatan flavorTables", () => {
+    it("authors four bound tables and one unbound favorite-scheme table", () => {
+        const charlatan = getBackground("charlatan");
+        expect(charlatan?.slug).toBe("charlatan");
+        expect(charlatan?.flavorTables).toHaveLength(5);
+
+        const slugs = charlatan?.flavorTables?.map((table) => table.slug);
+        expect(slugs).toEqual([
+            "personality-traits",
+            "ideals",
+            "bonds",
+            "flaws",
+            "favorite-scheme",
+        ]);
+
+        const bound = charlatan?.flavorTables?.filter((table) => table.bindTo);
+        for (const table of bound ?? []) {
+            const expected = expectedTableBindTo[table.slug];
+            expect(table.bindTo).toBe(expected.bindTo);
+            expect(table.pickCount).toBe(expected.pickCount);
+            expect(table.allowCustom).toBe(true);
+            expect(table.roll).toBeUndefined();
+            expect(table.options.length).toBeGreaterThanOrEqual(2);
+        }
+
+        const scheme = charlatan?.flavorTables?.find(
+            (table) => table.slug === "favorite-scheme"
+        );
+        expect(scheme?.bindTo).toBeUndefined();
+        expect(scheme?.pickCount).toBe(1);
+        expect(scheme?.roll).toBeUndefined();
+        expect(scheme?.allowCustom).toBe(true);
+        expect(scheme?.options).toHaveLength(3);
+        expect(scheme?.options[0]).toMatchObject({
+            slug: "charlatan-scheme-01",
+            label: "A distant heir who needs a modest loan to claim a fortune.",
+        });
+    });
+
+    it("overlays charlatan option labels in pt-BR without mutating English", () => {
+        const charlatan = getBackground("charlatan");
+        expect(charlatan).toBeDefined();
+        const englishScheme = flavorOptionLabel(
+            charlatan,
+            "favorite-scheme",
+            "charlatan-scheme-01"
+        );
+
+        const localized = localizeCurationEntry(
+            charlatan!,
+            "backgrounds",
+            "pt-BR"
+        );
+
+        expect(localized.name).toBe("Charlatão");
+        expect(
+            flavorOptionLabel(
+                localized,
+                "favorite-scheme",
+                "charlatan-scheme-01"
+            )
+        ).toMatch(/herdeiro distante/i);
+        expect(
+            flavorOptionLabel(charlatan, "favorite-scheme", "charlatan-scheme-01")
+        ).toBe(englishScheme);
+    });
+});
+
+describe("hermit flavorTables", () => {
+    it("authors four bound tables and one unbound life-of-seclusion table", () => {
+        const hermit = getBackground("hermit");
+        expect(hermit?.slug).toBe("hermit");
+        expect(hermit?.flavorTables).toHaveLength(5);
+
+        const slugs = hermit?.flavorTables?.map((table) => table.slug);
+        expect(slugs).toEqual([
+            "personality-traits",
+            "ideals",
+            "bonds",
+            "flaws",
+            "life-of-seclusion",
+        ]);
+
+        const bound = hermit?.flavorTables?.filter((table) => table.bindTo);
+        for (const table of bound ?? []) {
+            const expected = expectedTableBindTo[table.slug];
+            expect(table.bindTo).toBe(expected.bindTo);
+            expect(table.pickCount).toBe(expected.pickCount);
+            expect(table.allowCustom).toBe(true);
+            expect(table.roll).toBeUndefined();
+            expect(table.options.length).toBeGreaterThanOrEqual(2);
+        }
+
+        const seclusion = hermit?.flavorTables?.find(
+            (table) => table.slug === "life-of-seclusion"
+        );
+        expect(seclusion?.bindTo).toBeUndefined();
+        expect(seclusion?.pickCount).toBe(1);
+        expect(seclusion?.roll).toBeUndefined();
+        expect(seclusion?.allowCustom).toBe(true);
+        expect(seclusion?.options).toHaveLength(3);
+        expect(seclusion?.options[0]).toMatchObject({
+            slug: "hermit-seclusion-01",
+            label: "A vow to watch a grove until a promised sign arrived.",
+        });
+    });
+
+    it("overlays hermit option labels in pt-BR without mutating English", () => {
+        const hermit = getBackground("hermit");
+        expect(hermit).toBeDefined();
+        const englishIdeal = flavorOptionLabel(
+            hermit,
+            "ideals",
+            "hermit-ideal-01"
+        );
+        expect(englishIdeal).toBe("Quiet is a kind of honesty.");
+
+        const localized = localizeCurationEntry(hermit!, "backgrounds", "pt-BR");
+
+        expect(localized.name).toBe("Eremita");
+        expect(flavorOptionLabel(localized, "ideals", "hermit-ideal-01")).toBe(
+            "O silêncio é um tipo de honestidade."
+        );
+        expect(flavorOptionLabel(hermit, "ideals", "hermit-ideal-01")).toBe(
+            englishIdeal
+        );
     });
 });

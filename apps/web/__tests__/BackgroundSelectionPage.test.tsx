@@ -224,6 +224,61 @@ describe("BackgroundSelectionPage flavor pickers", () => {
             );
     });
 
+    it("shows the favorite scheme picker for Charlatan and writes the label", async () => {
+        const user = userEvent.setup();
+        render(
+            <BackgroundPageHarness defaultValues={{ background: "charlatan" }} />
+        );
+
+        expect(
+            screen.getByRole("combobox", { name: "Favorite scheme" })
+        ).toBeInTheDocument();
+        expect(
+            screen.queryByRole("combobox", { name: "Guild business" })
+        ).not.toBeInTheDocument();
+
+        await user.selectOptions(
+            screen.getByRole("combobox", { name: "Favorite scheme" }),
+            "charlatan-scheme-01"
+        );
+
+        expect(JSON.parse(screen.getByTestId("form-output").textContent ?? "{}"))
+            .toEqual(
+                expect.objectContaining({
+                    backgroundDetails: {
+                        "favorite-scheme":
+                            "A distant heir who needs a modest loan to claim a fortune.",
+                    },
+                })
+            );
+    });
+
+    it("shows the life of seclusion picker for Hermit and writes the label", async () => {
+        const user = userEvent.setup();
+        render(
+            <BackgroundPageHarness defaultValues={{ background: "hermit" }} />
+        );
+
+        expect(
+            screen.getByRole("combobox", { name: "Life of seclusion" })
+        ).toBeInTheDocument();
+
+        await user.selectOptions(
+            screen.getByRole("combobox", { name: "Life of seclusion" }),
+            "hermit-seclusion-01"
+        );
+
+        expect(JSON.parse(screen.getByTestId("form-output").textContent ?? "{}"))
+            .toEqual(
+                expect.objectContaining({
+                    backgroundDetails: {
+                        "life-of-seclusion":
+                            "A vow to watch a grove until a promised sign arrived.",
+                    },
+                })
+            );
+    });
+
     it("does not show roll buttons on Sage tables", () => {
         render(
             <BackgroundPageHarness defaultValues={{ background: "sage" }} />

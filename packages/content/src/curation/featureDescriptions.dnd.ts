@@ -51,6 +51,10 @@ const dndFeatureDescriptions: Record<string, string> = {
         "Those who share your faith respect you. You and your companions can receive free healing and care at a temple of your faith, and you have ties to a specific temple you can call on for aid that is not hazardous.",
     "guild-membership":
         "Fellow members of your guild treat you as one of their own. In a town with a chapter hall, you can find modest lodging, introductions, and help that is not a crime.",
+    "false-identity":
+        "You keep a second, fully prepared identity: papers, habits, and people who will vouch for the name. In a pinch you can step into that life as if it had always been yours.",
+    discovery:
+        "Years alone taught you something the settled world still argues about. You know where that knowledge lives, and who would rather it stayed buried.",
 };
 
 function localizedCuratedDescription(

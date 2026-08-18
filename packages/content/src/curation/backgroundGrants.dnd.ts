@@ -10,8 +10,8 @@ export interface BackgroundEntry {
 }
 
 /**
- * Hand-curated background grants. Small representative set to prove the
- * background source pipeline; full SRD backgrounds are future work.
+ * Hand-curated background grants. Representative set for the background
+ * source pipeline; remaining PHB/SRD backgrounds are future work.
  */
 export const dndBackgrounds: BackgroundEntry[] = [
     {
@@ -463,6 +463,269 @@ export const dndBackgrounds: BackgroundEntry[] = [
                     { slug: "guild-business-18", label: "Armorers" },
                     { slug: "guild-business-19", label: "Shipwrights" },
                     { slug: "guild-business-20", label: "Wheelwrights" },
+                ],
+            },
+        ],
+    },
+    {
+        slug: "charlatan",
+        name: "Charlatan",
+        description:
+            "You live by invented names and borrowed trust. You know how to look like someone else long enough to leave before the questions land.",
+        grants: [
+            {
+                grantType: "skill_proficiency",
+                choose: 0,
+                options: [
+                    { optionType: "skill", ref: "deception" },
+                    { optionType: "skill", ref: "sleight-of-hand" },
+                ],
+            },
+            {
+                grantType: "tool_proficiency",
+                choose: 0,
+                options: [
+                    { optionType: "proficiency", ref: "disguise-kit" },
+                    { optionType: "proficiency", ref: "forgery-kit" },
+                ],
+            },
+            {
+                grantType: "ability",
+                choose: 0,
+                description: "False Identity",
+            },
+        ],
+        flavorTables: [
+            {
+                slug: "personality-traits",
+                bindTo: "personalityTraits",
+                pickCount: 2,
+                allowCustom: true,
+                options: [
+                    {
+                        slug: "charlatan-trait-01",
+                        label: "I invent a name before I invent a reason to be in the room.",
+                    },
+                    {
+                        slug: "charlatan-trait-02",
+                        label: "I never correct a rumor that makes me more interesting.",
+                    },
+                    {
+                        slug: "charlatan-trait-03",
+                        label: "I watch hands first, faces second.",
+                    },
+                ],
+            },
+            {
+                slug: "ideals",
+                bindTo: "ideals",
+                pickCount: 1,
+                allowCustom: true,
+                options: [
+                    {
+                        slug: "charlatan-ideal-01",
+                        label: "The story sells the truth, not the other way around.",
+                    },
+                    {
+                        slug: "charlatan-ideal-02",
+                        label: "Everyone deserves a prettier version of themselves.",
+                    },
+                    {
+                        slug: "charlatan-ideal-03",
+                        label: "Never leave a mark that cannot be explained as luck.",
+                    },
+                ],
+            },
+            {
+                slug: "bonds",
+                bindTo: "bonds",
+                pickCount: 1,
+                allowCustom: true,
+                options: [
+                    {
+                        slug: "charlatan-bond-01",
+                        label: "A forged letter still keeps someone I love out of a cell.",
+                    },
+                    {
+                        slug: "charlatan-bond-02",
+                        label: "I owe a fence who taught me which seals to copy.",
+                    },
+                    {
+                        slug: "charlatan-bond-03",
+                        label: "The first identity I stole still answers mail in a town I cannot visit.",
+                    },
+                ],
+            },
+            {
+                slug: "flaws",
+                bindTo: "flaws",
+                pickCount: 1,
+                allowCustom: true,
+                options: [
+                    {
+                        slug: "charlatan-flaw-01",
+                        label: "I cannot resist a closed drawer.",
+                    },
+                    {
+                        slug: "charlatan-flaw-02",
+                        label: "I trust a good costume more than a good plan.",
+                    },
+                    {
+                        slug: "charlatan-flaw-03",
+                        label: "I talk until the lie has too many rooms.",
+                    },
+                ],
+            },
+            {
+                slug: "favorite-scheme",
+                pickCount: 1,
+                allowCustom: true,
+                options: [
+                    {
+                        slug: "charlatan-scheme-01",
+                        label: "A distant heir who needs a modest loan to claim a fortune.",
+                    },
+                    {
+                        slug: "charlatan-scheme-02",
+                        label: "A miracle tonic mixed from kitchen spices and confidence.",
+                    },
+                    {
+                        slug: "charlatan-scheme-03",
+                        label: "A lost relic I just happen to have found this morning.",
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        slug: "hermit",
+        name: "Hermit",
+        description:
+            "You spent years apart from towns and clocks. You know one additional language of your choice.",
+        grants: [
+            {
+                grantType: "skill_proficiency",
+                choose: 0,
+                options: [
+                    { optionType: "skill", ref: "medicine" },
+                    { optionType: "skill", ref: "religion" },
+                ],
+            },
+            {
+                grantType: "tool_proficiency",
+                choose: 0,
+                options: [{ optionType: "proficiency", ref: "herbalism-kit" }],
+            },
+            {
+                grantType: "language",
+                choose: 1,
+                selectionFilter: { any: true },
+                description: "One language of your choice.",
+            },
+            {
+                grantType: "ability",
+                choose: 0,
+                description: "Discovery",
+            },
+        ],
+        flavorTables: [
+            {
+                slug: "personality-traits",
+                bindTo: "personalityTraits",
+                pickCount: 2,
+                allowCustom: true,
+                options: [
+                    {
+                        slug: "hermit-trait-01",
+                        label: "I answer questions with a pause long enough to make people fidget.",
+                    },
+                    {
+                        slug: "hermit-trait-02",
+                        label: "I keep a scrap of bark in my pocket and worry it when I must speak.",
+                    },
+                    {
+                        slug: "hermit-trait-03",
+                        label: "I count days by weather, not by calendars.",
+                    },
+                ],
+            },
+            {
+                slug: "ideals",
+                bindTo: "ideals",
+                pickCount: 1,
+                allowCustom: true,
+                options: [
+                    {
+                        slug: "hermit-ideal-01",
+                        label: "Quiet is a kind of honesty.",
+                    },
+                    {
+                        slug: "hermit-ideal-02",
+                        label: "What grows without a name still deserves care.",
+                    },
+                    {
+                        slug: "hermit-ideal-03",
+                        label: "The world is loud; I will not add to it without cause.",
+                    },
+                ],
+            },
+            {
+                slug: "bonds",
+                bindTo: "bonds",
+                pickCount: 1,
+                allowCustom: true,
+                options: [
+                    {
+                        slug: "hermit-bond-01",
+                        label: "A cave that kept me through a winter still has my marks on the wall.",
+                    },
+                    {
+                        slug: "hermit-bond-02",
+                        label: "I left a question buried under a stone and I am not done answering it.",
+                    },
+                    {
+                        slug: "hermit-bond-03",
+                        label: "Someone from the village still leaves food at the tree line.",
+                    },
+                ],
+            },
+            {
+                slug: "flaws",
+                bindTo: "flaws",
+                pickCount: 1,
+                allowCustom: true,
+                options: [
+                    {
+                        slug: "hermit-flaw-01",
+                        label: "I forget that people expect answers on the same day.",
+                    },
+                    {
+                        slug: "hermit-flaw-02",
+                        label: "I hoard silence until it becomes unkind.",
+                    },
+                    {
+                        slug: "hermit-flaw-03",
+                        label: "I treat every crowd as a storm I must wait out.",
+                    },
+                ],
+            },
+            {
+                slug: "life-of-seclusion",
+                pickCount: 1,
+                allowCustom: true,
+                options: [
+                    {
+                        slug: "hermit-seclusion-01",
+                        label: "A vow to watch a grove until a promised sign arrived.",
+                    },
+                    {
+                        slug: "hermit-seclusion-02",
+                        label: "Illness that made towns feel like too many mouths.",
+                    },
+                    {
+                        slug: "hermit-seclusion-03",
+                        label: "A secret I was asked to keep far from anyone who would use it.",
+                    },
                 ],
             },
         ],

@@ -303,4 +303,44 @@ describe("resolveCreationSteps", () => {
             expect.arrayContaining(["backgroundDetails"])
         );
     });
+
+    it("omits background-choices for charlatan fixed grants", () => {
+        const graph = resolveCreationSteps({
+            formValues: {
+                race: "human",
+                characterClass: "fighter",
+                level: 1,
+                background: "charlatan",
+            },
+            system: "dnd",
+            contentLocale: "en",
+        });
+
+        expect(graph.steps.some((step) => step.id === "background-choices")).toBe(
+            false
+        );
+        expect(graph.getStep("background")?.fieldNames).toEqual(
+            expect.arrayContaining(["backgroundDetails"])
+        );
+    });
+
+    it("includes background-choices for hermit language picks", () => {
+        const graph = resolveCreationSteps({
+            formValues: {
+                race: "human",
+                characterClass: "fighter",
+                level: 1,
+                background: "hermit",
+            },
+            system: "dnd",
+            contentLocale: "en",
+        });
+
+        expect(graph.steps.some((step) => step.id === "background-choices")).toBe(
+            true
+        );
+        expect(graph.getStep("background")?.fieldNames).toEqual(
+            expect.arrayContaining(["backgroundDetails"])
+        );
+    });
 });

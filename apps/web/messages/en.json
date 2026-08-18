@@ -365,7 +365,9 @@
       "rollAria": "Roll {label}",
       "slot": "{label} ({current}/{total})",
       "tables": {
-        "guild-business": "Guild business"
+        "guild-business": "Guild business",
+        "favorite-scheme": "Favorite scheme",
+        "life-of-seclusion": "Life of seclusion"
       }
     },
     "level": {

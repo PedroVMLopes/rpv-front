@@ -365,7 +365,9 @@
       "rollAria": "Rolar {label}",
       "slot": "{label} ({current}/{total})",
       "tables": {
-        "guild-business": "Negócio da guilda"
+        "guild-business": "Negócio da guilda",
+        "favorite-scheme": "Golpe favorito",
+        "life-of-seclusion": "Vida de reclusão"
       }
     },
     "level": {
