@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Slider } from "@/components/ui/slider";
+import { DispositionAxisSlider } from "@/components/characters/DispositionAxisSlider";
 import { OverviewPanel } from "@/components/characters/PlayerSheet/overview/OverviewPanel";
 import { sheetInset } from "@/components/characters/PlayerSheet/playerSheetSurfaces";
 import { listFilledBackgroundDetails } from "@/lib/character/flavorTables";
@@ -11,25 +11,15 @@ import {
 } from "@/lib/character/overviewIdentity";
 import {
     PERSONA_DISPOSITION_AXIS_KEYS,
+    PERSONA_DISPOSITION_UNSET_DISPLAY,
     PERSONA_EMPTY_DISPLAY,
     PERSONA_PRESENCE_FIELD_KEYS,
-    PERSONA_SLIDER_MAX,
-    PERSONA_SLIDER_MIN,
-    PERSONA_SLIDER_STEP,
     readDispositionAxis,
     type PersonaDispositionAxisKey,
     type PersonaPresenceFieldKey,
 } from "@/lib/character/personaFields";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { cn } from "@/lib/utils";
-
-const DISPOSITION_SLIDER_RANGE_CLASSES = [
-    "[&_[data-slot=slider-range]]:bg-chart-1",
-    "[&_[data-slot=slider-range]]:bg-chart-2",
-    "[&_[data-slot=slider-range]]:bg-chart-3",
-    "[&_[data-slot=slider-range]]:bg-chart-4",
-    "[&_[data-slot=slider-range]]:bg-chart-5",
-] as const;
 
 function displayOrEmpty(value: string | null): string {
     return value ?? PERSONA_EMPTY_DISPLAY;
@@ -98,23 +88,14 @@ function DispositionCard({ stored }: PersonaCardProps) {
                                     {t(`axes.${key}.right`)}
                                 </span>
                             </div>
-                            {value === null ? (
-                                <p className="text-sm font-medium">
-                                    {PERSONA_EMPTY_DISPLAY}
-                                </p>
-                            ) : (
-                                <Slider
-                                    disabled
-                                    min={PERSONA_SLIDER_MIN}
-                                    max={PERSONA_SLIDER_MAX}
-                                    step={PERSONA_SLIDER_STEP}
-                                    value={[value]}
-                                    aria-label={axisLabel(key)}
-                                    className={
-                                        DISPOSITION_SLIDER_RANGE_CLASSES[index]
-                                    }
-                                />
-                            )}
+                            <DispositionAxisSlider
+                                disabled
+                                value={
+                                    value ?? PERSONA_DISPOSITION_UNSET_DISPLAY
+                                }
+                                colorIndex={index}
+                                aria-label={axisLabel(key)}
+                            />
                         </li>
                     );
                 })}

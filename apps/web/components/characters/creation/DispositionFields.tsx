@@ -2,26 +2,14 @@
 
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
-import { Slider } from "@/components/ui/slider";
+import { DispositionAxisSlider } from "@/components/characters/DispositionAxisSlider";
 import {
     DISPOSITION_FORM_KEY,
     PERSONA_DISPOSITION_AXIS_KEYS,
     PERSONA_DISPOSITION_UNSET_DISPLAY,
-    PERSONA_SLIDER_MAX,
-    PERSONA_SLIDER_MIN,
-    PERSONA_SLIDER_STEP,
     parseDisposition,
     type PersonaDispositionAxisKey,
 } from "@/lib/character/personaFields";
-import { cn } from "@/lib/utils";
-
-const DISPOSITION_SLIDER_RANGE_CLASSES = [
-    "[&_[data-slot=slider-range]]:bg-chart-1",
-    "[&_[data-slot=slider-range]]:bg-chart-2",
-    "[&_[data-slot=slider-range]]:bg-chart-3",
-    "[&_[data-slot=slider-range]]:bg-chart-4",
-    "[&_[data-slot=slider-range]]:bg-chart-5",
-] as const;
 
 type DispositionFieldsProps = {
     form: UseFormReturn<Record<string, unknown>>;
@@ -71,23 +59,14 @@ export function DispositionFields({ form }: DispositionFieldsProps) {
                                     {t(`axes.${key}.right`)}
                                 </span>
                             </div>
-                            <Slider
-                                min={PERSONA_SLIDER_MIN}
-                                max={PERSONA_SLIDER_MAX}
-                                step={PERSONA_SLIDER_STEP}
-                                value={[displayValue]}
-                                onValueChange={(next) => {
-                                    const nextValue = next[0];
-                                    if (typeof nextValue !== "number") {
-                                        return;
-                                    }
-                                    setAxis(key, nextValue);
-                                }}
+                            <DispositionAxisSlider
+                                value={displayValue}
+                                colorIndex={index}
                                 aria-label={axisLabel(key)}
-                                className={cn(
-                                    DISPOSITION_SLIDER_RANGE_CLASSES[index],
-                                    !isSet && "opacity-70"
-                                )}
+                                className={!isSet ? "opacity-70" : undefined}
+                                onValueChange={(nextValue) =>
+                                    setAxis(key, nextValue)
+                                }
                             />
                         </li>
                     );

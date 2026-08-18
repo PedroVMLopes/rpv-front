@@ -565,13 +565,18 @@ describe("PlayerSheet", () => {
                 "Worn travel clothes of rough cloth, mended more than once and without ornament."
             )
         ).not.toBeInTheDocument();
-        expect(screen.getAllByText("—")).toHaveLength(9);
+        expect(screen.getAllByText("—")).toHaveLength(4);
 
-        expect(
-            screen.queryAllByRole("slider").filter(
+        const sliders = screen
+            .queryAllByRole("slider")
+            .filter(
                 (slider) => slider.getAttribute("data-slot") === "slider-thumb"
-            )
-        ).toHaveLength(0);
+            );
+        expect(sliders).toHaveLength(5);
+        for (const slider of sliders) {
+            expect(slider).toHaveAttribute("data-disabled");
+            expect(slider).toHaveAttribute("aria-valuenow", "10");
+        }
 
         expect(screen.getByText("Coming soon")).toBeInTheDocument();
     });
@@ -607,10 +612,18 @@ describe("PlayerSheet", () => {
         expect(screen.queryByText("Adult")).not.toBeInTheDocument();
         expect(screen.queryByText("Protect the realm")).not.toBeInTheDocument();
         expect(screen.queryByText("Honor")).not.toBeInTheDocument();
-        expect(screen.getAllByText("—")).toHaveLength(15);
+        expect(screen.getAllByText("—")).toHaveLength(10);
+        expect(
+            screen
+                .getAllByRole("slider")
+                .filter(
+                    (slider) =>
+                        slider.getAttribute("data-slot") === "slider-thumb"
+                )
+        ).toHaveLength(5);
     });
 
-    it("shows a disabled disposition slider for stored axes and dashes for the rest", async () => {
+    it("shows disabled disposition sliders for stored axes and the midpoint for the rest", async () => {
         const user = userEvent.setup();
         renderWithProviders(
             <PlayerSheet
@@ -630,10 +643,16 @@ describe("PlayerSheet", () => {
         const sliders = screen
             .getAllByRole("slider")
             .filter((slider) => slider.getAttribute("data-slot") === "slider-thumb");
-        expect(sliders).toHaveLength(1);
+        expect(sliders).toHaveLength(5);
         expect(sliders[0]).toHaveAttribute("data-disabled");
         expect(sliders[0]).toHaveAttribute("aria-valuenow", "14");
-        expect(screen.getAllByText("—")).toHaveLength(8);
+        expect(sliders.slice(1).map((slider) => slider.getAttribute("aria-valuenow"))).toEqual(
+            ["10", "10", "10", "10"]
+        );
+        for (const slider of sliders) {
+            expect(slider).toHaveAttribute("data-disabled");
+        }
+        expect(screen.getAllByText("—")).toHaveLength(4);
     });
 
     it("shows filled background details on notes and hides the block when empty", async () => {
