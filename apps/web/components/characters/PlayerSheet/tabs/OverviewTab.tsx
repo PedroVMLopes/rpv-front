@@ -21,7 +21,6 @@ export function OverviewTab({ stored }: OverviewTabProps) {
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-6">
             <div className="flex flex-col gap-4">
                 <PortraitSection stored={stored} />
-                <IdentitySummarySection stored={stored} />
                 <AbilitiesSection stored={stored} />
             </div>
 
@@ -32,6 +31,7 @@ export function OverviewTab({ stored }: OverviewTabProps) {
             </div>
 
             <div className="flex flex-col gap-4">
+                <IdentitySummarySection stored={stored} />
                 <IdentitySection stored={stored} />
                 <FeaturesTraitsSection stored={stored} />
             </div>
