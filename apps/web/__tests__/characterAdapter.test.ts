@@ -115,6 +115,29 @@ describe("characterAdapter system-agnostic mapping", () => {
         });
     });
 
+    it("round-trips presence and disposition through systemData", () => {
+        const stored = formDataToStoredCharacter(
+            {
+                ...formData,
+                build: "Lean",
+                disposition: { solitarySociable: 14 },
+            },
+            "char-1",
+            "player",
+            "dnd",
+            []
+        );
+
+        expect(stored.systemData.build).toBe("Lean");
+        expect(stored.systemData.disposition).toEqual({ solitarySociable: 14 });
+        expect(flattenStoredToForm(stored, "dnd")).toEqual(
+            expect.objectContaining({
+                build: "Lean",
+                disposition: { solitarySociable: 14 },
+            })
+        );
+    });
+
     it("defaults new characters to the English content language", () => {
         const stored = formDataToStoredCharacter(
             formData,

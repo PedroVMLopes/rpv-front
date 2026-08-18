@@ -10,6 +10,7 @@ import {
 } from "@/components/forms/DynamicForm";
 import { CatalogSelectionPage } from "@/components/characters/creation/CatalogSelectionPage";
 import { FlavorTableField } from "@/components/characters/creation/FlavorTableField";
+import { DispositionFields } from "@/components/characters/creation/DispositionFields";
 import { BACKGROUND_STEP_IDENTITY_FIELD_NAMES } from "@/lib/character/overviewIdentity";
 import {
     boundFlavorTables,
@@ -61,14 +62,25 @@ export function BackgroundSelectionPage({
         [backgroundEntry]
     );
 
-    const filteredIdentityFields = useMemo(
+    const identityFormFields = useMemo(
         () =>
             identityFields.filter(
                 (field) =>
                     BACKGROUND_STEP_IDENTITY_FIELD_NAMES.has(field.name) &&
+                    field.group !== "presence" &&
                     !coveredBindTos.has(field.name)
             ),
         [coveredBindTos, identityFields]
+    );
+
+    const presenceFormFields = useMemo(
+        () =>
+            identityFields.filter(
+                (field) =>
+                    BACKGROUND_STEP_IDENTITY_FIELD_NAMES.has(field.name) &&
+                    field.group === "presence"
+            ),
+        [identityFields]
     );
 
     useEffect(() => {
@@ -142,13 +154,26 @@ export function BackgroundSelectionPage({
                     ))}
                 </div>
             ) : null}
-            {filteredIdentityFields.length > 0 ? (
+            {identityFormFields.length > 0 ? (
                 <DynamicForm
                     form={form}
-                    fields={filteredIdentityFields}
+                    fields={identityFormFields}
                     hideSubmit
                 />
             ) : null}
+            {presenceFormFields.length > 0 ? (
+                <div className="flex flex-col gap-3">
+                    <p className="text-sm font-medium leading-none">
+                        {t("playerSheet.persona.presenceTitle")}
+                    </p>
+                    <DynamicForm
+                        form={form}
+                        fields={presenceFormFields}
+                        hideSubmit
+                    />
+                </div>
+            ) : null}
+            <DispositionFields form={form} />
         </div>
     );
 }

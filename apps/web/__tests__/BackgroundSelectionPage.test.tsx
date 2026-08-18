@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
 import { NextIntlClientProvider } from "next-intl";
@@ -55,6 +55,8 @@ function BackgroundPageHarness({
                     name: form.watch("name"),
                     age: form.watch("age"),
                     goals: form.watch("goals"),
+                    build: form.watch("build"),
+                    disposition: form.watch("disposition"),
                 })}
             </pre>
             <button
@@ -388,5 +390,47 @@ describe("BackgroundSelectionPage flavor pickers", () => {
                 name: "Truth first: a beautiful lie is still a lie.",
             })
         ).not.toBeInTheDocument();
+    });
+
+    it("shows presence fields and does not persist disposition until a slider moves", async () => {
+        const user = userEvent.setup();
+        render(
+            <BackgroundPageHarness defaultValues={{ background: "sage" }} />
+        );
+
+        expect(screen.getByRole("textbox", { name: "Build" })).toBeInTheDocument();
+        expect(screen.getByRole("textbox", { name: "Voice" })).toBeInTheDocument();
+        expect(
+            screen.getByRole("textbox", { name: "Distinguishing marks" })
+        ).toBeInTheDocument();
+        expect(screen.getByRole("textbox", { name: "Attire" })).toBeInTheDocument();
+        expect(screen.getByText("Disposition")).toBeInTheDocument();
+
+        expect(
+            JSON.parse(screen.getByTestId("form-output").textContent ?? "{}")
+                .disposition
+        ).toBeUndefined();
+
+        await user.type(screen.getByRole("textbox", { name: "Build" }), "Lean");
+
+        expect(JSON.parse(screen.getByTestId("form-output").textContent ?? "{}"))
+            .toEqual(
+                expect.objectContaining({
+                    build: "Lean",
+                })
+            );
+
+        const solitary = screen.getByRole("slider", {
+            name: "Solitary – Sociable",
+        });
+        expect(solitary).toHaveAttribute("aria-valuenow", "10");
+        fireEvent.keyDown(solitary, { key: "ArrowRight" });
+
+        expect(JSON.parse(screen.getByTestId("form-output").textContent ?? "{}"))
+            .toEqual(
+                expect.objectContaining({
+                    disposition: { solitarySociable: 11 },
+                })
+            );
     });
 });

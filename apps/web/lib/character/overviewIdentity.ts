@@ -5,6 +5,7 @@ import {
     parseDarkvisionRangeFeet,
 } from "@/lib/character/creation/raceCatalogResourceChips";
 import type { StoredCharacter } from "./storedCharacter";
+import { PERSONA_PRESENCE_PROSE_FIELD_KEYS } from "./personaFields";
 
 export const OVERVIEW_PERSONALITY_FIELD_KEYS = [
     "personalityTraits",
@@ -21,6 +22,7 @@ export const BACKGROUND_STEP_IDENTITY_FIELD_NAMES = new Set([
     "name",
     "age",
     ...OVERVIEW_PERSONALITY_FIELD_KEYS,
+    ...PERSONA_PRESENCE_PROSE_FIELD_KEYS,
 ]);
 
 export type OverviewBackgroundDisplay = {

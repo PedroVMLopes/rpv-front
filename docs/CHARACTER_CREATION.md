@@ -114,6 +114,7 @@ A etapa `background` combina seleção de antecedente, pickers de sabor e campos
 - O picker genérico é [`FlavorTableField`](../apps/web/components/characters/creation/FlavorTableField.tsx) em [`BackgroundSelectionPage`](../apps/web/components/characters/creation/BackgroundSelectionPage.tsx).
 - `table.roll` (`d8`, `d6`, `d20`, …) é só hint de UI. O botão **Rolar** preenche todos os slots de uma vez com opções distintas; o motor (`@rpv/domain`) **não** resolve dado. Sem `roll` válido, o botão não aparece.
 - Labels das opções seguem `contentLocale` (overlay em `packages/content/data/translations`). O picker grava o texto visível em `systemData`; a ficha mostra o idioma da escolha. Opção sem overlay cai no inglês.
+- Presença (`build`, `voice`, `marks`, `attire`) e disposição (`systemData.disposition`, eixos 1–20) também se preenchem nesta etapa, abaixo da identidade. Eixos só gravam depois do primeiro toque no slider; omitidos aparecem como `—` na ficha. Trocar de antecedente **não** limpa presença/disposição.
 - Ao mudar `background`:
   - `backgroundDetails` é apagado por completo (`{}`);
   - campos bound só são limpos se **todas** as linhas não vazias forem labels da tabela **anterior**; texto custom permanece.

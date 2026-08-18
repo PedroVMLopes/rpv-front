@@ -143,6 +143,7 @@ export function resolveCreationSteps(
             fieldNames: [
                 "background",
                 "backgroundDetails",
+                "disposition",
                 ...BACKGROUND_STEP_IDENTITY_FIELD_NAMES,
             ],
         })

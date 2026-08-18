@@ -109,13 +109,13 @@ Recursos de classe reutilizam a lógica de [`DerivedResourcesDisplay`](../apps/w
 | **Visão geral** | Gameplay — o que o personagem sabe e pode (fora da economia de ataque) | Retrato, atributos + testes, passivas, CD/ataque de magia, recursos de classe, perícias (proficientes por padrão), fatos mecânicos (antecedente, tamanho, sentidos, dado de vida), proficiências (armas, armaduras, ferramentas, idiomas), características | [`OverviewTab`](../apps/web/components/characters/PlayerSheet/tabs/OverviewTab.tsx), [`AbilitiesSection`](../apps/web/components/characters/PlayerSheet/overview/AbilitiesSection.tsx), [`SkillsCard`](../apps/web/components/characters/PlayerSheet/overview/SkillsCard.tsx), [`ClassResourcesPanel`](../apps/web/components/characters/PlayerSheet/combat/ClassResourcesPanel.tsx) |
 | **Combate** | Economia de ação | Ataques, ações/bônus/reações, magias, recursos — agrupados por **tipo de ação**, não por origem (classe vs item) | [`CharacterCardAbilities`](../apps/web/components/characters/CharacterCard/CharacterCardAbilities.tsx) (reestruturado) |
 | **Mochila** | Posse e equipamento | Equipado + bag + moeda | [`CharacterCardInventory`](../apps/web/components/characters/CharacterCard/CharacterCardInventory.tsx) |
-| **Anotações** | Persona (roleplay) + diário | Presença (idade de `systemData`; porte/voz/marcas/vestimenta ainda sem persistência), disposição (sliders placeholder), personalidade D&D (traços, ideais, vínculos, falhas, objetivos de `systemData`); bloco Notas “em breve” | [`NotesTab`](../apps/web/components/characters/PlayerSheet/tabs/NotesTab.tsx), [`PersonaSection`](../apps/web/components/characters/PlayerSheet/notes/PersonaSection.tsx) |
+| **Anotações** | Persona (roleplay) + diário | Presença (idade, porte, voz, marcas, vestimenta de `systemData`), disposição (eixos 1–20 em `systemData.disposition`; omitido = `—`), personalidade D&D (traços, ideais, vínculos, falhas, objetivos de `systemData`); bloco Notas “em breve” | [`NotesTab`](../apps/web/components/characters/PlayerSheet/tabs/NotesTab.tsx), [`PersonaSection`](../apps/web/components/characters/PlayerSheet/notes/PersonaSection.tsx) |
 
 #### Decisões de UX
 
 - **Visão geral** não lista as 18 perícias por padrão — apenas as **proficientes**. Toggle "todas" já está na ficha. Saves completos ficam na aba Ações. Personalidade, idade aparente e prosa de antecedente saíram da Overview (Persona na aba Anotações).
 - **Combate** é adaptativo: seção Magia oculta se o personagem não tiver spell grants.
-- **Anotações:** Persona no topo (presença, disposição, campos D&D). Personalidade e idade vêm de `systemData`; rótulos vazios mostram `—`. Porte, voz, marcas, vestimenta e eixos de disposição ainda não persistem. Bloco Notas reservado (“em breve”).
+- **Anotações:** Persona no topo (presença, disposição, campos D&D). Personalidade, idade, porte, voz, marcas e vestimenta vêm de `systemData`; eixos de disposição gravados (1–20) mostram slider somente leitura, omitidos mostram `—`. Rótulos vazios mostram `—`. Bloco Notas reservado (“em breve”).
 
 ### 3.3 Responsividade
 

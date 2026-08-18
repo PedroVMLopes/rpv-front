@@ -86,6 +86,34 @@ export const dndCharacterFields = {
             type: "text",
             group: "general",
             order: 6
+        },
+        {
+            name: "build",
+            labelKey: "fields.build",
+            type: "text",
+            group: "presence",
+            order: 1
+        },
+        {
+            name: "voice",
+            labelKey: "fields.voice",
+            type: "text",
+            group: "presence",
+            order: 2
+        },
+        {
+            name: "marks",
+            labelKey: "fields.marks",
+            type: "text",
+            group: "presence",
+            order: 3
+        },
+        {
+            name: "attire",
+            labelKey: "fields.attire",
+            type: "text",
+            group: "presence",
+            order: 4
         }
     ],
     player: [

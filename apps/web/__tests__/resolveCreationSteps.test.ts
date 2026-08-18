@@ -19,6 +19,8 @@ describe("resolveCreationSteps", () => {
                 "ideals",
                 "bonds",
                 "flaws",
+                "build",
+                "disposition",
             ])
         );
         expect(graph.steps.at(-1)?.id).toBe("review");
