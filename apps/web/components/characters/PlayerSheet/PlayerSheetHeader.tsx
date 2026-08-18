@@ -65,20 +65,16 @@ function CombatStatsBlock({
                 className
             )}
         >
-            <HitPointsControl
-                characterId={characterId}
-                className="w-full sm:w-auto"
-            />
 
             <div className="flex w-full flex-col justify-center gap-2 sm:w-auto">
                 <div className="flex w-full items-stretch gap-2">
                     <div
-                        className="flex min-w-0 flex-1 flex-row items-center justify-center gap-1 rounded-2xl border-3 bg-accent text-accent-foreground px-3 py-2 sm:min-w-16 sm:flex-none"
+                        className="flex min-w-0 flex-1 flex-row items-center justify-center gap-1 rounded-2xl sm:border-3 sm:bg-accent sm:text-accent-foreground px-3 py-2 sm:min-w-16 sm:flex-none"
                         aria-label={`${tCombat("ac")} ${ac}`}
                     >
                         <span className="flex items-center gap-1 text-xs font-semibold uppercase">
                             <FaShieldHalved
-                                className="size-4 text-secondary"
+                                className="size-4"
                                 aria-hidden
                             />
                         </span>
@@ -88,7 +84,7 @@ function CombatStatsBlock({
                     </div>
 
                     <div
-                        className="flex min-w-0 flex-1 flex-row items-center justify-center gap-1 rounded-2xl border-3 bg-accent text-accent-foreground px-3 py-2 sm:min-w-16 sm:flex-none"
+                        className="flex min-w-0 flex-1 flex-row items-center justify-center gap-1 rounded-2xl sm:border-3 sm:bg-accent sm:text-accent-foreground px-3 py-2 sm:min-w-16 sm:flex-none"
                         aria-label={`${tCharacter("initiative")} ${formatModifier(initiative)}`}
                     >
                         <span className="text-sm font-semibold font-serif">
@@ -102,7 +98,7 @@ function CombatStatsBlock({
 
                 {walkSpeed !== undefined ? (
                     <div
-                        className="flex w-full flex-row items-center justify-center rounded-2xl border-3 bg-accent text-accent-foreground px-3 py-2 gap-1"
+                        className="flex w-full flex-row items-center justify-center rounded-2xl sm:border-3 sm:bg-accent sm:text-accent-foreground px-3 py-2 gap-1"
                         aria-label={`${t("speed")} ${t("speedValue", { speed: walkSpeed })}`}
                     >
                         <span className="text-sm font-semibold font-serif">
@@ -114,6 +110,11 @@ function CombatStatsBlock({
                     </div>
                 ) : null}
             </div>
+
+            <HitPointsControl
+                characterId={characterId}
+                className="w-full sm:w-auto"
+            />
         </div>
     );
 }
@@ -219,11 +220,11 @@ export function PlayerSheetHeader({
                     <Collapsible
                         open={combatOpen}
                         onOpenChange={setCombatOpen}
-                        className="w-full sm:hidden"
+                        className="w-full sm:hidden bg-card text-card-foreground shadow-xs border-custom border-background rounded-lg"
                     >
                         {!combatOpen ? (
                             <CollapsibleTrigger
-                                className="flex w-full items-center justify-between gap-2 rounded-lg px-1 py-1 text-sm"
+                                className="flex w-full items-center justify-between gap-2 p-2 text-sm"
                                 aria-label={t("toggleCombatStats")}
                             >
                                 <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1">
@@ -259,21 +260,21 @@ export function PlayerSheetHeader({
                                     </span>
                                 </div>
                                 <ChevronDown
-                                    className="size-4 shrink-0 bg-primary text-primary-foreground rounded"
+                                    className="size-5 shrink-0 text-primary"
                                     aria-hidden
                                 />
                             </CollapsibleTrigger>
                         ) : null}
 
                         <CollapsibleContent className="data-[state=closed]:hidden">
-                            <div className="flex flex-col gap-2">
+                            <div className="flex flex-col gap-1 p-1">
                                 <div className="flex justify-end">
                                     <CollapsibleTrigger
-                                        className="inline-flex items-center justify-center rounded-md p-1"
+                                        className="inline-flex items-center justify-center p-1"
                                         aria-label={t("toggleCombatStats")}
                                     >
                                         <ChevronDown
-                                            className="size-4 rotate-180 transition-transform bg-primary text-primary-foreground rounded"
+                                            className="size-5 rotate-180 transition-transform text-primary"
                                             aria-hidden
                                         />
                                     </CollapsibleTrigger>
