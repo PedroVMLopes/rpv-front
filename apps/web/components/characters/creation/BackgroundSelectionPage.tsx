@@ -8,6 +8,7 @@ import {
     type FieldConfig,
 } from "@/components/forms/DynamicForm";
 import { CatalogSelectionPage } from "@/components/characters/creation/CatalogSelectionPage";
+import { BACKGROUND_STEP_IDENTITY_FIELD_NAMES } from "@/lib/character/overviewIdentity";
 import type { SystemKey } from "@/presets";
 
 type BackgroundSelectionPageProps = {
@@ -16,8 +17,6 @@ type BackgroundSelectionPageProps = {
     system: SystemKey;
     identityFields: FieldConfig[];
 };
-
-const IDENTITY_FIELD_NAMES = new Set(["name", "age", "goals"]);
 
 export function BackgroundSelectionPage({
     form,
@@ -28,7 +27,7 @@ export function BackgroundSelectionPage({
     const filteredIdentityFields = useMemo(
         () =>
             identityFields.filter((field) =>
-                IDENTITY_FIELD_NAMES.has(field.name)
+                BACKGROUND_STEP_IDENTITY_FIELD_NAMES.has(field.name)
             ),
         [identityFields]
     );

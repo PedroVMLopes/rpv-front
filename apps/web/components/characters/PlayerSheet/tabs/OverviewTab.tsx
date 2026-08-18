@@ -6,8 +6,11 @@ import { PortraitSection } from "../overview/PortraitSection";
 import { AbilitiesSection } from "../overview/AbilitiesSection";
 import { SkillsCard } from "../overview/SkillsCard";
 import { ProficienciesCard } from "../overview/ProficienciesCard";
-import { IdentitySection } from "../overview/IdentitySection";
-import { ActionsSection } from "../overview/ActionsSection";
+import {
+    IdentitySection,
+    IdentitySummarySection,
+} from "../overview/IdentitySection";
+import { FeaturesTraitsSection } from "../overview/FeaturesTraitsSection";
 
 type OverviewTabProps = {
     stored: StoredCharacter;
@@ -18,18 +21,19 @@ export function OverviewTab({ stored }: OverviewTabProps) {
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-6">
             <div className="flex flex-col gap-4">
                 <PortraitSection stored={stored} />
+                <IdentitySummarySection stored={stored} />
                 <AbilitiesSection stored={stored} />
             </div>
 
             <div className="flex flex-col gap-4">
                 <UnresolvedChoicesBlock stored={stored} panelVariant="nested" />
                 <SkillsCard stored={stored} />
+                <ProficienciesCard stored={stored} />
             </div>
 
             <div className="flex flex-col gap-4">
-                <ProficienciesCard stored={stored} />
                 <IdentitySection stored={stored} />
-                {/* <ActionsSection stored={stored} /> */}
+                <FeaturesTraitsSection stored={stored} />
             </div>
         </div>
     );

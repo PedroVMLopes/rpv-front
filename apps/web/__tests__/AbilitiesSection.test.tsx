@@ -2,8 +2,12 @@
  * @jest-environment jsdom
  */
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { NextIntlClientProvider } from "next-intl";
 import { AbilitiesSection } from "../components/characters/PlayerSheet/overview/AbilitiesSection";
+import { PortraitSection } from "../components/characters/PlayerSheet/overview/PortraitSection";
+import { DiceRollAssistant } from "../components/characters/PlayerSheet/roll/DiceRollAssistant";
+import { RollAssistantProvider } from "../components/characters/PlayerSheet/roll/RollAssistantProvider";
 import type { StoredCharacter } from "../lib/character/storedCharacter";
 import { useCharacterStore } from "../store/useCharacterStore";
 import enMessages from "../messages/en.json";
@@ -47,15 +51,26 @@ function renderSection(stored: StoredCharacter) {
 
     return render(
         <NextIntlClientProvider locale="en" messages={enMessages}>
-            <AbilitiesSection stored={stored} />
+            <RollAssistantProvider>
+                <AbilitiesSection stored={stored} />
+                <DiceRollAssistant />
+            </RollAssistantProvider>
         </NextIntlClientProvider>
     );
 }
 
-describe("AbilitiesSection", () => {
-    it("shows a full-width level-up link to the class edit step when below level 20", () => {
-        const stored = baseStored({ systemData: { characterClass: "fighter", level: 5 } });
-        renderSection(stored);
+describe("PortraitSection", () => {
+    it("shows a level-up link when below level 20", () => {
+        const stored = baseStored({
+            systemData: { characterClass: "fighter", level: 5 },
+        });
+        useCharacterStore.setState({ characters: [stored] });
+
+        render(
+            <NextIntlClientProvider locale="en" messages={enMessages}>
+                <PortraitSection stored={stored} />
+            </NextIntlClientProvider>
+        );
 
         const link = screen.getByRole("link", { name: "Level up" });
         expect(link).toHaveAttribute(
@@ -65,15 +80,40 @@ describe("AbilitiesSection", () => {
     });
 
     it("hides the level-up link at level 20", () => {
-        renderSection(
-            baseStored({
-                id: "abilities-section-maxed",
-                systemData: { characterClass: "fighter", level: 20 },
-            })
+        const stored = baseStored({
+            id: "abilities-section-maxed",
+            systemData: { characterClass: "fighter", level: 20 },
+        });
+        useCharacterStore.setState({ characters: [stored] });
+
+        render(
+            <NextIntlClientProvider locale="en" messages={enMessages}>
+                <PortraitSection stored={stored} />
+            </NextIntlClientProvider>
         );
 
         expect(
             screen.queryByRole("link", { name: "Level up" })
         ).not.toBeInTheDocument();
+    });
+});
+
+describe("AbilitiesSection", () => {
+    it("shows proficiency bonus and exploration passives", () => {
+        renderSection(baseStored());
+
+        expect(screen.getByText("Proficiency Bonus")).toBeInTheDocument();
+        expect(screen.getByText("Passive Perception")).toBeInTheDocument();
+        expect(screen.getByText("Passive Insight")).toBeInTheDocument();
+        expect(screen.getByText("Passive Investigation")).toBeInTheDocument();
+    });
+
+    it("opens an ability check from the ability card", async () => {
+        const user = userEvent.setup();
+        renderSection(baseStored());
+
+        await user.click(screen.getByRole("button", { name: "Roll Strength" }));
+
+        expect(screen.getByText("Strength — d20 +3")).toBeInTheDocument();
     });
 });

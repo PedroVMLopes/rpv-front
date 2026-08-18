@@ -102,7 +102,12 @@ const storedCharacter: StoredCharacter = {
         characterClass: "fighter",
         level: 1,
         background: "Soldier",
+        age: "Adult",
         goals: "Protect the realm",
+        personalityTraits: "I face danger head-on.",
+        ideals: "Honor",
+        bonds: "My squad",
+        flaws: "I never back down.",
     },
 };
 
@@ -183,10 +188,10 @@ describe("PlayerSheet", () => {
             screen.getByRole("heading", { name: /Sheet Hero/i })
         ).toBeInTheDocument();
         expect(screen.getByText(/Level 1 ·/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/AC 13/i)).toBeInTheDocument();
+        expect(screen.getAllByLabelText(/AC 13/i).length).toBeGreaterThan(0);
         expect(
-            screen.getByLabelText(/Hit Points 10 \/ 12/i)
-        ).toBeInTheDocument();
+            screen.getAllByLabelText(/Hit Points 10 \/ 12/i).length
+        ).toBeGreaterThan(0);
         expect(screen.getByRole("tab", { name: "Overview" })).toHaveAttribute(
             "aria-selected",
             "true"
@@ -332,23 +337,93 @@ describe("PlayerSheet", () => {
         expect(screen.queryByText("Light Armor")).not.toBeInTheDocument();
     });
 
-    it("shows goals and background on overview", () => {
+    it("shows identity, personality, and passive scores on overview", () => {
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
+        expect(screen.getByText("Adult")).toBeInTheDocument();
         expect(screen.getByText("Soldier")).toBeInTheDocument();
         expect(screen.getByText("Protect the realm")).toBeInTheDocument();
+        expect(screen.getByText("I face danger head-on.")).toBeInTheDocument();
+        expect(screen.getByText("Honor")).toBeInTheDocument();
+        expect(screen.getByText("My squad")).toBeInTheDocument();
+        expect(screen.getByText("I never back down.")).toBeInTheDocument();
+        expect(screen.getByText("Passive Perception")).toBeInTheDocument();
+        expect(screen.getByText("Passive Insight")).toBeInTheDocument();
+        expect(screen.getByText("Passive Investigation")).toBeInTheDocument();
     });
 
-    it("shows equipped weapons without spells for fighter actions", () => {
+    it("resolves catalog background name and description from selections", () => {
+        renderWithProviders(
+            <PlayerSheet
+                stored={{
+                    ...storedCharacter,
+                    id: "char-sheet-sage",
+                    selections: {
+                        ...storedCharacter.selections,
+                        background: "sage",
+                    },
+                    systemData: {
+                        ...storedCharacter.systemData,
+                        background: "Soldier",
+                    },
+                }}
+            />
+        );
+
+        expect(screen.getByText("Sage")).toBeInTheDocument();
+        expect(
+            screen.getByText(/lore of the multiverse/i)
+        ).toBeInTheDocument();
+        expect(screen.queryByText("Soldier")).not.toBeInTheDocument();
+    });
+
+    it("lists class features as reminders without a use action", () => {
+        renderWithProviders(
+            <PlayerSheet
+                stored={{
+                    ...storedCharacter,
+                    id: "char-sheet-traits",
+                    selections: {
+                        ...storedCharacter.selections,
+                        race: "elf",
+                    },
+                    grants: [
+                        ...storedCharacter.grants,
+                        {
+                            id: "race-elf-base-ability-Fey Ancestry",
+                            kind: "ability",
+                            ref: "Fey Ancestry",
+                            name: "Fey Ancestry",
+                            source: { type: "race", id: "elf" },
+                        },
+                        {
+                            id: "class-fighter-2-ability-Action Surge",
+                            kind: "ability",
+                            ref: "Action Surge",
+                            name: "Action Surge",
+                            source: { type: "class", id: "fighter" },
+                        },
+                    ],
+                }}
+            />
+        );
+
+        expect(screen.getByText("Features & Traits")).toBeInTheDocument();
+        expect(screen.getByText("Fey Ancestry")).toBeInTheDocument();
+        expect(screen.getByText("Action Surge")).toBeInTheDocument();
+        expect(
+            screen.queryByRole("button", { name: /Use: Action Surge/i })
+        ).not.toBeInTheDocument();
+    });
+
+    it("does not list combat actions on overview", () => {
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
-        expect(screen.getByText("Actions")).toBeInTheDocument();
-        expect(screen.getByText("Longsword")).toBeInTheDocument();
-        expect(screen.getByText(/Melee main/)).toBeInTheDocument();
-        expect(screen.getByText(/1d8\+3 slashing/)).toBeInTheDocument();
-        expect(screen.getByText("Equipped: Leather Armor")).toBeInTheDocument();
-        expect(screen.queryByText("Fire Bolt")).not.toBeInTheDocument();
-        expect(screen.queryByText("Magic Missile")).not.toBeInTheDocument();
+        expect(screen.queryByText("Attacks & Actions")).not.toBeInTheDocument();
+        expect(screen.queryByText(/Melee main/)).not.toBeInTheDocument();
+        expect(
+            screen.queryByRole("button", { name: "Roll Longsword" })
+        ).not.toBeInTheDocument();
     });
 
     it("opens longsword attack roll from combat tab", async () => {
@@ -397,13 +472,13 @@ describe("PlayerSheet", () => {
         const overviewTab = screen.getByRole("tab", { name: "Overview" });
         const combatTab = screen.getByRole("tab", { name: "Combat" });
 
-        expect(overviewTab).toHaveClass("bg-background");
-        expect(overviewTab).toHaveClass("border-b-background");
-        expect(combatTab).toHaveClass("bg-muted");
-        expect(combatTab).not.toHaveClass("bg-background");
+        expect(overviewTab).toHaveClass("bg-muted");
+        expect(overviewTab).toHaveClass("border-b-0");
+        expect(combatTab).toHaveClass("bg-background");
+        expect(combatTab).not.toHaveClass("border-b-0");
 
         const tabPanel = screen.getByRole("tabpanel");
-        expect(tabPanel).toHaveClass("bg-background");
+        expect(tabPanel).toHaveClass("bg-muted");
     });
 
     it("renders overview panels on the card nested surface", () => {

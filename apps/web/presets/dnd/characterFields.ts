@@ -53,11 +53,39 @@ export const dndCharacterFields = {
             attributes: dndAbilityFieldAttributes
         },
         {
+            name: "personalityTraits",
+            labelKey: "fields.personalityTraits",
+            type: "text",
+            group: "general",
+            order: 2
+        },
+        {
+            name: "ideals",
+            labelKey: "fields.ideals",
+            type: "text",
+            group: "general",
+            order: 3
+        },
+        {
+            name: "bonds",
+            labelKey: "fields.bonds",
+            type: "text",
+            group: "general",
+            order: 4
+        },
+        {
+            name: "flaws",
+            labelKey: "fields.flaws",
+            type: "text",
+            group: "general",
+            order: 5
+        },
+        {
             name: "goals",
             labelKey: "fields.goals",
             type: "text",
             group: "general",
-            order: 2
+            order: 6
         }
     ],
     player: [

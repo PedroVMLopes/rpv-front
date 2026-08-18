@@ -1,21 +1,24 @@
 "use client";
 
 import { useMemo } from "react";
+import { Dices } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
     computeSkillModifiers,
     formatModifier,
     readCharacterLevel,
 } from "@/lib/character/skillModifiers";
-import {
-    computePassivePerception,
-    getProficiencyBonus,
-} from "@/lib/character/derivedStats";
+import { getProficiencyBonus } from "@/lib/character/derivedStats";
+import { computePassiveScore } from "@/lib/character/passiveScores";
 import { getResolvedStatDisplay } from "@/lib/character/presetStats";
 import { getSystemRules } from "@/lib/character/systemRules";
+import { buildAbilityCheckRollRequest } from "@/lib/roll/buildRollRequest";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useCharacterStore } from "@/store/useCharacterStore";
+import { Button } from "@/components/ui/button";
 import { OverviewPanel } from "./OverviewPanel";
+import { useRollAssistant } from "../roll/RollAssistantProvider";
+import { sheetInset } from "../playerSheetSurfaces";
 import { cn } from "@/lib/utils";
 
 type AbilitiesSectionProps = {
@@ -24,8 +27,10 @@ type AbilitiesSectionProps = {
 
 export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
     const t = useTranslations();
+    const tRoll = useTranslations("playerSheet.roll");
     const getCharacterProps = useCharacterStore((state) => state.getCharacterProps);
     const getResolvedStats = useCharacterStore((state) => state.getResolvedStats);
+    const { openRollRequest } = useRollAssistant();
 
     const props = getCharacterProps(stored.id);
     const resolved = getResolvedStats(stored.id);
@@ -51,17 +56,24 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
     const abilityModifier = getSystemRules(stored.system).abilityModifier;
     const level = readCharacterLevel(stored.systemData);
     const profBonus = getProficiencyBonus(stored.system, level);
-    const passivePerception = computePassivePerception(
-        stored.system,
-        skillModifiers
-    );
+    const passives = {
+        perception: computePassiveScore(skillModifiers, "perception"),
+        insight: computePassiveScore(skillModifiers, "insight"),
+        investigation: computePassiveScore(skillModifiers, "investigation"),
+    };
 
     return (
         <OverviewPanel contentClassName="overflow-visible">
             <div className="grid grid-cols-3 gap-x-2 gap-y-3 pt-1">
                 {display.abilities.map((ability) => {
                     const mod = abilityModifier(ability.resolved);
-                    const label = ability.labelKey
+                    const label = ability.shortLabelKey
+                        ? t(ability.shortLabelKey)
+                        : (ability.shortLabel ??
+                          (ability.labelKey
+                              ? t(ability.labelKey)
+                              : (ability.label ?? ability.name)));
+                    const rollLabel = ability.labelKey
                         ? t(ability.labelKey)
                         : (ability.label ?? ability.name);
 
@@ -71,12 +83,12 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
                                 className={cn(
                                     "relative flex min-h-24 flex-col items-center rounded-xl bg-accent px-1.5 pb-2 pt-3 text-accent-foreground shadow-xs border-custom border-background"
                                 )}
-                                aria-label={`${label} ${ability.resolved} ${formatModifier(mod)}`}
+                                aria-label={`${rollLabel} ${ability.resolved} ${formatModifier(mod)}`}
                             >
                                 <span
                                     className={cn(
                                         "absolute left-1/2 top-0 z-10 -translate-x-1/2 -translate-y-1/2",
-                                        "rounded-lg bg-primary text-primary-foreground px-2 py-0.5 font-semibold tabular-nums leading-none",
+                                        "rounded-lg bg-primary text-primary-foreground px-2 py-0.5 font-semibold leading-none",
                                         "border-2"
                                     )}
                                 >
@@ -85,8 +97,28 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
                                 <span className="flex flex-1 items-center text-2xl font-bold font-serif tracking-wide leading-none sm:text-3xl">
                                     {formatModifier(mod)}
                                 </span>
-                                <span className="text-center text-sm font-semibold leading-tight">
+                                <span className="flex items-center gap-0.5 text-center text-sm font-semibold leading-tight">
                                     {label}
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="icon"
+                                        className="size-7 shrink-0 text-accent-foreground"
+                                        aria-label={tRoll("rollAction", {
+                                            label: rollLabel,
+                                        })}
+                                        onClick={() =>
+                                            openRollRequest(
+                                                buildAbilityCheckRollRequest(
+                                                    ability.statKey,
+                                                    rollLabel,
+                                                    mod
+                                                )
+                                            )
+                                        }
+                                    >
+                                        <Dices className="size-3.5" aria-hidden />
+                                    </Button>
                                 </span>
                             </div>
                         </div>
@@ -94,7 +126,7 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
                 })}
             </div>
 
-            <div className="mt-2 grid grid-cols-1 gap-1 text-sm sm:grid-cols-2">
+            <div className="mt-2 flex flex-col gap-1 text-sm">
                 <div
                     className={cn(
                         "flex flex-row gap-1.5 rounded-lg bg-accent p-2 text-accent-foreground shadow-xs border-custom border-background"
@@ -105,12 +137,26 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
                     </span>
                     <span className="font-bold">{formatModifier(profBonus)}</span>
                 </div>
-                {/* <div className={cn("rounded-lg p-2 flex flex-row gap-1.5 bg-popover text-popover-foreground border-2 border-border/50")}>
-                    <span className="text-popover-foreground/70">
-                        {t("character.passivePerception")}{" "}
-                    </span>
-                    <span className="font-bold">{passivePerception}</span>
-                </div> */}
+                {(
+                    [
+                        ["passivePerception", passives.perception],
+                        ["passiveInsight", passives.insight],
+                        ["passiveInvestigation", passives.investigation],
+                    ] as const
+                ).map(([labelKey, value]) => (
+                    <div
+                        key={labelKey}
+                        className={cn(
+                            "flex items-center justify-between gap-2 rounded-lg px-3 py-2",
+                            sheetInset
+                        )}
+                    >
+                        <span className="text-muted-foreground">
+                            {t(`character.${labelKey}`)}
+                        </span>
+                        <span className="font-bold tabular-nums">{value}</span>
+                    </div>
+                ))}
             </div>
         </OverviewPanel>
     );

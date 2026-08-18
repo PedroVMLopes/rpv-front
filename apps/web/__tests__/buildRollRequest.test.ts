@@ -1,4 +1,5 @@
 import {
+    buildAbilityCheckRollRequest,
     buildSavingThrowRollRequest,
     buildSkillRollRequest,
     resolveD20TestTotal,
@@ -42,6 +43,22 @@ describe("buildRollRequest", () => {
             label: "Strength",
             die: 20,
             modifier: 4,
+        });
+    });
+
+    it("builds an ability check d20 test request", () => {
+        const request = buildAbilityCheckRollRequest(
+            "strength",
+            "Strength",
+            3
+        );
+
+        expect(request).toEqual({
+            kind: "d20_test",
+            id: "ability:strength",
+            label: "Strength",
+            die: 20,
+            modifier: 3,
         });
     });
 });

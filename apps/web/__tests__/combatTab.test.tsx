@@ -131,7 +131,7 @@ describe("CombatTab", () => {
         });
     });
 
-    it("shows defense saves, passives, and empty conditions", () => {
+    it("shows defense saves and empty conditions without exploration passives", () => {
         renderWithProviders(
             <CombatTabConnected characterId={storedCharacter.id} />
         );
@@ -139,8 +139,8 @@ describe("CombatTab", () => {
         expect(screen.getByText("Defense & Saves")).toBeInTheDocument();
         expect(screen.getByText("Strength")).toBeInTheDocument();
         expect(screen.getByText("Prof")).toBeInTheDocument();
-        expect(screen.getByText("Passive Perception")).toBeInTheDocument();
-        expect(screen.getByText("Passive Insight")).toBeInTheDocument();
+        expect(screen.queryByText("Passive Perception")).not.toBeInTheDocument();
+        expect(screen.queryByText("Passive Insight")).not.toBeInTheDocument();
         expect(
             screen.getByText("Conditions & Immunities")
         ).toBeInTheDocument();
@@ -162,9 +162,6 @@ describe("CombatTab", () => {
         expect(
             screen.getByRole("button", { name: "Roll Longsword" })
         ).toBeInTheDocument();
-        expect(
-            screen.queryByRole("button", { name: "Roll Fire Bolt" })
-        ).not.toBeInTheDocument();
         expect(
             screen.getByRole("button", { name: /Use: Second Wind/i })
         ).toBeInTheDocument();

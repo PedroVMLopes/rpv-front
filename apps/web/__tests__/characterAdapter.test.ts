@@ -16,6 +16,10 @@ describe("characterAdapter system-agnostic mapping", () => {
         level: 3,
         characterClass: "Fighter",
         goals: "Find the dragon",
+        personalityTraits: "I quote ancient texts.",
+        ideals: "Knowledge.",
+        bonds: "My library.",
+        flaws: "I speak without a filter.",
         attributes: [
             { name: "strength", value: 14 },
             { name: "dexterity", value: 10 },
@@ -39,6 +43,10 @@ describe("characterAdapter system-agnostic mapping", () => {
         expect(stored.resources.hp).toBe(8);
         expect(stored.systemData.level).toBe(3);
         expect(stored.systemData.goals).toBe("Find the dragon");
+        expect(stored.systemData.personalityTraits).toBe("I quote ancient texts.");
+        expect(stored.systemData.ideals).toBe("Knowledge.");
+        expect(stored.systemData.bonds).toBe("My library.");
+        expect(stored.systemData.flaws).toBe("I speak without a filter.");
         expect(stored.systemData).not.toHaveProperty("characterClass");
         expect(stored.baseStats.strength).toBe(14);
         expect(stored.baseStats.hitPoints).toBe(10);
@@ -74,6 +82,11 @@ describe("characterAdapter system-agnostic mapping", () => {
         expect(flattened.ac).toBe(12);
         expect(flattened.characterClass).toBe("fighter");
         expect(flattened.level).toBe(3);
+        expect(flattened.goals).toBe("Find the dragon");
+        expect(flattened.personalityTraits).toBe("I quote ancient texts.");
+        expect(flattened.ideals).toBe("Knowledge.");
+        expect(flattened.bonds).toBe("My library.");
+        expect(flattened.flaws).toBe("I speak without a filter.");
         expect(flattened.attributes).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({ name: "strength", value: 14 }),

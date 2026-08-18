@@ -4,7 +4,6 @@ import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { ClassResourcesPanel } from "../combat/ClassResourcesPanel";
 import { AttacksActionsPanel } from "../combat/AttacksActionsPanel";
 import { DefenseSavesPanel } from "../combat/DefenseSavesPanel";
-import { PassiveStatsPanel } from "../combat/PassiveStatsPanel";
 import { ConditionsPanel } from "../combat/ConditionsPanel";
 
 type CombatTabProps = {
@@ -20,7 +19,6 @@ export function CombatTab({ stored }: CombatTabProps) {
             </div>
             <div className="flex flex-col gap-4">
                 <DefenseSavesPanel stored={stored} />
-                <PassiveStatsPanel stored={stored} />
                 <ConditionsPanel />
             </div>
         </div>

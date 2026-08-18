@@ -170,7 +170,11 @@ export function RaceTraitsBlock({
                     <li key={trait.slug}>
                         <details className={cn("group rounded-xl", sheetInset)}>
                             <summary className="flex cursor-pointer list-none items-center justify-between gap-2 rounded-xl px-3 py-2 text-sm font-semibold marker:content-none [&::-webkit-details-marker]:hidden">
-                                <span>{trait.name}</span>
+                                <span>
+                                    {trait.slug === "vision"
+                                        ? t("vision")
+                                        : trait.name}
+                                </span>
                                 <FaChevronDown
                                     className="size-3 shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
                                     aria-hidden

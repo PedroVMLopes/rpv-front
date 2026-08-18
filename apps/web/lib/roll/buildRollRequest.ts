@@ -1,5 +1,6 @@
 import type { DieSides } from "./diceRoll";
 import { parseDiceNotation } from "./parseDiceNotation";
+import type { StatKey } from "@rpv/domain";
 import type { SavingThrowModifier } from "@/lib/character/savingThrowModifiers";
 import type { SkillModifier } from "@/lib/character/skillModifiers";
 import type { SpellAction, WeaponAction } from "@/lib/character/combatActions";
@@ -33,6 +34,20 @@ export function buildSavingThrowRollRequest(
         label,
         die: 20,
         modifier: save.modifier,
+    };
+}
+
+export function buildAbilityCheckRollRequest(
+    stat: StatKey,
+    label: string,
+    modifier: number
+): D20TestRequest {
+    return {
+        kind: "d20_test",
+        id: `ability:${stat}`,
+        label,
+        die: 20,
+        modifier,
     };
 }
 
