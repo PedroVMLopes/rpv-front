@@ -18,11 +18,11 @@ const DISPOSITION_SLIDER_RANGE_CLASSES = [
 ] as const;
 
 const DISPOSITION_SLIDER_THUMB_CLASSES = [
-    "size-2.5 border-chart-1 bg-chart-1",
-    "size-2.5 border-chart-2 bg-chart-2",
-    "size-2.5 border-chart-3 bg-chart-3",
-    "size-2.5 border-chart-4 bg-chart-4",
-    "size-2.5 border-chart-5 bg-chart-5",
+    "size-2.5 border-chart-1 bg-chart-1 disabled:opacity-0",
+    "size-2.5 border-chart-2 bg-chart-2 disabled:opacity-0",
+    "size-2.5 border-chart-3 bg-chart-3 disabled:opacity-0",
+    "size-2.5 border-chart-4 bg-chart-4 disabled:opacity-0",
+    "size-2.5 border-chart-5 bg-chart-5 disabled:opacity-0",
 ] as const;
 
 type DispositionAxisSliderProps = {
