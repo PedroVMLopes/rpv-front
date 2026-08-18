@@ -3,6 +3,7 @@ import type { StoredCharacter } from "../lib/character/storedCharacter";
 import {
     listOverviewOriginFacts,
     listOverviewPersonalityFields,
+    listPersonaPersonalityFields,
     resolveOverviewBackground,
 } from "../lib/character/overviewIdentity";
 
@@ -79,6 +80,29 @@ describe("listOverviewPersonalityFields", () => {
         expect(fields).toEqual([
             { key: "personalityTraits", value: "I laugh loudly." },
             { key: "bonds", value: "My crew" },
+            { key: "goals", value: "See the ocean" },
+        ]);
+    });
+});
+
+describe("listPersonaPersonalityFields", () => {
+    it("returns every personality field including empty values", () => {
+        const fields = listPersonaPersonalityFields(
+            baseStored({
+                systemData: {
+                    personalityTraits: "  I laugh loudly.  ",
+                    ideals: "",
+                    bonds: "My crew",
+                    goals: "See the ocean",
+                },
+            })
+        );
+
+        expect(fields).toEqual([
+            { key: "personalityTraits", value: "I laugh loudly." },
+            { key: "ideals", value: null },
+            { key: "bonds", value: "My crew" },
+            { key: "flaws", value: null },
             { key: "goals", value: "See the ocean" },
         ]);
     });

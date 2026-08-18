@@ -624,22 +624,6 @@
           "left": "Serious",
           "right": "Easygoing"
         }
-      },
-      "placeholders": {
-        "presence": {
-          "age": "Adult",
-          "build": "Average",
-          "attire": "Worn travel clothes of rough cloth, mended more than once and without ornament.",
-          "marks": "A thin scar across the left brow.",
-          "voice": "Low and even, with a dry laugh."
-        },
-        "personality": {
-          "personalityTraits": "I measure twice before I speak.",
-          "ideals": "The work matters more than the credit.",
-          "bonds": "I still write to the person who trained me.",
-          "flaws": "I assume every kindness hides a price.",
-          "goals": "See one plan through to the end."
-        }
       }
     }
   },

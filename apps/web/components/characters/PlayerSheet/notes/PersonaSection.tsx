@@ -4,10 +4,15 @@ import { useTranslations } from "next-intl";
 import { Slider } from "@/components/ui/slider";
 import { OverviewPanel } from "@/components/characters/PlayerSheet/overview/OverviewPanel";
 import { sheetInset } from "@/components/characters/PlayerSheet/playerSheetSurfaces";
+import {
+    listPersonaPersonalityFields,
+    readSystemDataString,
+} from "@/lib/character/overviewIdentity";
+import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { cn } from "@/lib/utils";
 import {
     PERSONA_DISPOSITION_AXES,
-    PERSONA_PERSONALITY_FIELD_KEYS,
+    PERSONA_EMPTY_DISPLAY,
     PERSONA_PRESENCE_FIELD_KEYS,
     PERSONA_SLIDER_MAX,
     PERSONA_SLIDER_MIN,
@@ -24,7 +29,26 @@ const DISPOSITION_SLIDER_RANGE_CLASSES = [
     "[&_[data-slot=slider-range]]:bg-chart-5",
 ] as const;
 
-function PresenceCard() {
+function displayOrEmpty(value: string | null): string {
+    return value ?? PERSONA_EMPTY_DISPLAY;
+}
+
+function presenceDisplayValue(
+    stored: StoredCharacter,
+    key: PersonaPresenceFieldKey
+): string {
+    if (key === "age") {
+        return displayOrEmpty(readSystemDataString(stored.systemData, "age"));
+    }
+
+    return PERSONA_EMPTY_DISPLAY;
+}
+
+type PersonaCardProps = {
+    stored: StoredCharacter;
+};
+
+function PresenceCard({ stored }: PersonaCardProps) {
     const t = useTranslations("playerSheet.persona");
     const tFields = useTranslations("fields");
 
@@ -49,7 +73,7 @@ function PresenceCard() {
                     >
                         <dt className="text-muted-foreground">{labelFor(key)}</dt>
                         <dd className="text-right font-medium">
-                            {t(`placeholders.presence.${key}`)}
+                            {presenceDisplayValue(stored, key)}
                         </dd>
                     </div>
                 ))}
@@ -99,22 +123,20 @@ function DispositionCard() {
     );
 }
 
-function PersonalityCard() {
+function PersonalityCard({ stored }: PersonaCardProps) {
     const t = useTranslations("playerSheet");
     const tFields = useTranslations("fields");
-    const tPersona = useTranslations("playerSheet.persona");
+    const fields = listPersonaPersonalityFields(stored);
 
     return (
         <OverviewPanel title={t("personalityTitle")}>
             <div className="flex flex-col gap-3">
-                {PERSONA_PERSONALITY_FIELD_KEYS.map((key) => (
-                    <div key={key}>
+                {fields.map((field) => (
+                    <div key={field.key}>
                         <p className="mb-1 text-xs font-semibold uppercase text-muted-foreground">
-                            {tFields(key)}
+                            {tFields(field.key)}
                         </p>
-                        <p className="text-sm">
-                            {tPersona(`placeholders.personality.${key}`)}
-                        </p>
+                        <p className="text-sm">{displayOrEmpty(field.value)}</p>
                     </div>
                 ))}
             </div>
@@ -122,14 +144,18 @@ function PersonalityCard() {
     );
 }
 
-export function PersonaSection() {
+type PersonaSectionProps = {
+    stored: StoredCharacter;
+};
+
+export function PersonaSection({ stored }: PersonaSectionProps) {
     return (
         <div className="flex flex-col gap-4">
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6">
-                <PresenceCard />
+                <PresenceCard stored={stored} />
                 <DispositionCard />
             </div>
-            <PersonalityCard />
+            <PersonalityCard stored={stored} />
         </div>
     );
 }

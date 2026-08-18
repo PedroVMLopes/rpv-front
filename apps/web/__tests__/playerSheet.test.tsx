@@ -509,7 +509,7 @@ describe("PlayerSheet", () => {
         expect(screen.getByText("Coming soon")).toBeInTheDocument();
     });
 
-    it("shows persona placeholders and a notes coming-soon block", async () => {
+    it("shows stored persona fields on notes and a coming-soon notes block", async () => {
         const user = userEvent.setup();
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
@@ -519,29 +519,68 @@ describe("PlayerSheet", () => {
         expect(screen.getByText("Disposition")).toBeInTheDocument();
         expect(screen.getByText("Personality")).toBeInTheDocument();
         expect(screen.getByText("Apparent Age")).toBeInTheDocument();
+        expect(screen.getByText("Adult")).toBeInTheDocument();
         expect(screen.getByText("Attire")).toBeInTheDocument();
+        expect(screen.getByText("Personality traits")).toBeInTheDocument();
+        expect(screen.getByText("I face danger head-on.")).toBeInTheDocument();
+        expect(screen.getByText("Ideals")).toBeInTheDocument();
+        expect(screen.getByText("Honor")).toBeInTheDocument();
+        expect(screen.getByText("Bonds")).toBeInTheDocument();
+        expect(screen.getByText("My squad")).toBeInTheDocument();
+        expect(screen.getByText("Flaws")).toBeInTheDocument();
+        expect(screen.getByText("I never back down.")).toBeInTheDocument();
+        expect(screen.getByText("Goals")).toBeInTheDocument();
+        expect(screen.getByText("Protect the realm")).toBeInTheDocument();
         expect(
-            screen.getByText(
+            screen.queryByText(
                 "Worn travel clothes of rough cloth, mended more than once and without ornament."
             )
-        ).toBeInTheDocument();
-        expect(screen.getByText("Personality traits")).toBeInTheDocument();
-        expect(screen.getByText("Ideals")).toBeInTheDocument();
-        expect(screen.getByText("Bonds")).toBeInTheDocument();
-        expect(screen.getByText("Flaws")).toBeInTheDocument();
-        expect(screen.getByText("Goals")).toBeInTheDocument();
-        expect(screen.queryByText("Protect the realm")).not.toBeInTheDocument();
-        expect(screen.queryByText("Honor")).not.toBeInTheDocument();
+        ).not.toBeInTheDocument();
+        expect(screen.getAllByText("—")).toHaveLength(4);
 
         const sliders = screen
             .getAllByRole("slider")
             .filter((slider) => slider.getAttribute("data-slot") === "slider-thumb");
-        expect(sliders).toHaveLength(6);
+        expect(sliders).toHaveLength(5);
         for (const slider of sliders) {
             expect(slider).toHaveAttribute("data-disabled");
         }
 
         expect(screen.getByText("Coming soon")).toBeInTheDocument();
+    });
+
+    it("shows dashes for empty persona fields on notes", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(
+            <PlayerSheet
+                stored={{
+                    ...storedCharacter,
+                    id: "char-sheet-empty-persona",
+                    systemData: {
+                        ...storedCharacter.systemData,
+                        age: "",
+                        goals: "   ",
+                        personalityTraits: "",
+                        ideals: undefined,
+                        bonds: null,
+                        flaws: "",
+                    },
+                }}
+            />
+        );
+
+        await user.click(screen.getByRole("tab", { name: "Notes" }));
+
+        expect(screen.getByText("Apparent Age")).toBeInTheDocument();
+        expect(screen.getByText("Personality traits")).toBeInTheDocument();
+        expect(screen.getByText("Ideals")).toBeInTheDocument();
+        expect(screen.getByText("Bonds")).toBeInTheDocument();
+        expect(screen.getByText("Flaws")).toBeInTheDocument();
+        expect(screen.getByText("Goals")).toBeInTheDocument();
+        expect(screen.queryByText("Adult")).not.toBeInTheDocument();
+        expect(screen.queryByText("Protect the realm")).not.toBeInTheDocument();
+        expect(screen.queryByText("Honor")).not.toBeInTheDocument();
+        expect(screen.getAllByText("—")).toHaveLength(10);
     });
 
     it("uses inverted tab surfaces and a background-colored tab panel", () => {

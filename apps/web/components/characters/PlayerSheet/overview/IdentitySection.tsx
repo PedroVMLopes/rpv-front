@@ -4,8 +4,6 @@ import { useTranslations } from "next-intl";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import {
     listOverviewOriginFacts,
-    listOverviewPersonalityFields,
-    resolveOverviewBackground,
     type OverviewOriginFact,
 } from "@/lib/character/overviewIdentity";
 import { useContentLocale } from "@/store/useContentLocale";
@@ -85,45 +83,6 @@ export function IdentitySummarySection({ stored }: IdentitySummarySectionProps) 
                     );
                 })}
             </dl>
-        </OverviewPanel>
-    );
-}
-
-type IdentitySectionProps = {
-    stored: StoredCharacter;
-};
-
-export function IdentitySection({ stored }: IdentitySectionProps) {
-    const tFields = useTranslations("fields");
-    const tSheet = useTranslations("playerSheet");
-    const background = resolveOverviewBackground(stored);
-    const personalityFields = listOverviewPersonalityFields(stored);
-    const backgroundDescription = background?.description;
-
-    if (!backgroundDescription && personalityFields.length === 0) {
-        return null;
-    }
-
-    return (
-        <OverviewPanel title={tSheet("personalityTitle")}>
-            <div className="flex flex-col gap-3">
-                {backgroundDescription ? (
-                    <div>
-                        <p className="mb-1 text-xs font-semibold uppercase text-muted-foreground">
-                            {tFields("background")}
-                        </p>
-                        <p className="text-sm">{backgroundDescription}</p>
-                    </div>
-                ) : null}
-                {personalityFields.map((field) => (
-                    <div key={field.key}>
-                        <p className="mb-1 text-xs font-semibold uppercase text-muted-foreground">
-                            {tFields(field.key)}
-                        </p>
-                        <p className="text-sm">{field.value}</p>
-                    </div>
-                ))}
-            </div>
         </OverviewPanel>
     );
 }

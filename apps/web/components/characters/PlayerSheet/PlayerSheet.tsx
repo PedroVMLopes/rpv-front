@@ -46,7 +46,7 @@ export function PlayerSheet({ stored }: PlayerSheetProps) {
                         <InventoryTab stored={stored} />
                     ) : null}
                     {activeTab === "magic" ? <MagicTab /> : null}
-                    {activeTab === "notes" ? <NotesTab /> : null}
+                    {activeTab === "notes" ? <NotesTab stored={stored} /> : null}
                 </main>
                 <DiceRollAssistant />
             </div>

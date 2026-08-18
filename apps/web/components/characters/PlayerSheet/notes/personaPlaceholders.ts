@@ -1,5 +1,3 @@
-import { OVERVIEW_PERSONALITY_FIELD_KEYS } from "@/lib/character/overviewIdentity";
-
 export const PERSONA_PRESENCE_FIELD_KEYS = [
     "age",
     "build",
@@ -22,7 +20,7 @@ export const PERSONA_DISPOSITION_AXES = [
 export type PersonaDispositionAxisKey =
     (typeof PERSONA_DISPOSITION_AXES)[number]["key"];
 
-export const PERSONA_PERSONALITY_FIELD_KEYS = OVERVIEW_PERSONALITY_FIELD_KEYS;
+export const PERSONA_EMPTY_DISPLAY = "—";
 
 export const PERSONA_SLIDER_MIN = 1;
 export const PERSONA_SLIDER_MAX = 20;

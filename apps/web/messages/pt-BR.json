@@ -624,22 +624,6 @@
           "left": "Sério",
           "right": "Descontraído"
         }
-      },
-      "placeholders": {
-        "presence": {
-          "age": "Adulto",
-          "build": "Mediano",
-          "attire": "Roupas de viagem gastas, de pano grosso, remendadas mais de uma vez e sem adorno.",
-          "marks": "Uma cicatriz fina na sobrancelha esquerda.",
-          "voice": "Baixa e pausada, com um riso seco."
-        },
-        "personality": {
-          "personalityTraits": "Meço duas vezes antes de falar.",
-          "ideals": "O trabalho importa mais do que o crédito.",
-          "bonds": "Ainda escrevo para quem me treinou.",
-          "flaws": "Assumo que toda gentileza esconde um preço.",
-          "goals": "Levar um plano até o fim."
-        }
       }
     }
   },

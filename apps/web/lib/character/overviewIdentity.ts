@@ -79,14 +79,22 @@ export function resolveOverviewBackground(
 export function listOverviewPersonalityFields(
     stored: StoredCharacter
 ): Array<{ key: OverviewPersonalityFieldKey; value: string }> {
-    return OVERVIEW_PERSONALITY_FIELD_KEYS.flatMap((key) => {
-        const value = readSystemDataString(stored.systemData, key);
-        if (!value) {
+    return listPersonaPersonalityFields(stored).flatMap((field) => {
+        if (!field.value) {
             return [];
         }
 
-        return [{ key, value }];
+        return [{ key: field.key, value: field.value }];
     });
+}
+
+export function listPersonaPersonalityFields(
+    stored: StoredCharacter
+): Array<{ key: OverviewPersonalityFieldKey; value: string | null }> {
+    return OVERVIEW_PERSONALITY_FIELD_KEYS.map((key) => ({
+        key,
+        value: readSystemDataString(stored.systemData, key),
+    }));
 }
 
 export type OverviewOriginFact =
