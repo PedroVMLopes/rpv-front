@@ -3,8 +3,9 @@ import { OVERVIEW_PERSONALITY_FIELD_KEYS } from "@/lib/character/overviewIdentit
 export const PERSONA_PRESENCE_FIELD_KEYS = [
     "age",
     "build",
-    "marks",
     "voice",
+    "marks",
+    "attire",
 ] as const;
 
 export type PersonaPresenceFieldKey =

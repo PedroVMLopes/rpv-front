@@ -519,6 +519,12 @@ describe("PlayerSheet", () => {
         expect(screen.getByText("Disposition")).toBeInTheDocument();
         expect(screen.getByText("Personality")).toBeInTheDocument();
         expect(screen.getByText("Apparent Age")).toBeInTheDocument();
+        expect(screen.getByText("Attire")).toBeInTheDocument();
+        expect(
+            screen.getByText(
+                "Worn travel clothes of rough cloth, mended more than once and without ornament."
+            )
+        ).toBeInTheDocument();
         expect(screen.getByText("Personality traits")).toBeInTheDocument();
         expect(screen.getByText("Ideals")).toBeInTheDocument();
         expect(screen.getByText("Bonds")).toBeInTheDocument();

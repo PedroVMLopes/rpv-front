@@ -599,6 +599,7 @@
       "notesBlockTitle": "Anotações",
       "presenceFields": {
         "build": "Porte",
+        "attire": "Vestimenta",
         "marks": "Marcas",
         "voice": "Voz"
       },
@@ -632,6 +633,7 @@
         "presence": {
           "age": "Adulto",
           "build": "Mediano",
+          "attire": "Roupas de viagem gastas, de pano grosso, remendadas mais de uma vez e sem adorno.",
           "marks": "Uma cicatriz fina na sobrancelha esquerda.",
           "voice": "Baixa e pausada, com um riso seco."
         },

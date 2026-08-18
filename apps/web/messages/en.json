@@ -599,6 +599,7 @@
       "notesBlockTitle": "Notes",
       "presenceFields": {
         "build": "Build",
+        "attire": "Attire",
         "marks": "Distinguishing marks",
         "voice": "Voice"
       },
@@ -632,6 +633,7 @@
         "presence": {
           "age": "Adult",
           "build": "Average",
+          "attire": "Worn travel clothes of rough cloth, mended more than once and without ornament.",
           "marks": "A thin scar across the left brow.",
           "voice": "Low and even, with a dry laugh."
         },
