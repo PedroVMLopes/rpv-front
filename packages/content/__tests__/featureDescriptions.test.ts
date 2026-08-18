@@ -56,4 +56,23 @@ describe("getAbilityFeatureDescription", () => {
             )
         ).toContain("estudioso ou arquivo");
     });
+
+    it("returns curated acolyte feature description in English", () => {
+        expect(
+            getAbilityFeatureDescription("Shelter of the Faithful", {
+                type: "background",
+                id: "acolyte",
+            })
+        ).toContain("free healing and care");
+    });
+
+    it("returns localized acolyte feature description for pt-BR", () => {
+        expect(
+            getAbilityFeatureDescription(
+                "Shelter of the Faithful",
+                { type: "background", id: "acolyte" },
+                "pt-BR"
+            )
+        ).toContain("cura e cuidados gratuitos");
+    });
 });

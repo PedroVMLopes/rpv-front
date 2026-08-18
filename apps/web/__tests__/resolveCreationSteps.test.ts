@@ -266,4 +266,21 @@ describe("resolveCreationSteps", () => {
             false
         );
     });
+
+    it("includes background-choices for acolyte language picks", () => {
+        const graph = resolveCreationSteps({
+            formValues: {
+                race: "human",
+                characterClass: "fighter",
+                level: 1,
+                background: "acolyte",
+            },
+            system: "dnd",
+            contentLocale: "en",
+        });
+
+        expect(graph.steps.some((step) => step.id === "background-choices")).toBe(
+            true
+        );
+    });
 });

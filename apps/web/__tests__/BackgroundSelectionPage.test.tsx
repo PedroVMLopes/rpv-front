@@ -18,6 +18,8 @@ const SAGE_IDEAL_01 = "Truth first: a beautiful lie is still a lie.";
 const SAGE_TRAIT_01 =
     "I annotate the margins of everything I read, including tavern menus.";
 const SAGE_TRAIT_02 = "Silence makes me restless; I fill it with a question.";
+const ACOLYTE_IDEAL_02 =
+    "Charity. I always try to help those in need, regardless of what it costs me. (Good)";
 
 const identityFields = dndCharacterFields.common as FieldConfig[];
 
@@ -145,5 +147,31 @@ describe("BackgroundSelectionPage flavor pickers", () => {
         expect(
             screen.queryByRole("combobox", { name: "Ideals" })
         ).not.toBeInTheDocument();
+    });
+
+    it("shows bound Acolyte tables and writes a SRD ideal label", async () => {
+        const user = userEvent.setup();
+        render(
+            <BackgroundPageHarness defaultValues={{ background: "acolyte" }} />
+        );
+
+        expect(screen.getByRole("combobox", { name: "Ideals" })).toBeInTheDocument();
+        expect(screen.getByRole("combobox", { name: "Bonds" })).toBeInTheDocument();
+        expect(screen.getByRole("combobox", { name: "Flaws" })).toBeInTheDocument();
+        expect(
+            screen.getByRole("combobox", { name: "Personality traits (1/2)" })
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole("combobox", { name: "Personality traits (2/2)" })
+        ).toBeInTheDocument();
+
+        await user.selectOptions(
+            screen.getByRole("combobox", { name: "Ideals" }),
+            "acolyte-ideal-02"
+        );
+
+        expect(screen.getByTestId("form-output")).toHaveTextContent(
+            ACOLYTE_IDEAL_02
+        );
     });
 });

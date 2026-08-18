@@ -91,4 +91,83 @@ describe("getBackgroundGrants", () => {
             description: "Researcher",
         });
     });
+
+    it("authors acolyte skills, language picks, and Shelter of the Faithful without loot", () => {
+        const grants = getBackgroundGrants("acolyte");
+
+        expect(grants[0]).toMatchObject({
+            grantType: "skill_proficiency",
+            choose: 0,
+            options: [
+                { optionType: "skill", ref: "insight" },
+                { optionType: "skill", ref: "religion" },
+            ],
+        });
+        expect(grants[1]).toMatchObject({
+            grantType: "language",
+            choose: 2,
+        });
+        expect(grants.at(-1)).toMatchObject({
+            grantType: "ability",
+            choose: 0,
+            description: "Shelter of the Faithful",
+        });
+        expect(
+            grants.some(
+                (grant) =>
+                    grant.grantType === "inventory_item" ||
+                    grant.grantType === "currency"
+            )
+        ).toBe(false);
+    });
+});
+
+describe("acolyte flavorTables", () => {
+    const expectedRoll: Record<string, string> = {
+        "personality-traits": "d8",
+        ideals: "d6",
+        bonds: "d6",
+        flaws: "d6",
+    };
+    const expectedOptionCount: Record<string, number> = {
+        "personality-traits": 8,
+        ideals: 6,
+        bonds: 6,
+        flaws: 6,
+    };
+
+    it("authors four bound SRD flavor tables", () => {
+        const acolyte = getBackground("acolyte");
+        expect(acolyte?.slug).toBe("acolyte");
+        expect(acolyte?.flavorTables).toHaveLength(4);
+
+        const slugs = acolyte?.flavorTables?.map((table) => table.slug);
+        expect(slugs).toEqual([
+            "personality-traits",
+            "ideals",
+            "bonds",
+            "flaws",
+        ]);
+
+        for (const table of acolyte?.flavorTables ?? []) {
+            const expected = expectedTableBindTo[table.slug];
+            expect(table.bindTo).toBe(expected.bindTo);
+            expect(table.pickCount).toBe(expected.pickCount);
+            expect(table.allowCustom).toBe(true);
+            expect(table.roll).toBe(expectedRoll[table.slug]);
+            expect(table.options).toHaveLength(expectedOptionCount[table.slug]);
+        }
+    });
+
+    it("preserves flavorTables when localizing acolyte name and description", () => {
+        const acolyte = getBackground("acolyte");
+        expect(acolyte).toBeDefined();
+        const tables = acolyte!.flavorTables;
+
+        const localized = localizeCurationEntry(acolyte!, "backgrounds", "pt-BR");
+
+        expect(localized.name).toBe("Acólito");
+        expect(localized.description).toMatch(/templo/i);
+        expect(localized.flavorTables).toEqual(tables);
+    });
 });

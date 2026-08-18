@@ -93,6 +93,10 @@
     "sage": {
       "name": "Sábio",
       "description": "Você passou anos estudando o saber do multiverso. Você conhece dois idiomas adicionais à sua escolha."
+    },
+    "acolyte": {
+      "name": "Acólito",
+      "description": "Você passou a vida a serviço de um templo, como intermediário entre o sagrado e o mundo mortal. Você conhece dois idiomas adicionais à sua escolha."
     }
   },
   "classes": {
@@ -268,6 +272,9 @@
     },
     "researcher": {
       "description": "Quando surge uma questão de saber, você sabe quais livros, pessoas ou arquivos consultar. Se a resposta não estiver à mão, em geral encontra um estudioso ou arquivo disposto a ajudar na busca."
+    },
+    "shelter-of-the-faithful": {
+      "description": "Quem compartilha sua fé o respeita. Você e seus companheiros podem receber cura e cuidados gratuitos em um templo da sua fé, e você tem laços com um templo específico ao qual pode pedir ajuda que não seja perigosa."
     }
   }
 }

@@ -47,6 +47,8 @@ const dndFeatureDescriptions: Record<string, string> = {
         "On your turn, you can use a bonus action to regain hit points equal to 1d10 + your fighter level.",
     researcher:
         "When a question of lore comes up, you know which books, people, or halls to consult. If the answer is not at hand, you can usually find a scholar or archive willing to help you look.",
+    "shelter-of-the-faithful":
+        "Those who share your faith respect you. You and your companions can receive free healing and care at a temple of your faith, and you have ties to a specific temple you can call on for aid that is not hazardous.",
 };
 
 function localizedCuratedDescription(
