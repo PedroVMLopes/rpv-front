@@ -89,6 +89,12 @@
       "shortDescription": "mão espectral manipula objetos, abre recipientes destrancados ou despeja frascos"
     }
   },
+  "backgrounds": {
+    "sage": {
+      "name": "Sábio",
+      "description": "Você passou anos estudando o saber do multiverso. Você conhece dois idiomas adicionais à sua escolha."
+    }
+  },
   "classes": {
     "fighter": {
       "name": "Guerreiro"

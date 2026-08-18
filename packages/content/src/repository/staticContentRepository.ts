@@ -42,12 +42,12 @@ export class StaticContentRepository implements ContentRepository {
         return curationReaders.readClass(slug, locale);
     }
 
-    listBackgrounds() {
-        return curationReaders.readListBackgrounds();
+    listBackgrounds(locale?: Locale) {
+        return curationReaders.readListBackgrounds(locale);
     }
 
-    getBackground(slug: string) {
-        return curationReaders.readBackground(slug);
+    getBackground(slug: string, locale?: Locale) {
+        return curationReaders.readBackground(slug, locale);
     }
 
     listItems(locale?: Locale) {

@@ -131,7 +131,7 @@ function listDndSubclasses(
 
 function listDndBackgrounds(locale: Locale): CatalogSelectionEntry[] {
     return contentRepo("dnd")
-        .listBackgrounds()
+        .listBackgrounds(locale)
         .map((background) => ({
             slug: background.slug,
             title: background.name,

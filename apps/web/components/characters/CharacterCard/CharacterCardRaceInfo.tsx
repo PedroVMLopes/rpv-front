@@ -39,7 +39,8 @@ function resolveSubclassName(
 
 function resolveBackgroundName(
     backgroundSlug: string | undefined,
-    fallback: unknown
+    fallback: unknown,
+    locale: Locale
 ): string {
     const slug =
         backgroundSlug?.trim() ||
@@ -47,7 +48,7 @@ function resolveBackgroundName(
     if (!slug) {
         return "";
     }
-    return contentRepo().getBackground(slug)?.name ?? slug;
+    return contentRepo().getBackground(slug, locale)?.name ?? slug;
 }
 
 /** Compact card: subrace if present, otherwise race; background on a second line. */
@@ -61,7 +62,8 @@ export function RaceBackgroundBlock({ stored }: { stored: StoredCharacter }) {
     const primary = subraceName ?? raceName ?? "";
     const backgroundStr = resolveBackgroundName(
         stored.selections.background,
-        stored.systemData.background
+        stored.systemData.background,
+        contentLocale
     );
 
     if (!primary && !backgroundStr) {

@@ -26,7 +26,7 @@ export function buildPlayerGrantSourceFields(
 ): FieldConfig[] {
     const raceOptions = listRaceOptions(contentLocale);
     const subraceOptions = listSubraceOptions(raceSlug, contentLocale);
-    const backgroundOptions = listBackgroundOptions();
+    const backgroundOptions = listBackgroundOptions(contentLocale);
     const classOptions = listClassOptions(contentLocale);
     const subclassOptions = listSubclassOptions(classSlug, contentLocale);
     const subclassLevel = classSlug ? getClassSubclassLevel(classSlug) : undefined;

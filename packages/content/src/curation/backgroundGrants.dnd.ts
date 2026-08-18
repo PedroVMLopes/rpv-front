@@ -1,10 +1,12 @@
 import type { Grant } from "../grant/grant.types";
+import type { FlavorTable } from "./flavorTable.types";
 
 export interface BackgroundEntry {
     slug: string;
     name: string;
     description: string;
     grants: Grant[];
+    flavorTables?: FlavorTable[];
 }
 
 /**

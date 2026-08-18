@@ -68,6 +68,18 @@ Helpers: `getClassGrants(slug, level)`, `getClassGrantSourcesForLevel`,
 - `classSlug` must match the parent class.
 - `grants` (base) + optional `featuresByLevel` (e.g. L3 feature).
 
+### `BackgroundEntry` ([`backgroundGrants.dnd.ts`](src/curation/backgroundGrants.dnd.ts))
+
+- `grants` — mechanical grants (skills, languages, tools, abilities, starting loot).
+- `flavorTables?` — optional suggested narrative tables (`FlavorTable` in
+  [`flavorTable.types.ts`](src/curation/flavorTable.types.ts)). These are **not**
+  `Grant`s: they do not produce `CharacterGrant`s and do not use `grantPicks`.
+  `bindTo` is an optional form/`systemData` field name; `roll` is a UI hint
+  (`"d8"`, `"d20"`). Overlay of option labels is a later step; today locale
+  overlays only `name` / `description` of the background.
+
+Helpers: `getBackgroundGrants(slug)` (grants only), `getBackground(slug, locale?)`.
+
 ### Resource grants (deltas)
 
 Author **increments** per level; aggregation sums by `ref`:
@@ -484,7 +496,7 @@ Persist the same JSON shapes as curation/catalog types:
 |--------|------|-------|
 | Class | `ClassEntry` | `grants`, `featuresByLevel`, `hitDie`, `subclassLevel`, `spellcastingMode` |
 | Subclass | `SubclassEntry` | `classSlug`, `grants`, `featuresByLevel` |
-| Background | `BackgroundEntry` | `grants` |
+| Background | `BackgroundEntry` | `grants`, optional `flavorTables` |
 | Item | `ItemEntry` | Open5e-shaped; `grants`, weapon/armor, `stackable`, `category` |
 | Race / spell | `RaceCatalogEntry`, `SpellCatalogEntry` | Open5e-mapped catalog rows |
 

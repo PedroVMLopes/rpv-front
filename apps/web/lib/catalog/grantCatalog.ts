@@ -22,8 +22,8 @@ export function listLanguageOptions(): CatalogSelectOption[] {
     }));
 }
 
-export function listBackgroundOptions(): CatalogSelectOption[] {
-    return contentRepo().listBackgrounds().map((background) => ({
+export function listBackgroundOptions(locale?: Locale): CatalogSelectOption[] {
+    return contentRepo().listBackgrounds(locale).map((background) => ({
         value: background.slug,
         label: background.name,
     }));

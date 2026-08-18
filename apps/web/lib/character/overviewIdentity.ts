@@ -45,11 +45,12 @@ export function readSystemDataString(
 }
 
 export function resolveOverviewBackground(
-    stored: StoredCharacter
+    stored: StoredCharacter,
+    locale?: Locale
 ): OverviewBackgroundDisplay | null {
     const slug = stored.selections.background?.trim() || "";
     if (slug) {
-        const entry = contentRepo(stored.system).getBackground(slug);
+        const entry = contentRepo(stored.system).getBackground(slug, locale);
         if (entry) {
             return {
                 name: entry.name,
@@ -65,7 +66,7 @@ export function resolveOverviewBackground(
         return null;
     }
 
-    const entry = contentRepo(stored.system).getBackground(fallback);
+    const entry = contentRepo(stored.system).getBackground(fallback, locale);
     if (entry) {
         return {
             name: entry.name,
@@ -108,7 +109,7 @@ export function listOverviewOriginFacts(
     locale?: Locale
 ): OverviewOriginFact[] {
     const facts: OverviewOriginFact[] = [];
-    const background = resolveOverviewBackground(stored);
+    const background = resolveOverviewBackground(stored, locale);
     if (background) {
         facts.push({ key: "background", value: background.name });
     }

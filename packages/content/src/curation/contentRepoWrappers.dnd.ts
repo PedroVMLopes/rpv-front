@@ -13,12 +13,15 @@ export function listClasses(locale?: Locale): ClassEntry[] {
     return getContentRepository("dnd").listClasses(locale);
 }
 
-export function getBackground(slug: string): BackgroundEntry | undefined {
-    return getContentRepository("dnd").getBackground(slug);
+export function getBackground(
+    slug: string,
+    locale?: Locale
+): BackgroundEntry | undefined {
+    return getContentRepository("dnd").getBackground(slug, locale);
 }
 
-export function listBackgrounds(): BackgroundEntry[] {
-    return getContentRepository("dnd").listBackgrounds();
+export function listBackgrounds(locale?: Locale): BackgroundEntry[] {
+    return getContentRepository("dnd").listBackgrounds(locale);
 }
 
 export function getItem(

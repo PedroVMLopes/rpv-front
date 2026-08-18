@@ -27,8 +27,8 @@ export interface ContentRepository {
 
     listClasses(locale?: Locale): ClassEntry[];
     getClass(slug: string, locale?: Locale): ClassEntry | undefined;
-    listBackgrounds(): BackgroundEntry[];
-    getBackground(slug: string): BackgroundEntry | undefined;
+    listBackgrounds(locale?: Locale): BackgroundEntry[];
+    getBackground(slug: string, locale?: Locale): BackgroundEntry | undefined;
     listItems(locale?: Locale): ItemEntry[];
     getItem(slug: string, locale?: Locale): ItemEntry | undefined;
     listSubclassesForClass(classSlug: string, locale?: Locale): SubclassEntry[];

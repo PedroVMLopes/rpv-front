@@ -10,8 +10,11 @@ function localizeClass(entry: ClassEntry, locale?: Locale): ClassEntry {
     return localizeCurationEntry(entry, "classes", locale);
 }
 
-function localizeBackground(entry: BackgroundEntry): BackgroundEntry {
-    return entry;
+function localizeBackground(
+    entry: BackgroundEntry,
+    locale?: Locale
+): BackgroundEntry {
+    return localizeCurationEntry(entry, "backgrounds", locale);
 }
 
 function localizeSubclass(entry: SubclassEntry, locale?: Locale): SubclassEntry {
@@ -30,16 +33,19 @@ export function readListClasses(locale?: Locale): ClassEntry[] {
     return dndClasses.map((entry) => localizeClass(entry, locale));
 }
 
-export function readBackground(slug: string): BackgroundEntry | undefined {
+export function readBackground(
+    slug: string,
+    locale?: Locale
+): BackgroundEntry | undefined {
     const entry = dndBackgrounds.find((item) => item.slug === slug);
     if (!entry) {
         return undefined;
     }
-    return localizeBackground(entry);
+    return localizeBackground(entry, locale);
 }
 
-export function readListBackgrounds(): BackgroundEntry[] {
-    return dndBackgrounds.map((entry) => localizeBackground(entry));
+export function readListBackgrounds(locale?: Locale): BackgroundEntry[] {
+    return dndBackgrounds.map((entry) => localizeBackground(entry, locale));
 }
 
 export function readItem(slug: string, locale?: Locale): ItemEntry | undefined {

@@ -27,6 +27,7 @@ export * from "./catalog/savingThrows.seed";
 export * from "./catalog/languages.seed";
 
 export * from "./curation/raceGrants.dnd";
+export * from "./curation/flavorTable.types";
 export * from "./curation/backgroundGrants.dnd";
 export * from "./curation/itemGrants.dnd";
 export * from "./curation/itemOverlays.dnd";
