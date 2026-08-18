@@ -75,8 +75,12 @@ Helpers: `getClassGrants(slug, level)`, `getClassGrantSourcesForLevel`,
   [`flavorTable.types.ts`](src/curation/flavorTable.types.ts)). These are **not**
   `Grant`s: they do not produce `CharacterGrant`s and do not use `grantPicks`.
   `bindTo` is an optional form/`systemData` field name; `roll` is a UI hint
-  (`"d8"`, `"d20"`). Overlay of option labels is a later step; today locale
-  overlays only `name` / `description` of the background.
+  (`"d8"`, `"d20"`). Locale overlays may replace `option.label` by option slug
+  (`backgrounds.{slug}.flavorTables.{tableSlug}.options.{optionSlug}` in
+  `data/translations/*.json`). Missing table or option keys fall back to the
+  English label so partial overlays never render blank. Overlay never changes
+  `slug`, `bindTo`, `pickCount`, `roll`, or `allowCustom`. The picker persists
+  the visible label, not the slug.
 
 Helpers: `getBackgroundGrants(slug)` (grants only), `getBackground(slug, locale?)`.
 

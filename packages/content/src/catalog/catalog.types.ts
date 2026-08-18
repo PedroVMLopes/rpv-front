@@ -33,6 +33,8 @@ export interface CatalogEntryTranslation {
     name?: string;
     description?: string;
     shortDescription?: string;
+    /** Option labels keyed by flavor table slug, then option slug. */
+    flavorTables?: Record<string, { options?: Record<string, string> }>;
 }
 
 /**

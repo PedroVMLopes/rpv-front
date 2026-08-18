@@ -5,10 +5,12 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
 import { NextIntlClientProvider } from "next-intl";
+import type { Locale } from "@rpv/domain";
 import { BackgroundSelectionPage } from "../components/characters/creation/BackgroundSelectionPage";
 import type { FieldConfig } from "../components/forms/DynamicForm";
 import { dndCharacterFields } from "../presets/dnd/characterFields";
 import enMessages from "../messages/en.json";
+import ptBRMessages from "../messages/pt-BR.json";
 
 jest.mock("../components/characters/creation/CatalogSelectionPage", () => ({
     CatalogSelectionPage: () => <div data-testid="catalog-selection" />,
@@ -29,16 +31,19 @@ const identityFields = dndCharacterFields.common as FieldConfig[];
 
 function BackgroundPageHarness({
     defaultValues,
+    contentLocale = "en",
 }: {
     defaultValues: Record<string, unknown>;
+    contentLocale?: Locale;
 }) {
     const form = useForm({ defaultValues });
+    const messages = contentLocale === "pt-BR" ? ptBRMessages : enMessages;
 
     return (
-        <NextIntlClientProvider locale="en" messages={enMessages}>
+        <NextIntlClientProvider locale={contentLocale} messages={messages}>
             <BackgroundSelectionPage
                 form={form}
-                contentLocale="en"
+                contentLocale={contentLocale}
                 system="dnd"
                 identityFields={identityFields}
             />
@@ -307,6 +312,26 @@ describe("BackgroundSelectionPage flavor pickers", () => {
         });
         expect(
             screen.queryByRole("combobox", { name: "Guild business" })
+        ).not.toBeInTheDocument();
+    });
+
+    it("shows Portuguese Sage option labels when contentLocale is pt-BR", () => {
+        render(
+            <BackgroundPageHarness
+                defaultValues={{ background: "sage" }}
+                contentLocale="pt-BR"
+            />
+        );
+
+        expect(
+            screen.getByRole("option", {
+                name: "A verdade primeiro: uma mentira bela continua sendo mentira.",
+            })
+        ).toBeInTheDocument();
+        expect(
+            screen.queryByRole("option", {
+                name: "Truth first: a beautiful lie is still a lie.",
+            })
         ).not.toBeInTheDocument();
     });
 });

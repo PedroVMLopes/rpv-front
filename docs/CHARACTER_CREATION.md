@@ -113,6 +113,7 @@ A etapa `background` combina seleção de antecedente, pickers de sabor e campos
 - `FlavorTable` **não é um Grant**: opções não geram `CharacterGrant` nem `grantPicks`. Texto bound (`personalityTraits`, `ideals`, `bonds`, `flaws`) e detalhes unbound (`backgroundDetails.{slug}`) persistem em `systemData`.
 - O picker genérico é [`FlavorTableField`](../apps/web/components/characters/creation/FlavorTableField.tsx) em [`BackgroundSelectionPage`](../apps/web/components/characters/creation/BackgroundSelectionPage.tsx).
 - `table.roll` (`d8`, `d6`, `d20`, …) é só hint de UI. O botão **Rolar** preenche todos os slots de uma vez com opções distintas; o motor (`@rpv/domain`) **não** resolve dado. Sem `roll` válido, o botão não aparece.
+- Labels das opções seguem `contentLocale` (overlay em `packages/content/data/translations`). O picker grava o texto visível em `systemData`; a ficha mostra o idioma da escolha. Opção sem overlay cai no inglês.
 - Ao mudar `background`:
   - `backgroundDetails` é apagado por completo (`{}`);
   - campos bound só são limpos se **todas** as linhas não vazias forem labels da tabela **anterior**; texto custom permanece.

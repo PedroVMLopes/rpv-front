@@ -1,6 +1,23 @@
 import { getBackground, getBackgroundGrants } from "../src";
 import { localizeCurationEntry } from "../src/curation/curationLocale";
 
+function flavorOptionLabel(
+    entry:
+        | {
+              flavorTables?: Array<{
+                  slug: string;
+                  options: Array<{ slug: string; label: string }>;
+              }>;
+          }
+        | undefined,
+    tableSlug: string,
+    optionSlug: string
+): string | undefined {
+    return entry?.flavorTables
+        ?.find((table) => table.slug === tableSlug)
+        ?.options.find((option) => option.slug === optionSlug)?.label;
+}
+
 const expectedTableBindTo: Record<string, { bindTo: string; pickCount: number }> =
     {
         "personality-traits": { bindTo: "personalityTraits", pickCount: 2 },
@@ -33,17 +50,28 @@ describe("BackgroundEntry flavorTables contract", () => {
         }
     });
 
-    it("preserves flavorTables when localizing name and description", () => {
+    it("overlays sage option labels in pt-BR without mutating English", () => {
         const sage = getBackground("sage");
         expect(sage).toBeDefined();
-        const tables = sage!.flavorTables;
-        expect(tables).toBeDefined();
+        const englishIdeal = flavorOptionLabel(sage, "ideals", "sage-ideal-01");
+        expect(englishIdeal).toBe("Truth first: a beautiful lie is still a lie.");
 
         const localized = localizeCurationEntry(sage!, "backgrounds", "pt-BR");
 
         expect(localized.name).toBe("Sábio");
         expect(localized.description).toMatch(/multiverso/i);
-        expect(localized.flavorTables).toEqual(tables);
+        expect(flavorOptionLabel(localized, "ideals", "sage-ideal-01")).toBe(
+            "A verdade primeiro: uma mentira bela continua sendo mentira."
+        );
+        const ideals = localized.flavorTables?.find(
+            (table) => table.slug === "ideals"
+        );
+        expect(ideals?.bindTo).toBe("ideals");
+        expect(ideals?.pickCount).toBe(1);
+        expect(ideals?.roll).toBeUndefined();
+        expect(flavorOptionLabel(sage, "ideals", "sage-ideal-01")).toBe(
+            englishIdeal
+        );
     });
 
     it("falls back to English when the overlay has no slug", () => {
@@ -67,10 +95,58 @@ describe("background locale overlays", () => {
     });
 
     it("applies the pt-BR overlay for sage", () => {
+        const english = getBackground("sage");
         const sage = getBackground("sage", "pt-BR");
         expect(sage?.name).toBe("Sábio");
         expect(sage?.description).toMatch(/multiverso/i);
-        expect(sage?.flavorTables).toEqual(getBackground("sage")?.flavorTables);
+        expect(flavorOptionLabel(sage, "ideals", "sage-ideal-01")).toBe(
+            "A verdade primeiro: uma mentira bela continua sendo mentira."
+        );
+        expect(flavorOptionLabel(english, "ideals", "sage-ideal-01")).toBe(
+            "Truth first: a beautiful lie is still a lie."
+        );
+        expect(flavorOptionLabel(getBackground("sage", "en"), "ideals", "sage-ideal-01")).toBe(
+            "Truth first: a beautiful lie is still a lie."
+        );
+    });
+
+    it("keeps English labels for options missing from the overlay", () => {
+        const sage = getBackground("sage");
+        const traits = sage?.flavorTables?.find(
+            (table) => table.slug === "personality-traits"
+        );
+        expect(traits).toBeDefined();
+
+        const localized = localizeCurationEntry(
+            {
+                ...sage!,
+                flavorTables: [
+                    {
+                        ...traits!,
+                        options: [
+                            ...traits!.options,
+                            {
+                                slug: "sage-trait-missing",
+                                label: "English only.",
+                            },
+                        ],
+                    },
+                ],
+            },
+            "backgrounds",
+            "pt-BR"
+        );
+
+        expect(
+            flavorOptionLabel(localized, "personality-traits", "sage-trait-01")
+        ).toMatch(/margens/i);
+        expect(
+            flavorOptionLabel(
+                localized,
+                "personality-traits",
+                "sage-trait-missing"
+            )
+        ).toBe("English only.");
     });
 });
 
@@ -193,16 +269,33 @@ describe("acolyte flavorTables", () => {
         }
     });
 
-    it("preserves flavorTables when localizing acolyte name and description", () => {
+    it("overlays acolyte option labels in pt-BR without mutating English", () => {
         const acolyte = getBackground("acolyte");
         expect(acolyte).toBeDefined();
-        const tables = acolyte!.flavorTables;
+        const englishCharity = flavorOptionLabel(
+            acolyte,
+            "ideals",
+            "acolyte-ideal-02"
+        );
+        expect(englishCharity).toMatch(/^Charity\./);
 
         const localized = localizeCurationEntry(acolyte!, "backgrounds", "pt-BR");
 
         expect(localized.name).toBe("Acólito");
         expect(localized.description).toMatch(/templo/i);
-        expect(localized.flavorTables).toEqual(tables);
+        expect(
+            flavorOptionLabel(localized, "ideals", "acolyte-ideal-02")
+        ).toBe(
+            "Caridade. Sempre tento ajudar quem precisa, custe o que custar. (Bom)"
+        );
+        const traits = localized.flavorTables?.find(
+            (table) => table.slug === "personality-traits"
+        );
+        expect(traits?.bindTo).toBe("personalityTraits");
+        expect(traits?.roll).toBe("d8");
+        expect(flavorOptionLabel(acolyte, "ideals", "acolyte-ideal-02")).toBe(
+            englishCharity
+        );
     });
 });
 
@@ -245,10 +338,15 @@ describe("guild-artisan flavorTables", () => {
         });
     });
 
-    it("preserves flavorTables when localizing guild-artisan name and description", () => {
+    it("overlays guild-artisan option labels in pt-BR without mutating English", () => {
         const artisan = getBackground("guild-artisan");
         expect(artisan).toBeDefined();
-        const tables = artisan!.flavorTables;
+        const englishBusiness = flavorOptionLabel(
+            artisan,
+            "guild-business",
+            "guild-business-01"
+        );
+        expect(englishBusiness).toBe("Alchemists");
 
         const localized = localizeCurationEntry(
             artisan!,
@@ -258,6 +356,16 @@ describe("guild-artisan flavorTables", () => {
 
         expect(localized.name).toBe("Artesão de Guilda");
         expect(localized.description).toMatch(/guilda/i);
-        expect(localized.flavorTables).toEqual(tables);
+        expect(
+            flavorOptionLabel(localized, "guild-business", "guild-business-01")
+        ).toBe("Alquimistas");
+        const business = localized.flavorTables?.find(
+            (table) => table.slug === "guild-business"
+        );
+        expect(business?.bindTo).toBeUndefined();
+        expect(business?.roll).toBe("d20");
+        expect(
+            flavorOptionLabel(artisan, "guild-business", "guild-business-01")
+        ).toBe(englishBusiness);
     });
 });

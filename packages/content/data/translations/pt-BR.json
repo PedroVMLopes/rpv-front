@@ -92,15 +92,143 @@
   "backgrounds": {
     "sage": {
       "name": "Sábio",
-      "description": "Você passou anos estudando o saber do multiverso. Você conhece dois idiomas adicionais à sua escolha."
+      "description": "Você passou anos estudando o saber do multiverso. Você conhece dois idiomas adicionais à sua escolha.",
+      "flavorTables": {
+        "personality-traits": {
+          "options": {
+            "sage-trait-01": "Anoto as margens de tudo o que leio, inclusive cardápios de taverna.",
+            "sage-trait-02": "O silêncio me deixa inquieto; eu o preencho com uma pergunta.",
+            "sage-trait-03": "Confio mais num diagrama do que num discurso."
+          }
+        },
+        "ideals": {
+          "options": {
+            "sage-ideal-01": "A verdade primeiro: uma mentira bela continua sendo mentira.",
+            "sage-ideal-02": "Compartilhe o que sabe; saber acumulado apodrece.",
+            "sage-ideal-03": "Método acima de brilho."
+          }
+        },
+        "bonds": {
+          "options": {
+            "sage-bond-01": "As anotações inacabadas do meu primeiro mestre viajam comigo.",
+            "sage-bond-02": "Devo um favor ao arquivo que me escondeu quando eu não tinha para onde ir.",
+            "sage-bond-03": "Um erudito rival ainda tem a única cópia de um texto de que preciso."
+          }
+        },
+        "flaws": {
+          "options": {
+            "sage-flaw-01": "Prefiro ser preciso a ser gentil.",
+            "sage-flaw-02": "Perguntas sem resposta me tiram o sono — e a vigília.",
+            "sage-flaw-03": "Cito fontes até os ouvintes pararem de perguntar."
+          }
+        }
+      }
     },
     "acolyte": {
       "name": "Acólito",
-      "description": "Você passou a vida a serviço de um templo, como intermediário entre o sagrado e o mundo mortal. Você conhece dois idiomas adicionais à sua escolha."
+      "description": "Você passou a vida a serviço de um templo, como intermediário entre o sagrado e o mundo mortal. Você conhece dois idiomas adicionais à sua escolha.",
+      "flavorTables": {
+        "personality-traits": {
+          "options": {
+            "acolyte-trait-01": "Idolatro um herói em particular da minha fé e cito o tempo todo seus feitos e exemplo.",
+            "acolyte-trait-02": "Encontro terreno comum entre os inimigos mais ferozes, empatizando com eles e sempre buscando a paz.",
+            "acolyte-trait-03": "Vejo presságios em cada evento e ação. Os deuses tentam falar conosco; só precisamos ouvir.",
+            "acolyte-trait-04": "Nada abala minha atitude otimista.",
+            "acolyte-trait-05": "Cito (ou cito mal) textos sagrados e provérbios em quase toda situação.",
+            "acolyte-trait-06": "Sou tolerante (ou intolerante) com outras fés e respeito (ou condeno) a adoração de outros deuses.",
+            "acolyte-trait-07": "Desfrutei de boa comida, bebida e alta sociedade entre a elite do meu templo. A vida rude me irrita.",
+            "acolyte-trait-08": "Passei tanto tempo no templo que tenho pouca experiência prática com pessoas do mundo lá fora."
+          }
+        },
+        "ideals": {
+          "options": {
+            "acolyte-ideal-01": "Tradição. As antigas tradições de culto e sacrifício devem ser preservadas e mantidas. (Leal)",
+            "acolyte-ideal-02": "Caridade. Sempre tento ajudar quem precisa, custe o que custar. (Bom)",
+            "acolyte-ideal-03": "Mudança. Precisamos ajudar a trazer as mudanças que os deuses trabalham constantemente no mundo. (Caótico)",
+            "acolyte-ideal-04": "Poder. Espero um dia chegar ao topo da hierarquia religiosa da minha fé. (Leal)",
+            "acolyte-ideal-05": "Fé. Confio que minha deidade guiará minhas ações. Tenho fé de que, se eu trabalhar duro, as coisas darão certo. (Leal)",
+            "acolyte-ideal-06": "Aspiração. Busco provar que sou digno do favor do meu deus, alinhando minhas ações aos seus ensinamentos. (Qualquer)"
+          }
+        },
+        "bonds": {
+          "options": {
+            "acolyte-bond-01": "Eu morreria para recuperar uma relíquia antiga da minha fé, perdida há muito tempo.",
+            "acolyte-bond-02": "Um dia me vingarei da hierarquia corrupta do templo que me marcou como herege.",
+            "acolyte-bond-03": "Devo a vida ao sacerdote que me acolheu quando meus pais morreram.",
+            "acolyte-bond-04": "Tudo o que faço é pelo povo comum.",
+            "acolyte-bond-05": "Farei qualquer coisa para proteger o templo onde servi.",
+            "acolyte-bond-06": "Busco preservar um texto sagrado que meus inimigos consideram herético e querem destruir."
+          }
+        },
+        "flaws": {
+          "options": {
+            "acolyte-flaw-01": "Julgo os outros com rigor, e a mim mesmo com ainda mais severidade.",
+            "acolyte-flaw-02": "Confio demais em quem detém poder na hierarquia do meu templo.",
+            "acolyte-flaw-03": "Minha piedade às vezes me faz confiar cegamente em quem professa fé no meu deus.",
+            "acolyte-flaw-04": "Sou inflexível no meu pensamento.",
+            "acolyte-flaw-05": "Desconfio de estranhos e espero o pior deles.",
+            "acolyte-flaw-06": "Quando escolho um objetivo, fico obcecado com ele em detrimento de todo o resto."
+          }
+        }
+      }
     },
     "guild-artisan": {
       "name": "Artesão de Guilda",
-      "description": "Você é membro de uma guilda de ofício, com banca, sede e uma marca que outras lojas reconhecem. Você conhece um idioma adicional à sua escolha."
+      "description": "Você é membro de uma guilda de ofício, com banca, sede e uma marca que outras lojas reconhecem. Você conhece um idioma adicional à sua escolha.",
+      "flavorTables": {
+        "personality-traits": {
+          "options": {
+            "guild-artisan-trait-01": "Precifico um serviço pelo veio da madeira antes de ouvir o nome do cliente.",
+            "guild-artisan-trait-02": "Guardo um retalho de cada selo de guilda que já conquistei.",
+            "guild-artisan-trait-03": "Falo com as mãos como se já estivesse na bancada."
+          }
+        },
+        "ideals": {
+          "options": {
+            "guild-artisan-ideal-01": "Medida justa: um peso curto engana a rua inteira.",
+            "guild-artisan-ideal-02": "Que dure: trabalho barato é um segundo serviço à espera.",
+            "guild-artisan-ideal-03": "A sede primeiro: o nome da minha guilda viaja em cada peça que vendo."
+          }
+        },
+        "bonds": {
+          "options": {
+            "guild-artisan-bond-01": "O mestre que assinou meus papéis ainda tem uma bancada que me recuso a decepcionar.",
+            "guild-artisan-bond-02": "Devo uma estação de salários à sede que me escondeu num inverno ruim.",
+            "guild-artisan-bond-03": "Uma loja rival copiou minha marca; vou vê-la retirada."
+          }
+        },
+        "flaws": {
+          "options": {
+            "guild-artisan-flaw-01": "Não consigo passar por uma junta torta sem comentar.",
+            "guild-artisan-flaw-02": "Cobro pouco dos amigos até o meu próprio livro sangrar.",
+            "guild-artisan-flaw-03": "Acumulo estoque sobrando para um serviço melhor que nunca chega."
+          }
+        },
+        "guild-business": {
+          "options": {
+            "guild-business-01": "Alquimistas",
+            "guild-business-02": "Cervejeiros",
+            "guild-business-03": "Calígrafos",
+            "guild-business-04": "Carpinteiros",
+            "guild-business-05": "Cartógrafos",
+            "guild-business-06": "Sapateiros",
+            "guild-business-07": "Cozinheiros",
+            "guild-business-08": "Vidreiros",
+            "guild-business-09": "Joalheiros",
+            "guild-business-10": "Coureiros",
+            "guild-business-11": "Pedreiros",
+            "guild-business-12": "Pintores",
+            "guild-business-13": "Oleiros",
+            "guild-business-14": "Ferreiros",
+            "guild-business-15": "Funileiros",
+            "guild-business-16": "Tecelões",
+            "guild-business-17": "Entalhadores",
+            "guild-business-18": "Armeiros",
+            "guild-business-19": "Construtores navais",
+            "guild-business-20": "Rodairos"
+          }
+        }
+      }
     }
   },
   "classes": {
