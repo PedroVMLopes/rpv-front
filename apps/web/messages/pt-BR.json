@@ -592,6 +592,57 @@
       "inventory": "Inventário",
       "magic": "Magia",
       "notes": "Anotações"
+    },
+    "persona": {
+      "presenceTitle": "Presença",
+      "dispositionTitle": "Disposição",
+      "notesBlockTitle": "Anotações",
+      "presenceFields": {
+        "build": "Porte",
+        "marks": "Marcas",
+        "voice": "Voz"
+      },
+      "axes": {
+        "solitaryCommunal": {
+          "left": "Solitário",
+          "right": "Comunitário"
+        },
+        "improviserPlanner": {
+          "left": "Improvisador",
+          "right": "Planejador"
+        },
+        "directIndirect": {
+          "left": "Direto",
+          "right": "Indireto"
+        },
+        "cautiousReckless": {
+          "left": "Cauteloso",
+          "right": "Temerário"
+        },
+        "principledPragmatic": {
+          "left": "Principista",
+          "right": "Pragmático"
+        },
+        "tenderHarsh": {
+          "left": "Brando",
+          "right": "Severo"
+        }
+      },
+      "placeholders": {
+        "presence": {
+          "age": "Adulto",
+          "build": "Mediano",
+          "marks": "Uma cicatriz fina na sobrancelha esquerda.",
+          "voice": "Baixa e pausada, com um riso seco."
+        },
+        "personality": {
+          "personalityTraits": "Meço duas vezes antes de falar.",
+          "ideals": "O trabalho importa mais do que o crédito.",
+          "bonds": "Ainda escrevo para quem me treinou.",
+          "flaws": "Assumo que toda gentileza esconde um preço.",
+          "goals": "Levar um plano até o fim."
+        }
+      }
     }
   },
   "contentDetail": {

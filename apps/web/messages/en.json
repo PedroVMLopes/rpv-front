@@ -592,6 +592,57 @@
       "inventory": "Inventory",
       "magic": "Magic",
       "notes": "Notes"
+    },
+    "persona": {
+      "presenceTitle": "Presence",
+      "dispositionTitle": "Disposition",
+      "notesBlockTitle": "Notes",
+      "presenceFields": {
+        "build": "Build",
+        "marks": "Distinguishing marks",
+        "voice": "Voice"
+      },
+      "axes": {
+        "solitaryCommunal": {
+          "left": "Solitary",
+          "right": "Communal"
+        },
+        "improviserPlanner": {
+          "left": "Improviser",
+          "right": "Planner"
+        },
+        "directIndirect": {
+          "left": "Direct",
+          "right": "Indirect"
+        },
+        "cautiousReckless": {
+          "left": "Cautious",
+          "right": "Reckless"
+        },
+        "principledPragmatic": {
+          "left": "Principled",
+          "right": "Pragmatic"
+        },
+        "tenderHarsh": {
+          "left": "Tender",
+          "right": "Harsh"
+        }
+      },
+      "placeholders": {
+        "presence": {
+          "age": "Adult",
+          "build": "Average",
+          "marks": "A thin scar across the left brow.",
+          "voice": "Low and even, with a dry laugh."
+        },
+        "personality": {
+          "personalityTraits": "I measure twice before I speak.",
+          "ideals": "The work matters more than the credit.",
+          "bonds": "I still write to the person who trained me.",
+          "flaws": "I assume every kindness hides a price.",
+          "goals": "See one plan through to the end."
+        }
+      }
     }
   },
   "contentDetail": {

@@ -109,13 +109,13 @@ Recursos de classe reutilizam a lógica de [`DerivedResourcesDisplay`](../apps/w
 | **Visão geral** | Gameplay — o que o personagem sabe e pode (fora da economia de ataque) | Retrato, atributos + testes, passivas, CD/ataque de magia, recursos de classe, perícias (proficientes por padrão), fatos mecânicos (antecedente, tamanho, sentidos, dado de vida), proficiências (armas, armaduras, ferramentas, idiomas), características | [`OverviewTab`](../apps/web/components/characters/PlayerSheet/tabs/OverviewTab.tsx), [`AbilitiesSection`](../apps/web/components/characters/PlayerSheet/overview/AbilitiesSection.tsx), [`SkillsCard`](../apps/web/components/characters/PlayerSheet/overview/SkillsCard.tsx), [`ClassResourcesPanel`](../apps/web/components/characters/PlayerSheet/combat/ClassResourcesPanel.tsx) |
 | **Combate** | Economia de ação | Ataques, ações/bônus/reações, magias, recursos — agrupados por **tipo de ação**, não por origem (classe vs item) | [`CharacterCardAbilities`](../apps/web/components/characters/CharacterCard/CharacterCardAbilities.tsx) (reestruturado) |
 | **Mochila** | Posse e equipamento | Equipado + bag + moeda | [`CharacterCardInventory`](../apps/web/components/characters/CharacterCard/CharacterCardInventory.tsx) |
-| **Anotações** | Memória de sessão | **Escopo adiado** — aba reservada; modelo de dados TBD | — |
+| **Anotações** | Persona (roleplay) + diário | Presença, disposição (sliders placeholder), personalidade D&D (traços, ideais, vínculos, falhas, objetivos — placeholder); bloco Notas “em breve” | [`NotesTab`](../apps/web/components/characters/PlayerSheet/tabs/NotesTab.tsx), [`PersonaSection`](../apps/web/components/characters/PlayerSheet/notes/PersonaSection.tsx) |
 
 #### Decisões de UX
 
-- **Visão geral** não lista as 18 perícias por padrão — apenas as **proficientes**. Toggle "todas" já está na ficha. Saves completos ficam na aba Ações. Personalidade, idade e prosa de antecedente saíram da Overview (aba Anotações / Persona, TBD).
+- **Visão geral** não lista as 18 perícias por padrão — apenas as **proficientes**. Toggle "todas" já está na ficha. Saves completos ficam na aba Ações. Personalidade, idade aparente e prosa de antecedente saíram da Overview (Persona na aba Anotações; modelo ainda placeholder).
 - **Combate** é adaptativo: seção Magia oculta se o personagem não tiver spell grants.
-- **Anotações:** aba existe na navegação; formato de conteúdo e persistência serão definidos posteriormente.
+- **Anotações:** Persona no topo (presença, disposição, campos D&D) com dados fictícios; bloco Notas reservado (“em breve”). Persistência TBD.
 
 ### 3.3 Responsividade
 
@@ -348,5 +348,5 @@ Helpers relevantes:
 | Alvos (AC, etc.) | Fora do escopo MVP |
 | Vantagem/desvantagem | Incluído no MVP do container (Tipo D) |
 | Edição na sessão | HP + recursos de classe (`+`/`-`) |
-| Anotações | Aba reservada; modelo TBD |
+| Anotações | Persona placeholder + Notas em breve; modelo TBD |
 | Responsividade | Mobile, tablet e desktop documentados; sem dispositivo único prioritário |

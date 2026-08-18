@@ -493,7 +493,7 @@ describe("PlayerSheet", () => {
         expect(strCard).toHaveTextContent("+3");
     });
 
-    it("shows combat and inventory content; magic and notes still coming soon", async () => {
+    it("shows combat and inventory content; magic stays coming soon", async () => {
         const user = userEvent.setup();
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
@@ -507,8 +507,34 @@ describe("PlayerSheet", () => {
 
         await user.click(screen.getByRole("tab", { name: "Magic" }));
         expect(screen.getByText("Coming soon")).toBeInTheDocument();
+    });
+
+    it("shows persona placeholders and a notes coming-soon block", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
         await user.click(screen.getByRole("tab", { name: "Notes" }));
+
+        expect(screen.getByText("Presence")).toBeInTheDocument();
+        expect(screen.getByText("Disposition")).toBeInTheDocument();
+        expect(screen.getByText("Personality")).toBeInTheDocument();
+        expect(screen.getByText("Apparent Age")).toBeInTheDocument();
+        expect(screen.getByText("Personality traits")).toBeInTheDocument();
+        expect(screen.getByText("Ideals")).toBeInTheDocument();
+        expect(screen.getByText("Bonds")).toBeInTheDocument();
+        expect(screen.getByText("Flaws")).toBeInTheDocument();
+        expect(screen.getByText("Goals")).toBeInTheDocument();
+        expect(screen.queryByText("Protect the realm")).not.toBeInTheDocument();
+        expect(screen.queryByText("Honor")).not.toBeInTheDocument();
+
+        const sliders = screen
+            .getAllByRole("slider")
+            .filter((slider) => slider.getAttribute("data-slot") === "slider-thumb");
+        expect(sliders).toHaveLength(6);
+        for (const slider of sliders) {
+            expect(slider).toHaveAttribute("data-disabled");
+        }
+
         expect(screen.getByText("Coming soon")).toBeInTheDocument();
     });
 
