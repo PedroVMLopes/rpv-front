@@ -76,7 +76,7 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
                                 <span
                                     className={cn(
                                         "absolute left-1/2 top-0 z-10 -translate-x-1/2 -translate-y-1/2",
-                                        "rounded-lg bg-primary px-2 py-0.5 font-semibold tabular-nums leading-none",
+                                        "rounded-lg bg-primary text-primary-foreground px-2 py-0.5 font-semibold tabular-nums leading-none",
                                         "border-2"
                                     )}
                                 >
