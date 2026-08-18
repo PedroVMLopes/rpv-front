@@ -604,29 +604,25 @@
         "voice": "Voz"
       },
       "axes": {
-        "solitaryCommunal": {
+        "solitarySociable": {
           "left": "Solitário",
-          "right": "Comunitário"
+          "right": "Sociável"
         },
         "improviserPlanner": {
           "left": "Improvisador",
           "right": "Planejador"
         },
-        "directIndirect": {
-          "left": "Direto",
-          "right": "Indireto"
+        "brusqueDelicate": {
+          "left": "Brusco/Grosseiro",
+          "right": "Delicado/Educado"
         },
-        "cautiousReckless": {
-          "left": "Cauteloso",
-          "right": "Temerário"
+        "unadornedOpulent": {
+          "left": "Despojado",
+          "right": "Opulento"
         },
-        "principledPragmatic": {
-          "left": "Principista",
-          "right": "Pragmático"
-        },
-        "tenderHarsh": {
-          "left": "Brando",
-          "right": "Severo"
+        "seriousEasygoing": {
+          "left": "Sério",
+          "right": "Descontraído"
         }
       },
       "placeholders": {

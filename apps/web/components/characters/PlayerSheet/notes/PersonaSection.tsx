@@ -16,6 +16,14 @@ import {
     type PersonaPresenceFieldKey,
 } from "./personaPlaceholders";
 
+const DISPOSITION_SLIDER_RANGE_CLASSES = [
+    "[&_[data-slot=slider-range]]:bg-chart-1",
+    "[&_[data-slot=slider-range]]:bg-chart-2",
+    "[&_[data-slot=slider-range]]:bg-chart-3",
+    "[&_[data-slot=slider-range]]:bg-chart-4",
+    "[&_[data-slot=slider-range]]:bg-chart-5",
+] as const;
+
 function PresenceCard() {
     const t = useTranslations("playerSheet.persona");
     const tFields = useTranslations("fields");
@@ -62,7 +70,7 @@ function DispositionCard() {
     return (
         <OverviewPanel title={t("dispositionTitle")}>
             <ul className="flex flex-col gap-3">
-                {PERSONA_DISPOSITION_AXES.map((axis) => (
+                {PERSONA_DISPOSITION_AXES.map((axis, index) => (
                     <li
                         key={axis.key}
                         className="flex flex-col gap-1.5"
@@ -82,6 +90,7 @@ function DispositionCard() {
                             step={PERSONA_SLIDER_STEP}
                             value={[axis.value]}
                             aria-label={axisLabel(axis.key)}
+                            className={DISPOSITION_SLIDER_RANGE_CLASSES[index]}
                         />
                     </li>
                 ))}
