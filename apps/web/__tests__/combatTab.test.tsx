@@ -136,7 +136,7 @@ describe("CombatTab", () => {
             <CombatTabConnected characterId={storedCharacter.id} />
         );
 
-        expect(screen.getByText("Class Resources")).toBeInTheDocument();
+        expect(screen.getByText("Spell Slots")).toBeInTheDocument();
         expect(screen.getByText("Defense & Saves")).toBeInTheDocument();
         expect(screen.getByText("Strength")).toBeInTheDocument();
         expect(screen.getByText("Prof")).toBeInTheDocument();
@@ -147,11 +147,11 @@ describe("CombatTab", () => {
         ).toBeInTheDocument();
         expect(screen.getByText("None yet")).toBeInTheDocument();
 
-        const resourcesHeading = screen.getByText("Class Resources");
+        const slotsHeading = screen.getByText("Spell Slots");
         const defenseHeading = screen.getByText("Defense & Saves");
         expect(
             Boolean(
-                resourcesHeading.compareDocumentPosition(defenseHeading) &
+                slotsHeading.compareDocumentPosition(defenseHeading) &
                     Node.DOCUMENT_POSITION_FOLLOWING
             )
         ).toBe(true);
@@ -177,15 +177,80 @@ describe("CombatTab", () => {
         ).toBeInTheDocument();
     });
 
-    it("shows class resources above defense saves", () => {
+    it("shows spell slot squares above defense saves", () => {
         renderWithProviders(
             <CombatTabConnected characterId={storedCharacter.id} />
         );
 
-        expect(screen.getByText("Class Resources")).toBeInTheDocument();
-        expect(screen.getByText("Level 1")).toBeInTheDocument();
-        expect(screen.getByText("2 / 2")).toBeInTheDocument();
+        expect(screen.queryByText("Class Resources")).not.toBeInTheDocument();
+        expect(screen.getByText("Spell Slots")).toBeInTheDocument();
+        expect(screen.getByText("Level 1:")).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: "Slot 1 of 2, available" })
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: "Slot 2 of 2, available" })
+        ).toBeInTheDocument();
+        expect(screen.queryByText("2 / 2")).not.toBeInTheDocument();
         expect(screen.queryByText("Spellcasting")).not.toBeInTheDocument();
+    });
+
+    it("shows class resources above spell slots when both exist", () => {
+        const mixed: StoredCharacter = {
+            ...storedCharacter,
+            id: "char-combat-mixed",
+            grants: [
+                ...storedCharacter.grants,
+                {
+                    id: "class-barbarian-resource-rage-uses",
+                    kind: "resource",
+                    ref: "rage-uses",
+                    amount: 2,
+                    source: { type: "class", id: "barbarian" },
+                },
+            ],
+            resources: { hp: 18, "spell-slots-1": 2, "rage-uses": 2 },
+        };
+
+        useCharacterStore.setState({
+            characters: [{ ...mixed, resources: { ...mixed.resources } }],
+        });
+
+        render(
+            <NextIntlClientProvider locale="en" messages={enMessages}>
+                <RollAssistantProvider>
+                    <CombatTab stored={mixed} />
+                </RollAssistantProvider>
+            </NextIntlClientProvider>
+        );
+
+        expect(screen.getByText("Class Resources")).toBeInTheDocument();
+        expect(screen.getByText("Rage Uses")).toBeInTheDocument();
+        expect(screen.getByText("2 / 2")).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: "Rage Uses −" })
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: "Rage Uses +" })
+        ).toBeInTheDocument();
+
+        expect(screen.getByText("Spell Slots")).toBeInTheDocument();
+        expect(screen.getByText("Level 1:")).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: "Slot 1 of 2, available" })
+        ).toBeInTheDocument();
+        expect(
+            screen.queryByRole("button", { name: "Level 1: −" })
+        ).not.toBeInTheDocument();
+
+        const resourcesHeading = screen.getByText("Class Resources");
+        const slotsHeading = screen.getByText("Spell Slots");
+        expect(
+            Boolean(
+                resourcesHeading.compareDocumentPosition(slotsHeading) &
+                    Node.DOCUMENT_POSITION_FOLLOWING
+            )
+        ).toBe(true);
     });
 });
 

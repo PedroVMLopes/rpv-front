@@ -70,7 +70,7 @@ export function CastingStatsPanel({ stored }: CastingStatsPanelProps) {
 
     return (
         <OverviewPanel title={t("combat.casting")}>
-            <dl className="flex flex-col gap-2 text-sm">
+            <dl className="flex flex-col lg:grid lg:grid-cols-2 gap-2 text-sm">
                 {rows.map((row) => (
                     <div
                         key={row.label}
