@@ -20,6 +20,14 @@ import {
 import { sheetInset } from "../playerSheetSurfaces";
 import { cn } from "@/lib/utils";
 
+type SpellSlotCombatEntry = CombatResourceEntry & { spellLevel: number };
+
+function isSpellSlotEntry(
+    entry: CombatResourceEntry
+): entry is SpellSlotCombatEntry {
+    return entry.spellLevel !== undefined;
+}
+
 type ClassResourcesPanelProps = {
     stored: StoredCharacter;
 };
@@ -41,10 +49,8 @@ export function ClassResourcesPanel({ stored }: ClassResourcesPanelProps) {
     const slots = useMemo(
         () =>
             entries
-                .filter((entry) => entry.spellLevel !== undefined)
-                .sort(
-                    (a, b) => (a.spellLevel ?? 0) - (b.spellLevel ?? 0)
-                ),
+                .filter(isSpellSlotEntry)
+                .sort((a, b) => a.spellLevel - b.spellLevel),
         [entries]
     );
 
