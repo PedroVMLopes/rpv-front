@@ -36,12 +36,12 @@ export function SpellSlotLevelBlock({
 
     return (
         <div className="flex flex-col bg-background rounded-xl shadow-xs w-fit items-center">            
-            <p className="text-sm font-semibold text-foreground py-1">
+            <p className="text-sm font-semibold text-foreground p-1 px-4">
                 {label}
             </p>
             <div
                 className={cn(
-                    "flex min-w-0 w-fit flex-col gap-2 rounded-xl rounded-t-none border-2 shadow-xs bg-popover p-2 text-popover-foreground"
+                    "flex min-w-0 w-full flex-col gap-2 rounded-xl rounded-t-none border-2 shadow-xs bg-popover p-2 text-popover-foreground"
                 )}
             >
                 <div
