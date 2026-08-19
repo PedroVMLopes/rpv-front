@@ -185,12 +185,14 @@ describe("CombatTab", () => {
         expect(screen.queryByText("Class Resources")).not.toBeInTheDocument();
         expect(screen.getByText("Spell Slots")).toBeInTheDocument();
         expect(screen.getByText("Level 1:")).toBeInTheDocument();
-        expect(
-            screen.getByRole("button", { name: "Slot 1 of 2, available" })
-        ).toBeInTheDocument();
-        expect(
-            screen.getByRole("button", { name: "Slot 2 of 2, available" })
-        ).toBeInTheDocument();
+        const slot1 = screen.getByRole("button", {
+            name: "Slot 1 of 2, available",
+        });
+        const slot2 = screen.getByRole("button", {
+            name: "Slot 2 of 2, available",
+        });
+        expect(slot1).toHaveStyle({ gridColumn: "1", gridRow: "1" });
+        expect(slot2).toHaveStyle({ gridColumn: "2", gridRow: "1" });
         expect(screen.queryByText("2 / 2")).not.toBeInTheDocument();
         expect(screen.queryByText("Spellcasting")).not.toBeInTheDocument();
     });
@@ -251,6 +253,50 @@ describe("CombatTab", () => {
                     Node.DOCUMENT_POSITION_FOLLOWING
             )
         ).toBe(true);
+    });
+
+    it("marks the last spell slots used first in the two-row grid", () => {
+        const fourSlots: StoredCharacter = {
+            ...storedCharacter,
+            id: "char-combat-four-slots",
+            grants: storedCharacter.grants.map((grant) =>
+                grant.ref === "spell-slots-1" ? { ...grant, amount: 4 } : grant
+            ),
+            resources: { hp: 18, "spell-slots-1": 2 },
+        };
+
+        useCharacterStore.setState({
+            characters: [
+                { ...fourSlots, resources: { ...fourSlots.resources } },
+            ],
+        });
+
+        render(
+            <NextIntlClientProvider locale="en" messages={enMessages}>
+                <RollAssistantProvider>
+                    <CombatTab stored={fourSlots} />
+                </RollAssistantProvider>
+            </NextIntlClientProvider>
+        );
+
+        expect(
+            screen.getByRole("button", { name: "Slot 1 of 4, available" })
+        ).toHaveAttribute("aria-pressed", "false");
+        expect(
+            screen.getByRole("button", { name: "Slot 2 of 4, available" })
+        ).toHaveAttribute("aria-pressed", "false");
+        expect(
+            screen.getByRole("button", { name: "Slot 3 of 4, used" })
+        ).toHaveAttribute("aria-pressed", "true");
+        expect(
+            screen.getByRole("button", { name: "Slot 4 of 4, used" })
+        ).toHaveAttribute("aria-pressed", "true");
+        expect(
+            screen.getByRole("button", { name: "Slot 3 of 4, used" })
+        ).toHaveStyle({ gridColumn: "1", gridRow: "2" });
+        expect(
+            screen.getByRole("button", { name: "Slot 4 of 4, used" })
+        ).toHaveStyle({ gridColumn: "2", gridRow: "2" });
     });
 });
 

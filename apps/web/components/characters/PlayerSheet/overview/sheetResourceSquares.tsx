@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 
 export type UsedCountByKey = Record<string, number>;
@@ -10,6 +11,33 @@ export function isSlotUsed(
     usedCount: number
 ): boolean {
     return index >= total - usedCount;
+}
+
+/** 1-based CSS grid coordinates for combat spell-slot squares. */
+export function spellSlotGridPosition(index: number): {
+    col: number;
+    row: number;
+} {
+    if (index < 4) {
+        return {
+            col: (index % 2) + 1,
+            row: Math.floor(index / 2) + 1,
+        };
+    }
+
+    const extra = index - 4;
+    return {
+        col: 3 + Math.floor(extra / 2),
+        row: (extra % 2) + 1,
+    };
+}
+
+export function spellSlotGridColumnCount(slotCount: number): number {
+    if (slotCount <= 4) {
+        return Math.max(0, Math.min(2, slotCount));
+    }
+
+    return 2 + Math.ceil((slotCount - 4) / 2);
 }
 
 export function toggleSlotCount(
@@ -41,14 +69,16 @@ export function updateUsedCountByKey(
     return { ...current, [rowKey]: nextCount };
 }
 
-function ResourceSquareButton({
+export function ResourceSquareButton({
     isUsed,
     ariaLabel,
     onClick,
+    style,
 }: {
     isUsed: boolean;
     ariaLabel: string;
     onClick: () => void;
+    style?: CSSProperties;
 }) {
     return (
         <button
@@ -59,6 +89,7 @@ function ResourceSquareButton({
                 event.stopPropagation();
                 onClick();
             }}
+            style={style}
             className={cn(
                 "size-6 shrink-0 rounded-sm border border-primary bg-primary transition-opacity",
                 isUsed && "opacity-25"

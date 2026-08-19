@@ -13,10 +13,8 @@ import { formatResourceRefLabel } from "@/lib/character/resourceLabels";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { OverviewPanel } from "../overview/OverviewPanel";
-import {
-    isSlotUsed,
-    ResourceSquareRow,
-} from "../overview/sheetResourceSquares";
+import { isSlotUsed } from "../overview/sheetResourceSquares";
+import { SpellSlotLevelBlock } from "./SpellSlotLevelBlock";
 import { sheetInset } from "../playerSheetSurfaces";
 import { cn } from "@/lib/utils";
 
@@ -156,7 +154,7 @@ export function ClassResourcesPanel({ stored }: ClassResourcesPanelProps) {
                             const usedCount = entry.max - entry.current;
 
                             return (
-                                <ResourceSquareRow
+                                <SpellSlotLevelBlock
                                     key={entry.ref}
                                     rowKey={entry.ref}
                                     label={t("spellSlotLevelLabel", {
