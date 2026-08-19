@@ -193,6 +193,7 @@ describe("deriveCharacterGrants", () => {
                     kind: "ability",
                     ref: "Action Surge",
                     source: { type: "class", id: "fighter" },
+                    activation: { cost: "special" },
                 }),
             ])
         );

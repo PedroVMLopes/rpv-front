@@ -42,4 +42,19 @@ describe("buildFeatureContentModel", () => {
 
         expect(summary.useAction?.disabled).toBe(true);
     });
+
+    it("omits use action for passive reminders", () => {
+        const { summary, detail } = buildFeatureContentModel({
+            id: "class-barbarian-ability-danger-sense",
+            title: "Danger Sense",
+            sourceLabel: "Class",
+            costLabel: "Passive",
+        });
+
+        expect(summary.useAction).toBeUndefined();
+        expect(detail.useAction).toBeUndefined();
+        expect(summary.badges).toEqual([
+            { label: "Passive", variant: "muted" },
+        ]);
+    });
 });

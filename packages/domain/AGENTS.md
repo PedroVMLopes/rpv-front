@@ -32,7 +32,10 @@ design smell — generalize the primitive or move the specifics into content.
 - `grants/` — `CharacterGrant`: the resolved things a character has (kinds:
   `language | ability | proficiency | saving_throw | spell | resource`), each carrying its
   `source`. Resource grants may include `amount`; refs are opaque strings (e.g.
-  `spell-slots-1`) with no D&D meaning in this package.
+  `spell-slots-1`) with no D&D meaning in this package. Optional `activation`
+  (`{ cost: string, resourceRef?: string }`) marks a grant as belonging in the
+  action catalog; omitted means trait-only. `cost` is an opaque slug — the
+  engine does not interpret it.
 - `character/` — the `Character` aggregate and its types.
 - `i18n/locale.ts` — locale primitives.
 

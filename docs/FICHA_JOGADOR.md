@@ -158,7 +158,7 @@ Cada ação tocável na ficha exibe: **rótulo + bônus principal + 1–2 pistas
 | Perícias, saves, atributos | `computeSkillModifiers`, `computeSavingThrowModifiers` | — |
 | Ataque/dano de armas | [`ItemEntry.weapon`](../packages/content/src/item/item.types.ts) + combate na web | Metadados de ataque derivados (`toHit`, `damageDice`, tipo de dano) |
 | Spell attack / DC | Spells como grants sem metadados estruturados | Metadados em spell catalog ou curation |
-| Features por tipo de ação | Listadas por origem em `CharacterCardAbilities` | Campo `actionCost` (action / bonus / reaction) nos grants |
+| Features por tipo de ação | `Grant.activation` / `CharacterGrant.activation` (`cost` slug + optional `resourceRef`) | Sem `activation` a ability não entra na aba de ações |
 
 ---
 
@@ -270,7 +270,7 @@ stateDiagram-v2
 | Modificadores de save | `computeSavingThrowModifiers` | — |
 | Atributos, AC, HP | `getResolvedStats`, `stored.resources` | — |
 | Proficiências | `grants` com `kind: "proficiency"` | UI de agrupamento por tipo (arma, ferramenta, skill, save) |
-| Features e magias | `CharacterCardAbilities` / `stored.grants` | `actionCost`; spell attack/DC |
+| Features e magias | `CharacterCardAbilities` / `stored.grants` | `activation` nas abilities de combate; spell attack/DC |
 | Armas equipadas | `selections.inventory.equipped` + `getItem` | Bloco de ataque/dano em `ItemEntry` |
 | Recursos de classe | `stored.resources` + `parseDerivedResources` | UI `+`/`-` na ficha |
 | Objetivos | `systemData.goals` | — |

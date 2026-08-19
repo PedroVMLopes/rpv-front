@@ -1,7 +1,12 @@
-import type { Locale, ModifierSourceType, Stats } from "@rpv/domain";
+import type {
+    CharacterGrant,
+    GrantActivation,
+    Locale,
+    ModifierSourceType,
+    Stats,
+} from "@rpv/domain";
 import {
     getAbilityFeatureDescription,
-    getFeatureActionMeta,
     getItem,
     getSpellDisplayMeta,
     normalizeSpellActionCost,
@@ -122,6 +127,25 @@ function displayActionCost(kind: string | undefined): ActionCost {
     }
 }
 
+function displayFeatureCost(cost: string): ActionCost {
+    switch (cost) {
+        case "action":
+        case "bonus":
+        case "reaction":
+        case "special":
+        case "passive":
+            return cost;
+        default:
+            return "special";
+    }
+}
+
+function isActivatedAbility(
+    grant: CharacterGrant
+): grant is CharacterGrant & { kind: "ability"; activation: GrantActivation } {
+    return grant.kind === "ability" && grant.activation != null;
+}
+
 function buildWeaponActions(
     stored: StoredCharacter,
     resolved: Stats,
@@ -231,12 +255,12 @@ function buildFeatureActions(
     const resourceByRef = new Map(resourceEntries.map((entry) => [entry.ref, entry]));
 
     return (stored.grants ?? [])
-        .filter((grant) => grant.kind === "ability")
+        .filter(isActivatedAbility)
         .map((grant) => {
             const title = grant.name ?? grant.ref;
-            const meta = getFeatureActionMeta(title);
-            const resourceEntry = meta?.resourceRef
-                ? resourceByRef.get(meta.resourceRef)
+            const actionCost = displayFeatureCost(grant.activation.cost);
+            const resourceEntry = grant.activation.resourceRef
+                ? resourceByRef.get(grant.activation.resourceRef)
                 : undefined;
             const sourceType = grant.source.type === "item" ? "item" : "feature";
 
@@ -244,7 +268,7 @@ function buildFeatureActions(
                 id: grant.id,
                 title,
                 sourceType,
-                actionCost: meta?.actionCost ?? "special",
+                actionCost,
                 availability:
                     resourceEntry && resourceEntry.current <= 0
                         ? "depleted"
@@ -276,8 +300,7 @@ function buildFeatureActions(
                       }
                     : undefined,
                 stateTags:
-                    meta?.actionCost === "passive" ? ["Passive"] : undefined,
-                tags: meta?.tags,
+                    actionCost === "passive" ? ["Passive"] : undefined,
                 featureSource: grant.source.type,
             };
         });

@@ -41,6 +41,7 @@ const stored: StoredCharacter = {
             ref: "Second Wind",
             name: "Second Wind",
             source: { type: "class", id: "fighter" },
+            activation: { cost: "bonus", resourceRef: "second-wind-uses" },
         },
         {
             id: "class-barbarian-ability-danger-sense",
@@ -48,6 +49,14 @@ const stored: StoredCharacter = {
             ref: "Danger Sense",
             name: "Danger Sense",
             source: { type: "class", id: "barbarian" },
+            activation: { cost: "passive" },
+        },
+        {
+            id: "background-guild-artisan-ability-guild-membership",
+            kind: "ability",
+            ref: "Guild Membership",
+            name: "Guild Membership",
+            source: { type: "background", id: "guild-artisan" },
         },
         {
             id: "class-wizard-spell-fire-bolt",
@@ -104,6 +113,9 @@ describe("actionDisplay", () => {
             expect.arrayContaining([
                 expect.objectContaining({ title: "Danger Sense" }),
             ])
+        );
+        expect(actions.map((action) => action.title)).not.toContain(
+            "Guild Membership"
         );
     });
 

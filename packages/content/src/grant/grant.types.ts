@@ -1,4 +1,4 @@
-import type { StatKey } from "@rpv/domain";
+import type { GrantActivation, StatKey } from "@rpv/domain";
 
 export type GrantType =
     | "ability_score"
@@ -84,4 +84,9 @@ export interface Grant {
     exclusiveGroup?: string;
     /** Branch id within exclusiveGroup (e.g. "equipment" | "gold"). */
     exclusiveBranch?: string;
+    /**
+     * When set on an ability grant, the resolved character grant appears in the
+     * action catalog. Omitted abilities are traits only (overview / features).
+     */
+    activation?: GrantActivation;
 }

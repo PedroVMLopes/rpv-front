@@ -22,6 +22,7 @@ export function FeatureActionCard({
     const tContentDetail = useTranslations("contentDetail");
     const tCombat = useTranslations("playerSheet.combat");
 
+    const isPassive = action.actionCost === "passive";
     const { summary, detail } = useMemo(
         () =>
             buildFeatureContentModel({
@@ -30,7 +31,7 @@ export function FeatureActionCard({
                 description: action.description,
                 sourceLabel,
                 costLabel,
-                useLabel: tCombat("use"),
+                useLabel: isPassive ? undefined : tCombat("use"),
                 depleted: action.availability === "depleted",
             }),
         [
@@ -39,6 +40,7 @@ export function FeatureActionCard({
             action.id,
             action.title,
             costLabel,
+            isPassive,
             sourceLabel,
             tCombat,
         ]

@@ -175,6 +175,7 @@ export function fixedGrantsToCharacterGrants(
                 ref: grant.description,
                 source,
                 name: grant.description,
+                ...(grant.activation ? { activation: grant.activation } : {}),
             });
         }
     }
@@ -230,6 +231,7 @@ export function choiceGrantToCharacterGrant(
         ref,
         source,
         name,
+        ...(grant.activation ? { activation: grant.activation } : {}),
     };
 }
 

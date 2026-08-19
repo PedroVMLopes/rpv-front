@@ -211,6 +211,10 @@ describe("AttacksActionsPanel roll integration", () => {
                     ref: "Second Wind",
                     name: "Second Wind",
                     source: { type: "class", id: "fighter" },
+                    activation: {
+                        cost: "bonus",
+                        resourceRef: "second-wind-uses",
+                    },
                 },
             ],
         });

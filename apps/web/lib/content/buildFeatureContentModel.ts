@@ -15,7 +15,7 @@ export type BuildFeatureContentModelInput = {
     description?: string;
     sourceLabel: string;
     costLabel?: string;
-    useLabel: string;
+    useLabel?: string;
     depleted?: boolean;
 };
 
@@ -32,11 +32,13 @@ export function buildFeatureContentModel(
     input: BuildFeatureContentModelInput
 ): FeatureContentModels {
     const shortDescription = firstParagraph(input.description);
-    const useAction: ContentUseActionSpec = {
-        kind: "cast",
-        label: input.useLabel,
-        disabled: Boolean(input.depleted),
-    };
+    const useAction: ContentUseActionSpec | undefined = input.useLabel
+        ? {
+              kind: "cast",
+              label: input.useLabel,
+              disabled: Boolean(input.depleted),
+          }
+        : undefined;
     const badges = input.costLabel
         ? [{ label: input.costLabel, variant: "muted" as const }]
         : [];

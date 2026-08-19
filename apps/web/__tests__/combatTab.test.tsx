@@ -73,6 +73,7 @@ const storedCharacter: StoredCharacter = {
             ref: "Second Wind",
             name: "Second Wind",
             source: { type: "class", id: "fighter" },
+            activation: { cost: "bonus", resourceRef: "second-wind-uses" },
         },
         {
             id: "class-wizard-spell-fire-bolt",

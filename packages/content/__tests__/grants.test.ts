@@ -2,10 +2,11 @@ import { readFileSync, readdirSync } from "fs";
 import { join } from "path";
 import {
     abilityScoreGrantsToModifiers,
-    fixedGrantsToCharacterGrants,
+    choiceGrantToCharacterGrant,
     countLanguageChoices,
-    resolveLanguagePool,
+    fixedGrantsToCharacterGrants,
     resolveGrantPool,
+    resolveLanguagePool,
     resolveSpellPool,
     statModifierGrantsToModifiers,
 } from "../src/grant/grants";
@@ -144,6 +145,54 @@ describe("fixedGrantsToCharacterGrants", () => {
             kind: "ability",
             ref: "Fey Ancestry",
             name: "Fey Ancestry",
+        });
+        expect(result[0]?.activation).toBeUndefined();
+    });
+
+    it("copies activation onto choice-resolved character grants", () => {
+        const grant: Grant = {
+            grantType: "ability",
+            choose: 1,
+            description: "Pick a combat feature",
+            activation: { cost: "bonus", resourceRef: "rage-uses" },
+        };
+
+        const result = choiceGrantToCharacterGrant(
+            grant,
+            { type: "class", id: "barbarian" },
+            "ability:0:0",
+            "Rage",
+            "Rage"
+        );
+
+        expect(result).toMatchObject({
+            kind: "ability",
+            ref: "Rage",
+            name: "Rage",
+            activation: { cost: "bonus", resourceRef: "rage-uses" },
+        });
+    });
+
+    it("copies activation onto ability character grants", () => {
+        const grants: Grant[] = [
+            {
+                grantType: "ability",
+                choose: 0,
+                description: "Action Surge",
+                activation: { cost: "special" },
+            },
+        ];
+
+        const result = fixedGrantsToCharacterGrants(grants, {
+            type: "class",
+            id: "fighter",
+        });
+
+        expect(result).toHaveLength(1);
+        expect(result[0]).toMatchObject({
+            kind: "ability",
+            ref: "Action Surge",
+            activation: { cost: "special" },
         });
     });
 

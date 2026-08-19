@@ -37,6 +37,11 @@ data here.
   - `grants.ts` is the **bridge**: it converts `Grant`s into domain `Modifier`s
     and `CharacterGrant`s. This is how authored content feeds the engine. Keep
     this translation generic — driven by the grant data, not by hardcoded names.
+  - `activation?` on an `ability` grant (`{ cost: string, resourceRef?: string }`)
+    opts the feature into the combat action catalog. Omitted abilities are
+    traits only (overview / Features & Traits). `cost` is an opaque slug
+    (`action`, `bonus`, `reaction`, `special`, `passive`, or a future system
+    slug). Do not infer combat membership from the feature name.
 - `grant/levelFeature.types.ts` — `LevelFeature { level, grants }` for per-level
   progression. `resolveLevelFeatures()` accumulates blocks where
   `characterLevel >= level`.
@@ -110,7 +115,7 @@ Convention: kebab-case refs (`spell-slots-1`, `rage-uses`, `ki-points`).
   subclassLevel: 3,
   grants: [ /* saves, armor, 2 skill picks */ ],
   featuresByLevel: [
-    { level: 2, grants: [{ grantType: "ability", choose: 0, description: "Action Surge" }] },
+    { level: 2, grants: [{ grantType: "ability", choose: 0, description: "Action Surge", activation: { cost: "special" } }] },
     { level: 3, grants: [{ grantType: "skill_proficiency", choose: 1, description: "Additional skill", options: [...] }] },
   ],
 }
@@ -120,7 +125,7 @@ Convention: kebab-case refs (`spell-slots-1`, `rage-uses`, `ki-points`).
   slug: "fighter-champion",
   classSlug: "fighter",
   featuresByLevel: [
-    { level: 3, grants: [{ grantType: "ability", choose: 0, description: "Improved Critical" }] },
+    { level: 3, grants: [{ grantType: "ability", choose: 0, description: "Improved Critical", activation: { cost: "passive" } }] },
   ],
 }
 ```
