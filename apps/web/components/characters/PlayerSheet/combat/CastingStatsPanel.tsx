@@ -15,7 +15,7 @@ import { formatModifier } from "@/lib/character/skillModifiers";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { useContentLocale } from "@/store/useContentLocale";
-import { OverviewPanel } from "./OverviewPanel";
+import { OverviewPanel } from "../overview/OverviewPanel";
 import { sheetInset } from "../playerSheetSurfaces";
 import { cn } from "@/lib/utils";
 
@@ -69,18 +69,22 @@ export function CastingStatsPanel({ stored }: CastingStatsPanelProps) {
     ];
 
     return (
-        <OverviewPanel>
+        <OverviewPanel title={t("combat.casting")}>
             <dl className="flex flex-col gap-2 text-sm">
                 {rows.map((row) => (
                     <div
                         key={row.label}
                         className={cn(
-                            "flex items-center justify-between gap-2 rounded-xl px-3 py-2",
+                            "flex items-start justify-between gap-2 rounded-xl px-3 py-2",
                             sheetInset
                         )}
                     >
-                        <dt className="text-muted-foreground">{row.label}</dt>
-                        <dd className="font-medium tabular-nums">{row.value}</dd>
+                        <dt className="min-w-0 wrap-break-word text-muted-foreground">
+                            {row.label}
+                        </dt>
+                        <dd className="shrink-0 font-medium tabular-nums">
+                            {row.value}
+                        </dd>
                     </div>
                 ))}
             </dl>

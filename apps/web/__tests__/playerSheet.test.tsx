@@ -376,12 +376,18 @@ describe("PlayerSheet", () => {
         expect(screen.queryByText("Soldier")).not.toBeInTheDocument();
     });
 
-    it("shows spell save DC and attack on overview for a caster", () => {
+    it("shows spell save DC and attack on combat for a caster", async () => {
+        const user = userEvent.setup();
         renderWithCharacters(
             <PlayerSheet stored={wizardCombatCharacter} />,
             [wizardCombatCharacter]
         );
 
+        expect(screen.queryByText("Spell save DC")).not.toBeInTheDocument();
+
+        await user.click(screen.getByRole("tab", { name: "Actions" }));
+
+        expect(screen.getByText("Spellcasting")).toBeInTheDocument();
         expect(screen.getByText("Spell save DC")).toBeInTheDocument();
         expect(
             screen.getByText("Spell save DC").closest("div")?.querySelector("dd")
@@ -389,10 +395,13 @@ describe("PlayerSheet", () => {
         expect(screen.getByText("Spell attack")).toBeInTheDocument();
         expect(screen.getByText("+5")).toBeInTheDocument();
         expect(screen.getByText("Casting ability")).toBeInTheDocument();
-        expect(screen.getByText("Intelligence")).toBeInTheDocument();
+        expect(
+            screen.getByText("Casting ability").closest("div")?.querySelector("dd")
+        ).toHaveTextContent("Intelligence");
     });
 
-    it("shows class resources on overview when the character has uses", () => {
+    it("shows class resources on combat when the character has uses", async () => {
+        const user = userEvent.setup();
         const barbarian: StoredCharacter = {
             ...storedCharacter,
             id: "char-sheet-rage",
@@ -418,6 +427,11 @@ describe("PlayerSheet", () => {
         };
 
         renderWithCharacters(<PlayerSheet stored={barbarian} />, [barbarian]);
+
+        expect(screen.queryByText("Class Resources")).not.toBeInTheDocument();
+        expect(screen.queryByText("Rage Uses")).not.toBeInTheDocument();
+
+        await user.click(screen.getByRole("tab", { name: "Actions" }));
 
         expect(screen.getByText("Class Resources")).toBeInTheDocument();
         expect(screen.getByText("Rage Uses")).toBeInTheDocument();

@@ -136,6 +136,7 @@ describe("CombatTab", () => {
             <CombatTabConnected characterId={storedCharacter.id} />
         );
 
+        expect(screen.getByText("Class Resources")).toBeInTheDocument();
         expect(screen.getByText("Defense & Saves")).toBeInTheDocument();
         expect(screen.getByText("Strength")).toBeInTheDocument();
         expect(screen.getByText("Prof")).toBeInTheDocument();
@@ -145,6 +146,15 @@ describe("CombatTab", () => {
             screen.getByText("Conditions & Immunities")
         ).toBeInTheDocument();
         expect(screen.getByText("None yet")).toBeInTheDocument();
+
+        const resourcesHeading = screen.getByText("Class Resources");
+        const defenseHeading = screen.getByText("Defense & Saves");
+        expect(
+            Boolean(
+                resourcesHeading.compareDocumentPosition(defenseHeading) &
+                    Node.DOCUMENT_POSITION_FOLLOWING
+            )
+        ).toBe(true);
     });
 
     it("lists equipped weapons, spells, and features with roll/use actions", () => {
@@ -153,8 +163,6 @@ describe("CombatTab", () => {
         );
 
         expect(screen.getAllByText("Actions").length).toBeGreaterThan(0);
-        expect(screen.getByLabelText("Hit Points 18/20")).toBeInTheDocument();
-        expect(screen.getByText("Lv1 2/2")).toBeInTheDocument();
         expect(screen.getByText("Longsword")).toBeInTheDocument();
         expect(screen.getByText("Fire Bolt")).toBeInTheDocument();
         expect(screen.getByText("Second Wind")).toBeInTheDocument();
@@ -169,14 +177,15 @@ describe("CombatTab", () => {
         ).toBeInTheDocument();
     });
 
-    it("shows the turn status rail with current hp and resource summary", () => {
+    it("shows class resources above defense saves", () => {
         renderWithProviders(
             <CombatTabConnected characterId={storedCharacter.id} />
         );
 
-        expect(screen.getByLabelText("Hit Points 18/20")).toBeInTheDocument();
-        expect(screen.getByLabelText(/AC \d+/)).toBeInTheDocument();
-        expect(screen.getByText("Lv1 2/2")).toBeInTheDocument();
+        expect(screen.getByText("Class Resources")).toBeInTheDocument();
+        expect(screen.getByText("Level 1")).toBeInTheDocument();
+        expect(screen.getByText("2 / 2")).toBeInTheDocument();
+        expect(screen.queryByText("Spellcasting")).not.toBeInTheDocument();
     });
 });
 

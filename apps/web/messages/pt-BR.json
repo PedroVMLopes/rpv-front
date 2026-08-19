@@ -532,6 +532,7 @@
     "darkvisionValue": "{range} pés",
     "combat": {
       "attacksActions": "Ações",
+      "casting": "Conjuração",
       "classResources": "Recursos de Classe",
       "defenseSaves": "Defesa e Resistências",
       "stat": "Atributo",

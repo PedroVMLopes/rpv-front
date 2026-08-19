@@ -532,6 +532,7 @@
     "darkvisionValue": "{range} ft",
     "combat": {
       "attacksActions": "Actions",
+      "casting": "Spellcasting",
       "classResources": "Class Resources",
       "defenseSaves": "Defense & Saves",
       "stat": "Stat",
