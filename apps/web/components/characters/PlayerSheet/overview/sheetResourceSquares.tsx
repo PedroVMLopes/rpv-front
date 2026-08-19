@@ -99,8 +99,8 @@ export function ResourceSquareButton({
             }}
             style={style}
             className={cn(
-                "size-6 shrink-0 rounded-sm border border-primary bg-primary transition-opacity",
-                isUsed && "opacity-25"
+                "size-6 shrink-0 rounded-sm border border-primary bg-primary transition-opacity shadow-xs hover:shadow-md",
+                isUsed && "opacity-25 shadow-none"
             )}
         />
     );

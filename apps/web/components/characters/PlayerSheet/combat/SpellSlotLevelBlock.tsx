@@ -8,7 +8,6 @@ import {
     spellSlotGridPosition,
     spellSlotGridRowCount,
 } from "../overview/sheetResourceSquares";
-import { Divide } from "lucide-react";
 
 type SpellSlotLevelBlockProps = {
     rowKey: string;
@@ -35,13 +34,13 @@ export function SpellSlotLevelBlock({
     const rowCount = spellSlotGridRowCount(count);
 
     return (
-        <div className="flex flex-col bg-background rounded-xl shadow-xs w-fit items-center">            
-            <p className="text-sm font-semibold text-foreground p-1 px-4">
+        <div className="flex w-fit shrink-0 flex-col rounded-xl shadow-xs bg-popover text-popover-foreground border-2"> 
+            <p className="text-sm font-semibold pt-1 px-4">
                 {label}
             </p>
             <div
                 className={cn(
-                    "flex min-w-0 w-full flex-col gap-2 rounded-xl rounded-t-none border-2 shadow-xs bg-popover p-2 text-popover-foreground"
+                    "flex min-w-0 w-full flex-col gap-2 rounded-xl rounded-t-none shadow-xs p-2 pt-1"
                 )}
             >
                 <div

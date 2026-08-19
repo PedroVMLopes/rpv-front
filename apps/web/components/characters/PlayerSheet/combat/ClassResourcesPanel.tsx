@@ -144,7 +144,7 @@ export function ClassResourcesPanel({ stored }: ClassResourcesPanelProps) {
 
             {slots.length > 0 ? (
                 <OverviewPanel title={t("combat.spellSlots")}>
-                    <div className="flex flex-col gap-2">
+                    <div className="flex min-w-0 flex-wrap items-start gap-2">
                         {slots.map((entry) => {
                             const spellLevel = entry.spellLevel;
                             if (spellLevel === undefined) {
