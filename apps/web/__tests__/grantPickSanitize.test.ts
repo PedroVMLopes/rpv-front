@@ -90,6 +90,29 @@ describe("sanitizeGrantPicks", () => {
         });
     });
 
+    it("keeps fighter starting-equipment picks for the selected equipment branch", () => {
+        const grantPicks = {
+            "class:fighter:base:exclusive:starting-wealth": "equipment",
+            "class:fighter:base:inventory_item:5:0": "0",
+            "class:fighter:base:inventory_item:6:0": "0",
+            "class:fighter:base:inventory_item:7:0": "0",
+            "class:fighter:base:inventory_item:8:0": "0",
+            "class:fighter:base:skill_proficiency:3:0": "athletics",
+        };
+
+        const selections = sanitizeGrantPicks(
+            {
+                ...baseSelections,
+                characterClass: "fighter",
+                choices: { grantPicks },
+            },
+            "en",
+            "dnd"
+        );
+
+        expect(selections.choices.grantPicks).toEqual(grantPicks);
+    });
+
     it("drops level 3 class picks when character level falls below 3", () => {
         const selections = sanitizeGrantPicks(
             {
