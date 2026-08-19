@@ -16,10 +16,20 @@ describe("parseDisposition", () => {
         ).toEqual({ solitarySociable: 14 });
     });
 
+    it("accepts the inclusive 1 and 20 bounds", () => {
+        expect(
+            parseDisposition({
+                solitarySociable: 1,
+                improviserPlanner: 20,
+            })
+        ).toEqual({ solitarySociable: 1, improviserPlanner: 20 });
+    });
+
     it("returns an empty map for missing or invalid values", () => {
         expect(parseDisposition(undefined)).toEqual({});
         expect(parseDisposition([])).toEqual({});
         expect(parseDisposition("nope")).toEqual({});
+        expect(parseDisposition({ solitarySociable: "14" })).toEqual({});
     });
 });
 

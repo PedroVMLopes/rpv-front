@@ -2,6 +2,7 @@ import type { FlavorTable } from "@rpv/content";
 import {
     boundFlavorTables,
     flavorFieldMatchesTable,
+    flavorSlotTextFromSelect,
     flavorTableFormPath,
     joinFlavorSlots,
     listFilledBackgroundDetails,
@@ -190,6 +191,19 @@ describe("selectValueForFlavorSlot", () => {
         expect(selectValueForFlavorSlot("Truth first.", table)).toBe("ideal-01");
         expect(selectValueForFlavorSlot("Mine.", table)).toBe(FLAVOR_CUSTOM_SENTINEL);
         expect(selectValueForFlavorSlot("", table)).toBe("");
+    });
+});
+
+describe("flavorSlotTextFromSelect", () => {
+    it("restores catalog labels and custom text from select values", () => {
+        expect(flavorSlotTextFromSelect("ideal-01", table, "ignored")).toBe(
+            "Truth first."
+        );
+        expect(
+            flavorSlotTextFromSelect(FLAVOR_CUSTOM_SENTINEL, table, "Mine.")
+        ).toBe("Mine.");
+        expect(flavorSlotTextFromSelect("", table, "Mine.")).toBe("");
+        expect(flavorSlotTextFromSelect("missing-slug", table, "Mine.")).toBe("");
     });
 });
 

@@ -1,13 +1,18 @@
 /**
  * @jest-environment jsdom
  */
-import { render, screen, within } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { NextIntlClientProvider } from "next-intl";
 import { PlayerCharacterForm } from "../components/characters/PlayerCharacterForm";
 import { getCreationSidebar } from "./helpers/characterCreationNav";
+import { applyAbilityScoreValidation } from "../lib/character/abilityScoreGeneration";
+import { applyChoiceValidation } from "../lib/character/choiceValidation";
+import { createDynamicSchema } from "../lib/schema/zodDynamic";
 import { dndCharacterFields } from "../presets/dnd/characterFields";
+import { dndCharacterSchema } from "../presets/dnd/characterSchema";
 import { dndStatConfig } from "../presets/dnd/characterStats";
 import enMessages from "../messages/en.json";
 
@@ -275,5 +280,112 @@ describe("PlayerCharacterForm", () => {
         expect(
             sidebar.getByRole("button", { name: "Class & Level" }).className
         ).toMatch(/bg-primary/);
+    });
+});
+
+function playerSaveSchema() {
+    return applyAbilityScoreValidation(
+        applyChoiceValidation(
+            createDynamicSchema(dndCharacterSchema, "player"),
+            "en",
+            "dnd"
+        ),
+        dndStatConfig
+    );
+}
+
+function SchemaAwarePlayerFormHarness({
+    defaultValues = {},
+    onSave = jest.fn(),
+    initialStepId,
+}: {
+    defaultValues?: Record<string, unknown>;
+    onSave?: (data: Record<string, unknown>) => void;
+    initialStepId?: string;
+}) {
+    const form = useForm({
+        resolver: zodResolver(playerSaveSchema()),
+        defaultValues,
+    });
+    const baseFields = [
+        ...dndCharacterFields.common,
+        ...dndCharacterFields.player,
+    ];
+
+    return (
+        <NextIntlClientProvider locale="en" messages={enMessages}>
+            <PlayerCharacterForm
+                mode="create"
+                system="dnd"
+                form={form}
+                baseFields={baseFields}
+                statConfig={dndStatConfig}
+                contentLocale="en"
+                onSave={onSave}
+                initialStepId={initialStepId}
+            />
+        </NextIntlClientProvider>
+    );
+}
+
+describe("PlayerCharacterForm save payload", () => {
+    const extraPersonaValues = {
+        name: "Hero",
+        race: "human",
+        characterClass: "wizard",
+        level: 5,
+        background: "sage",
+        abilityScoreMethod: "manual",
+        attributes: dndStatConfig.abilities.map((ability) => ({
+            name: ability.name,
+            value: 10,
+        })),
+        build: "Lean",
+        voice: "Soft",
+        disposition: { solitarySociable: 14, seriousEasygoing: 3 },
+        backgroundDetails: { "guild-business": "Alchemists" },
+    };
+
+    it("strips persona fields from the Zod schema used by create/edit pages", () => {
+        const parsed = playerSaveSchema().safeParse(extraPersonaValues);
+
+        expect(parsed.success).toBe(true);
+        if (!parsed.success) {
+            return;
+        }
+
+        expect(parsed.data).not.toHaveProperty("build");
+        expect(parsed.data).not.toHaveProperty("voice");
+        expect(parsed.data).not.toHaveProperty("disposition");
+        expect(parsed.data).not.toHaveProperty("backgroundDetails");
+    });
+
+    it("keeps persona and flavor fields that the schema would strip", async () => {
+        const user = userEvent.setup();
+        const onSave = jest.fn();
+
+        render(
+            <SchemaAwarePlayerFormHarness
+                defaultValues={extraPersonaValues}
+                onSave={onSave}
+                initialStepId="review"
+            />
+        );
+
+        const sidebar = getCreationSidebar();
+        await user.click(
+            sidebar.getByRole("button", { name: "Save Character" })
+        );
+
+        expect(onSave).toHaveBeenCalledWith(
+            expect.objectContaining({
+                name: "Hero",
+                characterClass: "wizard",
+                build: "Lean",
+                voice: "Soft",
+                disposition: { solitarySociable: 14, seriousEasygoing: 3 },
+                backgroundDetails: { "guild-business": "Alchemists" },
+            })
+        );
     });
 });
