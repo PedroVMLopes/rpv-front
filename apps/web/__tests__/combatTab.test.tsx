@@ -193,6 +193,9 @@ describe("CombatTab", () => {
         });
         expect(slot1).toHaveStyle({ gridColumn: "1", gridRow: "1" });
         expect(slot2).toHaveStyle({ gridColumn: "2", gridRow: "1" });
+        expect(slot1.parentElement).toHaveStyle({
+            gridTemplateRows: "repeat(1, auto)",
+        });
         expect(screen.queryByText("2 / 2")).not.toBeInTheDocument();
         expect(screen.queryByText("Spellcasting")).not.toBeInTheDocument();
     });

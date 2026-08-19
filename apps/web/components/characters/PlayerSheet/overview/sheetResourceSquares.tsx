@@ -40,6 +40,14 @@ export function spellSlotGridColumnCount(slotCount: number): number {
     return 2 + Math.ceil((slotCount - 4) / 2);
 }
 
+export function spellSlotGridRowCount(slotCount: number): number {
+    if (slotCount <= 0) {
+        return 0;
+    }
+
+    return slotCount <= 2 ? 1 : 2;
+}
+
 export function toggleSlotCount(
     index: number,
     total: number,

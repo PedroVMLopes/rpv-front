@@ -1,6 +1,7 @@
 import {
     spellSlotGridColumnCount,
     spellSlotGridPosition,
+    spellSlotGridRowCount,
 } from "../components/characters/PlayerSheet/overview/sheetResourceSquares";
 
 describe("spellSlotGridPosition", () => {
@@ -33,5 +34,16 @@ describe("spellSlotGridColumnCount", () => {
         expect(spellSlotGridColumnCount(6)).toBe(3);
         expect(spellSlotGridColumnCount(7)).toBe(4);
         expect(spellSlotGridColumnCount(8)).toBe(4);
+    });
+});
+
+describe("spellSlotGridRowCount", () => {
+    it("keeps a single row until a third slot needs the bottom line", () => {
+        expect(spellSlotGridRowCount(0)).toBe(0);
+        expect(spellSlotGridRowCount(1)).toBe(1);
+        expect(spellSlotGridRowCount(2)).toBe(1);
+        expect(spellSlotGridRowCount(3)).toBe(2);
+        expect(spellSlotGridRowCount(4)).toBe(2);
+        expect(spellSlotGridRowCount(5)).toBe(2);
     });
 });

@@ -6,7 +6,9 @@ import {
     ResourceSquareButton,
     spellSlotGridColumnCount,
     spellSlotGridPosition,
+    spellSlotGridRowCount,
 } from "../overview/sheetResourceSquares";
+import { Divide } from "lucide-react";
 
 type SpellSlotLevelBlockProps = {
     rowKey: string;
@@ -30,36 +32,40 @@ export function SpellSlotLevelBlock({
     }
 
     const columnCount = spellSlotGridColumnCount(count);
+    const rowCount = spellSlotGridRowCount(count);
 
     return (
-        <div
-            className={cn(
-                "flex min-w-0 w-fit flex-col gap-2 rounded-xl border-custom bg-popover p-3 text-popover-foreground"
-            )}
-        >
-            <p className="text-xs font-semibold text-muted-foreground">
+        <div className="flex flex-col bg-background rounded-xl shadow-xs w-fit items-center">            
+            <p className="text-sm font-semibold text-foreground py-1">
                 {label}
             </p>
             <div
-                className="grid w-fit grid-rows-2 gap-1"
-                style={{
-                    gridTemplateColumns: `repeat(${columnCount}, auto)`,
-                }}
+                className={cn(
+                    "flex min-w-0 w-fit flex-col gap-2 rounded-xl rounded-t-none border-2 shadow-xs bg-popover p-2 text-popover-foreground"
+                )}
             >
-                {Array.from({ length: count }, (_, index) => {
-                    const isUsed = isSlotUsed(index, count, usedCount);
-                    const { col, row } = spellSlotGridPosition(index);
+                <div
+                    className="grid w-fit gap-1"
+                    style={{
+                        gridTemplateColumns: `repeat(${columnCount}, auto)`,
+                        gridTemplateRows: `repeat(${rowCount}, auto)`,
+                    }}
+                >
+                    {Array.from({ length: count }, (_, index) => {
+                        const isUsed = isSlotUsed(index, count, usedCount);
+                        const { col, row } = spellSlotGridPosition(index);
 
-                    return (
-                        <ResourceSquareButton
-                            key={`${rowKey}:${index}`}
-                            isUsed={isUsed}
-                            ariaLabel={slotAriaLabel(index + 1, count, isUsed)}
-                            onClick={() => onToggle(index)}
-                            style={{ gridColumn: col, gridRow: row }}
-                        />
-                    );
-                })}
+                        return (
+                            <ResourceSquareButton
+                                key={`${rowKey}:${index}`}
+                                isUsed={isUsed}
+                                ariaLabel={slotAriaLabel(index + 1, count, isUsed)}
+                                onClick={() => onToggle(index)}
+                                style={{ gridColumn: col, gridRow: row }}
+                            />
+                        );
+                    })}
+                </div>
             </div>
         </div>
     );
