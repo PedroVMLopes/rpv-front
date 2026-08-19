@@ -511,7 +511,10 @@ describe("PlayerSheet", () => {
 
         expect(screen.queryByText(/Melee main/)).not.toBeInTheDocument();
         expect(
-            screen.queryByRole("button", { name: "Roll Longsword" })
+            screen.queryByRole("button", { name: "d20 +5" })
+        ).not.toBeInTheDocument();
+        expect(
+            screen.queryByRole("button", { name: "Expand Longsword" })
         ).not.toBeInTheDocument();
     });
 
@@ -520,11 +523,9 @@ describe("PlayerSheet", () => {
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
         await user.click(screen.getByRole("tab", { name: "Actions" }));
-        await user.click(screen.getByRole("button", { name: "Roll Longsword" }));
+        await user.click(screen.getByRole("button", { name: "d20 +5" }));
 
-        expect(
-            screen.getByText("Longsword — attack d20 +5")
-        ).toBeInTheDocument();
+        expect(screen.getByText("Longsword — d20 +5")).toBeInTheDocument();
     });
 
     it("shows ability scores with modifiers", () => {

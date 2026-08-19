@@ -130,30 +130,31 @@ describe("AttacksActionsPanel roll integration", () => {
 
         expect(screen.getByText("Action")).toBeInTheDocument();
         expect(screen.getByText("Longsword")).toBeInTheDocument();
-        expect(screen.getByText(/\+5/)).toBeInTheDocument();
-        expect(screen.getByText(/1d8\+3 slashing/)).toBeInTheDocument();
-        expect(screen.getByRole("button", { name: "Roll Longsword" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "d20 +5" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /1d8/ })).toBeInTheDocument();
+        expect(screen.getByText("To hit")).toBeInTheDocument();
+        expect(screen.getByText("Damage")).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: "Expand Longsword" })
+        ).toBeInTheDocument();
     });
 
-    it("opens attack_then_damage flow for longsword", async () => {
+    it("opens attack-only roll for longsword", async () => {
         const user = userEvent.setup();
         renderPanel(fighterStored);
 
-        await user.click(screen.getByRole("button", { name: "Roll Longsword" }));
+        await user.click(screen.getByRole("button", { name: "d20 +5" }));
 
-        expect(
-            screen.getByText("Longsword — attack d20 +5")
-        ).toBeInTheDocument();
+        expect(screen.getByText("Longsword — d20 +5")).toBeInTheDocument();
+    });
 
-        await user.click(screen.getByRole("button", { name: "14" }));
-        expect(
-            screen.getByText("Longsword — damage d8")
-        ).toBeInTheDocument();
+    it("opens damage-only roll for longsword", async () => {
+        const user = userEvent.setup();
+        renderPanel(fighterStored);
 
-        await user.click(screen.getByRole("button", { name: "5" }));
-        expect(toastMock).toHaveBeenCalledWith(
-            "Longsword: attack 19, damage 8"
-        );
+        await user.click(screen.getByRole("button", { name: /1d8/ }));
+
+        expect(screen.getByText(/Longsword — damage/)).toBeInTheDocument();
     });
 
     it("shows wizard spell previews and opens fire-bolt attack roll", async () => {
@@ -162,24 +163,22 @@ describe("AttacksActionsPanel roll integration", () => {
 
         expect(screen.getByText("Fire Bolt")).toBeInTheDocument();
         expect(screen.getByText("Burning Hands")).toBeInTheDocument();
-        expect(screen.getByText(/DC 13/)).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "d20 +5" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "1d10" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "3d6" })).toBeInTheDocument();
 
-        await user.click(screen.getByRole("button", { name: "Roll Fire Bolt" }));
-        expect(
-            screen.getByText("Fire Bolt — attack d20 +5")
-        ).toBeInTheDocument();
+        await user.click(screen.getByRole("button", { name: "d20 +5" }));
+        expect(screen.getByText("Fire Bolt — d20 +5")).toBeInTheDocument();
     });
 
-    it("opens damage_only flow with three d6 steps for burning hands", async () => {
+    it("opens damage-only flow with three d6 steps for burning hands", async () => {
         const user = userEvent.setup();
         renderPanel(wizardStored);
 
-        await user.click(
-            screen.getByRole("button", { name: "Roll Burning Hands" })
-        );
+        await user.click(screen.getByRole("button", { name: "3d6" }));
 
         expect(
-            screen.getByText(/Burning Hands — damage 1\/3 \(d6\) \(DC 13\)/)
+            screen.getByText(/Burning Hands — damage/)
         ).toBeInTheDocument();
 
         await user.click(screen.getByRole("button", { name: "4" }));
@@ -215,6 +214,15 @@ describe("AttacksActionsPanel roll integration", () => {
                 },
             ],
         });
+
+        expect(screen.getByText("Second Wind")).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: "Expand Second Wind" })
+        ).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Use" })).toBeInTheDocument();
+
+        await user.click(screen.getByRole("button", { name: "Use" }));
+        expect(toastMock).toHaveBeenCalledWith("Second Wind");
 
         await user.click(screen.getByRole("tab", { name: "Spells" }));
 

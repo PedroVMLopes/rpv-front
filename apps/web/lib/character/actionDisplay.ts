@@ -1,4 +1,4 @@
-import type { Locale, Stats } from "@rpv/domain";
+import type { Locale, ModifierSourceType, Stats } from "@rpv/domain";
 import {
     getAbilityFeatureDescription,
     getFeatureActionMeta,
@@ -15,6 +15,8 @@ import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import {
     listEquippedWeaponActions,
     listSpellActions,
+    type SpellAction,
+    type WeaponAction,
 } from "@/lib/character/combatActions";
 import {
     buildSpellAttackRollRequest,
@@ -65,6 +67,9 @@ export type DisplayAction = {
     };
     stateTags?: string[];
     tags?: string[];
+    weapon?: WeaponAction;
+    spell?: SpellAction;
+    featureSource?: ModifierSourceType;
 };
 
 export type ActionsStatusSummary = {
@@ -149,6 +154,7 @@ function buildWeaponActions(
                 "weapon",
                 weapon.slotId.startsWith("ranged") ? "ranged" : "melee",
             ],
+            weapon,
         };
     });
 }
@@ -212,6 +218,7 @@ function buildSpellActions(
                 entry?.requiresConcentration ? "Concentration" : null,
             ].filter(Boolean) as string[],
             tags: ["spell", entry?.levelInt === 0 ? "cantrip" : "leveled"],
+            spell,
         };
     });
 }
@@ -271,6 +278,7 @@ function buildFeatureActions(
                 stateTags:
                     meta?.actionCost === "passive" ? ["Passive"] : undefined,
                 tags: meta?.tags,
+                featureSource: grant.source.type,
             };
         });
 }

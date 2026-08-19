@@ -24,7 +24,7 @@ import type { Grant } from "@rpv/content";
 
 export type ContentDetailModel = {
     id: string;
-    kind: "spell" | "item" | "catalog";
+    kind: "spell" | "item" | "catalog" | "feature";
     title: string;
     sections: ContentDetailSection[];
     shortDescription?: string;
@@ -38,7 +38,7 @@ export type ContentDetailModel = {
 
 export type ContentSummaryModel = {
     id: string;
-    kind: "spell" | "item";
+    kind: "spell" | "item" | "feature";
     title: string;
     badges: Array<{ label: string; variant?: "default" | "muted" }>;
     shortDescription?: string;

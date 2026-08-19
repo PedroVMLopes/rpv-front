@@ -55,6 +55,12 @@ const storedCharacter: StoredCharacter = {
             source: { type: "class", id: "fighter" },
         },
         {
+            id: "class-fighter-weapon_proficiency-martial-weapons-0",
+            kind: "proficiency",
+            ref: "martial-weapons",
+            source: { type: "class", id: "fighter" },
+        },
+        {
             id: "class-fighter-resource-spell-slots-1",
             kind: "resource",
             ref: "spell-slots-1",
@@ -170,11 +176,18 @@ describe("CombatTab", () => {
             screen.getByText(/regain hit points equal to 1d10/i)
         ).toBeInTheDocument();
         expect(
-            screen.getByRole("button", { name: "Roll Longsword" })
+            screen.getByRole("button", { name: "d20 +5" })
         ).toBeInTheDocument();
         expect(
-            screen.getByRole("button", { name: /Use: Second Wind/i })
+            screen.getByRole("button", { name: /1d8/ })
         ).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: "Expand Longsword" })
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: "Expand Second Wind" })
+        ).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Use" })).toBeInTheDocument();
     });
 
     it("shows spell slot squares above defense saves", () => {
