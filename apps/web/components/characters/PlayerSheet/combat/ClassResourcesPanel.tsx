@@ -148,6 +148,11 @@ export function ClassResourcesPanel({ stored }: ClassResourcesPanelProps) {
                 <OverviewPanel title={t("combat.spellSlots")}>
                     <div className="flex flex-col gap-2">
                         {slots.map((entry) => {
+                            const spellLevel = entry.spellLevel;
+                            if (spellLevel === undefined) {
+                                return null;
+                            }
+
                             const usedCount = entry.max - entry.current;
 
                             return (
@@ -155,7 +160,7 @@ export function ClassResourcesPanel({ stored }: ClassResourcesPanelProps) {
                                     key={entry.ref}
                                     rowKey={entry.ref}
                                     label={t("spellSlotLevelLabel", {
-                                        level: entry.spellLevel,
+                                        level: spellLevel,
                                     })}
                                     count={entry.max}
                                     usedCount={usedCount}
