@@ -12,6 +12,7 @@ import {
     rollDie,
     type DieSides,
 } from "@/lib/roll/diceRoll";
+import { SheetDiceFaceButton } from "./SheetDiceFaceButton";
 
 type DiceResultStepProps = {
     sides: DieSides;
@@ -59,15 +60,13 @@ function D100ResultPicker({
                 </p>
                 <div className="grid grid-cols-5 gap-1.5">
                     {D100_TENS.map((tens) => (
-                        <Button
+                        <SheetDiceFaceButton
                             key={tens}
-                            type="button"
-                            variant={selectedTens === tens ? "default" : "outline"}
-                            size="sm"
+                            selected={selectedTens === tens}
                             onClick={() => handleTensSelect(tens)}
                         >
                             {formatD100TensLabel(tens)}
-                        </Button>
+                        </SheetDiceFaceButton>
                     ))}
                 </div>
             </div>
@@ -77,15 +76,13 @@ function D100ResultPicker({
                 </p>
                 <div className="grid grid-cols-5 gap-1.5">
                     {D100_UNITS.map((units) => (
-                        <Button
+                        <SheetDiceFaceButton
                             key={units}
-                            type="button"
-                            variant={selectedUnits === units ? "default" : "outline"}
-                            size="sm"
+                            selected={selectedUnits === units}
                             onClick={() => handleUnitsSelect(units)}
                         >
                             {units}
-                        </Button>
+                        </SheetDiceFaceButton>
                     ))}
                 </div>
             </div>
@@ -109,16 +106,13 @@ export function DiceResultStep({ sides, onSelectValue }: DiceResultStepProps) {
         <div className="flex flex-col gap-4">
             <div className={cn("grid gap-1.5", resultGridClassName(sides))}>
                 {values.map((value) => (
-                    <Button
+                    <SheetDiceFaceButton
                         key={value}
-                        type="button"
-                        variant="outline"
-                        size="sm"
                         className={cn(sides > 20 && "h-9 px-2 text-xs")}
                         onClick={() => onSelectValue(value)}
                     >
                         {value}
-                    </Button>
+                    </SheetDiceFaceButton>
                 ))}
             </div>
             <Button type="button" onClick={() => onSelectValue(rollDie(sides))}>
