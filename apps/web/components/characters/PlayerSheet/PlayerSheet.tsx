@@ -12,7 +12,6 @@ import { InventoryTab } from "./tabs/InventoryTab";
 import { MagicTab } from "./tabs/MagicTab";
 import { NotesTab } from "./tabs/NotesTab";
 import { PlayerSheetActionBar } from "./PlayerSheetActionBar";
-import { DiceRollAssistant } from "./roll/DiceRollAssistant";
 import { RollAssistantProvider } from "./roll/RollAssistantProvider";
 
 type PlayerSheetProps = {
@@ -50,7 +49,6 @@ export function PlayerSheet({ stored }: PlayerSheetProps) {
                     {activeTab === "notes" ? <NotesTab stored={stored} /> : null}
                 </main>
                 <PlayerSheetActionBar />
-                <DiceRollAssistant />
             </div>
         </RollAssistantProvider>
     );

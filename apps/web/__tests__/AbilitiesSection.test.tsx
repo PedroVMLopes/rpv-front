@@ -6,7 +6,7 @@ import userEvent from "@testing-library/user-event";
 import { NextIntlClientProvider } from "next-intl";
 import { AbilitiesSection } from "../components/characters/PlayerSheet/overview/AbilitiesSection";
 import { PortraitSection } from "../components/characters/PlayerSheet/overview/PortraitSection";
-import { DiceRollAssistant } from "../components/characters/PlayerSheet/roll/DiceRollAssistant";
+import { PlayerSheetActionBar } from "../components/characters/PlayerSheet/PlayerSheetActionBar";
 import { RollAssistantProvider } from "../components/characters/PlayerSheet/roll/RollAssistantProvider";
 import type { StoredCharacter } from "../lib/character/storedCharacter";
 import { useCharacterStore } from "../store/useCharacterStore";
@@ -53,7 +53,7 @@ function renderSection(stored: StoredCharacter) {
         <NextIntlClientProvider locale="en" messages={enMessages}>
             <RollAssistantProvider>
                 <AbilitiesSection stored={stored} />
-                <DiceRollAssistant />
+                <PlayerSheetActionBar />
             </RollAssistantProvider>
         </NextIntlClientProvider>
     );

@@ -16,7 +16,6 @@ import {
 type DiceResultStepProps = {
     sides: DieSides;
     onSelectValue: (value: number) => void;
-    onCancel: () => void;
 };
 
 function resultGridClassName(sides: DieSides): string {
@@ -29,10 +28,8 @@ function resultGridClassName(sides: DieSides): string {
 
 function D100ResultPicker({
     onSelectValue,
-    onCancel,
 }: {
     onSelectValue: (value: number) => void;
-    onCancel: () => void;
 }) {
     const t = useTranslations("playerSheet.roll");
     const [selectedTens, setSelectedTens] = useState<number | null>(null);
@@ -92,29 +89,18 @@ function D100ResultPicker({
                     ))}
                 </div>
             </div>
-            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                <Button type="button" variant="ghost" onClick={onCancel}>
-                    {t("cancel")}
-                </Button>
-                <Button type="button" onClick={() => onSelectValue(rollDie(100))}>
-                    {t("randomRoll")}
-                </Button>
-            </div>
+            <Button type="button" onClick={() => onSelectValue(rollDie(100))}>
+                {t("randomRoll")}
+            </Button>
         </div>
     );
 }
 
-export function DiceResultStep({
-    sides,
-    onSelectValue,
-    onCancel,
-}: DiceResultStepProps) {
+export function DiceResultStep({ sides, onSelectValue }: DiceResultStepProps) {
     const t = useTranslations("playerSheet.roll");
 
     if (sides === 100) {
-        return (
-            <D100ResultPicker onSelectValue={onSelectValue} onCancel={onCancel} />
-        );
+        return <D100ResultPicker onSelectValue={onSelectValue} />;
     }
 
     const values = Array.from({ length: sides }, (_, index) => index + 1);
@@ -135,14 +121,9 @@ export function DiceResultStep({
                     </Button>
                 ))}
             </div>
-            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                <Button type="button" variant="ghost" onClick={onCancel}>
-                    {t("cancel")}
-                </Button>
-                <Button type="button" onClick={() => onSelectValue(rollDie(sides))}>
-                    {t("randomRoll")}
-                </Button>
-            </div>
+            <Button type="button" onClick={() => onSelectValue(rollDie(sides))}>
+                {t("randomRoll")}
+            </Button>
         </div>
     );
 }

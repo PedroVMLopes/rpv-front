@@ -2,7 +2,6 @@
 
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
     resolveAttackThenDamageTotal,
     resolveD20TestTotal,
@@ -16,19 +15,24 @@ import {
     useRollAssistant,
 } from "./RollAssistantProvider";
 
-export function DiceRollAssistant() {
+type DiceRollAssistantProps = {
+    onDismiss: () => void;
+};
+
+export function DiceRollAssistant({ onDismiss }: DiceRollAssistantProps) {
     const t = useTranslations("playerSheet.roll");
     const { state, selectDie, submitRollValue, close } = useRollAssistant();
-    const { open, mode, request, selectedDie, stepIndex, attackRoll, damageRolls } =
+    const { mode, request, selectedDie, stepIndex, attackRoll, damageRolls } =
         state;
 
-    const handleClose = () => {
+    const handleDismiss = () => {
         close();
+        onDismiss();
     };
 
     const completeManualRoll = (sides: number, value: number) => {
         toast(t("toastResult", { sides, value }));
-        handleClose();
+        handleDismiss();
     };
 
     const handleSelectValue = (value: number) => {
@@ -44,7 +48,7 @@ export function DiceRollAssistant() {
         if (request.kind === "d20_test") {
             const total = resolveD20TestTotal(request, value);
             toast(t("contextToast", { label: request.label, total }));
-            handleClose();
+            handleDismiss();
             return;
         }
 
@@ -66,7 +70,7 @@ export function DiceRollAssistant() {
                     damageTotal,
                 })
             );
-            handleClose();
+            handleDismiss();
             return;
         }
 
@@ -85,11 +89,11 @@ export function DiceRollAssistant() {
                     total,
                 })
             );
-            handleClose();
+            handleDismiss();
         }
     };
 
-    const dialogTitle = (() => {
+    const panelTitle = (() => {
         if (mode === "request" && request) {
             if (request.kind === "d20_test") {
                 return t("contextTitle", {
@@ -138,35 +142,19 @@ export function DiceRollAssistant() {
         mode === "request" || (mode === "manual" && selectedDie !== null);
 
     return (
-        <Dialog
-            open={open}
-            onOpenChange={(nextOpen) => {
-                if (!nextOpen) {
-                    handleClose();
-                }
-            }}
-        >
-            <DialogContent
-                showCloseButton={false}
-                className="top-auto bottom-4 left-1/2 max-h-[85vh] w-full max-w-[calc(100%-2rem)] -translate-x-1/2 translate-y-0 overflow-y-auto sm:max-w-lg"
-            >
-                <DialogTitle className="text-center text-sm font-medium sm:text-left">
-                    {dialogTitle}
-                </DialogTitle>
-                {showDieSelection ? (
-                    <DiceSelectStep
-                        onSelectDie={selectDie}
-                        onCancel={handleClose}
-                    />
-                ) : null}
-                {showResultStep && resultSides !== null ? (
-                    <DiceResultStep
-                        sides={resultSides}
-                        onSelectValue={handleSelectValue}
-                        onCancel={handleClose}
-                    />
-                ) : null}
-            </DialogContent>
-        </Dialog>
+        <div className="flex flex-col gap-3">
+            <p className="text-center text-sm font-medium sm:text-left">
+                {panelTitle}
+            </p>
+            {showDieSelection ? (
+                <DiceSelectStep onSelectDie={selectDie} />
+            ) : null}
+            {showResultStep && resultSides !== null ? (
+                <DiceResultStep
+                    sides={resultSides}
+                    onSelectValue={handleSelectValue}
+                />
+            ) : null}
+        </div>
     );
 }

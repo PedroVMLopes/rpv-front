@@ -5,7 +5,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NextIntlClientProvider } from "next-intl";
 import { ActionsSection } from "../components/characters/PlayerSheet/overview/ActionsSection";
-import { DiceRollAssistant } from "../components/characters/PlayerSheet/roll/DiceRollAssistant";
+import { PlayerSheetActionBar } from "../components/characters/PlayerSheet/PlayerSheetActionBar";
 import { RollAssistantProvider } from "../components/characters/PlayerSheet/roll/RollAssistantProvider";
 import type { StoredCharacter } from "../lib/character/storedCharacter";
 import { useCharacterStore } from "../store/useCharacterStore";
@@ -24,7 +24,7 @@ function renderSection(stored: StoredCharacter) {
         <NextIntlClientProvider locale="en" messages={enMessages}>
             <RollAssistantProvider>
                 <ActionsSection stored={stored} />
-                <DiceRollAssistant />
+                <PlayerSheetActionBar />
             </RollAssistantProvider>
         </NextIntlClientProvider>
     );
