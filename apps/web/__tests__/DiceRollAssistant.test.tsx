@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import type { ReactNode } from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NextIntlClientProvider } from "next-intl";
 import { PlayerSheetActionBar } from "../components/characters/PlayerSheet/PlayerSheetActionBar";
@@ -93,11 +93,13 @@ describe("DiceRollAssistant", () => {
         await user.click(screen.getByRole("button", { name: "Open dice roller" }));
 
         expect(
-            screen.queryByText("Select the die you want to roll")
-        ).not.toBeInTheDocument();
-        expect(
             screen.getByRole("button", { name: "Open dice roller" })
         ).toHaveAttribute("aria-pressed", "false");
+        await waitFor(() => {
+            expect(
+                screen.queryByText("Select the die you want to roll")
+            ).not.toBeInTheDocument();
+        });
     });
 
     it("closes the panel when Escape is pressed on step 2", async () => {
@@ -109,11 +111,13 @@ describe("DiceRollAssistant", () => {
         await user.keyboard("{Escape}");
 
         expect(
-            screen.queryByText("Select the result (d4)")
-        ).not.toBeInTheDocument();
-        expect(
             screen.getByRole("button", { name: "Open dice roller" })
         ).toHaveAttribute("aria-pressed", "false");
+        await waitFor(() => {
+            expect(
+                screen.queryByText("Select the result (d4)")
+            ).not.toBeInTheDocument();
+        });
     });
 
     it("shows a toast and closes when a result is selected", async () => {
@@ -125,9 +129,11 @@ describe("DiceRollAssistant", () => {
         await user.click(screen.getByRole("button", { name: "14" }));
 
         expect(toastMock).toHaveBeenCalledWith("d20: 14");
-        expect(
-            screen.queryByText("Select the result (d20)")
-        ).not.toBeInTheDocument();
+        await waitFor(() => {
+            expect(
+                screen.queryByText("Select the result (d20)")
+            ).not.toBeInTheDocument();
+        });
     });
 
     it("shows a toast when random roll is used", async () => {
@@ -141,9 +147,11 @@ describe("DiceRollAssistant", () => {
         await user.click(screen.getByRole("button", { name: "Random roll" }));
 
         expect(toastMock).toHaveBeenCalledWith("d8: 5");
-        expect(
-            screen.queryByText("Select the result (d8)")
-        ).not.toBeInTheDocument();
+        await waitFor(() => {
+            expect(
+                screen.queryByText("Select the result (d8)")
+            ).not.toBeInTheDocument();
+        });
 
         randomSpy.mockRestore();
     });

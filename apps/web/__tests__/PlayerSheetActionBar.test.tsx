@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NextIntlClientProvider } from "next-intl";
 import { PlayerSheetActionBar } from "../components/characters/PlayerSheet/PlayerSheetActionBar";
@@ -71,7 +71,9 @@ describe("PlayerSheetActionBar", () => {
 
         await user.click(screen.getByRole("button", { name: "Cancel" }));
 
-        expect(screen.queryByText("Coming soon")).not.toBeInTheDocument();
+        await waitFor(() => {
+            expect(screen.queryByText("Coming soon")).not.toBeInTheDocument();
+        });
     });
 
     it("opens die selection from the dice button", async () => {

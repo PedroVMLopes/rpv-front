@@ -21,12 +21,11 @@ type DiceRollAssistantProps = {
 
 export function DiceRollAssistant({ onDismiss }: DiceRollAssistantProps) {
     const t = useTranslations("playerSheet.roll");
-    const { state, selectDie, submitRollValue, close } = useRollAssistant();
+    const { state, selectDie, submitRollValue } = useRollAssistant();
     const { mode, request, selectedDie, stepIndex, attackRoll, damageRolls } =
         state;
 
     const handleDismiss = () => {
-        close();
         onDismiss();
     };
 
