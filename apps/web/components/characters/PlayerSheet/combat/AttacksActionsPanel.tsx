@@ -185,7 +185,7 @@ export function AttacksActionsPanel({ stored }: AttacksActionsPanelProps) {
                                     <p className="text-xs font-semibold uppercase text-muted-foreground">
                                         {costLabel}
                                     </p>
-                                    <ul className="flex flex-col gap-2">
+                                    <ul className="flex flex-col lg:grid lg:grid-cols-2 gap-2">
                                         {group.actions.map((action) => (
                                             <li
                                                 key={action.id}
