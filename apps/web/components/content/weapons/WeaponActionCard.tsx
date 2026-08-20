@@ -25,12 +25,14 @@ type WeaponActionCardProps = {
     stored: StoredCharacter;
     weapon: WeaponAction;
     openRollRequest: (request: RollRequest) => void;
+    hideShortDescription?: boolean;
 };
 
 export function WeaponActionCard({
     stored,
     weapon,
     openRollRequest,
+    hideShortDescription,
 }: WeaponActionCardProps) {
     const tContentDetail = useTranslations("contentDetail");
     const tItems = useTranslations("items");
@@ -109,6 +111,7 @@ export function WeaponActionCard({
             detail={detail}
             expandLabel={tContentDetail("expand", { title: weapon.name })}
             onUse={canUse ? handleUse : undefined}
+            hideShortDescription={hideShortDescription}
         />
     );
 }

@@ -22,6 +22,8 @@ export type ContentActionCardProps = {
     equipActions?: ReactNode;
     /** Optional test id wrapper attribute on the summary root. */
     "data-testid"?: string;
+    /** When true, omit shortDescription from the list card (detail modal still has it). */
+    hideShortDescription?: boolean;
 };
 
 function hasUseActions(model: {
@@ -44,6 +46,7 @@ export function ContentActionCard({
     deleteLabel,
     equipActions,
     "data-testid": testId,
+    hideShortDescription,
 }: ContentActionCardProps) {
     const [detailOpen, setDetailOpen] = useState(false);
     const handleUse = onUse;
@@ -65,6 +68,7 @@ export function ContentActionCard({
                     hasUseActions(summary) && handleUse ? handleUse : undefined
                 }
                 headerActions={headerActions}
+                hideShortDescription={hideShortDescription}
             />
             <ContentDetailModal
                 model={detail}

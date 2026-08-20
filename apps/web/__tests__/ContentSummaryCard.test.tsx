@@ -66,4 +66,29 @@ describe("ContentSummaryCard", () => {
             expect.objectContaining({ role: "damage" })
         );
     });
+
+    it("hides shortDescription when hideShortDescription is set", () => {
+        const model: ContentSummaryModel = {
+            id: "feature-1",
+            kind: "feature",
+            title: "Dash",
+            badges: [{ label: "Action", variant: "muted" }],
+            shortDescription:
+                "When you take the Dash action, you gain extra movement.",
+        };
+
+        renderWithProviders(
+            <ContentSummaryCard
+                model={model}
+                expandLabel="Expand Dash"
+                onExpand={() => undefined}
+                hideShortDescription
+            />
+        );
+
+        expect(screen.getByText("Dash")).toBeInTheDocument();
+        expect(
+            screen.queryByText(/gain extra movement/)
+        ).not.toBeInTheDocument();
+    });
 });

@@ -89,6 +89,7 @@ function CombatActionEntry({
                 stored={stored}
                 weapon={action.weapon}
                 openRollRequest={openRollRequest}
+                hideShortDescription
             />
         );
     }
@@ -100,6 +101,7 @@ function CombatActionEntry({
                 spell={action.spell}
                 spellcastingAbility={spellcastingAbility}
                 openRollRequest={openRollRequest}
+                hideShortDescription
             />
         );
     }
@@ -109,6 +111,7 @@ function CombatActionEntry({
             action={action}
             costLabel={costLabel}
             sourceLabel={sourceLabel}
+            hideShortDescription
         />
     );
 }
@@ -185,7 +188,7 @@ export function AttacksActionsPanel({ stored }: AttacksActionsPanelProps) {
                                     <p className="text-xs font-semibold uppercase text-muted-foreground">
                                         {costLabel}
                                     </p>
-                                    <ul className="flex flex-col lg:grid lg:grid-cols-2 gap-2">
+                                    <ul className="flex flex-col lg:grid lg:grid-cols-3 gap-2">
                                         {group.actions.map((action) => (
                                             <li
                                                 key={action.id}

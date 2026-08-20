@@ -206,6 +206,47 @@ describe("AttacksActionsPanel roll integration", () => {
         expect(screen.getByText(/Longsword — damage/)).toBeInTheDocument();
     });
 
+    it("hides action descriptions in the list and keeps them in the expanded modal", async () => {
+        const user = userEvent.setup();
+        renderPanel(fighterStored);
+
+        expect(screen.getByText("Dash")).toBeInTheDocument();
+        expect(
+            screen.queryByText(/gain extra movement for the current turn/)
+        ).not.toBeInTheDocument();
+
+        await user.click(screen.getByRole("button", { name: "Expand Dash" }));
+
+        const dialog = screen.getByRole("dialog");
+        expect(
+            within(dialog).getAllByText(/gain extra movement for the current turn/)
+        ).not.toHaveLength(0);
+    });
+
+    it("hides spell short descriptions in the list and keeps them in the expanded modal", async () => {
+        const user = userEvent.setup();
+        renderPanel(wizardStored);
+
+        expect(screen.getByText("Fire Bolt")).toBeInTheDocument();
+        expect(
+            screen.queryByText("ranged spell attack; 1d10 fire damage on hit")
+        ).not.toBeInTheDocument();
+
+        await user.click(
+            screen.getByRole("button", { name: "Expand Fire Bolt" })
+        );
+
+        const dialog = screen.getByRole("dialog");
+        expect(
+            within(dialog).getByText(
+                "ranged spell attack; 1d10 fire damage on hit"
+            )
+        ).toBeInTheDocument();
+        expect(
+            within(dialog).getAllByText(/You hurl a mote of fire/)
+        ).not.toHaveLength(0);
+    });
+
     it("shows wizard spell previews and opens fire-bolt attack roll", async () => {
         const user = userEvent.setup();
         renderPanel(wizardStored);

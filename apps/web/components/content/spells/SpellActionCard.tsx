@@ -25,6 +25,7 @@ type SpellActionCardProps = {
     spell: SpellAction;
     spellcastingAbility?: StatKey | null;
     openRollRequest: (request: RollRequest) => void;
+    hideShortDescription?: boolean;
 };
 
 export function SpellActionCard({
@@ -32,6 +33,7 @@ export function SpellActionCard({
     spell,
     spellcastingAbility,
     openRollRequest,
+    hideShortDescription,
 }: SpellActionCardProps) {
     const tContentDetail = useTranslations("contentDetail");
     const tSpells = useTranslations("spells");
@@ -97,6 +99,7 @@ export function SpellActionCard({
             detail={detail}
             expandLabel={tContentDetail("expand", { title: spell.name })}
             onUse={canUse ? handleUse : undefined}
+            hideShortDescription={hideShortDescription}
         />
     );
 }

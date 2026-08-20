@@ -12,12 +12,14 @@ type FeatureActionCardProps = {
     action: DisplayAction;
     costLabel?: string;
     sourceLabel: string;
+    hideShortDescription?: boolean;
 };
 
 export function FeatureActionCard({
     action,
     costLabel,
     sourceLabel,
+    hideShortDescription,
 }: FeatureActionCardProps) {
     const tContentDetail = useTranslations("contentDetail");
     const tCombat = useTranslations("playerSheet.combat");
@@ -65,6 +67,7 @@ export function FeatureActionCard({
             detail={detail}
             expandLabel={tContentDetail("expand", { title: action.title })}
             onUse={handleUse}
+            hideShortDescription={hideShortDescription}
         />
     );
 }
