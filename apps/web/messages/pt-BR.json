@@ -254,7 +254,8 @@
     "noneYet": "Nenhum neste nível",
     "refs": {
       "rage-uses": "Usos de Fúria",
-      "ki-points": "Pontos de Ki"
+      "ki-points": "Pontos de Ki",
+      "action-surge-uses": "Usos de Surto de Ação"
     }
   },
   "equipmentSlots": {

@@ -29,6 +29,8 @@ const dndFeatureDescriptions: Record<string, string> = {
     "martial-arts":
         "Your practice of martial arts gives you mastery of combat styles that use unarmed strikes and monk weapons.",
     ki: "Your training allows you to harness mystic energy called ki.",
+    "flurry-of-blows":
+        "You can spend 1 ki point as a bonus action to make two unarmed strikes.",
     "unarmored-movement":
         "Your speed increases by 10 feet while you are not wearing armor or wielding a shield.",
     "deflect-missiles":

@@ -460,6 +460,9 @@
     "ki": {
       "description": "Seu treinamento permite canalizar energia mística chamada ki."
     },
+    "flurry-of-blows": {
+      "description": "Você pode gastar 1 ponto de ki como ação bônus para fazer dois ataques desarmados."
+    },
     "unarmored-movement": {
       "description": "Seu deslocamento aumenta em 10 pés enquanto você não estiver usando armadura ou empunhando escudo."
     },

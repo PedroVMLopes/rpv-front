@@ -153,12 +153,65 @@ describe("CombatTab", () => {
             screen.getByText("Conditions & Immunities")
         ).toBeInTheDocument();
         expect(screen.getByText("None yet")).toBeInTheDocument();
+        expect(screen.queryByText("Passive Reminders")).not.toBeInTheDocument();
 
         const slotsHeading = screen.getByText("Spell Slots");
         const defenseHeading = screen.getByText("Defense & Saves");
         expect(
             Boolean(
                 slotsHeading.compareDocumentPosition(defenseHeading) &
+                    Node.DOCUMENT_POSITION_FOLLOWING
+            )
+        ).toBe(true);
+    });
+
+    it("lists passive combat traits in reminders, not in actions", () => {
+        const withReminder: StoredCharacter = {
+            ...storedCharacter,
+            id: "char-combat-reminders",
+            grants: [
+                ...storedCharacter.grants,
+                {
+                    id: "class-barbarian-ability-danger-sense",
+                    kind: "ability",
+                    ref: "Danger Sense",
+                    name: "Danger Sense",
+                    source: { type: "class", id: "barbarian" },
+                    activation: { cost: "passive" },
+                },
+            ],
+        };
+
+        useCharacterStore.setState({
+            characters: [
+                { ...withReminder, resources: { ...withReminder.resources } },
+            ],
+        });
+
+        render(
+            <NextIntlClientProvider locale="en" messages={enMessages}>
+                <RollAssistantProvider>
+                    <CombatTab stored={withReminder} />
+                </RollAssistantProvider>
+            </NextIntlClientProvider>
+        );
+
+        const remindersHeading = screen.getByText((content, element) => {
+            return (
+                content === "Passive Reminders" &&
+                element?.getAttribute("data-slot") === "card-title"
+            );
+        });
+        expect(remindersHeading).toBeInTheDocument();
+        expect(screen.getByText("Danger Sense")).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: "Expand Danger Sense" })
+        ).toBeInTheDocument();
+
+        const conditionsHeading = screen.getByText("Conditions & Immunities");
+        expect(
+            Boolean(
+                conditionsHeading.compareDocumentPosition(remindersHeading) &
                     Node.DOCUMENT_POSITION_FOLLOWING
             )
         ).toBe(true);

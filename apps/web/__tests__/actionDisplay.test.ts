@@ -4,6 +4,7 @@ import {
     buildDisplayActions,
     filterDisplayActions,
     groupDisplayActions,
+    listCombatReminders,
 } from "../lib/character/actionDisplay";
 import type { StoredCharacter } from "../lib/character/storedCharacter";
 
@@ -102,21 +103,26 @@ describe("actionDisplay", () => {
         expect(groups.map((group) => group.cost)).toEqual([
             "action",
             "bonus",
-            "passive",
         ]);
         expect(groups.find((group) => group.cost === "bonus")?.actions).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({ title: "Second Wind" }),
             ])
         );
-        expect(groups.find((group) => group.cost === "passive")?.actions).toEqual(
-            expect.arrayContaining([
-                expect.objectContaining({ title: "Danger Sense" }),
-            ])
+        expect(actions.map((action) => action.title)).not.toContain(
+            "Danger Sense"
         );
         expect(actions.map((action) => action.title)).not.toContain(
             "Guild Membership"
         );
+        expect(listCombatReminders(stored, "en")).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ title: "Danger Sense" }),
+            ])
+        );
+        expect(
+            listCombatReminders(stored, "en").map((action) => action.title)
+        ).not.toContain("Guild Membership");
     });
 
     it("marks depleted feature resources and filters available actions", () => {
@@ -137,6 +143,87 @@ describe("actionDisplay", () => {
         expect(
             filterDisplayActions(actions, "available").map((action) => action.title)
         ).not.toContain("Second Wind");
+    });
+
+    it("puts a spendable bonus ability in the Actions catalog, not Reminders", () => {
+        const character: StoredCharacter = {
+            ...stored,
+            grants: [
+                {
+                    id: "class-example-resource-burst-uses",
+                    kind: "resource",
+                    ref: "burst-uses",
+                    amount: 3,
+                    source: { type: "class", id: "example" },
+                },
+                {
+                    id: "class-example-ability-spendable-burst",
+                    kind: "ability",
+                    ref: "Spendable Burst",
+                    name: "Spendable Burst",
+                    source: { type: "class", id: "example" },
+                    activation: { cost: "bonus", resourceRef: "burst-uses" },
+                },
+            ],
+            resources: { hp: 18, "burst-uses": 2 },
+        };
+
+        const actions = buildDisplayActions(
+            character,
+            resolved,
+            "en",
+            () => "Main hand"
+        );
+        const groups = groupDisplayActions(actions);
+        const burst = groups
+            .find((group) => group.cost === "bonus")
+            ?.actions.find((action) => action.title === "Spendable Burst");
+
+        expect(burst).toEqual(
+            expect.objectContaining({
+                title: "Spendable Burst",
+                resource: expect.objectContaining({
+                    ref: "burst-uses",
+                    current: 2,
+                    max: 3,
+                }),
+            })
+        );
+        expect(
+            listCombatReminders(character, "en").map((action) => action.title)
+        ).not.toContain("Spendable Burst");
+    });
+
+    it("puts a passive-only ability in Reminders, not the Actions catalog", () => {
+        const character: StoredCharacter = {
+            ...stored,
+            grants: [
+                {
+                    id: "class-example-ability-on-hit-rider",
+                    kind: "ability",
+                    ref: "On-hit Rider",
+                    name: "On-hit Rider",
+                    source: { type: "class", id: "example" },
+                    activation: { cost: "passive" },
+                },
+            ],
+        };
+
+        const actions = buildDisplayActions(
+            character,
+            resolved,
+            "en",
+            () => "Main hand"
+        );
+
+        expect(actions.map((action) => action.title)).not.toContain(
+            "On-hit Rider"
+        );
+        expect(listCombatReminders(character, "en")).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ title: "On-hit Rider" }),
+            ])
+        );
     });
 
     it("builds a status rail summary from resolved stats and current resources", () => {

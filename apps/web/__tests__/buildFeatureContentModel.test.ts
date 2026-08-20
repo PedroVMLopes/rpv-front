@@ -57,4 +57,20 @@ describe("buildFeatureContentModel", () => {
             { label: "Passive", variant: "muted" },
         ]);
     });
+
+    it("adds a resource count badge when provided", () => {
+        const { summary } = buildFeatureContentModel({
+            id: "class-barbarian-ability-rage",
+            title: "Rage",
+            sourceLabel: "Class",
+            costLabel: "Bonus Action",
+            resourceLabel: "2/3",
+            useLabel: "Use",
+        });
+
+        expect(summary.badges).toEqual([
+            { label: "Bonus Action", variant: "muted" },
+            { label: "2/3", variant: "muted" },
+        ]);
+    });
 });

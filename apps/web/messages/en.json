@@ -254,7 +254,8 @@
     "noneYet": "None at this level",
     "refs": {
       "rage-uses": "Rage Uses",
-      "ki-points": "Ki Points"
+      "ki-points": "Ki Points",
+      "action-surge-uses": "Action Surge Uses"
     }
   },
   "equipmentSlots": {

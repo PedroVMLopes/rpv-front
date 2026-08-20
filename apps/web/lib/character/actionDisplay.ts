@@ -14,7 +14,7 @@ import {
 import { contentRepo } from "@/lib/content/contentRepository";
 import { getCharacterWalkSpeed } from "@/lib/character/characterSpeed";
 import { computeInitiative } from "@/lib/character/derivedStats";
-import { listCombatResources } from "@/lib/character/combatResources";
+import { listCombatResources, type CombatResourceEntry } from "@/lib/character/combatResources";
 import { formatResourceRefLabel } from "@/lib/character/resourceLabels";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import {
@@ -247,63 +247,89 @@ function buildSpellActions(
     });
 }
 
+function abilityGrantToDisplayAction(
+    grant: CharacterGrant & { kind: "ability"; activation: GrantActivation },
+    resourceByRef: Map<string, CombatResourceEntry>,
+    locale: Locale | undefined
+): DisplayAction {
+    const title = grant.name ?? grant.ref;
+    const actionCost = displayFeatureCost(grant.activation.cost);
+    const resourceEntry = grant.activation.resourceRef
+        ? resourceByRef.get(grant.activation.resourceRef)
+        : undefined;
+    const sourceType = grant.source.type === "item" ? "item" : "feature";
+
+    return {
+        id: grant.id,
+        title,
+        sourceType,
+        actionCost,
+        availability:
+            resourceEntry && resourceEntry.current <= 0
+                ? "depleted"
+                : "available",
+        badges: [],
+        summary: [
+            resourceEntry
+                ? `${resourceEntry.current}/${resourceEntry.max}`
+                : null,
+        ].filter(Boolean) as string[],
+        description: getAbilityFeatureDescription(title, grant.source, locale),
+        actionLabel: "use",
+        resource: resourceEntry
+            ? {
+                  ref: resourceEntry.ref,
+                  label:
+                      resourceEntry.spellLevel !== undefined
+                          ? `Lv${resourceEntry.spellLevel}`
+                          : formatResourceRefLabel(
+                                resourceEntry.ref,
+                                (key) => key
+                            ),
+                  current: resourceEntry.current,
+                  max: resourceEntry.max,
+              }
+            : undefined,
+        stateTags: actionCost === "passive" ? ["Passive"] : undefined,
+        featureSource: grant.source.type,
+    };
+}
+
+function activatedAbilityDisplays(
+    stored: StoredCharacter,
+    locale: Locale | undefined
+): DisplayAction[] {
+    const resourceEntries = listCombatResources(
+        stored.grants ?? [],
+        stored.resources
+    );
+    const resourceByRef = new Map(
+        resourceEntries.map((entry) => [entry.ref, entry])
+    );
+
+    return (stored.grants ?? [])
+        .filter(isActivatedAbility)
+        .map((grant) =>
+            abilityGrantToDisplayAction(grant, resourceByRef, locale)
+        );
+}
+
 function buildFeatureActions(
     stored: StoredCharacter,
     locale: Locale | undefined
 ): DisplayAction[] {
-    const resourceEntries = listCombatResources(stored.grants ?? [], stored.resources);
-    const resourceByRef = new Map(resourceEntries.map((entry) => [entry.ref, entry]));
+    return activatedAbilityDisplays(stored, locale).filter(
+        (action) => action.actionCost !== "passive"
+    );
+}
 
-    return (stored.grants ?? [])
-        .filter(isActivatedAbility)
-        .map((grant) => {
-            const title = grant.name ?? grant.ref;
-            const actionCost = displayFeatureCost(grant.activation.cost);
-            const resourceEntry = grant.activation.resourceRef
-                ? resourceByRef.get(grant.activation.resourceRef)
-                : undefined;
-            const sourceType = grant.source.type === "item" ? "item" : "feature";
-
-            return {
-                id: grant.id,
-                title,
-                sourceType,
-                actionCost,
-                availability:
-                    resourceEntry && resourceEntry.current <= 0
-                        ? "depleted"
-                        : "available",
-                badges: [],
-                summary: [
-                    resourceEntry
-                        ? `${resourceEntry.current}/${resourceEntry.max}`
-                        : null,
-                ].filter(Boolean) as string[],
-                description: getAbilityFeatureDescription(
-                    title,
-                    grant.source,
-                    locale
-                ),
-                actionLabel: "use",
-                resource: resourceEntry
-                    ? {
-                          ref: resourceEntry.ref,
-                          label:
-                              resourceEntry.spellLevel !== undefined
-                                  ? `Lv${resourceEntry.spellLevel}`
-                                  : formatResourceRefLabel(
-                                        resourceEntry.ref,
-                                        (key) => key
-                                    ),
-                          current: resourceEntry.current,
-                          max: resourceEntry.max,
-                      }
-                    : undefined,
-                stateTags:
-                    actionCost === "passive" ? ["Passive"] : undefined,
-                featureSource: grant.source.type,
-            };
-        });
+export function listCombatReminders(
+    stored: StoredCharacter,
+    locale: Locale | undefined
+): DisplayAction[] {
+    return activatedAbilityDisplays(stored, locale).filter(
+        (action) => action.actionCost === "passive"
+    );
 }
 
 export function buildDisplayActions(
@@ -359,7 +385,6 @@ const ACTION_COST_ORDER: ActionCost[] = [
     "bonus",
     "reaction",
     "special",
-    "passive",
 ];
 
 export function groupDisplayActions(actions: DisplayAction[]): DisplayActionGroup[] {

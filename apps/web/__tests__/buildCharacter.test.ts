@@ -100,6 +100,15 @@ describe("buildStoredCharacter", () => {
                     kind: "ability",
                     ref: "Action Surge",
                     source: { type: "class", id: "fighter" },
+                    activation: {
+                        cost: "special",
+                        resourceRef: "action-surge-uses",
+                    },
+                }),
+                expect.objectContaining({
+                    kind: "resource",
+                    ref: "action-surge-uses",
+                    amount: 1,
                 }),
             ])
         );
@@ -749,6 +758,7 @@ describe("buildStoredCharacter", () => {
                     kind: "ability",
                     ref: "Frenzy",
                     source: { type: "subclass", id: "barbarian-berserker" },
+                    activation: { cost: "passive" },
                 }),
             ])
         );
@@ -779,6 +789,15 @@ describe("buildStoredCharacter", () => {
             expect.arrayContaining([
                 expect.objectContaining({
                     kind: "ability",
+                    ref: "Flurry of Blows",
+                    source: { type: "class", id: "monk" },
+                    activation: {
+                        cost: "bonus",
+                        resourceRef: "ki-points",
+                    },
+                }),
+                expect.objectContaining({
+                    kind: "ability",
                     ref: "Stunning Strike",
                     source: { type: "class", id: "monk" },
                 }),
@@ -786,6 +805,7 @@ describe("buildStoredCharacter", () => {
                     kind: "ability",
                     ref: "Open Hand Technique",
                     source: { type: "subclass", id: "monk-open-hand" },
+                    activation: { cost: "passive" },
                 }),
             ])
         );

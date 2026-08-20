@@ -100,6 +100,19 @@ describe("subclassGrants.dnd", () => {
                 expect.objectContaining({
                     grantType: "ability",
                     description: "Open Hand Technique",
+                    activation: { cost: "passive" },
+                }),
+            ])
+        );
+    });
+
+    it("treats Frenzy as a passive rider, not a spendable bonus", () => {
+        expect(getSubclassGrants("barbarian-berserker", 3)).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    grantType: "ability",
+                    description: "Frenzy",
+                    activation: { cost: "passive" },
                 }),
             ])
         );

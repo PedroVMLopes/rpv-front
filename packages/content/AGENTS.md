@@ -38,10 +38,19 @@ data here.
     and `CharacterGrant`s. This is how authored content feeds the engine. Keep
     this translation generic — driven by the grant data, not by hardcoded names.
   - `activation?` on an `ability` grant (`{ cost: string, resourceRef?: string }`)
-    opts the feature into the combat action catalog. Omitted abilities are
-    traits only (overview / Features & Traits). `cost` is an opaque slug
-    (`action`, `bonus`, `reaction`, `special`, `passive`, or a future system
-    slug). Do not infer combat membership from the feature name.
+    opts the feature into the combat sheet. Omitted abilities are traits only
+    (overview / Features & Traits). `cost` is an opaque slug:
+    `action` / `bonus` / `reaction` / `special` appear in the Actions catalog;
+    `passive` appears in combat Reminders (not as a useable action). A resource
+    pool is a separate `grantType: "resource"` (e.g. Ki points); do not put
+    `activation` on the named pool ability. Do not infer combat membership from
+    the feature name.
+    - Use an actionable cost only if the player **declares this feature on
+      their turn** (or as a reaction). “When you hit…”, “while raging…”,
+      “whenever you take the Attack action…” are riders: `passive` or omit
+      `activation`. `resourceRef` only if **this** grant spends the pool
+      (Flurry of Blows spends ki; Open Hand Technique does not). Same shape
+      as Rage (actionable) vs Frenzy (rider).
 - `grant/levelFeature.types.ts` — `LevelFeature { level, grants }` for per-level
   progression. `resolveLevelFeatures()` accumulates blocks where
   `characterLevel >= level`.
@@ -115,7 +124,10 @@ Convention: kebab-case refs (`spell-slots-1`, `rage-uses`, `ki-points`).
   subclassLevel: 3,
   grants: [ /* saves, armor, 2 skill picks */ ],
   featuresByLevel: [
-    { level: 2, grants: [{ grantType: "ability", choose: 0, description: "Action Surge", activation: { cost: "special" } }] },
+    { level: 2, grants: [
+      { grantType: "resource", choose: 0, ref: "action-surge-uses", amount: 1 },
+      { grantType: "ability", choose: 0, description: "Action Surge", activation: { cost: "special", resourceRef: "action-surge-uses" } },
+    ] },
     { level: 3, grants: [{ grantType: "skill_proficiency", choose: 1, description: "Additional skill", options: [...] }] },
   ],
 }

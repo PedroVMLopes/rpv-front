@@ -148,6 +148,15 @@ describe("classGrants.dnd", () => {
                 expect.objectContaining({
                     grantType: "ability",
                     description: "Action Surge",
+                    activation: {
+                        cost: "special",
+                        resourceRef: "action-surge-uses",
+                    },
+                }),
+                expect.objectContaining({
+                    grantType: "resource",
+                    ref: "action-surge-uses",
+                    amount: 1,
                 }),
             ])
         );
@@ -285,6 +294,26 @@ describe("barbarian progression", () => {
 });
 
 describe("monk progression", () => {
+    it("includes Flurry of Blows as a bonus ki spend at level 2", () => {
+        expect(getClassGrants("monk", 2)).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    grantType: "ability",
+                    description: "Flurry of Blows",
+                    activation: {
+                        cost: "bonus",
+                        resourceRef: "ki-points",
+                    },
+                }),
+            ])
+        );
+        expect(getClassGrants("monk", 1)).not.toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ description: "Flurry of Blows" }),
+            ])
+        );
+    });
+
     it("accumulates five ki point deltas by level 5", () => {
         const grants = getClassGrants("monk", 5);
         const kiGrants = grants.filter(

@@ -172,10 +172,19 @@ export const dndClasses: ClassEntry[] = [
                 level: 2,
                 grants: [
                     {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "action-surge-uses",
+                        amount: 1,
+                    },
+                    {
                         grantType: "ability",
                         choose: 0,
                         description: "Action Surge",
-                        activation: { cost: "special" },
+                        activation: {
+                            cost: "special",
+                            resourceRef: "action-surge-uses",
+                        },
                     },
                 ],
             },
@@ -564,7 +573,7 @@ export const dndClasses: ClassEntry[] = [
                         grantType: "ability",
                         choose: 0,
                         description: "Martial Arts",
-                        activation: { cost: "special" },
+                        activation: { cost: "passive" },
                     },
                 ],
             },
@@ -581,7 +590,15 @@ export const dndClasses: ClassEntry[] = [
                         grantType: "ability",
                         choose: 0,
                         description: "Ki",
-                        activation: { cost: "special", resourceRef: "ki-points" },
+                    },
+                    {
+                        grantType: "ability",
+                        choose: 0,
+                        description: "Flurry of Blows",
+                        activation: {
+                            cost: "bonus",
+                            resourceRef: "ki-points",
+                        },
                     },
                     {
                         grantType: "ability",

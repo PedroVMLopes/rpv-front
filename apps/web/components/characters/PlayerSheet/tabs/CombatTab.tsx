@@ -6,6 +6,7 @@ import { CastingStatsPanel } from "../combat/CastingStatsPanel";
 import { ClassResourcesPanel } from "../combat/ClassResourcesPanel";
 import { DefenseSavesPanel } from "../combat/DefenseSavesPanel";
 import { ConditionsPanel } from "../combat/ConditionsPanel";
+import { CombatRemindersPanel } from "../combat/CombatRemindersPanel";
 
 type CombatTabProps = {
     stored: StoredCharacter;
@@ -22,6 +23,7 @@ export function CombatTab({ stored }: CombatTabProps) {
                 <ClassResourcesPanel stored={stored} />
                 <DefenseSavesPanel stored={stored} />
                 <ConditionsPanel />
+                <CombatRemindersPanel stored={stored} />
             </div>
         </div>
     );

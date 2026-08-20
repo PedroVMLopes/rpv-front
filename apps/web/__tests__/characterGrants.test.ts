@@ -193,7 +193,16 @@ describe("deriveCharacterGrants", () => {
                     kind: "ability",
                     ref: "Action Surge",
                     source: { type: "class", id: "fighter" },
-                    activation: { cost: "special" },
+                    activation: {
+                        cost: "special",
+                        resourceRef: "action-surge-uses",
+                    },
+                }),
+                expect.objectContaining({
+                    kind: "resource",
+                    ref: "action-surge-uses",
+                    amount: 1,
+                    source: { type: "class", id: "fighter" },
                 }),
             ])
         );

@@ -17,6 +17,12 @@ describe("getAbilityFeatureDescription", () => {
                 id: "fighter",
             })
         ).toContain("additional action");
+        expect(
+            getAbilityFeatureDescription("Flurry of Blows", {
+                type: "class",
+                id: "monk",
+            })
+        ).toContain("two unarmed strikes");
     });
 
     it("returns localized curated description for pt-BR", () => {
