@@ -349,4 +349,134 @@ describe("actionDisplay", () => {
             ])
         );
     });
+
+    it("maps bonus-action and reaction spells into those cost groups, not Action", () => {
+        const withCastingTimes: StoredCharacter = {
+            ...stored,
+            grants: [
+                ...(stored.grants ?? []),
+                {
+                    id: "class-wizard-spell-misty-step",
+                    kind: "spell",
+                    ref: "misty-step",
+                    name: "Misty Step",
+                    source: { type: "class", id: "wizard" },
+                },
+                {
+                    id: "class-wizard-spell-shield",
+                    kind: "spell",
+                    ref: "shield",
+                    name: "Shield",
+                    source: { type: "class", id: "wizard" },
+                },
+            ],
+        };
+
+        const groups = groupDisplayActions(
+            buildDisplayActions(withCastingTimes, resolved, "en", () => "Main hand")
+        );
+
+        expect(
+            groups.find((group) => group.cost === "bonus")?.actions
+        ).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    title: "Misty Step",
+                    sourceType: "spell",
+                }),
+            ])
+        );
+        expect(
+            groups.find((group) => group.cost === "reaction")?.actions
+        ).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    title: "Shield",
+                    sourceType: "spell",
+                }),
+            ])
+        );
+        const actionTitles =
+            groups
+                .find((group) => group.cost === "action")
+                ?.actions.map((action) => action.title) ?? [];
+        expect(actionTitles).not.toContain("Misty Step");
+        expect(actionTitles).not.toContain("Shield");
+    });
+
+    it("puts unknown activation costs in the special group, not reminders", () => {
+        const character: StoredCharacter = {
+            ...stored,
+            grants: [
+                {
+                    id: "class-example-ability-unknown-cost",
+                    kind: "ability",
+                    ref: "Unknown Cost Feature",
+                    name: "Unknown Cost Feature",
+                    source: { type: "class", id: "example" },
+                    activation: { cost: "legendary" },
+                },
+            ],
+        };
+
+        const actions = buildDisplayActions(
+            character,
+            resolved,
+            "en",
+            () => "Main hand"
+        );
+        const groups = groupDisplayActions(actions);
+
+        expect(
+            groups.find((group) => group.cost === "special")?.actions
+        ).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ title: "Unknown Cost Feature" }),
+            ])
+        );
+        expect(actions.map((action) => action.title)).toContain(
+            "Unknown Cost Feature"
+        );
+        expect(
+            listCombatReminders(character, "en").map((action) => action.title)
+        ).not.toContain("Unknown Cost Feature");
+    });
+
+    it("filters features to class and item activations, excluding weapons and spells", () => {
+        const withItemFeature: StoredCharacter = {
+            ...stored,
+            grants: [
+                ...(stored.grants ?? []),
+                {
+                    id: "item-cloak-ability-cinder-burst",
+                    kind: "ability",
+                    ref: "Cinder Burst",
+                    name: "Cinder Burst",
+                    source: { type: "item", id: "rpv_cloak-of-embers" },
+                    activation: { cost: "action" },
+                },
+            ],
+        };
+        const actions = buildDisplayActions(
+            withItemFeature,
+            resolved,
+            "en",
+            () => "Main hand"
+        );
+
+        const featureTitles = filterDisplayActions(actions, "features").map(
+            (action) => action.title
+        );
+        expect(featureTitles).toEqual(
+            expect.arrayContaining(["Second Wind", "Cinder Burst"])
+        );
+        expect(featureTitles).not.toContain("Longsword");
+        expect(featureTitles).not.toContain("Fire Bolt");
+        expect(
+            filterDisplayActions(actions, "spells").map((action) => action.title)
+        ).toEqual(expect.arrayContaining(["Fire Bolt", "Burning Hands"]));
+        expect(
+            filterDisplayActions(actions, "all").map((action) => action.title)
+        ).toEqual(expect.arrayContaining(["Second Wind", "Longsword"]));
+    });
 });
