@@ -112,7 +112,7 @@ export function DiceRollAssistant({ onDismiss }: DiceRollAssistantProps) {
 
                 return t("damageStepTitle", {
                     label: request.label,
-                    sides: request.damage.sides,
+                    sides: request.damage.sides ?? 6,
                 });
             }
 
