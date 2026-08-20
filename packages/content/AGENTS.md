@@ -76,6 +76,21 @@ data here.
 Helpers: `getClassGrants(slug, level)`, `getClassGrantSourcesForLevel`,
 `getClassSubclassLevel`, `getClassSpellcastingMode`.
 
+### System combat grants ([`systemGrants.dnd.ts`](src/curation/systemGrants.dnd.ts))
+
+Universal actions every D&D character has (Dash, Dodge, Grapple, …). These are
+`ability` grants with `activation`, sourced as
+`{ type: "system", id: "dnd-basic-combat" }` by the web pipeline — **not** copied
+onto each class. Helper: `getSystemCombatGrants(system)` (empty for unknown
+systems). Unarmed Strike is **not** a grant; it is a natural weapon (below).
+
+### Natural weapons ([`naturalWeapons.dnd.ts`](src/curation/naturalWeapons.dnd.ts))
+
+Always-available attacks that are **not** `ItemEntry`s (they must not appear in
+`listItems` / inventory). Helper: `getNaturalWeapons(system, locale?)`. Unarmed
+Strike: Strength, always proficient, damage `1 + Strength` (no die). Locale
+overlay uses `features.{slug}` (`name` / `description`).
+
 ### `SubclassEntry` ([`subclassGrants.dnd.ts`](src/curation/subclassGrants.dnd.ts))
 
 - Namespaced slugs: `fighter-champion`, `wizard-evocation`.

@@ -120,9 +120,116 @@ describe("actionDisplay", () => {
                 expect.objectContaining({ title: "Danger Sense" }),
             ])
         );
+        expect(listCombatReminders(stored, "en").map((action) => action.title))
+            .not.toContain("Guild Membership");
+    });
+
+    it("always lists unarmed strike as a weapon action", () => {
+        const withWeapon = buildDisplayActions(
+            stored,
+            resolved,
+            "en",
+            () => "Main hand"
+        );
+        const unarmed = withWeapon.find(
+            (action) => action.title === "Unarmed Strike"
+        );
+
+        expect(unarmed).toEqual(
+            expect.objectContaining({
+                sourceType: "weapon",
+                actionCost: "action",
+                weapon: expect.objectContaining({
+                    slug: "unarmed-strike",
+                    slotId: "natural",
+                    attackModifier: 5,
+                    damageBase: 1,
+                    damageFlat: 3,
+                    damageType: "bludgeoning",
+                }),
+            })
+        );
+        expect(unarmed?.weapon?.damage).toBe("1+3 bludgeoning");
         expect(
-            listCombatReminders(stored, "en").map((action) => action.title)
-        ).not.toContain("Guild Membership");
+            filterDisplayActions(withWeapon, "weapons").map(
+                (action) => action.title
+            )
+        ).toEqual(expect.arrayContaining(["Longsword", "Unarmed Strike"]));
+
+        const unequipped: StoredCharacter = {
+            ...stored,
+            selections: {
+                ...stored.selections,
+                inventory: { bag: [], equipped: {} },
+            },
+        };
+        const withoutWeapon = buildDisplayActions(
+            unequipped,
+            resolved,
+            "en",
+            () => "Main hand"
+        );
+
+        expect(
+            withoutWeapon.map((action) => action.title)
+        ).toContain("Unarmed Strike");
+        expect(
+            withoutWeapon.map((action) => action.title)
+        ).not.toContain("Longsword");
+    });
+
+    it("lists system combat features in action and reaction groups, not reminders or overview", () => {
+        const withSystem: StoredCharacter = {
+            ...stored,
+            grants: [
+                ...(stored.grants ?? []),
+                {
+                    id: "system-dnd-basic-combat-base-ability-Dash",
+                    kind: "ability",
+                    ref: "Dash",
+                    name: "Dash",
+                    source: { type: "system", id: "dnd-basic-combat" },
+                    activation: { cost: "action" },
+                },
+                {
+                    id: "system-dnd-basic-combat-base-ability-Opportunity Attack",
+                    kind: "ability",
+                    ref: "Opportunity Attack",
+                    name: "Opportunity Attack",
+                    source: { type: "system", id: "dnd-basic-combat" },
+                    activation: { cost: "reaction" },
+                },
+            ],
+        };
+
+        const actions = buildDisplayActions(
+            withSystem,
+            resolved,
+            "en",
+            () => "Main hand"
+        );
+        const groups = groupDisplayActions(actions);
+
+        expect(
+            groups.find((group) => group.cost === "action")?.actions
+        ).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ title: "Dash" }),
+            ])
+        );
+        expect(
+            groups.find((group) => group.cost === "reaction")?.actions
+        ).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ title: "Opportunity Attack" }),
+            ])
+        );
+        expect(
+            listCombatReminders(withSystem, "en").map((action) => action.title)
+        ).not.toContain("Dash");
+        expect(
+            listCombatReminders(withSystem, "en").map((action) => action.title)
+        ).not.toContain("Opportunity Attack");
     });
 
     it("marks depleted feature resources and filters available actions", () => {

@@ -226,7 +226,7 @@ export function getActiveRollSides(
     }
 
     if (state.request.kind === "attack_then_damage") {
-        return state.stepIndex === 0 ? 20 : state.request.damage.sides;
+        return state.stepIndex === 0 ? 20 : state.request.damage.sides ?? null;
     }
 
     if (state.request.kind === "damage_only") {

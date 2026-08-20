@@ -106,4 +106,41 @@ describe("listOverviewTraitGroups", () => {
             groups.flatMap((group) => group.traits).map((trait) => trait.name)
         ).not.toContain("Extra Language");
     });
+
+    it("omits system combat abilities from Features & Traits", () => {
+        const groups = listOverviewTraitGroups(
+            baseStored({
+                grants: [
+                    {
+                        id: "system-dnd-basic-combat-base-ability-Dash",
+                        kind: "ability",
+                        ref: "Dash",
+                        name: "Dash",
+                        source: { type: "system", id: "dnd-basic-combat" },
+                        activation: { cost: "action" },
+                    },
+                    {
+                        id: "class-fighter-2-ability-Action Surge",
+                        kind: "ability",
+                        ref: "Action Surge",
+                        name: "Action Surge",
+                        source: { type: "class", id: "fighter" },
+                    },
+                ],
+            }),
+            "en"
+        );
+
+        expect(groups.some((group) => group.sourceType === "system")).toBe(
+            false
+        );
+        expect(
+            groups.flatMap((group) => group.traits).map((trait) => trait.name)
+        ).not.toContain("Dash");
+        expect(
+            groups
+                .find((group) => group.sourceType === "class")
+                ?.traits.map((trait) => trait.name)
+        ).toContain("Action Surge");
+    });
 });

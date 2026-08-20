@@ -501,6 +501,42 @@
     },
     "discovery": {
       "description": "Anos sozinho lhe ensinaram algo sobre o que o mundo povoado ainda discute. Você sabe onde esse saber vive, e quem preferiria que ele continuasse enterrado."
+    },
+    "grapple": {
+      "name": "Agarrar",
+      "description": "Ao realizar a ação Atacar, você pode substituir um ataque por um ataque especial corpo a corpo para agarrar uma criatura no máximo um tamanho maior que você, ao seu alcance, com uma mão livre. Faça um teste de Força (Atletismo) contestado por Força (Atletismo) ou Destreza (Acrobacia) do alvo."
+    },
+    "shove": {
+      "name": "Empurrar",
+      "description": "Ao realizar a ação Atacar, você pode substituir um ataque por um ataque especial corpo a corpo para empurrar uma criatura no máximo um tamanho maior que você, ao seu alcance. Em um sucesso, você a derruba ou a empurra 5 pés. Faça um teste de Força (Atletismo) contestado por Força (Atletismo) ou Destreza (Acrobacia) do alvo."
+    },
+    "dash": {
+      "name": "Disparada",
+      "description": "Ao realizar a ação Disparada, você ganha deslocamento extra neste turno igual ao seu deslocamento, após aplicar modificadores."
+    },
+    "disengage": {
+      "name": "Desengajar",
+      "description": "Se você realizar a ação Desengajar, seu movimento não provoca ataques de oportunidade pelo resto do turno."
+    },
+    "dodge": {
+      "name": "Esquivar",
+      "description": "Até o início do seu próximo turno, ataques contra você têm desvantagem se você puder ver o atacante, e você faz testes de resistência de Destreza com vantagem. Você perde esse benefício se estiver incapacitado ou se seu deslocamento for 0."
+    },
+    "help": {
+      "name": "Ajudar",
+      "description": "A criatura que você auxilia ganha vantagem no próximo teste de habilidade para a tarefa até o início do seu próximo turno. Como alternativa, você pode distrair uma criatura a até 5 pés para que o próximo ataque de um aliado contra ela até o seu próximo turno tenha vantagem."
+    },
+    "hide": {
+      "name": "Esconder-se",
+      "description": "Ao realizar a ação Esconder-se, você faz um teste de Destreza (Furtividade) para se esconder. Se tiver sucesso, você ganha os benefícios de estar escondido."
+    },
+    "opportunity-attack": {
+      "name": "Ataque de oportunidade",
+      "description": "Quando uma criatura hostil que você possa ver sai do seu alcance, você pode usar sua reação para fazer um ataque corpo a corpo contra ela. O ataque ocorre imediatamente antes de ela deixar o alcance."
+    },
+    "unarmed-strike": {
+      "name": "Ataque desarmado",
+      "description": "Em vez de usar uma arma para um ataque corpo a corpo, você pode fazer um ataque desarmado: um soco, chute, cabeçada ou golpe semelhante. Em um acerto, causa dano de concussão igual a 1 + seu modificador de Força. Você é proficiente em ataques desarmados."
     }
   }
 }

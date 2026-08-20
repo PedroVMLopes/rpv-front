@@ -546,6 +546,7 @@
       "features": "Features",
       "roll": "Roll",
       "use": "Use",
+      "naturalWeapon": "Unarmed",
       "noActions": "No actions available",
       "noResources": "No class resources",
       "filtersLabel": "Action filters",

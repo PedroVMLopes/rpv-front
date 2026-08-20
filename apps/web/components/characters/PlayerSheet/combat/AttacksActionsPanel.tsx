@@ -139,9 +139,10 @@ export function AttacksActionsPanel({ stored }: AttacksActionsPanelProps) {
             stored,
             resolved,
             contentLocale,
-            (key) => tSlots(key)
+            (key) => tSlots(key),
+            t("combat.naturalWeapon")
         );
-    }, [contentLocale, resolved, stored, tSlots]);
+    }, [contentLocale, resolved, stored, t, tSlots]);
 
     const visibleActions = useMemo(
         () => filterDisplayActions(actions, activeFilter),

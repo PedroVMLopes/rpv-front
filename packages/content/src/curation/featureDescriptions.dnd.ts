@@ -57,6 +57,21 @@ const dndFeatureDescriptions: Record<string, string> = {
         "You keep a second, fully prepared identity: papers, habits, and people who will vouch for the name. In a pinch you can step into that life as if it had always been yours.",
     discovery:
         "Years alone taught you something the settled world still argues about. You know where that knowledge lives, and who would rather it stayed buried.",
+    grapple:
+        "When you take the Attack action, you can replace one attack with a special melee attack to grapple a creature no more than one size larger than you, within your reach, using a free hand. Make a Strength (Athletics) check contested by the target's Strength (Athletics) or Dexterity (Acrobatics).",
+    shove:
+        "When you take the Attack action, you can replace one attack with a special melee attack to shove a creature no more than one size larger than you, within your reach. On a success, you knock it prone or push it 5 feet away. Make a Strength (Athletics) check contested by the target's Strength (Athletics) or Dexterity (Acrobatics).",
+    dash: "When you take the Dash action, you gain extra movement for the current turn equal to your speed, after applying any modifiers.",
+    disengage:
+        "If you take the Disengage action, your movement doesn't provoke opportunity attacks for the rest of the turn.",
+    dodge:
+        "Until the start of your next turn, attack rolls against you have disadvantage if you can see the attacker, and you make Dexterity saving throws with advantage. You lose this benefit if you are incapacitated or your speed is 0.",
+    help: "The creature you aid gains advantage on the next ability check it makes to perform the task before the start of your next turn. Alternatively, you can distract a creature within 5 feet of you so that the next attack roll an ally makes against it before your next turn has advantage.",
+    hide: "When you take the Hide action, you make a Dexterity (Stealth) check in an attempt to hide. If you succeed, you gain the benefits of being hidden.",
+    "opportunity-attack":
+        "When a hostile creature that you can see moves out of your reach, you can use your reaction to make one melee attack against it. The attack occurs right before the creature leaves your reach.",
+    "unarmed-strike":
+        "Instead of using a weapon to make a melee weapon attack, you can use an unarmed strike: a punch, kick, head-butt, or similar forceful blow. On a hit, it deals bludgeoning damage equal to 1 + your Strength modifier. You are proficient with your unarmed strikes.",
 };
 
 function localizedCuratedDescription(
@@ -111,6 +126,23 @@ function traitDescriptionForAbility(
     }
 
     return undefined;
+}
+
+export function getAbilityFeatureName(
+    featureName: string,
+    locale?: Locale
+): string {
+    const slug = slugifyFeatureName(featureName);
+    if (locale && locale !== "en") {
+        const overlayName = (ptBRTranslations as CatalogTranslations).features?.[
+            slug
+        ]?.name;
+        if (overlayName) {
+            return overlayName;
+        }
+    }
+
+    return featureName;
 }
 
 export function getAbilityFeatureDescription(

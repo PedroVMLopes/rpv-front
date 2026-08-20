@@ -16,7 +16,7 @@ export type D20TestRequest = {
 };
 
 export type DamageStep = {
-    sides: DieSides;
+    sides?: DieSides;
     flat?: number;
     damageType?: string;
 };

@@ -1,4 +1,7 @@
-import { getAbilityFeatureDescription } from "../src/curation/featureDescriptions.dnd";
+import {
+    getAbilityFeatureDescription,
+    getAbilityFeatureName,
+} from "../src/curation/featureDescriptions.dnd";
 
 describe("getAbilityFeatureDescription", () => {
     it("returns race trait description from catalog", () => {
@@ -137,5 +140,29 @@ describe("getAbilityFeatureDescription", () => {
                 "pt-BR"
             )
         ).toContain("mundo povoado");
+    });
+
+    it("returns curated system combat descriptions", () => {
+        expect(
+            getAbilityFeatureDescription("Dash", {
+                type: "system",
+                id: "dnd-basic-combat",
+            })
+        ).toContain("extra movement");
+        expect(
+            getAbilityFeatureDescription(
+                "Opportunity Attack",
+                { type: "system", id: "dnd-basic-combat" },
+                "pt-BR"
+            )
+        ).toContain("reação");
+    });
+
+    it("returns localized feature names", () => {
+        expect(getAbilityFeatureName("Dash")).toBe("Dash");
+        expect(getAbilityFeatureName("Dash", "pt-BR")).toBe("Disparada");
+        expect(getAbilityFeatureName("Opportunity Attack", "pt-BR")).toBe(
+            "Ataque de oportunidade"
+        );
     });
 });

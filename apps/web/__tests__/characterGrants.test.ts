@@ -10,6 +10,39 @@ import { emptyCharacterSelections } from "../lib/character/storedCharacter";
 const baseSelections = { ...emptyCharacterSelections() };
 
 describe("deriveCharacterGrants", () => {
+    it("includes D&D system combat abilities even without a class", () => {
+        const grants = deriveCharacterGrants(baseSelections, "en", 1, "dnd");
+
+        expect(grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    kind: "ability",
+                    ref: "Dash",
+                    name: "Dash",
+                    source: { type: "system", id: "dnd-basic-combat" },
+                    activation: { cost: "action" },
+                }),
+                expect.objectContaining({
+                    kind: "ability",
+                    ref: "Opportunity Attack",
+                    source: { type: "system", id: "dnd-basic-combat" },
+                    activation: { cost: "reaction" },
+                }),
+                expect.objectContaining({
+                    kind: "ability",
+                    ref: "Shove",
+                    activation: { cost: "action" },
+                }),
+            ])
+        );
+        expect(
+            grants.some(
+                (grant) =>
+                    grant.kind === "ability" && grant.ref === "Unarmed Strike"
+            )
+        ).toBe(false);
+    });
+
     it("derives fixed racial languages for dwarf", () => {
         const grants = deriveCharacterGrants(
             { ...baseSelections, race: "dwarf" },

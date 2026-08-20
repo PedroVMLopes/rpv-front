@@ -91,6 +91,16 @@ function resolveUseActions(weapon: WeaponAction): ContentUseActionSpec[] {
                 modifier: weapon.damageFlat ?? 0,
             }),
         });
+    } else if (weapon.damageBase != null) {
+        actions.push({
+            kind: "roll",
+            role: "damage",
+            captionKey: "damageCaption",
+            label: formatRollButtonLabel({
+                primary: String(weapon.damageBase),
+                modifier: weapon.damageFlat ?? 0,
+            }),
+        });
     }
 
     return actions;
@@ -126,7 +136,7 @@ export function buildWeaponContentModel(
         {
             labelKey: "damageType",
             value: localizeDamageType(
-                itemEntry?.weapon?.damageType.key,
+                itemEntry?.weapon?.damageType.key ?? weapon.damageType,
                 formatters
             ),
         },

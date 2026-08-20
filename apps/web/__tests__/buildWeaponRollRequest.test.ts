@@ -1,11 +1,13 @@
 import { getItem } from "@rpv/content";
 import type { Stats } from "@rpv/domain";
-import { listEquippedWeaponActions } from "../lib/character/combatActions";
+import { listEquippedWeaponActions, listNaturalWeaponActions } from "../lib/character/combatActions";
 import {
     buildWeaponAttackOnlyRollRequest,
     buildWeaponAttackRollRequest,
     buildWeaponDamageRollRequest,
+    isFlatOnlyDamageRequest,
     resolveAttackThenDamageTotal,
+    resolveFlatDamageTotal,
 } from "../lib/roll/buildRollRequest";
 import type { StoredCharacter } from "../lib/character/storedCharacter";
 
@@ -155,7 +157,7 @@ describe("buildWeaponDamageRollRequest", () => {
         });
     });
 
-    it("returns null without damage dice", () => {
+    it("returns null without damage dice or flat damage", () => {
         expect(
             buildWeaponDamageRollRequest({
                 id: "weapon-x",
@@ -165,6 +167,47 @@ describe("buildWeaponDamageRollRequest", () => {
                 attackModifier: 5,
             })
         ).toBeNull();
+    });
+
+    it("builds flat-only damage for unarmed strike", () => {
+        const [unarmed] = listNaturalWeaponActions(
+            {
+                ...fighterStored,
+                selections: {
+                    ...fighterStored.selections,
+                    inventory: { bag: [], equipped: {} },
+                },
+            },
+            fighterStats
+        );
+
+        expect(unarmed).toEqual(
+            expect.objectContaining({
+                slug: "unarmed-strike",
+                attackModifier: 5,
+                damageBase: 1,
+                damageFlat: 3,
+                damageType: "bludgeoning",
+            })
+        );
+
+        expect(buildWeaponAttackOnlyRollRequest(unarmed)).toEqual({
+            kind: "d20_test",
+            id: unarmed.id,
+            label: "Unarmed Strike",
+            die: 20,
+            modifier: 5,
+        });
+
+        const damage = buildWeaponDamageRollRequest(unarmed);
+        expect(damage).toEqual({
+            kind: "damage_only",
+            id: unarmed.id,
+            label: "Unarmed Strike",
+            steps: [{ flat: 4, damageType: "bludgeoning" }],
+        });
+        expect(isFlatOnlyDamageRequest(damage!)).toBe(true);
+        expect(resolveFlatDamageTotal(damage!)).toBe(4);
     });
 });
 

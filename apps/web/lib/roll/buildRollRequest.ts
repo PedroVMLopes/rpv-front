@@ -131,24 +131,51 @@ export function buildWeaponAttackOnlyRollRequest(
 export function buildWeaponDamageRollRequest(
     weapon: WeaponAction
 ): DamageOnlyRequest | null {
-    if (!weapon.damageDice) {
+    if (weapon.damageDice) {
+        const flat = weapon.damageFlat ?? 0;
+        const steps = expandDamageSteps(weapon.damageDice, weapon.damageType);
+
+        if (flat !== 0 && steps.length > 0) {
+            const last = steps.length - 1;
+            steps[last] = { ...steps[last], flat };
+        }
+
+        return {
+            kind: "damage_only",
+            id: weapon.id,
+            label: weapon.name,
+            steps,
+        };
+    }
+
+    if (weapon.damageBase == null && weapon.damageFlat === undefined) {
         return null;
     }
 
-    const flat = weapon.damageFlat ?? 0;
-    const steps = expandDamageSteps(weapon.damageDice, weapon.damageType);
-
-    if (flat !== 0 && steps.length > 0) {
-        const last = steps.length - 1;
-        steps[last] = { ...steps[last], flat };
-    }
+    const flat = Math.max(
+        0,
+        (weapon.damageBase ?? 0) + (weapon.damageFlat ?? 0)
+    );
 
     return {
         kind: "damage_only",
         id: weapon.id,
         label: weapon.name,
-        steps,
+        steps: [{ flat, damageType: weapon.damageType }],
     };
+}
+
+export function isFlatOnlyDamageRequest(
+    request: DamageOnlyRequest
+): boolean {
+    return (
+        request.steps.length > 0 &&
+        request.steps.every((step) => step.sides == null)
+    );
+}
+
+export function resolveFlatDamageTotal(request: DamageOnlyRequest): number {
+    return request.steps.reduce((total, step) => total + (step.flat ?? 0), 0);
 }
 
 export function buildSpellAttackRollRequest(
@@ -298,7 +325,11 @@ export function resolveDamageOnlyTotal(
     }
 
     return values.reduce(
-        (total, value, index) => total + value + (steps[index]?.flat ?? 0),
+        (total, value, index) => {
+            const step = steps[index];
+            const rolled = step?.sides == null ? 0 : value;
+            return total + rolled + (step?.flat ?? 0);
+        },
         0
     );
 }

@@ -36,6 +36,8 @@ export * from "./curation/equipmentSlots.dnd";
 export * from "./curation/equipmentSlotAffinity.dnd";
 export * from "./curation/classGrants.dnd";
 export * from "./curation/subclassGrants.dnd";
+export * from "./curation/systemGrants.dnd";
+export * from "./curation/naturalWeapons.dnd";
 export * from "./curation/featureDescriptions.dnd";
 export * from "./curation/spellCombat.dnd";
 export * from "./curation/spellDisplay.dnd";

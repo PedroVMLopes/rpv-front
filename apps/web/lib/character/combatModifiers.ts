@@ -105,6 +105,67 @@ export function computeWeaponDamageFlat(
     return rules.abilityModifier(resolved[ability] ?? 10);
 }
 
+export function computeNaturalWeaponAttackBonus(
+    weapon: {
+        attackAbility: StatKey;
+        alwaysProficient: boolean;
+    },
+    resolved: Stats,
+    system: SystemKey,
+    systemData: Record<string, unknown>
+): number {
+    const rules = getSystemRules(system);
+    const level = readCharacterLevel(systemData);
+    const abilityMod = rules.abilityModifier(
+        resolved[weapon.attackAbility] ?? 10
+    );
+    const proficiency = weapon.alwaysProficient
+        ? rules.proficiencyBonus(level)
+        : 0;
+
+    return abilityMod + proficiency;
+}
+
+export function computeNaturalWeaponAbilityMod(
+    weapon: { attackAbility: StatKey },
+    resolved: Stats,
+    system: SystemKey
+): number {
+    const rules = getSystemRules(system);
+    return rules.abilityModifier(resolved[weapon.attackAbility] ?? 10);
+}
+
+export function computeNaturalWeaponDamageTotal(
+    weapon: { attackAbility: StatKey; damageFlatBase: number },
+    resolved: Stats,
+    system: SystemKey
+): number {
+    const abilityMod = computeNaturalWeaponAbilityMod(weapon, resolved, system);
+    return Math.max(0, weapon.damageFlatBase + abilityMod);
+}
+
+export function computeNaturalWeaponDamagePreview(
+    weapon: { attackAbility: StatKey; damageFlatBase: number; damageType: string },
+    resolved: Stats,
+    system: SystemKey
+): string {
+    const abilityMod = computeNaturalWeaponAbilityMod(weapon, resolved, system);
+    const total = Math.max(0, weapon.damageFlatBase + abilityMod);
+
+    if (total === 0) {
+        return `0 ${weapon.damageType}`;
+    }
+
+    const flat =
+        abilityMod === 0
+            ? ""
+            : abilityMod > 0
+              ? `+${abilityMod}`
+              : String(abilityMod);
+
+    return `${weapon.damageFlatBase}${flat} ${weapon.damageType}`.trim();
+}
+
 function readSpellcastingAbility(
     system: SystemKey,
     systemData: Record<string, unknown>

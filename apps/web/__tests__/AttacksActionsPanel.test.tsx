@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NextIntlClientProvider } from "next-intl";
 import { AttacksActionsPanel } from "../components/characters/PlayerSheet/combat/AttacksActionsPanel";
@@ -41,6 +41,14 @@ const fighterStored: StoredCharacter = {
             kind: "proficiency",
             ref: "martial-weapons",
             source: { type: "class", id: "fighter" },
+        },
+        {
+            id: "system-dnd-basic-combat-base-ability-Dash",
+            kind: "ability",
+            ref: "Dash",
+            name: "Dash",
+            source: { type: "system", id: "dnd-basic-combat" },
+            activation: { cost: "action" },
         },
     ],
     selections: {
@@ -128,14 +136,29 @@ describe("AttacksActionsPanel roll integration", () => {
     it("shows longsword attack preview for fighter", () => {
         renderPanel(fighterStored);
 
-        expect(screen.getByText("Action")).toBeInTheDocument();
+        expect(screen.getAllByText("Action").length).toBeGreaterThan(0);
         expect(screen.getByText("Longsword")).toBeInTheDocument();
-        expect(screen.getByRole("button", { name: "d20 +5" })).toBeInTheDocument();
-        expect(screen.getByRole("button", { name: /1d8/ })).toBeInTheDocument();
-        expect(screen.getByText("To hit")).toBeInTheDocument();
-        expect(screen.getByText("Damage")).toBeInTheDocument();
+        expect(screen.getByText("Unarmed Strike")).toBeInTheDocument();
+        expect(screen.getByText("Dash")).toBeInTheDocument();
+        const longswordCard = screen
+            .getByRole("button", { name: "Expand Longsword" })
+            .closest("li");
+        expect(longswordCard).not.toBeNull();
         expect(
-            screen.getByRole("button", { name: "Expand Longsword" })
+            within(longswordCard as HTMLElement).getByRole("button", {
+                name: "d20 +5",
+            })
+        ).toBeInTheDocument();
+        expect(
+            within(longswordCard as HTMLElement).getByRole("button", {
+                name: /1d8/,
+            })
+        ).toBeInTheDocument();
+        expect(
+            within(longswordCard as HTMLElement).getByText("To hit")
+        ).toBeInTheDocument();
+        expect(
+            within(longswordCard as HTMLElement).getByText("Damage")
         ).toBeInTheDocument();
     });
 
@@ -143,9 +166,35 @@ describe("AttacksActionsPanel roll integration", () => {
         const user = userEvent.setup();
         renderPanel(fighterStored);
 
-        await user.click(screen.getByRole("button", { name: "d20 +5" }));
+        const longswordCard = screen
+            .getByRole("button", { name: "Expand Longsword" })
+            .closest("li");
+        await user.click(
+            within(longswordCard as HTMLElement).getByRole("button", {
+                name: "d20 +5",
+            })
+        );
 
         expect(screen.getByText("Longsword — d20 +5")).toBeInTheDocument();
+    });
+
+    it("toasts unarmed strike damage without opening the dice dialog", async () => {
+        const user = userEvent.setup();
+        renderPanel(fighterStored);
+
+        const unarmedCard = screen
+            .getByRole("button", { name: "Expand Unarmed Strike" })
+            .closest("li");
+        await user.click(
+            within(unarmedCard as HTMLElement).getByRole("button", {
+                name: "1 +3",
+            })
+        );
+
+        expect(toastMock).toHaveBeenCalledWith("Unarmed Strike: 4 damage");
+        expect(
+            screen.queryByText(/Unarmed Strike — damage/)
+        ).not.toBeInTheDocument();
     });
 
     it("opens damage-only roll for longsword", async () => {
@@ -162,6 +211,7 @@ describe("AttacksActionsPanel roll integration", () => {
         renderPanel(wizardStored);
 
         expect(screen.getByText("Fire Bolt")).toBeInTheDocument();
+        expect(screen.getByText("Unarmed Strike")).toBeInTheDocument();
         expect(screen.getByText("Burning Hands")).toBeInTheDocument();
         expect(screen.getByRole("button", { name: "d20 +5" })).toBeInTheDocument();
         expect(screen.getByRole("button", { name: "1d10" })).toBeInTheDocument();

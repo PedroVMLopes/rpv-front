@@ -1,6 +1,9 @@
 import type { CharacterGrant, Stats } from "@rpv/domain";
 import { getItem } from "@rpv/content";
 import {
+    computeNaturalWeaponAttackBonus,
+    computeNaturalWeaponDamagePreview,
+    computeNaturalWeaponDamageTotal,
     computeSpellAttackBonus,
     computeSpellSaveDc,
     computeWeaponAttackBonus,
@@ -76,6 +79,54 @@ describe("combatModifiers", () => {
             computeSpellAttackBonus(fighterStats, "dnd", systemData)
         ).toBeNull();
         expect(computeSpellSaveDc(fighterStats, "dnd", systemData)).toBeNull();
+    });
+
+    it("computes unarmed strike for fighter L1 STR 16", () => {
+        const unarmed = {
+            attackAbility: "strength" as const,
+            alwaysProficient: true,
+            damageFlatBase: 1,
+            damageType: "bludgeoning",
+        };
+
+        expect(
+            computeNaturalWeaponAttackBonus(
+                unarmed,
+                fighterStats,
+                "dnd",
+                { level: 1, characterClass: "fighter" }
+            )
+        ).toBe(5);
+        expect(
+            computeNaturalWeaponDamagePreview(unarmed, fighterStats, "dnd")
+        ).toBe("1+3 bludgeoning");
+        expect(
+            computeNaturalWeaponDamageTotal(unarmed, fighterStats, "dnd")
+        ).toBe(4);
+    });
+
+    it("computes unarmed strike for wizard L1 STR 8 without weapon proficiency", () => {
+        const unarmed = {
+            attackAbility: "strength" as const,
+            alwaysProficient: true,
+            damageFlatBase: 1,
+            damageType: "bludgeoning",
+        };
+
+        expect(
+            computeNaturalWeaponAttackBonus(
+                unarmed,
+                wizardStats,
+                "dnd",
+                { level: 1, characterClass: "wizard" }
+            )
+        ).toBe(1);
+        expect(
+            computeNaturalWeaponDamagePreview(unarmed, wizardStats, "dnd")
+        ).toBe("0 bludgeoning");
+        expect(
+            computeNaturalWeaponDamageTotal(unarmed, wizardStats, "dnd")
+        ).toBe(0);
     });
 });
 

@@ -65,6 +65,10 @@ export function listOverviewTraitGroups(
     const grants = stored.grants ?? [];
 
     for (const sourceType of ABILITY_SOURCE_ORDER) {
+        if (sourceType === "system") {
+            continue;
+        }
+
         const traits = grants
             .filter(
                 (grant) =>

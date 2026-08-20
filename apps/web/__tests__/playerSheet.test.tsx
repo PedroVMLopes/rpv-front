@@ -523,7 +523,14 @@ describe("PlayerSheet", () => {
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
         await user.click(screen.getByRole("tab", { name: "Actions" }));
-        await user.click(screen.getByRole("button", { name: "d20 +5" }));
+        const longswordCard = screen
+            .getByRole("button", { name: "Expand Longsword" })
+            .closest("li");
+        await user.click(
+            within(longswordCard as HTMLElement).getByRole("button", {
+                name: "d20 +5",
+            })
+        );
 
         expect(screen.getByText("Longsword — d20 +5")).toBeInTheDocument();
     });

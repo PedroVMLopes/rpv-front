@@ -189,7 +189,8 @@ export function collectPendingChoiceGrants(
     for (const entry of collectGrantSources(
         selections,
         locale,
-        characterLevel
+        characterLevel,
+        system
     )) {
         if (
             entry.source.type === "race" &&

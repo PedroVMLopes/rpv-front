@@ -167,4 +167,54 @@ describe("buildWeaponContentModel", () => {
                 ?.value
         ).toBe("—");
     });
+
+    it("builds unarmed strike actions with flat damage and no properties", () => {
+        const weapon = makeWeapon({
+            slug: "unarmed-strike",
+            name: "Unarmed Strike",
+            slotId: "natural",
+            toHit: "+5",
+            damage: "1+3 bludgeoning",
+            attackModifier: 5,
+            damageBase: 1,
+            damageFlat: 3,
+            damageType: "bludgeoning",
+        });
+
+        const { summary, detail } = buildWeaponContentModel(
+            {
+                weapon,
+                slotLabel: "Unarmed",
+            },
+            {
+                ...formatters,
+                tItems: (key) =>
+                    key === "damageType.bludgeoning" ? "Bludgeoning" : key,
+            }
+        );
+
+        expect(summary.badges.map((badge) => badge.label)).toEqual(["Unarmed"]);
+        expect(summary.useActions).toEqual([
+            {
+                kind: "roll",
+                role: "attack",
+                captionKey: "toHitCaption",
+                label: "d20 +5",
+            },
+            {
+                kind: "roll",
+                role: "damage",
+                captionKey: "damageCaption",
+                label: "1 +3",
+            },
+        ]);
+        expect(
+            detail.sections[0]?.rows.find((row) => row.labelKey === "damageType")
+                ?.value
+        ).toBe("Bludgeoning");
+        expect(
+            detail.sections[0]?.rows.find((row) => row.labelKey === "properties")
+                ?.value
+        ).toBe("—");
+    });
 });

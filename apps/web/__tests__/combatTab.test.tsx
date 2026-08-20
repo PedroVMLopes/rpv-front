@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import type { ReactElement } from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NextIntlClientProvider } from "next-intl";
 import { emptyInventory } from "@rpv/domain";
@@ -74,6 +74,14 @@ const storedCharacter: StoredCharacter = {
             name: "Second Wind",
             source: { type: "class", id: "fighter" },
             activation: { cost: "bonus", resourceRef: "second-wind-uses" },
+        },
+        {
+            id: "system-dnd-basic-combat-base-ability-Dash",
+            kind: "ability",
+            ref: "Dash",
+            name: "Dash",
+            source: { type: "system", id: "dnd-basic-combat" },
+            activation: { cost: "action" },
         },
         {
             id: "class-wizard-spell-fire-bolt",
@@ -224,16 +232,25 @@ describe("CombatTab", () => {
 
         expect(screen.getAllByText("Actions").length).toBeGreaterThan(0);
         expect(screen.getByText("Longsword")).toBeInTheDocument();
+        expect(screen.getByText("Unarmed Strike")).toBeInTheDocument();
+        expect(screen.getByText("Dash")).toBeInTheDocument();
         expect(screen.getByText("Fire Bolt")).toBeInTheDocument();
         expect(screen.getByText("Second Wind")).toBeInTheDocument();
         expect(
             screen.getByText(/regain hit points equal to 1d10/i)
         ).toBeInTheDocument();
+        const longswordCard = screen
+            .getByRole("button", { name: "Expand Longsword" })
+            .closest("li");
         expect(
-            screen.getByRole("button", { name: "d20 +5" })
+            within(longswordCard as HTMLElement).getByRole("button", {
+                name: "d20 +5",
+            })
         ).toBeInTheDocument();
         expect(
-            screen.getByRole("button", { name: /1d8/ })
+            within(longswordCard as HTMLElement).getByRole("button", {
+                name: /1d8/,
+            })
         ).toBeInTheDocument();
         expect(
             screen.getByRole("button", { name: "Expand Longsword" })
@@ -241,7 +258,9 @@ describe("CombatTab", () => {
         expect(
             screen.getByRole("button", { name: "Expand Second Wind" })
         ).toBeInTheDocument();
-        expect(screen.getByRole("button", { name: "Use" })).toBeInTheDocument();
+        expect(
+            screen.getAllByRole("button", { name: "Use" }).length
+        ).toBeGreaterThanOrEqual(1);
     });
 
     it("shows spell slot squares above defense saves", () => {

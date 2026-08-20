@@ -13,6 +13,8 @@ import {
     getSpell,
     dndRaceLevelGrants,
     statModifierGrantsToModifiers,
+    getSystemCombatGrants,
+    DND_BASIC_COMBAT_SOURCE_ID,
     type Grant,
 } from "@rpv/content";
 import { getRace, getSubrace } from "@/lib/catalog/raceCatalog";
@@ -33,9 +35,18 @@ export type GrantSourceEntry = {
 export function collectGrantSources(
     selections: CharacterSelections,
     locale: Locale,
-    characterLevel = 1
+    characterLevel = 1,
+    system: SystemKey = "dnd"
 ): GrantSourceEntry[] {
     const sources: GrantSourceEntry[] = [];
+
+    const systemGrants = getSystemCombatGrants(system);
+    if (systemGrants.length > 0) {
+        sources.push({
+            source: { type: "system", id: DND_BASIC_COMBAT_SOURCE_ID },
+            grants: systemGrants,
+        });
+    }
 
     if (selections.race) {
         const race = getRace(selections.race, locale);
@@ -123,10 +134,11 @@ export function getFixedRefsForGrantType(
     selections: CharacterSelections,
     locale: Locale,
     grantType: Grant["grantType"],
-    characterLevel = 1
+    characterLevel = 1,
+    system: SystemKey = "dnd"
 ): Set<string> {
     const refs = new Set<string>();
-    const sources = collectGrantSources(selections, locale, characterLevel);
+    const sources = collectGrantSources(selections, locale, characterLevel, system);
 
     for (const entry of sources) {
         for (const grant of entry.grants) {
@@ -152,9 +164,10 @@ export const STAT_MODIFIER_SOURCE_TYPES: ModifierSourceType[] = ["item", "feat"]
 export function deriveStatModifiers(
     selections: CharacterSelections,
     locale: Locale,
-    characterLevel = 1
+    characterLevel = 1,
+    system: SystemKey = "dnd"
 ): Modifier[] {
-    return collectGrantSources(selections, locale, characterLevel)
+    return collectGrantSources(selections, locale, characterLevel, system)
         .filter((entry) =>
             STAT_MODIFIER_SOURCE_TYPES.includes(entry.source.type)
         )
@@ -219,9 +232,10 @@ function resolveChoiceGrants(
 export function getLanguageBudget(
     selections: CharacterSelections,
     locale: Locale,
-    characterLevel = 1
+    characterLevel = 1,
+    system: SystemKey = "dnd"
 ): number {
-    const sources = collectGrantSources(selections, locale, characterLevel);
+    const sources = collectGrantSources(selections, locale, characterLevel, system);
     const allGrants = sources.flatMap((entry) => entry.grants);
     return countLanguageChoices(allGrants);
 }
@@ -229,9 +243,10 @@ export function getLanguageBudget(
 export function getFixedLanguageGrants(
     selections: CharacterSelections,
     locale: Locale,
-    characterLevel = 1
+    characterLevel = 1,
+    system: SystemKey = "dnd"
 ): CharacterGrant[] {
-    const sources = collectGrantSources(selections, locale, characterLevel);
+    const sources = collectGrantSources(selections, locale, characterLevel, system);
     const grants: CharacterGrant[] = [];
 
     for (const entry of sources) {
@@ -259,7 +274,7 @@ export function deriveCharacterGrants(
     characterLevel = 1,
     system: SystemKey
 ): CharacterGrant[] {
-    const sources = collectGrantSources(selections, locale, characterLevel);
+    const sources = collectGrantSources(selections, locale, characterLevel, system);
     const fixedGrants = sources.flatMap((entry) =>
         fixedGrantsToCharacterGrants(entry.grants, entry.source, {
             featureLevel: entry.featureLevel,

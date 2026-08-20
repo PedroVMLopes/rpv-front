@@ -7,6 +7,7 @@ import type {
 } from "@rpv/domain";
 import {
     getAbilityFeatureDescription,
+    getAbilityFeatureName,
     getItem,
     getSpellDisplayMeta,
     normalizeSpellActionCost,
@@ -19,6 +20,7 @@ import { formatResourceRefLabel } from "@/lib/character/resourceLabels";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import {
     listEquippedWeaponActions,
+    listNaturalWeaponActions,
     listSpellActions,
     type SpellAction,
     type WeaponAction,
@@ -96,7 +98,11 @@ export type DisplayActionGroup = {
     actions: DisplayAction[];
 };
 
-function slotLabel(slotId: string, tSlots: (key: string) => string): string {
+function slotLabel(
+    slotId: string,
+    tSlots: (key: string) => string,
+    tNatural?: string
+): string {
     switch (slotId) {
         case "melee-main":
             return tSlots("meleeMain");
@@ -106,6 +112,8 @@ function slotLabel(slotId: string, tSlots: (key: string) => string): string {
             return tSlots("rangedMain");
         case "ranged-off":
             return tSlots("rangedOff");
+        case "natural":
+            return tNatural ?? slotId;
         default:
             return slotId;
     }
@@ -150,10 +158,17 @@ function buildWeaponActions(
     stored: StoredCharacter,
     resolved: Stats,
     locale: Locale | undefined,
-    tSlots: (key: string) => string
+    tSlots: (key: string) => string,
+    naturalWeaponLabel: string
 ): DisplayAction[] {
-    return listEquippedWeaponActions(stored, resolved, locale).map((weapon) => {
-        const item = getItem(weapon.slug, stored.system, locale);
+    const equipped = listEquippedWeaponActions(stored, resolved, locale);
+    const natural = listNaturalWeaponActions(stored, resolved, locale);
+
+    return [...equipped, ...natural].map((weapon) => {
+        const item =
+            weapon.slotId === "natural"
+                ? undefined
+                : getItem(weapon.slug, stored.system, locale);
         const rangeSummary =
             item?.weapon?.range != null
                 ? item.weapon.longRange != null
@@ -164,16 +179,16 @@ function buildWeaponActions(
         return {
             id: weapon.id,
             title: weapon.name,
-            sourceType: "weapon",
-            actionCost: "action",
-            availability: "available",
-            badges: [slotLabel(weapon.slotId, tSlots)],
+            sourceType: "weapon" as const,
+            actionCost: "action" as const,
+            availability: "available" as const,
+            badges: [slotLabel(weapon.slotId, tSlots, naturalWeaponLabel)],
             summary: [weapon.toHit, weapon.damage, rangeSummary].filter(
                 Boolean
             ) as string[],
             description: weapon.description,
             rollRequest: buildWeaponAttackRollRequest(weapon) ?? undefined,
-            actionLabel: "roll",
+            actionLabel: "roll" as const,
             tags: [
                 "weapon",
                 weapon.slotId.startsWith("ranged") ? "ranged" : "melee",
@@ -252,7 +267,8 @@ function abilityGrantToDisplayAction(
     resourceByRef: Map<string, CombatResourceEntry>,
     locale: Locale | undefined
 ): DisplayAction {
-    const title = grant.name ?? grant.ref;
+    const englishName = grant.name ?? grant.ref;
+    const title = getAbilityFeatureName(englishName, locale);
     const actionCost = displayFeatureCost(grant.activation.cost);
     const resourceEntry = grant.activation.resourceRef
         ? resourceByRef.get(grant.activation.resourceRef)
@@ -274,7 +290,11 @@ function abilityGrantToDisplayAction(
                 ? `${resourceEntry.current}/${resourceEntry.max}`
                 : null,
         ].filter(Boolean) as string[],
-        description: getAbilityFeatureDescription(title, grant.source, locale),
+        description: getAbilityFeatureDescription(
+            englishName,
+            grant.source,
+            locale
+        ),
         actionLabel: "use",
         resource: resourceEntry
             ? {
@@ -336,13 +356,20 @@ export function buildDisplayActions(
     stored: StoredCharacter,
     resolved: Stats,
     locale: Locale | undefined,
-    tSlots: (key: string) => string
+    tSlots: (key: string) => string,
+    naturalWeaponLabel = "Unarmed"
 ): DisplayAction[] {
     const resourceEntries = listCombatResources(stored.grants ?? [], stored.resources);
     const featureResources = new Map(resourceEntries.map((entry) => [entry.ref, entry]));
 
     return [
-        ...buildWeaponActions(stored, resolved, locale, tSlots),
+        ...buildWeaponActions(
+            stored,
+            resolved,
+            locale,
+            tSlots,
+            naturalWeaponLabel
+        ),
         ...buildSpellActions(stored, resolved, locale).map((action) => ({
             ...action,
             resource:

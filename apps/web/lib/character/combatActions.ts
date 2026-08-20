@@ -1,7 +1,9 @@
-import type { CharacterGrant, Locale, Stats } from "@rpv/domain";
+import type { CharacterGrant, Locale, ModifierSource, Stats } from "@rpv/domain";
 import {
     getAbilityFeatureDescription,
+    getAbilityFeatureName,
     getItem,
+    getNaturalWeapons,
     getSpellRollProfile,
     type SpellRollProfile,
 } from "@rpv/content";
@@ -9,6 +11,9 @@ import type { SystemKey } from "@/presets";
 import { contentRepo } from "@/lib/content/contentRepository";
 import type { CharacterSelections, StoredCharacter } from "./storedCharacter";
 import {
+    computeNaturalWeaponAbilityMod,
+    computeNaturalWeaponAttackBonus,
+    computeNaturalWeaponDamagePreview,
     computeSpellCombatPreview,
     computeWeaponAttackBonus,
     computeWeaponDamageFlat,
@@ -26,23 +31,23 @@ export const WEAPON_SLOTS = [
     "ranged-off",
 ] as const;
 export type WeaponSlotId = (typeof WEAPON_SLOTS)[number];
+export const NATURAL_WEAPON_SLOT = "natural" as const;
+export type WeaponActionSlotId = WeaponSlotId | typeof NATURAL_WEAPON_SLOT;
 
 export type WeaponAction = {
     id: string;
     slug: string;
     name: string;
-    slotId: WeaponSlotId;
+    slotId: WeaponActionSlotId;
     description?: string;
     toHit?: string;
     damage?: string;
     attackModifier: number | null;
     damageDice?: string;
     damageFlat?: number;
+    damageBase?: number;
     damageType?: string;
 };
-
-import type { ModifierSource } from "@rpv/domain";
-import type { SpellRollProfile } from "@rpv/content";
 
 export type SpellAction = {
     id: string;
@@ -198,6 +203,46 @@ export function listEquippedWeaponActions(
     return result;
 }
 
+export function listNaturalWeaponActions(
+    stored: StoredCharacter,
+    resolved: Stats,
+    locale?: Locale
+): WeaponAction[] {
+    const context = toCombatContext(stored, resolved, locale);
+
+    return getNaturalWeapons(context.system, context.locale).map((weapon) => {
+        const attackModifier = computeNaturalWeaponAttackBonus(
+            weapon,
+            context.resolved,
+            context.system,
+            context.systemData
+        );
+        const abilityMod = computeNaturalWeaponAbilityMod(
+            weapon,
+            context.resolved,
+            context.system
+        );
+
+        return {
+            id: `${NATURAL_WEAPON_SLOT}-${weapon.slug}`,
+            slug: weapon.slug,
+            name: weapon.name,
+            slotId: NATURAL_WEAPON_SLOT,
+            description: weapon.description,
+            toHit: formatWeaponToHit(attackModifier),
+            damage: computeNaturalWeaponDamagePreview(
+                weapon,
+                context.resolved,
+                context.system
+            ),
+            attackModifier,
+            damageBase: weapon.damageFlatBase,
+            damageFlat: abilityMod,
+            damageType: weapon.damageType,
+        };
+    });
+}
+
 export function listSpellActions(
     stored: StoredCharacter,
     resolved: Stats,
@@ -296,12 +341,12 @@ export function listFeatureActions(
     return grants
         .filter((grant) => grant.kind === "ability")
         .map((grant) => {
-            const name = grant.name ?? grant.ref;
+            const englishName = grant.name ?? grant.ref;
             return {
                 id: grant.id,
-                name,
+                name: getAbilityFeatureName(englishName, locale),
                 description: getAbilityFeatureDescription(
-                    name,
+                    englishName,
                     grant.source,
                     locale
                 ),

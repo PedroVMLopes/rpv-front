@@ -546,6 +546,7 @@
       "features": "Características",
       "roll": "Rolar",
       "use": "Usar",
+      "naturalWeapon": "Desarmado",
       "noActions": "Nenhuma ação disponível",
       "noResources": "Nenhum recurso de classe",
       "filtersLabel": "Filtros de ações",
