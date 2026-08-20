@@ -449,6 +449,11 @@
     "openFullSheet": "Open full sheet",
     "comingSoon": "Coming soon",
     "rollComingSoon": "Roll assistant coming soon",
+    "actionBar": {
+      "navLabel": "Session actions",
+      "skills": "Skills and abilities",
+      "notes": "Quick note"
+    },
     "roll": {
       "selectDie": "Select the die you want to roll",
       "pickResult": "Select the result (d{sides})",

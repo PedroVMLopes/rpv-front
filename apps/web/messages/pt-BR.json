@@ -449,6 +449,11 @@
     "openFullSheet": "Abrir Ficha",
     "comingSoon": "Em breve",
     "rollComingSoon": "Auxiliar de rolagens em breve",
+    "actionBar": {
+      "navLabel": "Ações da sessão",
+      "skills": "Perícias e habilidades",
+      "notes": "Nota rápida"
+    },
     "roll": {
       "selectDie": "Selecione o dado desejado",
       "pickResult": "Selecione o resultado (d{sides})",

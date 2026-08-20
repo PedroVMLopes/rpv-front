@@ -11,6 +11,7 @@ import { CombatTab } from "./tabs/CombatTab";
 import { InventoryTab } from "./tabs/InventoryTab";
 import { MagicTab } from "./tabs/MagicTab";
 import { NotesTab } from "./tabs/NotesTab";
+import { PlayerSheetActionBar } from "./PlayerSheetActionBar";
 import { DiceRollAssistant } from "./roll/DiceRollAssistant";
 import { RollAssistantProvider } from "./roll/RollAssistantProvider";
 
@@ -31,7 +32,7 @@ export function PlayerSheet({ stored }: PlayerSheetProps) {
                 />
                 <main
                     className={cn(
-                        "flex-1 rounded-b-xl border border-t-0 border-border px-3 py-3 sm:px-4 sm:py-4",
+                        "flex-1 rounded-b-xl border border-t-0 border-border px-3 pt-3 pb-20 sm:px-4 sm:pt-4 sm:pb-20",
                         sheetSurface
                     )}
                     role="tabpanel"
@@ -48,6 +49,7 @@ export function PlayerSheet({ stored }: PlayerSheetProps) {
                     {activeTab === "magic" ? <MagicTab /> : null}
                     {activeTab === "notes" ? <NotesTab stored={stored} /> : null}
                 </main>
+                <PlayerSheetActionBar />
                 <DiceRollAssistant />
             </div>
         </RollAssistantProvider>

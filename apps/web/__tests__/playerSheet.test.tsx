@@ -196,6 +196,9 @@ describe("PlayerSheet", () => {
             "aria-selected",
             "true"
         );
+        expect(
+            screen.getByRole("toolbar", { name: "Session actions" })
+        ).toBeInTheDocument();
     });
 
     it("shows only proficient skills in the skills card", () => {

@@ -5,6 +5,7 @@ import type { ComponentProps, ReactNode } from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NextIntlClientProvider } from "next-intl";
+import { PlayerSheetActionBar } from "../components/characters/PlayerSheet/PlayerSheetActionBar";
 import { DiceRollAssistant } from "../components/characters/PlayerSheet/roll/DiceRollAssistant";
 import { RollAssistantProvider, useRollAssistant } from "../components/characters/PlayerSheet/roll/RollAssistantProvider";
 import type {
@@ -25,6 +26,7 @@ function renderAssistant(children?: ReactNode) {
         <NextIntlClientProvider locale="en" messages={enMessages}>
             <RollAssistantProvider>
                 {children}
+                <PlayerSheetActionBar />
                 <DiceRollAssistant />
             </RollAssistantProvider>
         </NextIntlClientProvider>
