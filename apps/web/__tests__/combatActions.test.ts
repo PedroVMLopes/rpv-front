@@ -42,6 +42,7 @@ const fighterStored: StoredCharacter = {
         inventory: {
             bag: [{ slug: "srd_longsword", quantity: 1 }],
             equipped: { "melee-main": "srd_longsword" },
+            equippedMulti: {},
         },
     },
     resources: { hp: 10 },
