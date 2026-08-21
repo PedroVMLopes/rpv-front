@@ -5,8 +5,14 @@ import { Dices, ListChecks, NotebookPen } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import type { StoredCharacter } from "@/lib/character/storedCharacter";
+import { AbilityChecksPanel } from "./AbilityChecksPanel";
 import { DiceRollAssistant } from "./roll/DiceRollAssistant";
 import { useRollAssistant } from "./roll/RollAssistantProvider";
+
+type PlayerSheetActionBarProps = {
+    stored?: StoredCharacter;
+};
 
 type ActionBarPanel = "skills" | "dice" | "notes";
 
@@ -20,7 +26,7 @@ function prefersReducedMotion(): boolean {
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-export function PlayerSheetActionBar() {
+export function PlayerSheetActionBar({ stored }: PlayerSheetActionBarProps) {
     const t = useTranslations("playerSheet.actionBar");
     const tSheet = useTranslations("playerSheet");
     const tRoll = useTranslations("playerSheet.roll");
@@ -237,6 +243,14 @@ export function PlayerSheetActionBar() {
                                         <DiceRollAssistant
                                             onDismiss={collapsePanel}
                                         />
+                                    ) : panel === "skills" ? (
+                                        stored ? (
+                                            <AbilityChecksPanel stored={stored} />
+                                        ) : (
+                                            <p className="pb-2 text-sm text-muted-foreground">
+                                                {tSheet("noneYet")}
+                                            </p>
+                                        )
                                     ) : (
                                         <p className="pb-2 text-sm text-muted-foreground">
                                             {tSheet("comingSoon")}

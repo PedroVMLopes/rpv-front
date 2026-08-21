@@ -16,6 +16,7 @@ import { buildAbilityCheckRollRequest } from "@/lib/roll/buildRollRequest";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { Button } from "@/components/ui/button";
+import { AbilityStone } from "../AbilityStone";
 import { OverviewPanel } from "./OverviewPanel";
 import { useRollAssistant } from "../roll/RollAssistantProvider";
 import { sheetInset } from "../playerSheetSurfaces";
@@ -79,48 +80,33 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
 
                     return (
                         <div key={ability.name} className="pt-3">
-                            <div
-                                className={cn(
-                                    "relative flex min-h-24 flex-col items-center rounded-xl bg-accent px-1.5 pb-2 pt-3 text-accent-foreground shadow-xs border-custom border-background"
-                                )}
-                                aria-label={`${rollLabel} ${ability.resolved} ${formatModifier(mod)}`}
+                            <AbilityStone
+                                score={ability.resolved}
+                                modifier={mod}
+                                shortLabel={label}
+                                ariaLabel={`${rollLabel} ${ability.resolved} ${formatModifier(mod)}`}
                             >
-                                <span
-                                    className={cn(
-                                        "absolute left-1/2 top-0 z-5 -translate-x-1/2 -translate-y-1/2",
-                                        "rounded-lg bg-primary text-primary-foreground px-2 py-0.5 font-semibold leading-none",
-                                        "border-2"
-                                    )}
-                                >
-                                    {ability.resolved}
-                                </span>
-                                <span className="flex flex-1 items-center text-2xl font-bold font-serif tracking-wide leading-none sm:text-3xl">
-                                    {formatModifier(mod)}
-                                </span>
-                                <span className="flex items-center gap-0.5 text-center text-sm font-semibold leading-tight">
-                                    {label}
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="icon"
-                                        className="size-7 shrink-0 text-accent-foreground"
-                                        aria-label={tRoll("rollAction", {
-                                            label: rollLabel,
-                                        })}
-                                        onClick={() =>
-                                            openRollRequest(
-                                                buildAbilityCheckRollRequest(
-                                                    ability.statKey,
-                                                    rollLabel,
-                                                    mod
-                                                )
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="size-7 shrink-0 text-accent-foreground"
+                                    aria-label={tRoll("rollAction", {
+                                        label: rollLabel,
+                                    })}
+                                    onClick={() =>
+                                        openRollRequest(
+                                            buildAbilityCheckRollRequest(
+                                                ability.statKey,
+                                                rollLabel,
+                                                mod
                                             )
-                                        }
-                                    >
-                                        <Dices className="size-3.5" aria-hidden />
-                                    </Button>
-                                </span>
-                            </div>
+                                        )
+                                    }
+                                >
+                                    <Dices className="size-3.5" aria-hidden />
+                                </Button>
+                            </AbilityStone>
                         </div>
                     );
                 })}

@@ -48,7 +48,7 @@ export function PlayerSheet({ stored }: PlayerSheetProps) {
                     {activeTab === "magic" ? <MagicTab /> : null}
                     {activeTab === "notes" ? <NotesTab stored={stored} /> : null}
                 </main>
-                <PlayerSheetActionBar />
+                <PlayerSheetActionBar stored={stored} />
             </div>
         </RollAssistantProvider>
     );

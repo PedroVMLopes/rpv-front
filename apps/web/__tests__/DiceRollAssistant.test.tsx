@@ -67,9 +67,11 @@ describe("DiceRollAssistant", () => {
             screen.getByText("Select the die you want to roll")
         ).toBeInTheDocument();
         expect(screen.getByRole("button", { name: "d20" })).toBeInTheDocument();
-        expect(
-            screen.getByRole("button", { name: "Open dice roller" })
-        ).toHaveAttribute("aria-pressed", "true");
+        await waitFor(() => {
+            expect(
+                screen.getByRole("button", { name: "Open dice roller" })
+            ).toHaveAttribute("aria-pressed", "true");
+        });
     });
 
     it("moves to the result step after selecting a die", async () => {
@@ -90,6 +92,11 @@ describe("DiceRollAssistant", () => {
         renderAssistant();
 
         await user.click(screen.getByRole("button", { name: "Open dice roller" }));
+        await waitFor(() => {
+            expect(
+                screen.getByRole("button", { name: "Open dice roller" })
+            ).toHaveAttribute("aria-pressed", "true");
+        });
         await user.click(screen.getByRole("button", { name: "Open dice roller" }));
 
         expect(
@@ -201,9 +208,11 @@ describe("DiceRollAssistant", () => {
         expect(
             screen.queryByText("Select the die you want to roll")
         ).not.toBeInTheDocument();
-        expect(
-            screen.getByRole("button", { name: "Open dice roller" })
-        ).toHaveAttribute("aria-pressed", "true");
+        await waitFor(() => {
+            expect(
+                screen.getByRole("button", { name: "Open dice roller" })
+            ).toHaveAttribute("aria-pressed", "true");
+        });
     });
 
     it("shows contextual toast with modifier applied", async () => {

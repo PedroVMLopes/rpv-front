@@ -116,4 +116,10 @@ describe("AbilitiesSection", () => {
 
         expect(screen.getByText("Strength — d20 +3")).toBeInTheDocument();
     });
+
+    it("exposes the ability score and modifier on the stone", () => {
+        renderSection(baseStored());
+
+        expect(screen.getByLabelText("Strength 16 +3")).toBeInTheDocument();
+    });
 });
