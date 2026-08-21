@@ -581,4 +581,34 @@ describe("actionDisplay", () => {
             DEFAULT_ACTION_FILTER_STATE
         );
     });
+
+    it("from show-all, category click selects that category exclusively then adds", () => {
+        const onlySpells = toggleActionFilterCategory(
+            DEFAULT_ACTION_FILTER_STATE,
+            "spells"
+        );
+        expect(onlySpells).toEqual({
+            weapons: false,
+            spells: true,
+            abilities: false,
+        });
+
+        const spellsAndWeapons = toggleActionFilterCategory(
+            onlySpells,
+            "weapons"
+        );
+        expect(spellsAndWeapons).toEqual({
+            weapons: true,
+            spells: true,
+            abilities: false,
+        });
+
+        expect(
+            toggleActionFilterCategory(spellsAndWeapons, "spells")
+        ).toEqual({
+            weapons: true,
+            spells: false,
+            abilities: false,
+        });
+    });
 });

@@ -74,6 +74,14 @@ export function toggleActionFilterCategory(
     state: ActionFilterState,
     category: ActionFilterCategory
 ): ActionFilterState {
+    if (isActionFilterShowAll(state)) {
+        return {
+            weapons: category === "weapons",
+            spells: category === "spells",
+            abilities: category === "abilities",
+        };
+    }
+
     const next: ActionFilterState = {
         ...state,
         [category]: !state[category],
