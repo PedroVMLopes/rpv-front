@@ -48,22 +48,30 @@ export type ActionAvailability =
     | "unequipped"
     | "unprepared";
 
-export type ActionFilterCategory = "weapons" | "spells" | "abilities";
+export type ActionFilterCategory =
+    | "weapons"
+    | "spells"
+    | "abilities"
+    | "basics";
 
 export type ActionFilterState = {
     weapons: boolean;
     spells: boolean;
     abilities: boolean;
+    basics: boolean;
 };
 
 export const DEFAULT_ACTION_FILTER_STATE: ActionFilterState = {
     weapons: true,
     spells: true,
     abilities: true,
+    basics: true,
 };
 
 export function isActionFilterShowAll(state: ActionFilterState): boolean {
-    return state.weapons && state.spells && state.abilities;
+    return (
+        state.weapons && state.spells && state.abilities && state.basics
+    );
 }
 
 export function selectAllActionFilters(): ActionFilterState {
@@ -79,6 +87,7 @@ export function toggleActionFilterCategory(
             weapons: category === "weapons",
             spells: category === "spells",
             abilities: category === "abilities",
+            basics: category === "basics",
         };
     }
 
@@ -87,7 +96,12 @@ export function toggleActionFilterCategory(
         [category]: !state[category],
     };
 
-    if (!next.weapons && !next.spells && !next.abilities) {
+    if (
+        !next.weapons &&
+        !next.spells &&
+        !next.abilities &&
+        !next.basics
+    ) {
         return selectAllActionFilters();
     }
 
@@ -424,6 +438,20 @@ export function buildDisplayActions(
     ];
 }
 
+function matchesAbilitiesFilter(action: DisplayAction): boolean {
+    if (
+        action.sourceType !== "feature" &&
+        action.sourceType !== "item"
+    ) {
+        return false;
+    }
+    return action.featureSource !== "system";
+}
+
+function matchesBasicsFilter(action: DisplayAction): boolean {
+    return action.featureSource === "system";
+}
+
 export function filterDisplayActions(
     actions: DisplayAction[],
     filter: ActionFilterState
@@ -439,10 +467,10 @@ export function filterDisplayActions(
         if (filter.spells && action.sourceType === "spell") {
             return true;
         }
-        if (
-            filter.abilities &&
-            (action.sourceType === "feature" || action.sourceType === "item")
-        ) {
+        if (filter.abilities && matchesAbilitiesFilter(action)) {
+            return true;
+        }
+        if (filter.basics && matchesBasicsFilter(action)) {
             return true;
         }
         return false;

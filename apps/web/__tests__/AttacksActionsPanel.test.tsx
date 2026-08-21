@@ -337,4 +337,38 @@ describe("AttacksActionsPanel roll integration", () => {
         expect(screen.getByText("Second Wind")).toBeInTheDocument();
         expect(screen.getByText("Fire Bolt")).toBeInTheDocument();
     });
+
+    it("filters basics separately from class abilities", async () => {
+        const user = userEvent.setup();
+        renderPanel({
+            ...fighterStored,
+            grants: [
+                ...fighterStored.grants,
+                {
+                    id: "class-fighter-ability-second-wind",
+                    kind: "ability",
+                    ref: "Second Wind",
+                    name: "Second Wind",
+                    source: { type: "class", id: "fighter" },
+                    activation: {
+                        cost: "bonus",
+                        resourceRef: "second-wind-uses",
+                    },
+                },
+            ],
+            resources: {
+                ...fighterStored.resources,
+                "second-wind-uses": 1,
+            },
+        });
+
+        expect(screen.getByText("Dash")).toBeInTheDocument();
+        expect(screen.getByText("Second Wind")).toBeInTheDocument();
+
+        await user.click(screen.getByRole("button", { name: "Basics" }));
+
+        expect(screen.getByText("Dash")).toBeInTheDocument();
+        expect(screen.queryByText("Second Wind")).not.toBeInTheDocument();
+        expect(screen.queryByText("Longsword")).not.toBeInTheDocument();
+    });
 });

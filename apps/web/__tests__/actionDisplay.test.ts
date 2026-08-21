@@ -157,6 +157,7 @@ describe("actionDisplay", () => {
                 weapons: true,
                 spells: false,
                 abilities: false,
+                basics: false,
             }).map((action) => action.title)
         ).toEqual(expect.arrayContaining(["Longsword", "Unarmed Strike"]));
 
@@ -509,7 +510,7 @@ describe("actionDisplay", () => {
         ).not.toContain("Unknown Cost Feature");
     });
 
-    it("filters abilities to class and item activations, excluding weapons and spells", () => {
+    it("filters abilities to class and item activations, excluding weapons spells and basics", () => {
         const withItemFeature: StoredCharacter = {
             ...stored,
             grants: [
@@ -520,6 +521,14 @@ describe("actionDisplay", () => {
                     ref: "Cinder Burst",
                     name: "Cinder Burst",
                     source: { type: "item", id: "rpv_cloak-of-embers" },
+                    activation: { cost: "action" },
+                },
+                {
+                    id: "system-dnd-basic-combat-base-ability-Dash",
+                    kind: "ability",
+                    ref: "Dash",
+                    name: "Dash",
+                    source: { type: "system", id: "dnd-basic-combat" },
                     activation: { cost: "action" },
                 },
             ],
@@ -535,29 +544,45 @@ describe("actionDisplay", () => {
             weapons: false,
             spells: false,
             abilities: true,
+            basics: false,
         }).map((action) => action.title);
         expect(abilityTitles).toEqual(
             expect.arrayContaining(["Second Wind", "Cinder Burst"])
         );
         expect(abilityTitles).not.toContain("Longsword");
         expect(abilityTitles).not.toContain("Fire Bolt");
+        expect(abilityTitles).not.toContain("Dash");
+
+        const basicsTitles = filterDisplayActions(actions, {
+            weapons: false,
+            spells: false,
+            abilities: false,
+            basics: true,
+        }).map((action) => action.title);
+        expect(basicsTitles).toEqual(expect.arrayContaining(["Dash"]));
+        expect(basicsTitles).not.toContain("Second Wind");
+        expect(basicsTitles).not.toContain("Cinder Burst");
+        expect(basicsTitles).not.toContain("Longsword");
+
         expect(
             filterDisplayActions(actions, {
                 weapons: false,
                 spells: true,
                 abilities: false,
+                basics: false,
             }).map((action) => action.title)
         ).toEqual(expect.arrayContaining(["Fire Bolt", "Burning Hands"]));
         expect(
             filterDisplayActions(actions, DEFAULT_ACTION_FILTER_STATE).map(
                 (action) => action.title
             )
-        ).toEqual(expect.arrayContaining(["Second Wind", "Longsword"]));
+        ).toEqual(expect.arrayContaining(["Second Wind", "Longsword", "Dash"]));
         expect(
             filterDisplayActions(actions, {
                 weapons: true,
                 spells: true,
                 abilities: false,
+                basics: false,
             }).map((action) => action.title)
         ).toEqual(
             expect.arrayContaining(["Longsword", "Fire Bolt", "Burning Hands"])
@@ -567,8 +592,17 @@ describe("actionDisplay", () => {
                 weapons: true,
                 spells: true,
                 abilities: false,
+                basics: false,
             }).map((action) => action.title)
         ).not.toContain("Second Wind");
+        expect(
+            filterDisplayActions(actions, {
+                weapons: true,
+                spells: true,
+                abilities: false,
+                basics: false,
+            }).map((action) => action.title)
+        ).not.toContain("Dash");
     });
 
     it("resets to show-all when the last category toggle is turned off", () => {
@@ -576,6 +610,7 @@ describe("actionDisplay", () => {
             weapons: true,
             spells: false,
             abilities: false,
+            basics: false,
         };
         expect(toggleActionFilterCategory(onlyWeapons, "weapons")).toEqual(
             DEFAULT_ACTION_FILTER_STATE
@@ -591,6 +626,7 @@ describe("actionDisplay", () => {
             weapons: false,
             spells: true,
             abilities: false,
+            basics: false,
         });
 
         const spellsAndWeapons = toggleActionFilterCategory(
@@ -601,6 +637,7 @@ describe("actionDisplay", () => {
             weapons: true,
             spells: true,
             abilities: false,
+            basics: false,
         });
 
         expect(
@@ -609,6 +646,26 @@ describe("actionDisplay", () => {
             weapons: true,
             spells: false,
             abilities: false,
+            basics: false,
+        });
+
+        const onlyBasics = toggleActionFilterCategory(
+            DEFAULT_ACTION_FILTER_STATE,
+            "basics"
+        );
+        expect(onlyBasics).toEqual({
+            weapons: false,
+            spells: false,
+            abilities: false,
+            basics: true,
+        });
+        expect(
+            toggleActionFilterCategory(onlyBasics, "abilities")
+        ).toEqual({
+            weapons: false,
+            spells: false,
+            abilities: true,
+            basics: true,
         });
     });
 });

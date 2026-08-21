@@ -562,7 +562,8 @@
         "all": "All",
         "weapons": "Weapons",
         "spells": "Spells",
-        "abilities": "Abilities"
+        "abilities": "Abilities",
+        "basics": "Basics"
       },
       "group": {
         "action": "Action",

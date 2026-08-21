@@ -20,6 +20,7 @@ const CATEGORIES: ActionFilterCategory[] = [
     "weapons",
     "spells",
     "abilities",
+    "basics",
 ];
 
 function categoryLabel(
@@ -33,6 +34,8 @@ function categoryLabel(
             return t("combat.filters.spells");
         case "abilities":
             return t("combat.filters.abilities");
+        case "basics":
+            return t("combat.filters.basics");
     }
 }
 
