@@ -193,7 +193,7 @@ export function PlayerSheetActionBar({ stored }: PlayerSheetActionBarProps) {
                 ? "text-primary"
                 : accentWhenIdle
                   ? "text-primary"
-                  : "text-muted-foreground"
+                  : "text-card-foreground"
         );
 
     return (
@@ -276,7 +276,7 @@ export function PlayerSheetActionBar({ stored }: PlayerSheetActionBarProps) {
                             aria-label={t("skills")}
                             aria-pressed={expanded && panel === "skills"}
                             aria-expanded={expanded && panel === "skills"}
-                            className={buttonClass("skills", true)}
+                            className={buttonClass("skills")}
                             onClick={() => selectPanel("skills")}
                         >
                             <ListChecks className="size-4" aria-hidden />
@@ -288,7 +288,7 @@ export function PlayerSheetActionBar({ stored }: PlayerSheetActionBarProps) {
                             aria-label={tRoll("openFab")}
                             aria-pressed={expanded && panel === "dice"}
                             aria-expanded={expanded && panel === "dice"}
-                            className={buttonClass("dice", true)}
+                            className={buttonClass("dice")}
                             onClick={() => selectPanel("dice")}
                         >
                             <Dices className="size-5" aria-hidden />
