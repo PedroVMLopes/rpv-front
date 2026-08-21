@@ -1,71 +1,87 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import type { ActionFilterId } from "@/lib/character/actionDisplay";
+import {
+    isActionFilterShowAll,
+    selectAllActionFilters,
+    toggleActionFilterCategory,
+    type ActionFilterCategory,
+    type ActionFilterState,
+} from "@/lib/character/actionDisplay";
 import { cn } from "@/lib/utils";
 import { sheetInset } from "../playerSheetSurfaces";
 
 type CombatActionFilterProps = {
-    activeFilter: ActionFilterId;
-    onFilterChange: (filter: ActionFilterId) => void;
+    state: ActionFilterState;
+    onChange: (next: ActionFilterState) => void;
 };
 
-const FILTERS: ActionFilterId[] = [
-    "all",
+const CATEGORIES: ActionFilterCategory[] = [
     "weapons",
     "spells",
-    "features",
-    "available",
+    "abilities",
 ];
 
-function filterLabel(
-    filter: ActionFilterId,
+function categoryLabel(
+    category: ActionFilterCategory,
     t: ReturnType<typeof useTranslations>
 ) {
-    switch (filter) {
-        case "all":
-            return t("combat.filters.all");
+    switch (category) {
         case "weapons":
             return t("combat.filters.weapons");
         case "spells":
             return t("combat.filters.spells");
-        case "features":
-            return t("combat.filters.features");
-        case "available":
-            return t("combat.filters.available");
+        case "abilities":
+            return t("combat.filters.abilities");
     }
 }
 
 export function CombatActionFilter({
-    activeFilter,
-    onFilterChange,
+    state,
+    onChange,
 }: CombatActionFilterProps) {
     const t = useTranslations("playerSheet");
+    const showAll = isActionFilterShowAll(state);
 
     return (
         <div
             className={cn("flex flex-wrap gap-1 rounded-xl p-1", sheetInset)}
-            role="tablist"
+            role="group"
             aria-label={t("combat.filtersLabel")}
         >
-            {FILTERS.map((filter) => {
-                const selected = activeFilter === filter;
+            <button
+                type="button"
+                aria-pressed={showAll}
+                className={cn(
+                    "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
+                    showAll
+                        ? "border border-card-foreground/10 bg-card text-card-foreground shadow-sm"
+                        : "text-card-foreground/60 hover:text-card-foreground"
+                )}
+                onClick={() => onChange(selectAllActionFilters())}
+            >
+                {t("combat.filters.all")}
+            </button>
+
+            {CATEGORIES.map((category) => {
+                const pressed = state[category];
 
                 return (
                     <button
-                        key={filter}
+                        key={category}
                         type="button"
-                        role="tab"
-                        aria-selected={selected}
+                        aria-pressed={pressed}
                         className={cn(
                             "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
-                            selected
+                            pressed
                                 ? "border border-card-foreground/10 bg-card text-card-foreground shadow-sm"
                                 : "text-card-foreground/60 hover:text-card-foreground"
                         )}
-                        onClick={() => onFilterChange(filter)}
+                        onClick={() =>
+                            onChange(toggleActionFilterCategory(state, category))
+                        }
                     >
-                        {filterLabel(filter, t)}
+                        {categoryLabel(category, t)}
                     </button>
                 );
             })}

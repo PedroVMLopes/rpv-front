@@ -48,12 +48,43 @@ export type ActionAvailability =
     | "unequipped"
     | "unprepared";
 
-export type ActionFilterId =
-    | "all"
-    | "weapons"
-    | "spells"
-    | "features"
-    | "available";
+export type ActionFilterCategory = "weapons" | "spells" | "abilities";
+
+export type ActionFilterState = {
+    weapons: boolean;
+    spells: boolean;
+    abilities: boolean;
+};
+
+export const DEFAULT_ACTION_FILTER_STATE: ActionFilterState = {
+    weapons: true,
+    spells: true,
+    abilities: true,
+};
+
+export function isActionFilterShowAll(state: ActionFilterState): boolean {
+    return state.weapons && state.spells && state.abilities;
+}
+
+export function selectAllActionFilters(): ActionFilterState {
+    return { ...DEFAULT_ACTION_FILTER_STATE };
+}
+
+export function toggleActionFilterCategory(
+    state: ActionFilterState,
+    category: ActionFilterCategory
+): ActionFilterState {
+    const next: ActionFilterState = {
+        ...state,
+        [category]: !state[category],
+    };
+
+    if (!next.weapons && !next.spells && !next.abilities) {
+        return selectAllActionFilters();
+    }
+
+    return next;
+}
 
 export type DisplayAction = {
     id: string;
@@ -387,24 +418,27 @@ export function buildDisplayActions(
 
 export function filterDisplayActions(
     actions: DisplayAction[],
-    filter: ActionFilterId
+    filter: ActionFilterState
 ): DisplayAction[] {
-    switch (filter) {
-        case "weapons":
-            return actions.filter((action) => action.sourceType === "weapon");
-        case "spells":
-            return actions.filter((action) => action.sourceType === "spell");
-        case "features":
-            return actions.filter(
-                (action) =>
-                    action.sourceType === "feature" || action.sourceType === "item"
-            );
-        case "available":
-            return actions.filter((action) => action.availability === "available");
-        case "all":
-        default:
-            return actions;
+    if (isActionFilterShowAll(filter)) {
+        return actions;
     }
+
+    return actions.filter((action) => {
+        if (filter.weapons && action.sourceType === "weapon") {
+            return true;
+        }
+        if (filter.spells && action.sourceType === "spell") {
+            return true;
+        }
+        if (
+            filter.abilities &&
+            (action.sourceType === "feature" || action.sourceType === "item")
+        ) {
+            return true;
+        }
+        return false;
+    });
 }
 
 const ACTION_COST_ORDER: ActionCost[] = [

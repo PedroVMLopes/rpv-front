@@ -562,8 +562,7 @@
         "all": "Todas",
         "weapons": "Armas",
         "spells": "Magias",
-        "features": "Características",
-        "available": "Disponíveis agora"
+        "abilities": "Habilidades"
       },
       "group": {
         "action": "Ação",

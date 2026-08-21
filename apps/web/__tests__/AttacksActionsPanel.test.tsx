@@ -283,7 +283,7 @@ describe("AttacksActionsPanel roll integration", () => {
         expect(toastMock).toHaveBeenCalledWith("Burning Hands: 12 damage");
     });
 
-    it("filters the surface down to spell actions", async () => {
+    it("filters the surface with category toggles", async () => {
         const user = userEvent.setup();
         renderPanel({
             ...wizardStored,
@@ -319,10 +319,17 @@ describe("AttacksActionsPanel roll integration", () => {
         await user.click(screen.getByRole("button", { name: "Use" }));
         expect(toastMock).toHaveBeenCalledWith("Second Wind");
 
-        await user.click(screen.getByRole("tab", { name: "Spells" }));
+        await user.click(screen.getByRole("button", { name: "Weapons" }));
+        await user.click(screen.getByRole("button", { name: "Abilities" }));
 
         expect(screen.getByText("Fire Bolt")).toBeInTheDocument();
         expect(screen.queryByText("Longsword")).not.toBeInTheDocument();
         expect(screen.queryByText("Second Wind")).not.toBeInTheDocument();
+
+        await user.click(screen.getByRole("button", { name: "All" }));
+
+        expect(screen.getByText("Longsword")).toBeInTheDocument();
+        expect(screen.getByText("Second Wind")).toBeInTheDocument();
+        expect(screen.getByText("Fire Bolt")).toBeInTheDocument();
     });
 });

@@ -5,10 +5,11 @@ import { useTranslations } from "next-intl";
 import type { ModifierSourceType, StatKey } from "@rpv/domain";
 import {
     buildDisplayActions,
+    DEFAULT_ACTION_FILTER_STATE,
     filterDisplayActions,
     groupDisplayActions,
     type ActionCost,
-    type ActionFilterId,
+    type ActionFilterState,
     type DisplayAction,
 } from "@/lib/character/actionDisplay";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
@@ -123,7 +124,9 @@ export function AttacksActionsPanel({ stored }: AttacksActionsPanelProps) {
     const getResolvedStats = useCharacterStore((state) => state.getResolvedStats);
     const { openRollRequest } = useRollAssistant();
     const resolved = getResolvedStats(stored.id);
-    const [activeFilter, setActiveFilter] = useState<ActionFilterId>("all");
+    const [filterState, setFilterState] = useState<ActionFilterState>(
+        DEFAULT_ACTION_FILTER_STATE
+    );
 
     const classEntry = stored.selections.characterClass
         ? contentRepo(stored.system).getClass(
@@ -148,8 +151,8 @@ export function AttacksActionsPanel({ stored }: AttacksActionsPanelProps) {
     }, [contentLocale, resolved, stored, t, tSlots]);
 
     const visibleActions = useMemo(
-        () => filterDisplayActions(actions, activeFilter),
-        [actions, activeFilter]
+        () => filterDisplayActions(actions, filterState),
+        [actions, filterState]
     );
 
     const groups = useMemo(
@@ -168,8 +171,8 @@ export function AttacksActionsPanel({ stored }: AttacksActionsPanelProps) {
             ) : (
                 <div className="flex flex-col gap-4">
                     <CombatActionFilter
-                        activeFilter={activeFilter}
-                        onFilterChange={setActiveFilter}
+                        state={filterState}
+                        onChange={setFilterState}
                     />
 
                     {groups.length === 0 ? (

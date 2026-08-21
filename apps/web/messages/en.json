@@ -562,8 +562,7 @@
         "all": "All",
         "weapons": "Weapons",
         "spells": "Spells",
-        "features": "Features",
-        "available": "Available now"
+        "abilities": "Abilities"
       },
       "group": {
         "action": "Action",

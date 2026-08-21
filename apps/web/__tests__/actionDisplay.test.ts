@@ -2,9 +2,11 @@ import type { Stats } from "@rpv/domain";
 import {
     buildActionsStatusSummary,
     buildDisplayActions,
+    DEFAULT_ACTION_FILTER_STATE,
     filterDisplayActions,
     groupDisplayActions,
     listCombatReminders,
+    toggleActionFilterCategory,
 } from "../lib/character/actionDisplay";
 import type { StoredCharacter } from "../lib/character/storedCharacter";
 
@@ -151,9 +153,11 @@ describe("actionDisplay", () => {
         );
         expect(unarmed?.weapon?.damage).toBe("1+3 bludgeoning");
         expect(
-            filterDisplayActions(withWeapon, "weapons").map(
-                (action) => action.title
-            )
+            filterDisplayActions(withWeapon, {
+                weapons: true,
+                spells: false,
+                abilities: false,
+            }).map((action) => action.title)
         ).toEqual(expect.arrayContaining(["Longsword", "Unarmed Strike"]));
 
         const unequipped: StoredCharacter = {
@@ -263,7 +267,7 @@ describe("actionDisplay", () => {
         ).not.toContain("Opportunity Attack");
     });
 
-    it("marks depleted feature resources and filters available actions", () => {
+    it("marks depleted feature resources", () => {
         const actions = buildDisplayActions(stored, resolved, "en", () => "Main hand");
         const secondWind = actions.find((action) => action.title === "Second Wind");
 
@@ -277,10 +281,6 @@ describe("actionDisplay", () => {
                 }),
             })
         );
-
-        expect(
-            filterDisplayActions(actions, "available").map((action) => action.title)
-        ).not.toContain("Second Wind");
     });
 
     it("puts a spendable bonus ability in the Actions catalog, not Reminders", () => {
@@ -509,7 +509,7 @@ describe("actionDisplay", () => {
         ).not.toContain("Unknown Cost Feature");
     });
 
-    it("filters features to class and item activations, excluding weapons and spells", () => {
+    it("filters abilities to class and item activations, excluding weapons and spells", () => {
         const withItemFeature: StoredCharacter = {
             ...stored,
             grants: [
@@ -531,19 +531,54 @@ describe("actionDisplay", () => {
             () => "Main hand"
         );
 
-        const featureTitles = filterDisplayActions(actions, "features").map(
-            (action) => action.title
-        );
-        expect(featureTitles).toEqual(
+        const abilityTitles = filterDisplayActions(actions, {
+            weapons: false,
+            spells: false,
+            abilities: true,
+        }).map((action) => action.title);
+        expect(abilityTitles).toEqual(
             expect.arrayContaining(["Second Wind", "Cinder Burst"])
         );
-        expect(featureTitles).not.toContain("Longsword");
-        expect(featureTitles).not.toContain("Fire Bolt");
+        expect(abilityTitles).not.toContain("Longsword");
+        expect(abilityTitles).not.toContain("Fire Bolt");
         expect(
-            filterDisplayActions(actions, "spells").map((action) => action.title)
+            filterDisplayActions(actions, {
+                weapons: false,
+                spells: true,
+                abilities: false,
+            }).map((action) => action.title)
         ).toEqual(expect.arrayContaining(["Fire Bolt", "Burning Hands"]));
         expect(
-            filterDisplayActions(actions, "all").map((action) => action.title)
+            filterDisplayActions(actions, DEFAULT_ACTION_FILTER_STATE).map(
+                (action) => action.title
+            )
         ).toEqual(expect.arrayContaining(["Second Wind", "Longsword"]));
+        expect(
+            filterDisplayActions(actions, {
+                weapons: true,
+                spells: true,
+                abilities: false,
+            }).map((action) => action.title)
+        ).toEqual(
+            expect.arrayContaining(["Longsword", "Fire Bolt", "Burning Hands"])
+        );
+        expect(
+            filterDisplayActions(actions, {
+                weapons: true,
+                spells: true,
+                abilities: false,
+            }).map((action) => action.title)
+        ).not.toContain("Second Wind");
+    });
+
+    it("resets to show-all when the last category toggle is turned off", () => {
+        const onlyWeapons = {
+            weapons: true,
+            spells: false,
+            abilities: false,
+        };
+        expect(toggleActionFilterCategory(onlyWeapons, "weapons")).toEqual(
+            DEFAULT_ACTION_FILTER_STATE
+        );
     });
 });
