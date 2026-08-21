@@ -267,6 +267,27 @@ describe("DiceRollAssistant", () => {
         );
     });
 
+    it("defaults the damage step title to d6 when sides are missing", async () => {
+        const user = userEvent.setup();
+
+        renderAssistant(
+            <ContextRollTrigger
+                request={{
+                    kind: "attack_then_damage",
+                    id: "weapon:club",
+                    label: "Club",
+                    attack: { die: 20, modifier: 2 },
+                    damage: { flat: 1, damageType: "bludgeoning" },
+                }}
+            />
+        );
+
+        await user.click(screen.getByRole("button", { name: "Open contextual roll" }));
+        await user.click(screen.getByRole("button", { name: "10" }));
+
+        expect(screen.getByText("Club — damage d6")).toBeInTheDocument();
+    });
+
     it("completes damage_only across three d6 steps", async () => {
         const user = userEvent.setup();
 

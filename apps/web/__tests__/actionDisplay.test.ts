@@ -350,6 +350,42 @@ describe("actionDisplay", () => {
         );
     });
 
+    it("maps catalog casting time when display meta has no actionCost", () => {
+        const withFeatherFall: StoredCharacter = {
+            ...stored,
+            grants: [
+                ...(stored.grants ?? []),
+                {
+                    id: "class-wizard-spell-feather-fall",
+                    kind: "spell",
+                    ref: "feather-fall",
+                    name: "Feather Fall",
+                    source: { type: "class", id: "wizard" },
+                },
+            ],
+        };
+
+        const groups = groupDisplayActions(
+            buildDisplayActions(withFeatherFall, resolved, "en", () => "Main hand")
+        );
+
+        expect(
+            groups.find((group) => group.cost === "reaction")?.actions
+        ).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    title: "Feather Fall",
+                    sourceType: "spell",
+                }),
+            ])
+        );
+        const actionTitles =
+            groups
+                .find((group) => group.cost === "action")
+                ?.actions.map((action) => action.title) ?? [];
+        expect(actionTitles).not.toContain("Feather Fall");
+    });
+
     it("maps bonus-action and reaction spells into those cost groups, not Action", () => {
         const withCastingTimes: StoredCharacter = {
             ...stored,
