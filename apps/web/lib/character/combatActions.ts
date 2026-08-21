@@ -5,6 +5,7 @@ import {
     getItem,
     getNaturalWeapons,
     getSpellRollProfile,
+    itemProvidesWeaponAttack,
     type SpellRollProfile,
 } from "@rpv/content";
 import type { SystemKey } from "@/presets";
@@ -194,6 +195,11 @@ export function listEquippedWeaponActions(
     for (const slotId of WEAPON_SLOTS) {
         const slug = equipped[slotId];
         if (!slug) {
+            continue;
+        }
+
+        const item = getItem(slug, context.system, context.locale);
+        if (!itemProvidesWeaponAttack(item)) {
             continue;
         }
 

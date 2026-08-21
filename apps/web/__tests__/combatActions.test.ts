@@ -133,6 +133,73 @@ describe("listEquippedWeaponActions", () => {
             )
         ).toEqual([]);
     });
+
+    it("skips shield equipped in a hand slot", () => {
+        expect(
+            listEquippedWeaponActions(
+                {
+                    ...fighterStored,
+                    selections: {
+                        ...fighterStored.selections,
+                        inventory: {
+                            bag: [{ slug: "srd_shield", quantity: 1 }],
+                            equipped: { "melee-off": "srd_shield" },
+                            equippedMulti: {},
+                        },
+                    },
+                },
+                fighterStats
+            )
+        ).toEqual([]);
+    });
+
+    it("lists longsword but not off-hand shield", () => {
+        expect(
+            listEquippedWeaponActions(
+                {
+                    ...fighterStored,
+                    selections: {
+                        ...fighterStored.selections,
+                        inventory: {
+                            bag: [
+                                { slug: "srd_longsword", quantity: 1 },
+                                { slug: "srd_shield", quantity: 1 },
+                            ],
+                            equipped: {
+                                "melee-main": "srd_longsword",
+                                "melee-off": "srd_shield",
+                            },
+                            equippedMulti: {},
+                        },
+                    },
+                },
+                fighterStats
+            ).map((action) => action.slug)
+        ).toEqual(["srd_longsword"]);
+    });
+
+    it("skips non-weapon items equipped in hand slots", () => {
+        expect(
+            listEquippedWeaponActions(
+                {
+                    ...fighterStored,
+                    selections: {
+                        ...fighterStored.selections,
+                        inventory: {
+                            bag: [
+                                { slug: "rpv_amulet-of-vitality", quantity: 1 },
+                            ],
+                            equipped: {
+                                "melee-main": "rpv_amulet-of-vitality",
+                            },
+                            equippedMulti: {},
+                        },
+                    },
+                },
+                fighterStats
+            )
+        ).toEqual([]);
+    });
 });
 
 describe("listNaturalWeaponActions", () => {

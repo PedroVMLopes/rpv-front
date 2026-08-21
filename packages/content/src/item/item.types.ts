@@ -62,3 +62,10 @@ export interface ItemEntry {
 export function isItemStackable(entry: ItemEntry): boolean {
     return entry.stackable !== false;
 }
+
+/** Whether equipped inventory listing may treat this item as an attack action. */
+export function itemProvidesWeaponAttack(
+    entry: ItemEntry | undefined
+): boolean {
+    return Boolean(entry?.weapon);
+}

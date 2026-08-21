@@ -2,6 +2,7 @@ import {
     getItem,
     getItemGrants,
     isItemStackable,
+    itemProvidesWeaponAttack,
     listItems,
     type ItemSystem,
 } from "../src";
@@ -48,6 +49,21 @@ describe("item catalog + overlays", () => {
         expect(isItemStackable(getItem("srd_longsword")!)).toBe(false);
         expect(isItemStackable(getItem("srd_leather-armor")!)).toBe(false);
         expect(isItemStackable(getItem("srd_shield")!)).toBe(false);
+    });
+
+    it("itemProvidesWeaponAttack is true only when weapon profile is set", () => {
+        expect(itemProvidesWeaponAttack(undefined)).toBe(false);
+        expect(itemProvidesWeaponAttack(getItem("srd_longsword"))).toBe(true);
+        expect(itemProvidesWeaponAttack(getItem("rpv_pilot-test-dagger"))).toBe(
+            true
+        );
+        expect(itemProvidesWeaponAttack(getItem("srd_shield"))).toBe(false);
+        expect(itemProvidesWeaponAttack(getItem("srd_leather-armor"))).toBe(
+            false
+        );
+        expect(
+            itemProvidesWeaponAttack(getItem("rpv_amulet-of-vitality"))
+        ).toBe(false);
     });
 
     it("returns overlay grants for RPV magic items", () => {

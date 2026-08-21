@@ -178,6 +178,37 @@ describe("actionDisplay", () => {
         ).not.toContain("Longsword");
     });
 
+    it("excludes equipped shield from the attack action list", () => {
+        const withShield: StoredCharacter = {
+            ...stored,
+            selections: {
+                ...stored.selections,
+                inventory: {
+                    bag: [
+                        { slug: "srd_longsword", quantity: 1 },
+                        { slug: "srd_shield", quantity: 1 },
+                    ],
+                    equipped: {
+                        "melee-main": "srd_longsword",
+                        "melee-off": "srd_shield",
+                    },
+                },
+            },
+        };
+
+        const actions = buildDisplayActions(
+            withShield,
+            resolved,
+            "en",
+            () => "Main hand"
+        );
+        const titles = actions.map((action) => action.title);
+
+        expect(titles).toContain("Longsword");
+        expect(titles).toContain("Unarmed Strike");
+        expect(titles).not.toContain("Shield");
+    });
+
     it("lists system combat features in action and reaction groups, not reminders or overview", () => {
         const withSystem: StoredCharacter = {
             ...stored,

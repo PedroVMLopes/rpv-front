@@ -205,9 +205,18 @@ interface ItemEntry {
 - `weapon` / `armor` — combat and AC data from Open5e (AC uses `acBase` + Dex rules).
 - `grants` — bonuses/abilities when **equipped** (RPV overlays for magic).
 - No `allowedSlots` — any bag item may equip into any valid slot id.
+- **Combat attack list membership** is data-driven via `itemProvidesWeaponAttack`
+  (`weapon != null`). Only hand slots (`melee-main`, `melee-off`, `ranged-main`,
+  `ranged-off`) feed inventory attacks; the multi `usable` slot does **not**.
+  - Attack on Combat / Overview → fill `weapon`.
+  - Defense / AC only → fill `armor` (shield: `armor.category: "shield"`); does
+    **not** appear as an attack even in a hand slot.
+  - Declared use on your turn → `ability` grant with `activation` (not inferred
+    from category or slot).
 
 Helpers: `getItem`, `listItems`, `getItemGrants`, `isItemStackable`,
-`mapOpen5eItem`, `mergeItemCatalog`. Exported from [`src/index.ts`](src/index.ts).
+`itemProvidesWeaponAttack`, `mapOpen5eItem`, `mergeItemCatalog`. Exported from
+[`src/index.ts`](src/index.ts).
 
 ### Authoring checklist — SRD refresh
 
@@ -233,7 +242,7 @@ Helpers: `getItem`, `listItems`, `getItemGrants`, `isItemStackable`,
 | Spell when equipped | `rpv_scroll-of-fire-bolt` | overlay spell grant |
 | Weapon | `srd_longsword` | nested `weapon` profile |
 | Armor | `srd_leather-armor` | nested `armor` → AC formula |
-| Shield | `srd_shield` | overlay fills `armor.category: "shield"`, `acBase: 2` |
+| Shield | `srd_shield` | overlay fills `armor.category: "shield"`, `acBase: 2`; not an attack |
 
 ### Starting equipment grants (Etapa 1 — data contract)
 
