@@ -276,7 +276,7 @@ export function PlayerSheetActionBar({ stored }: PlayerSheetActionBarProps) {
                             aria-label={t("skills")}
                             aria-pressed={expanded && panel === "skills"}
                             aria-expanded={expanded && panel === "skills"}
-                            className={buttonClass("skills")}
+                            className={buttonClass("skills", true)}
                             onClick={() => selectPanel("skills")}
                         >
                             <ListChecks className="size-4" aria-hidden />

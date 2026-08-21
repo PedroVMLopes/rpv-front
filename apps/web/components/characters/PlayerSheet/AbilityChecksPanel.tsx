@@ -175,7 +175,6 @@ export function AbilityChecksPanel({ stored }: AbilityChecksPanelProps) {
                                 modifier={group.modifier}
                                 shortLabel={tAbilitiesShort(group.stat)}
                                 ariaLabel={tRoll("rollAction", { label: rollLabel })}
-                                className="w-19 shrink-0"
                                 compact
                                 onRoll={() =>
                                     openRollRequest(

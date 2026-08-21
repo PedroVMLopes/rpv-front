@@ -38,13 +38,20 @@ export function AbilityStone({
             </span>
             <span
                 className={cn(
-                    "flex flex-1 items-end justify-center font-bold font-serif tracking-wide leading-none",
-                    compact ? "text-2xl" : "text-2xl sm:text-3xl"
+                    "flex items-end justify-center font-bold font-serif tracking-wide leading-none",
+                    compact
+                        ? "text-xl"
+                        : "flex-1 text-2xl sm:text-3xl"
                 )}
             >
                 {score}
             </span>
-            <span className="flex items-center gap-0.5 text-center text-sm font-semibold leading-tight">
+            <span
+                className={cn(
+                    "flex items-center gap-0.5 text-center font-semibold leading-tight",
+                    compact ? "text-xs" : "text-sm"
+                )}
+            >
                 {shortLabel}
                 {children}
             </span>
@@ -52,7 +59,10 @@ export function AbilityStone({
     );
 
     const stoneClassName = cn(
-        "relative flex min-h-24 flex-col items-center rounded-xl bg-accent px-1.5 pb-2 pt-3 text-accent-foreground shadow-xs border-custom border-background",
+        "relative flex flex-col items-center rounded-xl bg-accent px-1.5 text-accent-foreground shadow-xs border-custom border-background",
+        compact
+            ? "size-19 shrink-0 justify-end gap-1 pb-1.5"
+            : "min-h-24 pb-2 pt-3",
         onRoll &&
             "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         className
