@@ -54,8 +54,7 @@ function CheckRow({
             onClick={onRoll}
             aria-label={tRoll("rollAction", { label: rollLabel })}
             className={cn(
-                "flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-1 text-left text-sm",
-                sheetInset,
+                "flex w-full items-center justify-between gap-2 rounded-lg px-2.5 text-left text-sm",
                 proficient && "border-primary/40",
                 "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             )}
@@ -150,7 +149,7 @@ export function AbilityChecksPanel({ stored }: AbilityChecksPanelProps) {
                     ))}
                 </nav>
                 <span
-                    className="shrink-0 rounded-md bg-accent px-1.5 py-0.5 text-xs font-semibold tabular-nums text-accent-foreground"
+                    className="shrink-0 rounded-md bg-primary px-1.5 py-0.5 text-xs font-semibold tabular-nums text-primary-foreground"
                     aria-label={`${tCharacter("proficiencyBonus")} ${formatModifier(profBonus)}`}
                 >
                     {formatModifier(profBonus)}
@@ -167,7 +166,7 @@ export function AbilityChecksPanel({ stored }: AbilityChecksPanelProps) {
                             key={group.stat}
                             id={`ability-check-${group.stat}`}
                             role="region"
-                            className="flex scroll-mt-2 items-start gap-2 pt-3 pr-2"
+                            className="flex scroll-mt-2 items-start gap-2 pt-2 pr-2"
                             aria-label={rollLabel}
                         >
                             <AbilityStone
