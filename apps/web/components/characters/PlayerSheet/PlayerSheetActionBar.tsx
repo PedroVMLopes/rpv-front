@@ -222,18 +222,21 @@ export function PlayerSheetActionBar({ stored }: PlayerSheetActionBarProps) {
                     {isMounted ? (
                         <div
                             className={cn(
-                                "grid transition-[grid-template-rows] duration-200 motion-reduce:transition-none",
+                                "grid min-h-0 transition-[grid-template-rows] duration-200 motion-reduce:transition-none",
                                 expanded
                                     ? "grid-rows-[1fr]"
                                     : "grid-rows-[0fr]"
                             )}
                             onTransitionEnd={handlePanelGridTransitionEnd}
                         >
-                            <div className="min-h-0 overflow-hidden">
+                            <div className="flex h-full min-h-0 flex-col overflow-hidden">
                                 <div
                                     key={panel}
                                     className={cn(
-                                        "overflow-y-auto px-3 pt-3 transition-opacity duration-200 motion-reduce:transition-none",
+                                        "flex h-full min-h-0 flex-col px-3 pt-3 transition-opacity duration-200 motion-reduce:transition-none",
+                                        panel === "skills"
+                                            ? "overflow-hidden"
+                                            : "overflow-y-auto",
                                         expanded
                                             ? "opacity-100 animate-in fade-in duration-200"
                                             : "opacity-0"

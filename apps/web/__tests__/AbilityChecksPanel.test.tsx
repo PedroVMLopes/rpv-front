@@ -73,6 +73,10 @@ describe("AbilityChecksPanel", () => {
     it("lists the dexterity saving throw then its skills", () => {
         renderPanel();
 
+        expect(
+            screen.getByRole("navigation", { name: "Abilities" })
+        ).toBeInTheDocument();
+
         const dexterity = screen.getByRole("region", { name: "Dexterity" });
         const labels = within(dexterity)
             .getAllByRole("button")

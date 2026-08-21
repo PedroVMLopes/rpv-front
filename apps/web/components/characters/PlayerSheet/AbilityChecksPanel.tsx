@@ -132,8 +132,8 @@ export function AbilityChecksPanel({ stored }: AbilityChecksPanelProps) {
     }
 
     return (
-        <div className="flex flex-col gap-3 pb-2">
-            <div className="sticky top-0 z-10 -mx-3 flex items-center gap-1 bg-card px-3 pb-2">
+        <div className="flex h-full min-h-0 flex-col">
+            <div className="flex shrink-0 items-center gap-1 bg-card pb-2">
                 <nav
                     aria-label={t("abilityRailLabel")}
                     className="flex min-w-0 flex-1 justify-around gap-0.5"
@@ -157,79 +157,81 @@ export function AbilityChecksPanel({ stored }: AbilityChecksPanelProps) {
                 </span>
             </div>
 
-            {groups.map((group) => {
-                const rollLabel = tAbilities(group.stat);
-                const saveRollLabel = `${t("savingThrowRow")} (${tAbilitiesShort(group.stat)})`;
+            <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pb-2">
+                {groups.map((group) => {
+                    const rollLabel = tAbilities(group.stat);
+                    const saveRollLabel = `${t("savingThrowRow")} (${tAbilitiesShort(group.stat)})`;
 
-                return (
-                    <section
-                        key={group.stat}
-                        id={`ability-check-${group.stat}`}
-                        role="region"
-                        className="flex scroll-mt-10 items-start gap-2 pt-3"
-                        aria-label={rollLabel}
-                    >
-                        <AbilityStone
-                            score={group.score}
-                            modifier={group.modifier}
-                            shortLabel={tAbilitiesShort(group.stat)}
-                            ariaLabel={tRoll("rollAction", { label: rollLabel })}
-                            className="w-19 shrink-0"
-                            compact
-                            onRoll={() =>
-                                openRollRequest(
-                                    buildAbilityCheckRollRequest(
-                                        group.stat,
-                                        rollLabel,
-                                        group.modifier
-                                    )
-                                )
-                            }
-                        />
-                        <ul className="flex min-w-0 flex-1 flex-col gap-1">
-                            <li>
-                                <CheckRow
-                                    label={t("savingThrowRow")}
-                                    rollLabel={saveRollLabel}
-                                    modifier={group.save.modifier}
-                                    proficient={group.save.proficient}
-                                    quiet
-                                    onRoll={() =>
-                                        openRollRequest(
-                                            buildSavingThrowRollRequest(
-                                                group.save,
-                                                saveRollLabel
-                                            )
+                    return (
+                        <section
+                            key={group.stat}
+                            id={`ability-check-${group.stat}`}
+                            role="region"
+                            className="flex scroll-mt-2 items-start gap-2 pt-3 pr-2"
+                            aria-label={rollLabel}
+                        >
+                            <AbilityStone
+                                score={group.score}
+                                modifier={group.modifier}
+                                shortLabel={tAbilitiesShort(group.stat)}
+                                ariaLabel={tRoll("rollAction", { label: rollLabel })}
+                                className="w-19 shrink-0"
+                                compact
+                                onRoll={() =>
+                                    openRollRequest(
+                                        buildAbilityCheckRollRequest(
+                                            group.stat,
+                                            rollLabel,
+                                            group.modifier
                                         )
-                                    }
-                                />
-                            </li>
-                            {group.skills.map((skill) => {
-                                const skillLabel = tSkills(skill.slug);
-
-                                return (
-                                    <li key={skill.slug}>
-                                        <CheckRow
-                                            label={skillLabel}
-                                            rollLabel={skillLabel}
-                                            modifier={skill.modifier}
-                                            proficient={skill.proficient}
-                                            onRoll={() =>
-                                                openRollRequest(
-                                                    buildSkillRollRequest(
-                                                        skill,
-                                                        skillLabel
-                                                    )
+                                    )
+                                }
+                            />
+                            <ul className="flex min-w-0 flex-1 flex-col gap-1">
+                                <li>
+                                    <CheckRow
+                                        label={t("savingThrowRow")}
+                                        rollLabel={saveRollLabel}
+                                        modifier={group.save.modifier}
+                                        proficient={group.save.proficient}
+                                        quiet
+                                        onRoll={() =>
+                                            openRollRequest(
+                                                buildSavingThrowRollRequest(
+                                                    group.save,
+                                                    saveRollLabel
                                                 )
-                                            }
-                                        />
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    </section>
-                );
-            })}
+                                            )
+                                        }
+                                    />
+                                </li>
+                                {group.skills.map((skill) => {
+                                    const skillLabel = tSkills(skill.slug);
+
+                                    return (
+                                        <li key={skill.slug}>
+                                            <CheckRow
+                                                label={skillLabel}
+                                                rollLabel={skillLabel}
+                                                modifier={skill.modifier}
+                                                proficient={skill.proficient}
+                                                onRoll={() =>
+                                                    openRollRequest(
+                                                        buildSkillRollRequest(
+                                                            skill,
+                                                            skillLabel
+                                                        )
+                                                    )
+                                                }
+                                            />
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </section>
+                    );
+                })}
+            </div>
         </div>
     );
 }
