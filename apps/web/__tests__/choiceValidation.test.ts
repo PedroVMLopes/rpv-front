@@ -323,6 +323,105 @@ describe("findMissingRequiredChoices", () => {
         ).toEqual([]);
     });
 
+    it("flags half-elf ASI picks that are not in the stat pool", () => {
+        const invalid = findInvalidGrantPicks(
+            {
+                ...baseFormData,
+                race: "half-elf",
+                choices: {
+                    grantPicks: {
+                        "race:half-elf:base:ability_score:1:0": "not-a-stat",
+                        "race:half-elf:base:ability_score:1:1": "strength",
+                    },
+                },
+            },
+            "en",
+            "dnd"
+        );
+
+        expect(invalid).toEqual([
+            expect.objectContaining({
+                code: "invalidAbilityScorePick",
+                key: "race:half-elf:base:ability_score:1:0",
+            }),
+        ]);
+    });
+
+    it("flags half-elf CHA picks as already granted by the fixed +2", () => {
+        const invalid = findInvalidGrantPicks(
+            {
+                ...baseFormData,
+                race: "half-elf",
+                choices: {
+                    grantPicks: {
+                        "race:half-elf:base:ability_score:1:0": "charisma",
+                        "race:half-elf:base:ability_score:1:1": "strength",
+                    },
+                },
+            },
+            "en",
+            "dnd"
+        );
+
+        expect(invalid).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    code: "alreadyGranted",
+                    ref: "charisma",
+                    key: "race:half-elf:base:ability_score:1:0",
+                }),
+            ])
+        );
+    });
+
+    it("accepts valid half-elf distributable ASI picks", () => {
+        const invalid = findInvalidGrantPicks(
+            {
+                ...baseFormData,
+                race: "half-elf",
+                choices: {
+                    grantPicks: {
+                        "race:half-elf:base:ability_score:1:0": "strength",
+                        "race:half-elf:base:ability_score:1:1": "dexterity",
+                    },
+                },
+            },
+            "en",
+            "dnd"
+        );
+
+        expect(
+            invalid.filter((issue) => issue.code === "invalidAbilityScorePick")
+        ).toEqual([]);
+    });
+
+    it("omits post-cap class picks when maxProgressionLevel is below the pick", () => {
+        const formData = {
+            ...baseFormData,
+            characterClass: "fighter",
+            level: 3,
+            choices: {
+                grantPicks: {
+                    "class:fighter:base:skill_proficiency:3:0": "athletics",
+                    "class:fighter:base:skill_proficiency:3:1": "intimidation",
+                    ...fighterEquipmentPicks,
+                },
+            },
+        };
+
+        const uncapped = findMissingRequiredChoices(formData, "en", "dnd");
+        const capped = findMissingRequiredChoices(formData, "en", "dnd", {
+            maxProgressionLevel: 2,
+        });
+
+        expect(uncapped.map((choice) => choice.key)).toEqual(
+            expect.arrayContaining(["class:fighter:3:skill_proficiency:0:0"])
+        );
+        expect(capped.map((choice) => choice.key)).not.toContain(
+            "class:fighter:3:skill_proficiency:0:0"
+        );
+    });
+
     it("flags invalid inventory_item pick index", () => {
         const invalid = findInvalidGrantPicks(
             {
@@ -444,6 +543,43 @@ describe("findMissingSubclass", () => {
             )
         ).toBe(false);
     });
+
+    it("treats a subclass belonging to another class as missing", () => {
+        expect(
+            findMissingSubclass(
+                {
+                    ...baseFormData,
+                    level: 3,
+                    characterClass: "fighter",
+                    subclass: "wizard-evocation",
+                },
+                "en"
+            )
+        ).toBe(true);
+    });
+
+    it("does not require a subclass when class is unset or unknown", () => {
+        expect(
+            findMissingSubclass(
+                {
+                    ...baseFormData,
+                    level: 3,
+                    characterClass: "",
+                },
+                "en"
+            )
+        ).toBe(false);
+        expect(
+            findMissingSubclass(
+                {
+                    ...baseFormData,
+                    level: 3,
+                    characterClass: "not-a-class",
+                },
+                "en"
+            )
+        ).toBe(false);
+    });
 });
 
 describe("applyChoiceValidation", () => {
@@ -522,6 +658,30 @@ describe("applyChoiceValidation", () => {
         });
 
         expect(result.success).toBe(true);
+    });
+
+    it("fails validation for an invalid half-elf ability score pick", () => {
+        const result = schema.safeParse({
+            ...baseFormData,
+            race: "half-elf",
+            choices: {
+                grantPicks: {
+                    "race:half-elf:base:ability_score:1:0": "not-a-stat",
+                    "race:half-elf:base:ability_score:1:1": "strength",
+                },
+            },
+        });
+
+        expect(result.success).toBe(false);
+        if (!result.success) {
+            expect(
+                result.error.issues.some(
+                    (issue) =>
+                        issue.path.includes("choices") &&
+                        String(issue.message).includes("ability score")
+                )
+            ).toBe(true);
+        }
     });
 
     it("fails validation for duplicate grant picks", () => {
