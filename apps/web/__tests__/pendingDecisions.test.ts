@@ -24,6 +24,20 @@ describe("defaultCharacterName", () => {
         expect(getDefaultCharacterName("en")).toBe("Unnamed Character");
         expect(getDefaultCharacterName("pt-BR")).toBe("Sem Nome");
     });
+
+    it("treats non-string names as empty and falls back for unknown locales", () => {
+        expect(resolveCharacterNameForSave(null, "en")).toBe(
+            "Unnamed Character"
+        );
+        expect(resolveCharacterNameForSave(12, "pt-BR")).toBe("Sem Nome");
+        expect(
+            resolveCharacterNameForSave("", "de" as never)
+        ).toBe("Unnamed Character");
+        expect(isCharacterNamePending(undefined, "en")).toBe(true);
+        expect(getDefaultCharacterName("fr" as never)).toBe(
+            "Unnamed Character"
+        );
+    });
 });
 
 describe("collectPendingDecisions", () => {

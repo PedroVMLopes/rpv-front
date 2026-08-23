@@ -83,4 +83,28 @@ describe("syncResourceHpToResolvedMax", () => {
 
         expect(synced.hp).toBe(8);
     });
+
+    it("treats string max-hp and zero current as needing a resolved fill", () => {
+        expect(
+            syncResourceHpToResolvedMax(
+                { maxHp: 12, hp: "12" },
+                baseStats,
+                [itemHpModifier]
+            ).hp
+        ).toBe(17);
+        expect(
+            syncResourceHpToResolvedMax(
+                { maxHp: 12, hp: 0 },
+                baseStats,
+                [itemHpModifier]
+            ).hp
+        ).toBe(17);
+        expect(
+            syncResourceHpToResolvedMax(
+                { maxHp: 12, hp: "" },
+                baseStats,
+                [itemHpModifier]
+            ).hp
+        ).toBe(17);
+    });
 });
