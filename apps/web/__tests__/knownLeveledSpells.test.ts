@@ -1,5 +1,8 @@
 import { emptyInventory } from "@rpv/domain";
-import { listKnownLeveledSpellRefs } from "../lib/character/knownLeveledSpells";
+import {
+    listKnownLeveledSpellRefs,
+    prunePreparedSpellsToBook,
+} from "../lib/character/knownLeveledSpells";
 import { sanitizeGrantPicks } from "../lib/character/grantPickSanitize";
 import type { CharacterSelections } from "../lib/character/storedCharacter";
 
@@ -45,6 +48,28 @@ describe("listKnownLeveledSpellRefs", () => {
         });
 
         expect(refs).toEqual([]);
+    });
+});
+
+describe("prunePreparedSpellsToBook", () => {
+    it("returns undefined when prepared spells were never set", () => {
+        expect(
+            prunePreparedSpellsToBook(undefined, ["burning-hands"])
+        ).toBeUndefined();
+    });
+
+    it("keeps only slugs still in the known leveled book", () => {
+        expect(
+            prunePreparedSpellsToBook(
+                ["burning-hands", "magic-missile", "fire-bolt"],
+                ["burning-hands", "magic-missile"]
+            )
+        ).toEqual(["burning-hands", "magic-missile"]);
+    });
+
+    it("clears prepared slugs when the book is empty", () => {
+        expect(prunePreparedSpellsToBook(["burning-hands"], [])).toEqual([]);
+        expect(prunePreparedSpellsToBook([], ["burning-hands"])).toEqual([]);
     });
 });
 

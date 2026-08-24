@@ -108,6 +108,28 @@ describe("groupGrantPreviewBuckets", () => {
         expect(actionResourceGrants(contexts, "spells")).toHaveLength(0);
     });
 
+    it("classifies option-only spell grants from catalog level", () => {
+        const cantrip = ctx(
+            {
+                grantType: "spell",
+                choose: 0,
+                options: [{ optionType: "spell", ref: "mage-hand" }],
+            },
+            { type: "race", id: "high-elf" }
+        );
+        const leveled = ctx(
+            {
+                grantType: "spell",
+                choose: 0,
+                options: [{ optionType: "spell", ref: "burning-hands" }],
+            },
+            { type: "class", id: "wizard" }
+        );
+
+        expect(actionResourceGrants([cantrip], "cantrips")).toHaveLength(1);
+        expect(actionResourceGrants([leveled], "spells")).toHaveLength(1);
+    });
+
     it("routes racial ability traits to resources and class abilities to actions", () => {
         const racialAbility = ctx(
             {

@@ -141,4 +141,17 @@ describe("parseDiceNotation", () => {
         expect(() => parseDiceNotation("d8")).toThrow();
         expect(() => parseDiceNotation("1d")).toThrow();
     });
+
+    it("trims whitespace and rejects zero count or sides", () => {
+        expect(parseDiceNotation("  2d6  ")).toEqual({ count: 2, sides: 6 });
+        expect(() => parseDiceNotation("0d8")).toThrow(
+            "Invalid dice notation: 0d8"
+        );
+        expect(() => parseDiceNotation("1d0")).toThrow(
+            "Invalid dice notation: 1d0"
+        );
+        expect(() => parseDiceNotation("2D6")).toThrow(
+            "Invalid dice notation: 2D6"
+        );
+    });
 });
