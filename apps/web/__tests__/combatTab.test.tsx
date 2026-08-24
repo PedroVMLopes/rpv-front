@@ -237,8 +237,8 @@ describe("CombatTab", () => {
         expect(screen.getByText("Fire Bolt")).toBeInTheDocument();
         expect(screen.getByText("Second Wind")).toBeInTheDocument();
         expect(
-            screen.getByText(/regain hit points equal to 1d10/i)
-        ).toBeInTheDocument();
+            screen.queryByText(/regain hit points equal to 1d10/i)
+        ).not.toBeInTheDocument();
         const longswordCard = screen
             .getByRole("button", { name: "Expand Longsword" })
             .closest("li");
@@ -342,6 +342,57 @@ describe("CombatTab", () => {
                     Node.DOCUMENT_POSITION_FOLLOWING
             )
         ).toBe(true);
+    });
+
+    it("spends one class resource when the store key is missing", async () => {
+        const user = userEvent.setup();
+        const missingRage: StoredCharacter = {
+            ...storedCharacter,
+            id: "char-combat-missing-rage",
+            grants: [
+                ...storedCharacter.grants,
+                {
+                    id: "class-barbarian-resource-rage-uses",
+                    kind: "resource",
+                    ref: "rage-uses",
+                    amount: 2,
+                    source: { type: "class", id: "barbarian" },
+                },
+            ],
+            resources: { hp: 18, "spell-slots-1": 2 },
+        };
+
+        useCharacterStore.setState({
+            characters: [
+                { ...missingRage, resources: { ...missingRage.resources } },
+            ],
+        });
+
+        render(
+            <NextIntlClientProvider locale="en" messages={enMessages}>
+                <RollAssistantProvider>
+                    <CombatTabConnected characterId={missingRage.id} />
+                </RollAssistantProvider>
+            </NextIntlClientProvider>
+        );
+
+        expect(screen.getByText("2 / 2")).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: "Rage Uses +" })
+        ).toBeDisabled();
+
+        await user.click(screen.getByRole("button", { name: "Rage Uses −" }));
+
+        expect(
+            useCharacterStore
+                .getState()
+                .characters.find((character) => character.id === missingRage.id)
+                ?.resources["rage-uses"]
+        ).toBe(1);
+        expect(screen.getByText("1 / 2")).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: "Rage Uses +" })
+        ).not.toBeDisabled();
     });
 
     it("marks the last spell slots used first in the two-row grid", () => {

@@ -101,4 +101,91 @@ describe("aggregateResourcePreviewContexts", () => {
             amount: 10,
         });
     });
+
+    it("drops zero-sum resources and rewrites choose>0 resource grants to choose 0", () => {
+        const contexts: GrantPreviewContext[] = [
+            {
+                grant: {
+                    grantType: "resource",
+                    choose: 0,
+                    ref: "rage-uses",
+                    amount: 2,
+                },
+                source: { type: "class", id: "barbarian" },
+            },
+            {
+                grant: {
+                    grantType: "resource",
+                    choose: 0,
+                    ref: "rage-uses",
+                    amount: -2,
+                },
+                source: { type: "class", id: "barbarian" },
+            },
+            {
+                grant: {
+                    grantType: "resource",
+                    choose: 1,
+                    ref: "ki-points",
+                    amount: 3,
+                },
+                source: { type: "class", id: "monk" },
+            },
+        ];
+
+        const aggregated = aggregateResourcePreviewContexts(contexts);
+
+        expect(aggregated).toHaveLength(1);
+        expect(aggregated[0].grant).toMatchObject({
+            grantType: "resource",
+            choose: 0,
+            ref: "ki-points",
+            amount: 3,
+        });
+    });
+
+    it("trims refs, sorts spell slots by level, then other resources alphabetically", () => {
+        const contexts: GrantPreviewContext[] = [
+            {
+                grant: {
+                    grantType: "resource",
+                    choose: 0,
+                    ref: "rage-uses",
+                    amount: 2,
+                },
+                source: { type: "class", id: "barbarian" },
+            },
+            {
+                grant: {
+                    grantType: "resource",
+                    choose: 0,
+                    ref: "  spell-slots-2  ",
+                    amount: 1,
+                },
+                source: { type: "class", id: "wizard" },
+            },
+            {
+                grant: {
+                    grantType: "resource",
+                    choose: 0,
+                    ref: "ki-points",
+                    amount: 4,
+                },
+                source: { type: "class", id: "monk" },
+            },
+            {
+                grant: {
+                    grantType: "resource",
+                    choose: 0,
+                    ref: "spell-slots-1",
+                    amount: 3,
+                },
+                source: { type: "class", id: "wizard" },
+            },
+        ];
+
+        expect(
+            aggregateResourcePreviewContexts(contexts).map((ctx) => ctx.grant.ref)
+        ).toEqual(["spell-slots-1", "spell-slots-2", "ki-points", "rage-uses"]);
+    });
 });

@@ -1,4 +1,6 @@
+import type { CharacterGrant } from "@rpv/domain";
 import {
+    formatClassStepGrantLabel,
     partitionClassGrantsForLevel,
     summarizeClassStartingEquipment,
 } from "../lib/character/classStepDisplay";
@@ -37,5 +39,56 @@ describe("classStepDisplay", () => {
         expect(summarizeClassStartingEquipment("fighter", 1)).toBe(
             "equipment or 50 gp"
         );
+    });
+});
+
+describe("formatClassStepGrantLabel amounts", () => {
+    const translateAbility = (ref: string) => ref;
+    const translateResource = (ref: string) =>
+        ref === "rage-uses" ? "Rage" : ref;
+    const translateSpellSlots = (
+        _key: "spellSlotsGrouped" | "spellSlotsGroupedDelta",
+        values: { level: number; count: number }
+    ) => `Spell Slots L${values.level}: ${values.count}`;
+
+    const grant = (
+        partial: Partial<CharacterGrant> & Pick<CharacterGrant, "kind" | "ref">
+    ): CharacterGrant => ({
+        id: "grant",
+        source: { type: "class", id: "fighter" },
+        ...partial,
+    });
+
+    it("omits the count when a named resource has no amount", () => {
+        expect(
+            formatClassStepGrantLabel(
+                grant({ kind: "resource", ref: "rage-uses" }),
+                "en",
+                translateAbility,
+                translateResource
+            )
+        ).toBe("Rage");
+    });
+
+    it("treats missing spell-slot amounts as 0 with a translator, else drops the count", () => {
+        const slot = grant({ kind: "resource", ref: "spell-slots-2" });
+
+        expect(
+            formatClassStepGrantLabel(
+                slot,
+                "en",
+                translateAbility,
+                translateResource,
+                translateSpellSlots
+            )
+        ).toBe("Spell Slots L2: 0");
+        expect(
+            formatClassStepGrantLabel(
+                slot,
+                "en",
+                translateAbility,
+                translateResource
+            )
+        ).toBe("L2 spell slots");
     });
 });

@@ -104,4 +104,75 @@ describe("race catalog details", () => {
             },
         ]);
     });
+
+    it("builds class hit-die and subclass-level rows without race-only fields", () => {
+        const model = buildCatalogDetailModel(
+            {
+                slug: "fighter",
+                title: "Fighter",
+                summary: "A master of martial combat.",
+                detailDescription: "Fighters share an unparalleled mastery of weapons.",
+                grants: [],
+                metadata: {
+                    hitDie: 10,
+                    subclassLevel: 3,
+                    size: "Medium",
+                    speedWalk: 30,
+                    ageDesc: "**_Age._** Fighters age like humans.",
+                    alignmentDesc: "**_Alignment._** Any alignment.",
+                },
+            },
+            "class"
+        );
+
+        expect(model.sections[0]?.rows).toEqual([
+            { labelKey: "hitDie", value: "d10" },
+            { labelKey: "subclassLevel", value: "3" },
+            { labelKey: "size", value: "Medium" },
+            { labelKey: "speed", value: "30 ft" },
+        ]);
+    });
+
+    it("builds race size and speed rows and skips blank metadata", () => {
+        const model = buildCatalogDetailModel(
+            {
+                slug: "elf",
+                title: "Elf",
+                summary: "Elf summary",
+                detailDescription: "",
+                grants: [],
+                metadata: {
+                    size: "Medium",
+                    speedWalk: 30,
+                    asiDesc: "   ",
+                    ageDesc: "   ",
+                    alignmentDesc: "",
+                },
+            },
+            "race"
+        );
+
+        expect(model.description).toBeUndefined();
+        expect(model.sections[0]?.rows).toEqual([
+            { labelKey: "size", value: "Medium" },
+            { labelKey: "speed", value: "30 ft" },
+        ]);
+    });
+
+    it("omits the metadata section when nothing is present", () => {
+        const model = buildCatalogDetailModel(
+            {
+                slug: "sage",
+                title: "Sage",
+                summary: "A scholar.",
+                detailDescription: "You spent years learning lore.",
+                grants: [],
+            },
+            "background"
+        );
+
+        expect(model.sections).toEqual([]);
+        expect(model.kind).toBe("catalog");
+        expect(model.catalogGrants).toEqual([]);
+    });
 });
