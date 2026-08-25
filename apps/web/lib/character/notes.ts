@@ -1,4 +1,11 @@
-import type { CharacterNote, NoteVisibility } from "./storedCharacter";
+import {
+    NOTE_COLORS,
+    type CharacterNote,
+    type NoteColor,
+    type NoteVisibility,
+} from "./storedCharacter";
+
+export type NoteColorChoice = NoteColor | "default";
 
 export const NOTE_BODY_MAX_LENGTH = 1200;
 export const NOTE_REMAINING_COUNTER_AT = 200;
@@ -46,18 +53,30 @@ export function createCharacterNote(body: string): CharacterNote | null {
 
 export function updateCharacterNote(
     note: CharacterNote,
-    body: string
+    body: string,
+    color?: NoteColorChoice
 ): CharacterNote | null {
     const nextBody = clampNoteBody(body);
     if (nextBody.length === 0) {
         return null;
     }
 
-    return {
+    const next: CharacterNote = {
         ...note,
         body: nextBody,
         updatedAt: new Date().toISOString(),
     };
+
+    if (color === undefined) {
+        return next;
+    }
+
+    if (color === "default") {
+        const { color: _removed, ...withoutColor } = next;
+        return withoutColor;
+    }
+
+    return { ...next, color };
 }
 
 function isIsoDateString(value: unknown): value is string {
@@ -66,6 +85,14 @@ function isIsoDateString(value: unknown): value is string {
 
 function coerceVisibility(_value: unknown): NoteVisibility {
     return "private";
+}
+
+function coerceNoteColor(value: unknown): NoteColor | undefined {
+    if (typeof value !== "string") {
+        return undefined;
+    }
+
+    return NOTE_COLORS.find((color) => color === value);
 }
 
 function sanitizeCharacterNote(value: unknown): CharacterNote | null {
@@ -95,12 +122,15 @@ function sanitizeCharacterNote(value: unknown): CharacterNote | null {
         ? record.updatedAt
         : record.createdAt;
 
+    const color = coerceNoteColor(record.color);
+
     return {
         id: record.id,
         body,
         createdAt: record.createdAt,
         updatedAt,
         visibility: coerceVisibility(record.visibility),
+        ...(color ? { color } : {}),
     };
 }
 

@@ -876,6 +876,89 @@ describe("PlayerSheet", () => {
         expect(screen.getByText("Keep me")).toBeInTheDocument();
     });
 
+    it("previews a note color in edit and commits it only on save", async () => {
+        const user = userEvent.setup();
+        const withNotes: StoredCharacter = {
+            ...storedCharacter,
+            id: "char-sheet-notes-color",
+            notes: [
+                {
+                    id: "garen",
+                    body: "Garen\nThe barkeep at the inn",
+                    createdAt: "2026-08-24T12:00:00.000Z",
+                    updatedAt: "2026-08-24T12:00:00.000Z",
+                    visibility: "private",
+                },
+            ],
+        };
+
+        function LiveSheet() {
+            const stored = useCharacterStore(
+                (state) =>
+                    state.characters.find(
+                        (character) => character.id === withNotes.id
+                    ) ?? withNotes
+            );
+            return <PlayerSheet stored={stored} />;
+        }
+
+        renderWithCharacters(<LiveSheet />, [withNotes]);
+        await user.click(screen.getByRole("tab", { name: "Notes" }));
+        await user.click(
+            screen.getByRole("button", { name: "Open note: Garen" })
+        );
+
+        const dialog = await screen.findByRole("dialog");
+        expect(
+            screen.queryByRole("radiogroup", { name: "Note color" })
+        ).not.toBeInTheDocument();
+
+        await user.click(within(dialog).getByRole("button", { name: "Edit" }));
+        const picker = within(dialog).getByRole("radiogroup", {
+            name: "Note color",
+        });
+        expect(within(picker).getAllByRole("radio")).toHaveLength(7);
+
+        await user.click(within(picker).getByRole("radio", { name: "Yellow" }));
+        await user.clear(within(dialog).getByRole("textbox", { name: "Note" }));
+        await user.click(
+            within(dialog).getByRole("button", { name: "Save note" })
+        );
+
+        await waitFor(() => {
+            expect(
+                within(dialog).queryByRole("textbox", { name: "Note" })
+            ).not.toBeInTheDocument();
+        });
+        expect(
+            useCharacterStore
+                .getState()
+                .characters[0]
+                .notes?.find((note) => note.id === "garen")?.body
+        ).toBe("Garen\nThe barkeep at the inn");
+        expect(
+            useCharacterStore
+                .getState()
+                .characters[0]
+                .notes?.find((note) => note.id === "garen")?.color
+        ).toBeUndefined();
+
+        await user.click(within(dialog).getByRole("button", { name: "Edit" }));
+        await user.click(
+            within(dialog).getByRole("radio", { name: "Yellow" })
+        );
+        await user.click(
+            within(dialog).getByRole("button", { name: "Save note" })
+        );
+
+        expect(
+            useCharacterStore
+                .getState()
+                .characters[0]
+                .notes?.find((note) => note.id === "garen")?.color
+        ).toBe("yellow");
+    });
+
     it("uses inverted tab surfaces and a background-colored tab panel", () => {
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 

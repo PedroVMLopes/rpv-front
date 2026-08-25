@@ -463,7 +463,15 @@
       "expand": "Open note: {title}",
       "close": "Close",
       "edit": "Edit",
-      "delete": "Delete"
+      "delete": "Delete",
+      "colorPicker": "Note color",
+      "colorDefault": "Default",
+      "colorYellow": "Yellow",
+      "colorOrange": "Orange",
+      "colorRed": "Red",
+      "colorGreen": "Green",
+      "colorBlue": "Blue",
+      "colorPurple": "Purple"
     },
     "roll": {
       "selectDie": "Select the die you want to roll",

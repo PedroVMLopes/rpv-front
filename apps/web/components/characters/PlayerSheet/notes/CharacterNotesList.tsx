@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { OverviewPanel } from "@/components/characters/PlayerSheet/overview/OverviewPanel";
 import { NoteDetailModal } from "@/components/characters/PlayerSheet/notes/NoteDetailModal";
+import { noteSurfaceClass } from "@/components/characters/PlayerSheet/notes/noteColors";
 import {
     formatNoteTimestamp,
     listCharacterNotes,
@@ -52,17 +53,11 @@ export function CharacterNotesList({ stored }: CharacterNotesListProps) {
                             <li
                                 key={note.id}
                                 className={cn(
-                                    "flex flex-col rounded-xl px-3 py-2 border-custom border-background bg-popover text-popover-foreground"
+                                    "flex flex-col rounded-xl px-3 py-2 border-custom border-background",
+                                    noteSurfaceClass(note.color, "card")
                                 )}
                             >
-                                <div className="flex items-start justify-between gap-2">
-                                    {stamped ? (
-                                        <p className="min-w-0 text-xs text-muted-foreground">
-                                            {stamped}
-                                        </p>
-                                    ) : (
-                                        <span />
-                                    )}
+                                <div className="flex items-start justify-end">
                                     <Button
                                         type="button"
                                         variant="ghost"
@@ -81,6 +76,11 @@ export function CharacterNotesList({ stored }: CharacterNotesListProps) {
                                 {rest.length > 0 ? (
                                     <p className="line-clamp-3 whitespace-pre-wrap wrap-break-word text-sm leading-6">
                                         {rest}
+                                    </p>
+                                ) : null}
+                                {stamped ? (
+                                    <p className="mt-auto pt-2 text-xs text-muted-foreground">
+                                        {stamped}
                                     </p>
                                 ) : null}
                             </li>

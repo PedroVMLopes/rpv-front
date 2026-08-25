@@ -109,13 +109,13 @@ Recursos de classe reutilizam a lógica de [`DerivedResourcesDisplay`](../apps/w
 | **Visão geral** | Gameplay — o que o personagem sabe e pode (fora da economia de ataque) | Retrato, atributos + testes, passivas, perícias (proficientes por padrão), fatos mecânicos (antecedente, tamanho, sentidos, dado de vida), proficiências (armas, armaduras, ferramentas, idiomas), características | [`OverviewTab`](../apps/web/components/characters/PlayerSheet/tabs/OverviewTab.tsx), [`AbilitiesSection`](../apps/web/components/characters/PlayerSheet/overview/AbilitiesSection.tsx), [`SkillsCard`](../apps/web/components/characters/PlayerSheet/overview/SkillsCard.tsx) |
 | **Combate** | Economia de ação | Ataques, ações/bônus/reações, magias, CD/ataque de magia, recursos de classe, defesa e resistências — agrupados por **tipo de ação**, não por origem (classe vs item) | [`CombatTab`](../apps/web/components/characters/PlayerSheet/tabs/CombatTab.tsx), [`CastingStatsPanel`](../apps/web/components/characters/PlayerSheet/combat/CastingStatsPanel.tsx), [`ClassResourcesPanel`](../apps/web/components/characters/PlayerSheet/combat/ClassResourcesPanel.tsx), [`DefenseSavesPanel`](../apps/web/components/characters/PlayerSheet/combat/DefenseSavesPanel.tsx) |
 | **Mochila** | Posse e equipamento | Equipado + bag + moeda | [`CharacterCardInventory`](../apps/web/components/characters/CharacterCard/CharacterCardInventory.tsx) |
-| **Anotações** | Persona (roleplay) + recados de sessão | Presença, disposição, personalidade D&D; notas do personagem (`StoredCharacter.notes`, mais recente primeiro). Card com expandir → modal para ler, editar (compositor da action bar) e excluir | [`NotesTab`](../apps/web/components/characters/PlayerSheet/tabs/NotesTab.tsx), [`PersonaSection`](../apps/web/components/characters/PlayerSheet/notes/PersonaSection.tsx), [`CharacterNotesList`](../apps/web/components/characters/PlayerSheet/notes/CharacterNotesList.tsx), [`NoteDetailModal`](../apps/web/components/characters/PlayerSheet/notes/NoteDetailModal.tsx) |
+| **Anotações** | Persona (roleplay) + recados de sessão | Presença, disposição, personalidade D&D; notas do personagem (`StoredCharacter.notes`, mais recente primeiro). Card com expandir → modal para ler, editar (cor Keep + compositor da action bar) e excluir | [`NotesTab`](../apps/web/components/characters/PlayerSheet/tabs/NotesTab.tsx), [`PersonaSection`](../apps/web/components/characters/PlayerSheet/notes/PersonaSection.tsx), [`CharacterNotesList`](../apps/web/components/characters/PlayerSheet/notes/CharacterNotesList.tsx), [`NoteDetailModal`](../apps/web/components/characters/PlayerSheet/notes/NoteDetailModal.tsx) |
 
 #### Decisões de UX
 
 - **Visão geral** não lista as 18 perícias por padrão — apenas as **proficientes**. Toggle "todas" já está na ficha. Saves completos ficam na aba Ações. Personalidade, idade aparente e prosa de antecedente saíram da Overview (Persona na aba Anotações).
 - **Combate** é adaptativo: seção Magia oculta se o personagem não tiver spell grants.
-- **Anotações:** Persona no topo (presença, disposição, campos D&D). Personalidade, idade, porte, voz, marcas e vestimenta vêm de `systemData`; eixos de disposição gravados (1–20) mostram slider somente leitura, omitidos mostram `—`. Rótulos vazios mostram `—`. Notas de sessão: criar pela action bar (`Quick note`); a aba lista os recados. Card mostra preview (primeira linha + até 3 linhas de corpo); expandir abre modal. Editar reusa o compositor (primeira linha estilo iPhone); save vazio na edição descarta o rascunho e volta à leitura. Excluir apaga na hora. `visibility: "private"` no recorde, sem UI de share.
+- **Anotações:** Persona no topo (presença, disposição, campos D&D). Personalidade, idade, porte, voz, marcas e vestimenta vêm de `systemData`; eixos de disposição gravados (1–20) mostram slider somente leitura, omitidos mostram `—`. Rótulos vazios mostram `—`. Notas de sessão: criar pela action bar (`Quick note`); a aba lista os recados. Card mostra preview (primeira linha + até 3 linhas de corpo) e timestamp embaixo; expandir abre modal (timestamp também embaixo na leitura). Editar reusa o compositor (primeira linha estilo iPhone) e mostra uma linha de cores Keep (padrão + 6 pastéis) acima de Excluir/Salvar; clicar na cor é preview no modal; só Salvar nota grava (`color` no recorde). Save vazio na edição descarta o rascunho (texto e cor) e volta à leitura. Excluir apaga na hora. `visibility: "private"` no recorde, sem UI de share.
 
 ### 3.3 Responsividade
 
@@ -274,7 +274,7 @@ stateDiagram-v2
 | Armas equipadas | `selections.inventory.equipped` + `getItem` | Bloco de ataque/dano em `ItemEntry` |
 | Recursos de classe | `stored.resources` + `parseDerivedResources` | UI `+`/`-` na ficha |
 | Objetivos | `systemData.goals` | — |
-| Anotações | `StoredCharacter.notes` (`CharacterNote[]`) | Share, pin, arquivo, cor — futuros |
+| Anotações | `StoredCharacter.notes` (`CharacterNote[]`, `color?`) | Share, pin, arquivo
 
 Helpers relevantes:
 
@@ -323,7 +323,7 @@ Helpers relevantes:
 - Alvos concretos (AC de inimigo, saves de NPC, comparação automática hit/miss).
 - Sincronização multiplayer ou persistência de rolagens no backend.
 - Regras de mesa (house rules) além do que os grants declarativos já expressam.
-- Pin, arquivo, cor, tags, ou compartilhar notas com a mesa.
+- Pin, arquivo, tags, ou compartilhar notas com a mesa.
 
 ---
 
@@ -349,5 +349,5 @@ Helpers relevantes:
 | Alvos (AC, etc.) | Fora do escopo MVP |
 | Vantagem/desvantagem | Incluído no MVP do container (Tipo D) |
 | Edição na sessão | HP + recursos de classe (`+`/`-`) |
-| Anotações | Persona + notas de sessão; criar na action bar; modal na aba para ler/editar/excluir |
+| Anotações | Persona + notas de sessão; criar na action bar; modal na aba para ler/editar/excluir; cor Keep no recorde |
 | Responsividade | Mobile, tablet e desktop documentados; sem dispositivo único prioritário |

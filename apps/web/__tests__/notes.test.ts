@@ -49,6 +49,7 @@ describe("character notes helpers", () => {
         expect(note?.id).toEqual(expect.any(String));
         expect(note?.createdAt).toEqual(note?.updatedAt);
         expect(Number.isNaN(Date.parse(note?.createdAt ?? ""))).toBe(false);
+        expect(note?.color).toBeUndefined();
     });
 
     it("updates a note body and timestamp or returns null when blank", () => {
@@ -63,6 +64,18 @@ describe("character notes helpers", () => {
             visibility: "private",
         });
         expect(Number.isNaN(Date.parse(updated?.updatedAt ?? ""))).toBe(false);
+        expect(updated?.color).toBeUndefined();
+
+        const colored = updateCharacterNote(created, "Garen", "yellow");
+        expect(colored).toMatchObject({
+            id: created.id,
+            body: "Garen",
+            color: "yellow",
+        });
+
+        const cleared = updateCharacterNote(colored!, "Garen", "default");
+        expect(cleared?.color).toBeUndefined();
+        expect(cleared).not.toHaveProperty("color");
     });
 
     it("drops invalid notes and keeps a sanitized list newest first", () => {
@@ -75,6 +88,15 @@ describe("character notes helpers", () => {
                     createdAt: "2026-08-24T12:00:00.000Z",
                     updatedAt: "2026-08-24T12:00:00.000Z",
                     visibility: "nope",
+                    color: "yellow",
+                },
+                {
+                    id: "invalid-color",
+                    body: "keep color fallback",
+                    createdAt: "2026-08-24T11:00:00.000Z",
+                    updatedAt: "2026-08-24T11:00:00.000Z",
+                    visibility: "private",
+                    color: "neon",
                 },
                 { id: "blank", body: "   ", createdAt: "2026-08-24T12:00:00.000Z" },
                 { body: "no id", createdAt: "2026-08-24T12:00:00.000Z" },
@@ -85,6 +107,14 @@ describe("character notes helpers", () => {
                 body: "keep me",
                 createdAt: "2026-08-24T12:00:00.000Z",
                 updatedAt: "2026-08-24T12:00:00.000Z",
+                visibility: "private",
+                color: "yellow",
+            },
+            {
+                id: "invalid-color",
+                body: "keep color fallback",
+                createdAt: "2026-08-24T11:00:00.000Z",
+                updatedAt: "2026-08-24T11:00:00.000Z",
                 visibility: "private",
             },
         ]);

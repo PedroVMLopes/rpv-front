@@ -29,12 +29,25 @@ export const STORED_CHARACTER_SCHEMA_VERSION = 1;
 /** Opens later with `"party" | "gm"` when notes can be shared. */
 export type NoteVisibility = "private";
 
+export const NOTE_COLORS = [
+    "yellow",
+    "orange",
+    "red",
+    "green",
+    "blue",
+    "purple",
+] as const;
+
+export type NoteColor = (typeof NOTE_COLORS)[number];
+
 export type CharacterNote = {
     id: string;
     body: string;
     createdAt: string;
     updatedAt: string;
     visibility: NoteVisibility;
+    /** Keep-like pastel. Omitted means the default surface. */
+    color?: NoteColor;
 };
 
 export type StoredCharacter = {

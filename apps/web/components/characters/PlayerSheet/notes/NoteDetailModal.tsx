@@ -14,12 +14,20 @@ import {
 } from "@/components/ui/dialog";
 import { NoteComposer } from "@/components/characters/PlayerSheet/notes/NoteComposer";
 import {
+    NOTE_COLOR_CHOICES,
+    noteSurfaceClass,
+    noteSwatchClass,
+    savedNoteColorChoice,
+} from "@/components/characters/PlayerSheet/notes/noteColors";
+import {
     formatNoteTimestamp,
     isBlankNoteBody,
     splitNoteBody,
+    type NoteColorChoice,
 } from "@/lib/character/notes";
 import type { CharacterNote } from "@/lib/character/storedCharacter";
 import { useCharacterStore } from "@/store/useCharacterStore";
+import { cn } from "@/lib/utils";
 
 type NoteDetailModalProps = {
     characterId: string;
@@ -27,6 +35,16 @@ type NoteDetailModalProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
 };
+
+const COLOR_LABEL_KEYS = {
+    default: "colorDefault",
+    yellow: "colorYellow",
+    orange: "colorOrange",
+    red: "colorRed",
+    green: "colorGreen",
+    blue: "colorBlue",
+    purple: "colorPurple",
+} as const;
 
 export function NoteDetailModal({
     characterId,
@@ -40,8 +58,12 @@ export function NoteDetailModal({
     const deleteNote = useCharacterStore((state) => state.deleteNote);
     const [editing, setEditing] = useState(false);
     const [draft, setDraft] = useState(note.body);
+    const [draftColor, setDraftColor] = useState<NoteColorChoice>(
+        savedNoteColorChoice(note.color)
+    );
     const { title, rest } = splitNoteBody(note.body);
     const stamped = formatNoteTimestamp(note.createdAt, locale);
+    const surfaceColor = editing ? draftColor : savedNoteColorChoice(note.color);
 
     useEffect(() => {
         if (!open) {
@@ -50,19 +72,21 @@ export function NoteDetailModal({
         }
 
         setDraft(note.body);
+        setDraftColor(savedNoteColorChoice(note.color));
         setEditing(false);
-    }, [open, note.id, note.body]);
+    }, [open, note.id, note.body, note.color]);
 
     const closeModal = () => onOpenChange(false);
 
     const handleSave = () => {
         if (isBlankNoteBody(draft)) {
             setDraft(note.body);
+            setDraftColor(savedNoteColorChoice(note.color));
             setEditing(false);
             return;
         }
 
-        updateNote(characterId, note.id, draft);
+        updateNote(characterId, note.id, draft, draftColor);
         setEditing(false);
     };
 
@@ -75,7 +99,10 @@ export function NoteDetailModal({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent
                 showCloseButton={false}
-                className="flex max-h-[85vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-lg bg-card text-card-foreground"
+                className={cn(
+                    "flex max-h-[85vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-lg",
+                    noteSurfaceClass(surfaceColor, "modal")
+                )}
             >
                 <Button
                     type="button"
@@ -104,11 +131,6 @@ export function NoteDetailModal({
                         />
                     ) : (
                         <div className="flex flex-col gap-2">
-                            {stamped ? (
-                                <p className="text-xs text-muted-foreground">
-                                    {stamped}
-                                </p>
-                            ) : null}
                             <p className="whitespace-pre-wrap wrap-break-word text-lg font-semibold leading-7">
                                 {title}
                             </p>
@@ -117,35 +139,70 @@ export function NoteDetailModal({
                                     {rest}
                                 </p>
                             ) : null}
+                            {stamped ? (
+                                <p className="text-xs text-muted-foreground">
+                                    {stamped}
+                                </p>
+                            ) : null}
                         </div>
                     )}
                 </div>
-                <DialogFooter className="flex-row gap-2 px-6 pb-4">
-                    <Button
-                        type="button"
-                        variant="destructive"
-                        className="flex-1"
-                        onClick={handleDelete}
-                    >
-                        {t("delete")}
-                    </Button>
+                <DialogFooter className="flex flex-col gap-3 px-6 pb-4 sm:flex-col sm:justify-start">
                     {editing ? (
+                        <div
+                            role="radiogroup"
+                            aria-label={t("colorPicker")}
+                            className="flex flex-wrap items-center gap-2"
+                        >
+                            {NOTE_COLOR_CHOICES.map((choice) => {
+                                const selected = draftColor === choice;
+
+                                return (
+                                    <button
+                                        key={choice}
+                                        type="button"
+                                        role="radio"
+                                        aria-checked={selected}
+                                        aria-pressed={selected}
+                                        aria-label={t(COLOR_LABEL_KEYS[choice])}
+                                        className={cn(
+                                            "size-8 shrink-0 rounded-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                                            noteSwatchClass(choice),
+                                            selected && "ring-2 ring-foreground/50"
+                                        )}
+                                        onClick={() => setDraftColor(choice)}
+                                    />
+                                );
+                            })}
+                        </div>
+                    ) : null}
+                    <div className="flex w-full flex-row gap-2">
                         <Button
                             type="button"
+                            variant="destructive"
                             className="flex-1"
-                            onClick={handleSave}
+                            onClick={handleDelete}
                         >
-                            {t("saveNote")}
+                            {t("delete")}
                         </Button>
-                    ) : (
-                        <Button
-                            type="button"
-                            className="flex-1"
-                            onClick={() => setEditing(true)}
-                        >
-                            {t("edit")}
-                        </Button>
-                    )}
+                        {editing ? (
+                            <Button
+                                type="button"
+                                className="flex-1"
+                                onClick={handleSave}
+                            >
+                                {t("saveNote")}
+                            </Button>
+                        ) : (
+                            <Button
+                                type="button"
+                                className="flex-1"
+                                onClick={() => setEditing(true)}
+                            >
+                                {t("edit")}
+                            </Button>
+                        )}
+                    </div>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

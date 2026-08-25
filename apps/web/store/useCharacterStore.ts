@@ -32,7 +32,11 @@ import {
     unequipItemFromMultiSlot as unequipItemFromMultiSlotInventory,
 } from "@/lib/character/inventory";
 import { getResourceMax } from "@/lib/character/presetStats";
-import { createCharacterNote, updateCharacterNote } from "@/lib/character/notes";
+import {
+    createCharacterNote,
+    updateCharacterNote,
+    type NoteColorChoice,
+} from "@/lib/character/notes";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useContentLocale } from "@/store/useContentLocale";
 
@@ -71,7 +75,12 @@ interface CharacterStore {
     ) => void;
     updateResource: (id: string, resourceName: string, delta: number) => void;
     addNote: (id: string, body: string) => void;
-    updateNote: (id: string, noteId: string, body: string) => void;
+    updateNote: (
+        id: string,
+        noteId: string,
+        body: string,
+        color?: NoteColorChoice
+    ) => void;
     deleteNote: (id: string, noteId: string) => void;
     getResolvedStats: (id: string) => Stats | undefined;
     getCharacterProps: (id: string) => CharacterProps | undefined;
@@ -333,7 +342,7 @@ export const useCharacterStore = create<CharacterStore>()(
                     }),
                 })),
 
-            updateNote: (id, noteId, body) =>
+            updateNote: (id, noteId, body, color) =>
                 set((state) => ({
                     characters: state.characters.map((char) => {
                         if (char.id !== id) return char;
@@ -342,7 +351,7 @@ export const useCharacterStore = create<CharacterStore>()(
                         const current = notes.find((note) => note.id === noteId);
                         if (!current) return char;
 
-                        const next = updateCharacterNote(current, body);
+                        const next = updateCharacterNote(current, body, color);
                         if (!next) return char;
 
                         return {

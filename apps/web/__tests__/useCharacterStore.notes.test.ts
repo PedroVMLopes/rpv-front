@@ -108,6 +108,48 @@ describe("useCharacterStore notes", () => {
         expect(updated.createdAt).toBe(created.createdAt);
     });
 
+    it("persists note color and clears it back to default", () => {
+        const character = addBaseCharacter();
+
+        act(() => {
+            useCharacterStore.getState().addNote(character.id, "Garen");
+        });
+
+        const created = useCharacterStore.getState().characters[0].notes![0];
+
+        act(() => {
+            useCharacterStore
+                .getState()
+                .updateNote(character.id, created.id, created.body, "blue");
+        });
+
+        const colored = useCharacterStore.getState().characters[0].notes![0];
+        expect(colored.color).toBe("blue");
+
+        const withColor = useCharacterStore.getState().characters[0];
+
+        act(() => {
+            useCharacterStore.getState().updateCharacter(
+                withColor.id,
+                flattenStoredToForm(withColor, withColor.system)
+            );
+        });
+
+        expect(useCharacterStore.getState().characters[0].notes?.[0].color).toBe(
+            "blue"
+        );
+
+        act(() => {
+            useCharacterStore
+                .getState()
+                .updateNote(character.id, created.id, created.body, "default");
+        });
+
+        expect(
+            useCharacterStore.getState().characters[0].notes?.[0].color
+        ).toBeUndefined();
+    });
+
     it("deletes a note by id", () => {
         const character = addBaseCharacter();
 

@@ -463,7 +463,15 @@
       "expand": "Abrir nota: {title}",
       "close": "Fechar",
       "edit": "Editar",
-      "delete": "Excluir"
+      "delete": "Excluir",
+      "colorPicker": "Cor da nota",
+      "colorDefault": "Padrão",
+      "colorYellow": "Amarelo",
+      "colorOrange": "Laranja",
+      "colorRed": "Vermelho",
+      "colorGreen": "Verde",
+      "colorBlue": "Azul",
+      "colorPurple": "Roxo"
     },
     "roll": {
       "selectDie": "Selecione o dado desejado",
