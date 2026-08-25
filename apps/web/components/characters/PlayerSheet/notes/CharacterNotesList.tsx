@@ -28,7 +28,7 @@ export function CharacterNotesList({ stored }: CharacterNotesListProps) {
                     {tNotes("empty")}
                 </p>
             ) : (
-                <ul className="flex flex-col gap-2">
+                <ul className="flex flex-col gap-2 md:grid md:grid-cols-2 lg:grid-cols-3">
                     {notes.map((note) => {
                         const { title, rest } = splitNoteBody(note.body);
                         const stamped = formatNoteTimestamp(
@@ -40,8 +40,7 @@ export function CharacterNotesList({ stored }: CharacterNotesListProps) {
                             <li
                                 key={note.id}
                                 className={cn(
-                                    "flex flex-col gap-1 rounded-xl px-3 py-2",
-                                    sheetInset
+                                    "flex flex-col rounded-xl px-3 py-2 border-custom border-background bg-popover text-popover-foreground",
                                 )}
                             >
                                 {stamped ? (
@@ -49,11 +48,11 @@ export function CharacterNotesList({ stored }: CharacterNotesListProps) {
                                         {stamped}
                                     </p>
                                 ) : null}
-                                <p className="whitespace-pre-wrap wrap-break-word text-lg font-semibold leading-7 text-card-foreground">
+                                <p className="whitespace-pre-wrap wrap-break-word text-lg font-semibold leading-7">
                                     {title}
                                 </p>
                                 {rest.length > 0 ? (
-                                    <p className="whitespace-pre-wrap wrap-break-word text-sm leading-6 text-card-foreground">
+                                    <p className="whitespace-pre-wrap wrap-break-word text-sm leading-6">
                                         {rest}
                                     </p>
                                 ) : null}
