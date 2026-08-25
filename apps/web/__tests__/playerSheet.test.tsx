@@ -854,12 +854,9 @@ describe("PlayerSheet", () => {
             " discarded"
         );
         await user.click(within(dialog).getByRole("button", { name: "Close" }));
-        expect(
-            within(dialog).queryByRole("textbox", { name: "Note" })
-        ).not.toBeInTheDocument();
-        expect(within(dialog).getAllByText("Updated clue").length).toBeGreaterThan(
-            0
-        );
+        await waitFor(() => {
+            expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+        });
         expect(
             useCharacterStore
                 .getState()
@@ -867,7 +864,11 @@ describe("PlayerSheet", () => {
                 .notes?.find((note) => note.id === "garen")?.body
         ).toBe("Updated clue");
 
-        await user.click(within(dialog).getByRole("button", { name: "Delete" }));
+        await user.click(
+            screen.getByRole("button", { name: "Open note: Updated clue" })
+        );
+        const reopened = await screen.findByRole("dialog");
+        await user.click(within(reopened).getByRole("button", { name: "Delete" }));
         await waitFor(() => {
             expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
         });

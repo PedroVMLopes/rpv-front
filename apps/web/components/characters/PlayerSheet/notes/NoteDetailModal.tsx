@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { XIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
@@ -54,16 +55,6 @@ export function NoteDetailModal({
 
     const closeModal = () => onOpenChange(false);
 
-    const handleClose = () => {
-        if (editing) {
-            setDraft(note.body);
-            setEditing(false);
-            return;
-        }
-
-        closeModal();
-    };
-
     const handleSave = () => {
         if (isBlankNoteBody(draft)) {
             setDraft(note.body);
@@ -86,7 +77,17 @@ export function NoteDetailModal({
                 showCloseButton={false}
                 className="flex max-h-[85vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-lg bg-card text-card-foreground"
             >
-                <div className="min-h-0 flex-1 overflow-y-auto p-6">
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-3 right-3 z-10 size-8"
+                    aria-label={t("close")}
+                    onClick={closeModal}
+                >
+                    <XIcon aria-hidden />
+                </Button>
+                <div className="min-h-0 flex-1 overflow-y-auto p-6 pr-12">
                     <DialogHeader>
                         <DialogTitle className="sr-only">
                             {title || t("bodyLabel")}
@@ -119,36 +120,32 @@ export function NoteDetailModal({
                         </div>
                     )}
                 </div>
-                <DialogFooter className="flex-col gap-2 border-t border-border px-6 py-4 sm:flex-col sm:space-x-0">
-                    <div className="grid w-full grid-cols-2 gap-2">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={handleClose}
-                        >
-                            {t("close")}
-                        </Button>
-                        {editing ? (
-                            <Button type="button" onClick={handleSave}>
-                                {t("saveNote")}
-                            </Button>
-                        ) : (
-                            <Button
-                                type="button"
-                                onClick={() => setEditing(true)}
-                            >
-                                {t("edit")}
-                            </Button>
-                        )}
-                    </div>
+                <DialogFooter className="flex-row gap-2 px-6 pb-4">
                     <Button
                         type="button"
                         variant="destructive"
-                        className="w-full"
+                        className="flex-1"
                         onClick={handleDelete}
                     >
                         {t("delete")}
                     </Button>
+                    {editing ? (
+                        <Button
+                            type="button"
+                            className="flex-1"
+                            onClick={handleSave}
+                        >
+                            {t("saveNote")}
+                        </Button>
+                    ) : (
+                        <Button
+                            type="button"
+                            className="flex-1"
+                            onClick={() => setEditing(true)}
+                        >
+                            {t("edit")}
+                        </Button>
+                    )}
                 </DialogFooter>
             </DialogContent>
         </Dialog>
