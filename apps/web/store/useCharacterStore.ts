@@ -32,6 +32,7 @@ import {
     unequipItemFromMultiSlot as unequipItemFromMultiSlotInventory,
 } from "@/lib/character/inventory";
 import { getResourceMax } from "@/lib/character/presetStats";
+import { createCharacterNote } from "@/lib/character/notes";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useContentLocale } from "@/store/useContentLocale";
 
@@ -69,6 +70,7 @@ interface CharacterStore {
         multiSlug?: string
     ) => void;
     updateResource: (id: string, resourceName: string, delta: number) => void;
+    addNote: (id: string, body: string) => void;
     getResolvedStats: (id: string) => Stats | undefined;
     getCharacterProps: (id: string) => CharacterProps | undefined;
     getFormDefaults: (id: string) => Record<string, unknown> | undefined;
@@ -310,6 +312,21 @@ export const useCharacterStore = create<CharacterStore>()(
                                 ...char.resources,
                                 [resourceName]: clamped,
                             },
+                        };
+                    }),
+                })),
+
+            addNote: (id, body) =>
+                set((state) => ({
+                    characters: state.characters.map((char) => {
+                        if (char.id !== id) return char;
+
+                        const note = createCharacterNote(body);
+                        if (!note) return char;
+
+                        return {
+                            ...char,
+                            notes: [note, ...(char.notes ?? [])],
                         };
                     }),
                 })),

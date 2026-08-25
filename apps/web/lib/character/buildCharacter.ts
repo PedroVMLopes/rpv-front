@@ -14,6 +14,7 @@ import { readLevelFromForm } from "./level";
 import { resolveCharacterNameForSave } from "./defaultCharacterName";
 import type { StoredCharacter } from "./storedCharacter";
 import type { CharacterSelections } from "./storedCharacter";
+import { sanitizeCharacterNotes } from "./notes";
 
 export type BuildCharacterInput = {
     id: string;
@@ -83,7 +84,7 @@ export function buildStoredCharacter(input: BuildCharacterInput): StoredCharacte
         modifiers
     );
 
-    return formDataToStoredCharacter(
+    const stored = formDataToStoredCharacter(
         processedForm,
         id,
         type,
@@ -93,6 +94,11 @@ export function buildStoredCharacter(input: BuildCharacterInput): StoredCharacte
         grants,
         selections
     );
+
+    return {
+        ...stored,
+        notes: sanitizeCharacterNotes(existing?.notes),
+    };
 }
 
 export function buildNewStoredCharacter(

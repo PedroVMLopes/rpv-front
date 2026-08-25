@@ -9,6 +9,7 @@ import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { AbilityChecksPanel } from "./AbilityChecksPanel";
 import { DiceRollAssistant } from "./roll/DiceRollAssistant";
 import { useRollAssistant } from "./roll/RollAssistantProvider";
+import { QuickNotePanel } from "./notes/QuickNotePanel";
 
 type PlayerSheetActionBarProps = {
     stored?: StoredCharacter;
@@ -234,7 +235,7 @@ export function PlayerSheetActionBar({ stored }: PlayerSheetActionBarProps) {
                                     key={panel}
                                     className={cn(
                                         "flex h-full min-h-0 flex-col px-3 pt-3 transition-opacity duration-200 motion-reduce:transition-none",
-                                        panel === "skills"
+                                        panel === "skills" || panel === "notes"
                                             ? "overflow-hidden"
                                             : "overflow-y-auto",
                                         expanded
@@ -254,9 +255,14 @@ export function PlayerSheetActionBar({ stored }: PlayerSheetActionBarProps) {
                                                 {tSheet("noneYet")}
                                             </p>
                                         )
+                                    ) : stored ? (
+                                        <QuickNotePanel
+                                            stored={stored}
+                                            onDismiss={collapsePanel}
+                                        />
                                     ) : (
                                         <p className="pb-2 text-sm text-muted-foreground">
-                                            {tSheet("comingSoon")}
+                                            {tSheet("noneYet")}
                                         </p>
                                     )}
                                 </div>

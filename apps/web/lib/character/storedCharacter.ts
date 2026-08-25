@@ -26,6 +26,17 @@ export function emptyCharacterSelections(): CharacterSelections {
 
 export const STORED_CHARACTER_SCHEMA_VERSION = 1;
 
+/** Opens later with `"party" | "gm"` when notes can be shared. */
+export type NoteVisibility = "private";
+
+export type CharacterNote = {
+    id: string;
+    body: string;
+    createdAt: string;
+    updatedAt: string;
+    visibility: NoteVisibility;
+};
+
 export type StoredCharacter = {
     id: string;
     schemaVersion: number;
@@ -40,4 +51,6 @@ export type StoredCharacter = {
     selections: CharacterSelections;
     resources: Record<string, number>;
     systemData: Record<string, unknown>;
+    /** Session notes authored on the sheet. Missing means none yet. */
+    notes?: CharacterNote[];
 };

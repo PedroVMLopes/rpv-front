@@ -26,6 +26,7 @@ import { sanitizeStartingMaterialization } from "./sanitizeStartingMaterializati
 import { resolveArmorClassWithEquipment } from "./ac";
 import type { StoredCharacter, CharacterSelections, CharacterChoices } from "./storedCharacter";
 import { STORED_CHARACTER_SCHEMA_VERSION } from "./storedCharacter";
+import { sanitizeCharacterNotes } from "./notes";
 import type { CharacterInventory } from "@rpv/domain";
 
 function coerceString(value: unknown, fallback: string): string {
@@ -127,6 +128,7 @@ function finalizeStoredCharacter(
         grants: stored.grants ?? [],
         selections: normalizedSelections,
         systemData: stripLegacyInventoryFormKeys(stored.systemData ?? {}),
+        notes: sanitizeCharacterNotes(stored.notes),
     };
 }
 
@@ -219,6 +221,7 @@ export function formDataToStoredCharacter(
             ...deriveResourceTotals(grants),
         },
         systemData: buildSystemDataFromForm(processedForm, system),
+        notes: [],
     };
 }
 

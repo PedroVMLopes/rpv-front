@@ -107,13 +107,77 @@ describe("PlayerSheetActionBar", () => {
         renderBar();
 
         await user.click(screen.getByRole("button", { name: "Quick note" }));
-        expect(screen.getByText("Coming soon")).toBeInTheDocument();
+        expect(screen.getByRole("textbox", { name: "Note" })).toBeInTheDocument();
 
         await user.click(screen.getByRole("button", { name: "Cancel" }));
 
         await waitFor(() => {
-            expect(screen.queryByText("Coming soon")).not.toBeInTheDocument();
+            expect(
+                screen.queryByRole("textbox", { name: "Note" })
+            ).not.toBeInTheDocument();
         });
+    });
+
+    it("opens the note composer from the quick note button", async () => {
+        const user = userEvent.setup();
+        renderBar();
+
+        await user.click(screen.getByRole("button", { name: "Quick note" }));
+
+        expect(screen.getByRole("textbox", { name: "Note" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Save note" })).toBeEnabled();
+        expect(screen.queryByText("Coming soon")).not.toBeInTheDocument();
+    });
+
+    it("closes without saving when save is pressed on an empty note", async () => {
+        const user = userEvent.setup();
+        renderBar();
+
+        await user.click(screen.getByRole("button", { name: "Quick note" }));
+        await user.click(screen.getByRole("button", { name: "Save note" }));
+
+        await waitFor(() => {
+            expect(
+                screen.queryByRole("textbox", { name: "Note" })
+            ).not.toBeInTheDocument();
+        });
+        expect(useCharacterStore.getState().characters[0].notes ?? []).toEqual(
+            []
+        );
+    });
+
+    it("saves a note and closes the panel", async () => {
+        const user = userEvent.setup();
+        renderBar();
+
+        await user.click(screen.getByRole("button", { name: "Quick note" }));
+        await user.type(screen.getByRole("textbox", { name: "Note" }), "Garen");
+        await user.click(screen.getByRole("button", { name: "Save note" }));
+
+        await waitFor(() => {
+            expect(
+                screen.queryByRole("textbox", { name: "Note" })
+            ).not.toBeInTheDocument();
+        });
+        expect(useCharacterStore.getState().characters[0].notes).toEqual([
+            expect.objectContaining({
+                body: "Garen",
+                visibility: "private",
+            }),
+        ]);
+    });
+
+    it("does not accept more than 1200 characters", async () => {
+        const user = userEvent.setup();
+        renderBar();
+
+        await user.click(screen.getByRole("button", { name: "Quick note" }));
+        const field = screen.getByRole("textbox", { name: "Note" });
+        await user.click(field);
+        await user.paste("a".repeat(1201));
+
+        expect(field).toHaveValue("a".repeat(1200));
+        expect(screen.getByText("1200/1200")).toBeInTheDocument();
     });
 
     it("opens die selection from the dice button", async () => {

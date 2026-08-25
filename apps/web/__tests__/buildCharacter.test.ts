@@ -930,4 +930,28 @@ describe("buildStoredCharacter", () => {
             ])
         );
     });
+
+    it("preserves session notes when rebuilding a character", () => {
+        const created = buildNewStoredCharacter(baseFormData, "player", "dnd", "en");
+        const notes = [
+            {
+                id: "note-1",
+                body: "Garen the barkeep",
+                createdAt: "2026-08-24T12:00:00.000Z",
+                updatedAt: "2026-08-24T12:00:00.000Z",
+                visibility: "private" as const,
+            },
+        ];
+
+        const rebuilt = rebuildStoredCharacter(
+            { ...created, notes },
+            {
+                ...baseFormData,
+                inventory: created.selections.inventory,
+            },
+            "en"
+        );
+
+        expect(rebuilt.notes).toEqual(notes);
+    });
 });

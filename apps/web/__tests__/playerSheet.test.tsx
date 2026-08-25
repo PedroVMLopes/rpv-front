@@ -563,7 +563,7 @@ describe("PlayerSheet", () => {
         expect(screen.getByText("Coming soon")).toBeInTheDocument();
     });
 
-    it("shows stored persona fields on notes and a coming-soon notes block", async () => {
+    it("shows stored persona fields on notes and an empty notes prompt", async () => {
         const user = userEvent.setup();
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
@@ -603,7 +603,10 @@ describe("PlayerSheet", () => {
             expect(slider).toHaveAttribute("aria-valuenow", "10");
         }
 
-        expect(screen.getByText("Coming soon")).toBeInTheDocument();
+        expect(
+            screen.getByText("Use the bar below to jot a note.")
+        ).toBeInTheDocument();
+        expect(screen.queryByText("Coming soon")).not.toBeInTheDocument();
     });
 
     it("shows dashes for empty persona fields on notes", async () => {
@@ -726,6 +729,43 @@ describe("PlayerSheet", () => {
 
         expect(screen.queryByText("Background details")).not.toBeInTheDocument();
         expect(screen.queryByText("Guild business")).not.toBeInTheDocument();
+    });
+
+    it("lists stored session notes on the notes tab", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(
+            <PlayerSheet
+                stored={{
+                    ...storedCharacter,
+                    id: "char-sheet-notes",
+                    notes: [
+                        {
+                            id: "older",
+                            body: "Older clue",
+                            createdAt: "2026-08-01T12:00:00.000Z",
+                            updatedAt: "2026-08-01T12:00:00.000Z",
+                            visibility: "private",
+                        },
+                        {
+                            id: "newer",
+                            body: "Garen\nThe barkeep at the inn",
+                            createdAt: "2026-08-24T12:00:00.000Z",
+                            updatedAt: "2026-08-24T12:00:00.000Z",
+                            visibility: "private",
+                        },
+                    ],
+                }}
+            />
+        );
+
+        await user.click(screen.getByRole("tab", { name: "Notes" }));
+
+        expect(screen.getByText("Garen")).toBeInTheDocument();
+        expect(screen.getByText("The barkeep at the inn")).toBeInTheDocument();
+        expect(screen.getByText("Older clue")).toBeInTheDocument();
+        expect(
+            screen.queryByText("Use the bar below to jot a note.")
+        ).not.toBeInTheDocument();
     });
 
     it("uses inverted tab surfaces and a background-colored tab panel", () => {

@@ -454,6 +454,13 @@
       "skills": "Perícias e habilidades",
       "notes": "Nota rápida"
     },
+    "notes": {
+      "saveNote": "Salvar nota",
+      "placeholder": "Escreva uma nota",
+      "bodyLabel": "Nota",
+      "remaining": "{count}/{max}",
+      "empty": "Use a barra abaixo para anotar."
+    },
     "roll": {
       "selectDie": "Selecione o dado desejado",
       "pickResult": "Selecione o resultado (d{sides})",

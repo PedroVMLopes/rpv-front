@@ -109,13 +109,13 @@ Recursos de classe reutilizam a lógica de [`DerivedResourcesDisplay`](../apps/w
 | **Visão geral** | Gameplay — o que o personagem sabe e pode (fora da economia de ataque) | Retrato, atributos + testes, passivas, perícias (proficientes por padrão), fatos mecânicos (antecedente, tamanho, sentidos, dado de vida), proficiências (armas, armaduras, ferramentas, idiomas), características | [`OverviewTab`](../apps/web/components/characters/PlayerSheet/tabs/OverviewTab.tsx), [`AbilitiesSection`](../apps/web/components/characters/PlayerSheet/overview/AbilitiesSection.tsx), [`SkillsCard`](../apps/web/components/characters/PlayerSheet/overview/SkillsCard.tsx) |
 | **Combate** | Economia de ação | Ataques, ações/bônus/reações, magias, CD/ataque de magia, recursos de classe, defesa e resistências — agrupados por **tipo de ação**, não por origem (classe vs item) | [`CombatTab`](../apps/web/components/characters/PlayerSheet/tabs/CombatTab.tsx), [`CastingStatsPanel`](../apps/web/components/characters/PlayerSheet/combat/CastingStatsPanel.tsx), [`ClassResourcesPanel`](../apps/web/components/characters/PlayerSheet/combat/ClassResourcesPanel.tsx), [`DefenseSavesPanel`](../apps/web/components/characters/PlayerSheet/combat/DefenseSavesPanel.tsx) |
 | **Mochila** | Posse e equipamento | Equipado + bag + moeda | [`CharacterCardInventory`](../apps/web/components/characters/CharacterCard/CharacterCardInventory.tsx) |
-| **Anotações** | Persona (roleplay) + diário | Presença (idade, porte, voz, marcas, vestimenta de `systemData`), disposição (eixos 1–20 em `systemData.disposition`; omitido = `—`), personalidade D&D (traços, ideais, vínculos, falhas, objetivos de `systemData`); bloco Notas “em breve” | [`NotesTab`](../apps/web/components/characters/PlayerSheet/tabs/NotesTab.tsx), [`PersonaSection`](../apps/web/components/characters/PlayerSheet/notes/PersonaSection.tsx) |
+| **Anotações** | Persona (roleplay) + recados de sessão | Presença, disposição, personalidade D&D; lista só-leitura das notas do personagem (`StoredCharacter.notes`, mais recente primeiro; primeira linha como título visual) | [`NotesTab`](../apps/web/components/characters/PlayerSheet/tabs/NotesTab.tsx), [`PersonaSection`](../apps/web/components/characters/PlayerSheet/notes/PersonaSection.tsx), [`CharacterNotesList`](../apps/web/components/characters/PlayerSheet/notes/CharacterNotesList.tsx) |
 
 #### Decisões de UX
 
 - **Visão geral** não lista as 18 perícias por padrão — apenas as **proficientes**. Toggle "todas" já está na ficha. Saves completos ficam na aba Ações. Personalidade, idade aparente e prosa de antecedente saíram da Overview (Persona na aba Anotações).
 - **Combate** é adaptativo: seção Magia oculta se o personagem não tiver spell grants.
-- **Anotações:** Persona no topo (presença, disposição, campos D&D). Personalidade, idade, porte, voz, marcas e vestimenta vêm de `systemData`; eixos de disposição gravados (1–20) mostram slider somente leitura, omitidos mostram `—`. Rótulos vazios mostram `—`. Bloco Notas reservado (“em breve”).
+- **Anotações:** Persona no topo (presença, disposição, campos D&D). Personalidade, idade, porte, voz, marcas e vestimenta vêm de `systemData`; eixos de disposição gravados (1–20) mostram slider somente leitura, omitidos mostram `—`. Rótulos vazios mostram `—`. Notas de sessão: criar só pela action bar (`Quick note`); a aba lista os recados do personagem. Um campo `body` (até 1200 caracteres); a primeira linha é título visual (estilo Notas do iPhone). Save vazio fecha sem gravar. Sem editar/apagar neste passo. `visibility: "private"` no recorde, sem UI de share.
 
 ### 3.3 Responsividade
 
@@ -274,7 +274,7 @@ stateDiagram-v2
 | Armas equipadas | `selections.inventory.equipped` + `getItem` | Bloco de ataque/dano em `ItemEntry` |
 | Recursos de classe | `stored.resources` + `parseDerivedResources` | UI `+`/`-` na ficha |
 | Objetivos | `systemData.goals` | — |
-| Anotações | — | Modelo TBD |
+| Anotações | `StoredCharacter.notes` (`CharacterNote[]`) | Share, edit/delete, pin — futuros |
 
 Helpers relevantes:
 
@@ -282,6 +282,7 @@ Helpers relevantes:
 - [`apps/web/lib/character/savingThrowModifiers.ts`](../apps/web/lib/character/savingThrowModifiers.ts)
 - [`apps/web/lib/character/derivedStats.ts`](../apps/web/lib/character/derivedStats.ts)
 - [`apps/web/lib/character/deriveResourcesFromForm.ts`](../apps/web/lib/character/deriveResourcesFromForm.ts)
+- [`apps/web/lib/character/notes.ts`](../apps/web/lib/character/notes.ts)
 
 ---
 
@@ -309,7 +310,7 @@ Helpers relevantes:
 ### Fase 4 — Polish — Residual
 
 - Header colapsável em mobile
-- Aba Anotações (quando modelo de dados for definido)
+- Aba Anotações: criar na action bar + lista só-leitura — Feito
 - Condições temporárias no header (Bless, etc.) — extensão futura
 - **Level-up:** CTA na overview (`AbilitiesSection`) abre `/edit/{id}?mode=level-up&from={N}` — wizard delta (`resolveLevelUpSteps`) com progressão do nível N+1, subclass se desbloquear, e passo Confirmar (HP + recursos).
 
@@ -322,7 +323,7 @@ Helpers relevantes:
 - Alvos concretos (AC de inimigo, saves de NPC, comparação automática hit/miss).
 - Sincronização multiplayer ou persistência de rolagens no backend.
 - Regras de mesa (house rules) além do que os grants declarativos já expressam.
-- Definição do modelo de dados da aba Anotações (adiado).
+- Editar/apagar notas, pin, arquivo, cor, tags, ou compartilhar notas com a mesa.
 
 ---
 
@@ -348,5 +349,5 @@ Helpers relevantes:
 | Alvos (AC, etc.) | Fora do escopo MVP |
 | Vantagem/desvantagem | Incluído no MVP do container (Tipo D) |
 | Edição na sessão | HP + recursos de classe (`+`/`-`) |
-| Anotações | Persona placeholder + Notas em breve; modelo TBD |
+| Anotações | Persona + notas de sessão no personagem; criar na action bar; aba só lista |
 | Responsividade | Mobile, tablet e desktop documentados; sem dispositivo único prioritário |

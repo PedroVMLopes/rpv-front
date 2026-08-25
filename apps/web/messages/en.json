@@ -454,6 +454,13 @@
       "skills": "Skills and abilities",
       "notes": "Quick note"
     },
+    "notes": {
+      "saveNote": "Save note",
+      "placeholder": "Write a note",
+      "bodyLabel": "Note",
+      "remaining": "{count}/{max}",
+      "empty": "Use the bar below to jot a note."
+    },
     "roll": {
       "selectDie": "Select the die you want to roll",
       "pickResult": "Select the result (d{sides})",

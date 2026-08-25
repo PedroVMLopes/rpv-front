@@ -63,6 +63,7 @@ describe("characterAdapter system-agnostic mapping", () => {
         expect(stored).not.toHaveProperty("hp");
         expect(stored).not.toHaveProperty("characterClass");
         expect(stored.schemaVersion).toBe(1);
+        expect(stored.notes).toEqual([]);
     });
 
     it("round-trips stored character back to form shape", () => {
@@ -514,5 +515,46 @@ describe("characterAdapter system-agnostic mapping", () => {
         expect(stored.systemData).not.toHaveProperty("inventory");
         expect(stored.systemData).not.toHaveProperty("startingItem");
         expect(stored.selections.inventory.bag).toHaveLength(1);
+    });
+
+    it("sanitizes persisted notes on normalize", () => {
+        const stored = normalizeStoredCharacter({
+            id: "notes-hero",
+            schemaVersion: 1,
+            type: "player",
+            system: "dnd",
+            language: "en",
+            name: "Hero",
+            baseStats: {},
+            modifiers: [],
+            grants: [],
+            resources: { hp: 8 },
+            systemData: { level: 1 },
+            selections: {
+                characterClass: "fighter",
+                choices: {},
+                inventory: emptyInventory(),
+            },
+            notes: [
+                {
+                    id: "keep",
+                    body: "  Garen  ",
+                    createdAt: "2026-08-24T12:00:00.000Z",
+                    updatedAt: "2026-08-24T12:00:00.000Z",
+                    visibility: "private",
+                },
+                { id: "drop", body: "   ", createdAt: "2026-08-24T12:00:00.000Z" },
+            ],
+        });
+
+        expect(stored.notes).toEqual([
+            {
+                id: "keep",
+                body: "Garen",
+                createdAt: "2026-08-24T12:00:00.000Z",
+                updatedAt: "2026-08-24T12:00:00.000Z",
+                visibility: "private",
+            },
+        ]);
     });
 });
