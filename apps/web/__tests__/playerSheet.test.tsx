@@ -917,9 +917,9 @@ describe("PlayerSheet", () => {
         const picker = within(dialog).getByRole("radiogroup", {
             name: "Note color",
         });
-        expect(within(picker).getAllByRole("radio")).toHaveLength(7);
+        expect(within(picker).getAllByRole("radio")).toHaveLength(6);
 
-        await user.click(within(picker).getByRole("radio", { name: "Yellow" }));
+        await user.click(within(picker).getByRole("radio", { name: "Color 1" }));
         await user.clear(within(dialog).getByRole("textbox", { name: "Note" }));
         await user.click(
             within(dialog).getByRole("button", { name: "Save note" })
@@ -945,7 +945,7 @@ describe("PlayerSheet", () => {
 
         await user.click(within(dialog).getByRole("button", { name: "Edit" }));
         await user.click(
-            within(dialog).getByRole("radio", { name: "Yellow" })
+            within(dialog).getByRole("radio", { name: "Color 1" })
         );
         await user.click(
             within(dialog).getByRole("button", { name: "Save note" })
@@ -956,7 +956,7 @@ describe("PlayerSheet", () => {
                 .getState()
                 .characters[0]
                 .notes?.find((note) => note.id === "garen")?.color
-        ).toBe("yellow");
+        ).toBe("chart-1");
     });
 
     it("uses inverted tab surfaces and a background-colored tab panel", () => {

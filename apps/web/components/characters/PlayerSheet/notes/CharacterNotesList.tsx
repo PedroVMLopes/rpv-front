@@ -53,11 +53,18 @@ export function CharacterNotesList({ stored }: CharacterNotesListProps) {
                             <li
                                 key={note.id}
                                 className={cn(
-                                    "flex flex-col rounded-xl px-3 py-2 border-custom border-background",
-                                    noteSurfaceClass(note.color, "card")
+                                    "flex h-full flex-col rounded-xl px-3 py-2 border-custom border-background",
+                                    noteSurfaceClass(note.color)
                                 )}
                             >
-                                <div className="flex items-start justify-end">
+                                <div className="flex items-start justify-between gap-2">
+                                    {stamped ? (
+                                        <p className="min-w-0 text-xs text-muted-foreground">
+                                            {stamped}
+                                        </p>
+                                    ) : (
+                                        <span />
+                                    )}
                                     <Button
                                         type="button"
                                         variant="ghost"
@@ -70,19 +77,16 @@ export function CharacterNotesList({ stored }: CharacterNotesListProps) {
                                         <Maximize2 aria-hidden />
                                     </Button>
                                 </div>
-                                <p className="whitespace-pre-wrap wrap-break-word text-lg font-semibold leading-7">
+                                <p className="shrink-0 whitespace-pre-wrap wrap-break-word text-lg font-semibold leading-7">
                                     {title}
                                 </p>
                                 {rest.length > 0 ? (
-                                    <p className="line-clamp-3 whitespace-pre-wrap wrap-break-word text-sm leading-6">
+                                    <p className="min-h-0 flex-1 line-clamp-3 whitespace-pre-wrap wrap-break-word text-sm leading-6">
                                         {rest}
                                     </p>
-                                ) : null}
-                                {stamped ? (
-                                    <p className="mt-auto pt-2 text-xs text-muted-foreground">
-                                        {stamped}
-                                    </p>
-                                ) : null}
+                                ) : (
+                                    <div className="min-h-0 flex-1" />
+                                )}
                             </li>
                         );
                     })}

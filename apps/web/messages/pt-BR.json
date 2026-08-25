@@ -466,12 +466,11 @@
       "delete": "Excluir",
       "colorPicker": "Cor da nota",
       "colorDefault": "Padrão",
-      "colorYellow": "Amarelo",
-      "colorOrange": "Laranja",
-      "colorRed": "Vermelho",
-      "colorGreen": "Verde",
-      "colorBlue": "Azul",
-      "colorPurple": "Roxo"
+      "colorChart1": "Cor 1",
+      "colorChart2": "Cor 2",
+      "colorChart3": "Cor 3",
+      "colorChart4": "Cor 4",
+      "colorChart5": "Cor 5"
     },
     "roll": {
       "selectDie": "Selecione o dado desejado",

@@ -30,12 +30,11 @@ export const STORED_CHARACTER_SCHEMA_VERSION = 1;
 export type NoteVisibility = "private";
 
 export const NOTE_COLORS = [
-    "yellow",
-    "orange",
-    "red",
-    "green",
-    "blue",
-    "purple",
+    "chart-1",
+    "chart-2",
+    "chart-3",
+    "chart-4",
+    "chart-5",
 ] as const;
 
 export type NoteColor = (typeof NOTE_COLORS)[number];
@@ -46,7 +45,7 @@ export type CharacterNote = {
     createdAt: string;
     updatedAt: string;
     visibility: NoteVisibility;
-    /** Keep-like pastel. Omitted means the default surface. */
+    /** Theme chart token. Omitted means the default card surface. */
     color?: NoteColor;
 };
 

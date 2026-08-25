@@ -466,12 +466,11 @@
       "delete": "Delete",
       "colorPicker": "Note color",
       "colorDefault": "Default",
-      "colorYellow": "Yellow",
-      "colorOrange": "Orange",
-      "colorRed": "Red",
-      "colorGreen": "Green",
-      "colorBlue": "Blue",
-      "colorPurple": "Purple"
+      "colorChart1": "Color 1",
+      "colorChart2": "Color 2",
+      "colorChart3": "Color 3",
+      "colorChart4": "Color 4",
+      "colorChart5": "Color 5"
     },
     "roll": {
       "selectDie": "Select the die you want to roll",

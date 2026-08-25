@@ -120,11 +120,11 @@ describe("useCharacterStore notes", () => {
         act(() => {
             useCharacterStore
                 .getState()
-                .updateNote(character.id, created.id, created.body, "blue");
+                .updateNote(character.id, created.id, created.body, "chart-2");
         });
 
         const colored = useCharacterStore.getState().characters[0].notes![0];
-        expect(colored.color).toBe("blue");
+        expect(colored.color).toBe("chart-2");
 
         const withColor = useCharacterStore.getState().characters[0];
 
@@ -136,7 +136,7 @@ describe("useCharacterStore notes", () => {
         });
 
         expect(useCharacterStore.getState().characters[0].notes?.[0].color).toBe(
-            "blue"
+            "chart-2"
         );
 
         act(() => {

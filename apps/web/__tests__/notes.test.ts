@@ -66,11 +66,11 @@ describe("character notes helpers", () => {
         expect(Number.isNaN(Date.parse(updated?.updatedAt ?? ""))).toBe(false);
         expect(updated?.color).toBeUndefined();
 
-        const colored = updateCharacterNote(created, "Garen", "yellow");
+        const colored = updateCharacterNote(created, "Garen", "chart-1");
         expect(colored).toMatchObject({
             id: created.id,
             body: "Garen",
-            color: "yellow",
+            color: "chart-1",
         });
 
         const cleared = updateCharacterNote(colored!, "Garen", "default");
@@ -88,7 +88,7 @@ describe("character notes helpers", () => {
                     createdAt: "2026-08-24T12:00:00.000Z",
                     updatedAt: "2026-08-24T12:00:00.000Z",
                     visibility: "nope",
-                    color: "yellow",
+                    color: "chart-1",
                 },
                 {
                     id: "invalid-color",
@@ -108,7 +108,7 @@ describe("character notes helpers", () => {
                 createdAt: "2026-08-24T12:00:00.000Z",
                 updatedAt: "2026-08-24T12:00:00.000Z",
                 visibility: "private",
-                color: "yellow",
+                color: "chart-1",
             },
             {
                 id: "invalid-color",

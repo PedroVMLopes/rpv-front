@@ -38,12 +38,11 @@ type NoteDetailModalProps = {
 
 const COLOR_LABEL_KEYS = {
     default: "colorDefault",
-    yellow: "colorYellow",
-    orange: "colorOrange",
-    red: "colorRed",
-    green: "colorGreen",
-    blue: "colorBlue",
-    purple: "colorPurple",
+    "chart-1": "colorChart1",
+    "chart-2": "colorChart2",
+    "chart-3": "colorChart3",
+    "chart-4": "colorChart4",
+    "chart-5": "colorChart5",
 } as const;
 
 export function NoteDetailModal({
@@ -101,7 +100,7 @@ export function NoteDetailModal({
                 showCloseButton={false}
                 className={cn(
                     "flex max-h-[85vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-lg",
-                    noteSurfaceClass(surfaceColor, "modal")
+                    noteSurfaceClass(surfaceColor)
                 )}
             >
                 <Button
@@ -131,17 +130,17 @@ export function NoteDetailModal({
                         />
                     ) : (
                         <div className="flex flex-col gap-2">
+                            {stamped ? (
+                                <p className="text-xs text-muted-foreground">
+                                    {stamped}
+                                </p>
+                            ) : null}
                             <p className="whitespace-pre-wrap wrap-break-word text-lg font-semibold leading-7">
                                 {title}
                             </p>
                             {rest.length > 0 ? (
                                 <p className="whitespace-pre-wrap wrap-break-word text-sm leading-6">
                                     {rest}
-                                </p>
-                            ) : null}
-                            {stamped ? (
-                                <p className="text-xs text-muted-foreground">
-                                    {stamped}
                                 </p>
                             ) : null}
                         </div>

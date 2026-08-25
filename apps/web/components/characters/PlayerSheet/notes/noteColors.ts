@@ -8,33 +8,29 @@ export const NOTE_COLOR_CHOICES: readonly NoteColorChoice[] = [
 ];
 
 const NOTE_SWATCH_FILL: Record<NoteColor, string> = {
-    yellow: "bg-amber-200",
-    orange: "bg-orange-200",
-    red: "bg-red-200",
-    green: "bg-lime-200",
-    blue: "bg-sky-200",
-    purple: "bg-violet-200",
+    "chart-1": "bg-chart-1",
+    "chart-2": "bg-chart-2",
+    "chart-3": "bg-chart-3",
+    "chart-4": "bg-chart-4",
+    "chart-5": "bg-chart-5",
 };
 
 export function noteSwatchClass(choice: NoteColorChoice): string {
     if (choice === "default") {
-        return "bg-transparent border border-foreground/40";
+        return "bg-popover border border-popover-border";
     }
 
     return NOTE_SWATCH_FILL[choice];
 }
 
 export function noteSurfaceClass(
-    color: NoteColor | NoteColorChoice | undefined,
-    surface: "card" | "modal"
+    color: NoteColor | NoteColorChoice | undefined
 ): string {
     const choice: NoteColorChoice =
         color === undefined || color === "default" ? "default" : color;
 
     if (choice === "default") {
-        return surface === "card"
-            ? "bg-popover text-popover-foreground"
-            : "bg-card text-card-foreground";
+        return "bg-popover text-popover-foreground";
     }
 
     return cn(NOTE_SWATCH_FILL[choice], "text-popover-foreground");
