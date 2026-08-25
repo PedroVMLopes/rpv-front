@@ -32,7 +32,7 @@ import {
     unequipItemFromMultiSlot as unequipItemFromMultiSlotInventory,
 } from "@/lib/character/inventory";
 import { getResourceMax } from "@/lib/character/presetStats";
-import { createCharacterNote } from "@/lib/character/notes";
+import { createCharacterNote, updateCharacterNote } from "@/lib/character/notes";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useContentLocale } from "@/store/useContentLocale";
 
@@ -71,6 +71,8 @@ interface CharacterStore {
     ) => void;
     updateResource: (id: string, resourceName: string, delta: number) => void;
     addNote: (id: string, body: string) => void;
+    updateNote: (id: string, noteId: string, body: string) => void;
+    deleteNote: (id: string, noteId: string) => void;
     getResolvedStats: (id: string) => Stats | undefined;
     getCharacterProps: (id: string) => CharacterProps | undefined;
     getFormDefaults: (id: string) => Record<string, unknown> | undefined;
@@ -327,6 +329,41 @@ export const useCharacterStore = create<CharacterStore>()(
                         return {
                             ...char,
                             notes: [note, ...(char.notes ?? [])],
+                        };
+                    }),
+                })),
+
+            updateNote: (id, noteId, body) =>
+                set((state) => ({
+                    characters: state.characters.map((char) => {
+                        if (char.id !== id) return char;
+
+                        const notes = char.notes ?? [];
+                        const current = notes.find((note) => note.id === noteId);
+                        if (!current) return char;
+
+                        const next = updateCharacterNote(current, body);
+                        if (!next) return char;
+
+                        return {
+                            ...char,
+                            notes: notes.map((note) =>
+                                note.id === noteId ? next : note
+                            ),
+                        };
+                    }),
+                })),
+
+            deleteNote: (id, noteId) =>
+                set((state) => ({
+                    characters: state.characters.map((char) => {
+                        if (char.id !== id) return char;
+
+                        return {
+                            ...char,
+                            notes: (char.notes ?? []).filter(
+                                (note) => note.id !== noteId
+                            ),
                         };
                     }),
                 })),

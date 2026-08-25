@@ -76,4 +76,57 @@ describe("useCharacterStore notes", () => {
         const rebuilt = useCharacterStore.getState().characters[0];
         expect(rebuilt.notes).toEqual(withNote.notes);
     });
+
+    it("updates a note body and ignores blank edits", () => {
+        const character = addBaseCharacter();
+
+        act(() => {
+            useCharacterStore.getState().addNote(character.id, "Garen");
+        });
+
+        const created = useCharacterStore.getState().characters[0].notes![0];
+
+        act(() => {
+            useCharacterStore
+                .getState()
+                .updateNote(character.id, created.id, "   ");
+        });
+
+        expect(useCharacterStore.getState().characters[0].notes?.[0].body).toBe(
+            "Garen"
+        );
+
+        act(() => {
+            useCharacterStore
+                .getState()
+                .updateNote(character.id, created.id, "Garen the barkeep");
+        });
+
+        const updated = useCharacterStore.getState().characters[0].notes![0];
+        expect(updated.body).toBe("Garen the barkeep");
+        expect(updated.id).toBe(created.id);
+        expect(updated.createdAt).toBe(created.createdAt);
+    });
+
+    it("deletes a note by id", () => {
+        const character = addBaseCharacter();
+
+        act(() => {
+            useCharacterStore.getState().addNote(character.id, "Keep");
+            useCharacterStore.getState().addNote(character.id, "Drop");
+        });
+
+        const drop = useCharacterStore
+            .getState()
+            .characters[0]
+            .notes!.find((note) => note.body === "Drop")!;
+
+        act(() => {
+            useCharacterStore.getState().deleteNote(character.id, drop.id);
+        });
+
+        expect(
+            useCharacterStore.getState().characters[0].notes?.map((note) => note.body)
+        ).toEqual(["Keep"]);
+    });
 });

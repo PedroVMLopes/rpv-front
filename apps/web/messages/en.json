@@ -459,7 +459,11 @@
       "placeholder": "Write a note",
       "bodyLabel": "Note",
       "remaining": "{count}/{max}",
-      "empty": "Use the bar below to jot a note."
+      "empty": "Use the bar below to jot a note.",
+      "expand": "Open note: {title}",
+      "close": "Close",
+      "edit": "Edit",
+      "delete": "Delete"
     },
     "roll": {
       "selectDie": "Select the die you want to roll",

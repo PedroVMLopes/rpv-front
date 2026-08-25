@@ -44,6 +44,22 @@ export function createCharacterNote(body: string): CharacterNote | null {
     };
 }
 
+export function updateCharacterNote(
+    note: CharacterNote,
+    body: string
+): CharacterNote | null {
+    const nextBody = clampNoteBody(body);
+    if (nextBody.length === 0) {
+        return null;
+    }
+
+    return {
+        ...note,
+        body: nextBody,
+        updatedAt: new Date().toISOString(),
+    };
+}
+
 function isIsoDateString(value: unknown): value is string {
     return typeof value === "string" && !Number.isNaN(Date.parse(value));
 }

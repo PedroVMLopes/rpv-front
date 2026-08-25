@@ -459,7 +459,11 @@
       "placeholder": "Escreva uma nota",
       "bodyLabel": "Nota",
       "remaining": "{count}/{max}",
-      "empty": "Use a barra abaixo para anotar."
+      "empty": "Use a barra abaixo para anotar.",
+      "expand": "Abrir nota: {title}",
+      "close": "Fechar",
+      "edit": "Editar",
+      "delete": "Excluir"
     },
     "roll": {
       "selectDie": "Selecione o dado desejado",

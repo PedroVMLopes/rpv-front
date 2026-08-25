@@ -8,6 +8,7 @@ import {
     NOTE_BODY_MAX_LENGTH,
     sanitizeCharacterNotes,
     splitNoteBody,
+    updateCharacterNote,
 } from "../lib/character/notes";
 
 describe("character notes helpers", () => {
@@ -48,6 +49,20 @@ describe("character notes helpers", () => {
         expect(note?.id).toEqual(expect.any(String));
         expect(note?.createdAt).toEqual(note?.updatedAt);
         expect(Number.isNaN(Date.parse(note?.createdAt ?? ""))).toBe(false);
+    });
+
+    it("updates a note body and timestamp or returns null when blank", () => {
+        const created = createCharacterNote("Garen")!;
+        expect(updateCharacterNote(created, "   ")).toBeNull();
+
+        const updated = updateCharacterNote(created, "  Garen the barkeep  ");
+        expect(updated).toMatchObject({
+            id: created.id,
+            body: "Garen the barkeep",
+            createdAt: created.createdAt,
+            visibility: "private",
+        });
+        expect(Number.isNaN(Date.parse(updated?.updatedAt ?? ""))).toBe(false);
     });
 
     it("drops invalid notes and keeps a sanitized list newest first", () => {

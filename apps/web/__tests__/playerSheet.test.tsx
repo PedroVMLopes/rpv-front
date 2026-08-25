@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import type { ReactElement } from "react";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NextIntlClientProvider } from "next-intl";
 import { PlayerSheet } from "../components/characters/PlayerSheet/PlayerSheet";
@@ -766,6 +766,113 @@ describe("PlayerSheet", () => {
         expect(
             screen.queryByText("Use the bar below to jot a note.")
         ).not.toBeInTheDocument();
+    });
+
+    it("opens a note modal to read, edit, and delete", async () => {
+        const user = userEvent.setup();
+        const withNotes: StoredCharacter = {
+            ...storedCharacter,
+            id: "char-sheet-notes-modal",
+            notes: [
+                {
+                    id: "keep",
+                    body: "Keep me",
+                    createdAt: "2026-08-01T12:00:00.000Z",
+                    updatedAt: "2026-08-01T12:00:00.000Z",
+                    visibility: "private",
+                },
+                {
+                    id: "garen",
+                    body: "Garen\nThe barkeep at the inn",
+                    createdAt: "2026-08-24T12:00:00.000Z",
+                    updatedAt: "2026-08-24T12:00:00.000Z",
+                    visibility: "private",
+                },
+            ],
+        };
+
+        function LiveSheet() {
+            const stored = useCharacterStore(
+                (state) =>
+                    state.characters.find(
+                        (character) => character.id === withNotes.id
+                    ) ?? withNotes
+            );
+            return <PlayerSheet stored={stored} />;
+        }
+
+        renderWithCharacters(<LiveSheet />, [withNotes]);
+        await user.click(screen.getByRole("tab", { name: "Notes" }));
+        await user.click(
+            screen.getByRole("button", { name: "Open note: Garen" })
+        );
+
+        const dialog = await screen.findByRole("dialog");
+        expect(within(dialog).getByText("The barkeep at the inn")).toBeInTheDocument();
+
+        await user.click(within(dialog).getByRole("button", { name: "Edit" }));
+        const field = within(dialog).getByRole("textbox", { name: "Note" });
+        await user.clear(field);
+        await user.type(field, "Updated clue");
+        await user.click(
+            within(dialog).getByRole("button", { name: "Save note" })
+        );
+
+        await waitFor(() => {
+            expect(
+                within(dialog).queryByRole("textbox", { name: "Note" })
+            ).not.toBeInTheDocument();
+        });
+        expect(within(dialog).getAllByText("Updated clue").length).toBeGreaterThan(
+            0
+        );
+        expect(
+            useCharacterStore
+                .getState()
+                .characters[0]
+                .notes?.find((note) => note.id === "garen")?.body
+        ).toBe("Updated clue");
+
+        await user.click(within(dialog).getByRole("button", { name: "Edit" }));
+        await user.clear(within(dialog).getByRole("textbox", { name: "Note" }));
+        await user.click(
+            within(dialog).getByRole("button", { name: "Save note" })
+        );
+        expect(within(dialog).getAllByText("Updated clue").length).toBeGreaterThan(
+            0
+        );
+        expect(
+            useCharacterStore
+                .getState()
+                .characters[0]
+                .notes?.find((note) => note.id === "garen")?.body
+        ).toBe("Updated clue");
+
+        await user.click(within(dialog).getByRole("button", { name: "Edit" }));
+        await user.type(
+            within(dialog).getByRole("textbox", { name: "Note" }),
+            " discarded"
+        );
+        await user.click(within(dialog).getByRole("button", { name: "Close" }));
+        expect(
+            within(dialog).queryByRole("textbox", { name: "Note" })
+        ).not.toBeInTheDocument();
+        expect(within(dialog).getAllByText("Updated clue").length).toBeGreaterThan(
+            0
+        );
+        expect(
+            useCharacterStore
+                .getState()
+                .characters[0]
+                .notes?.find((note) => note.id === "garen")?.body
+        ).toBe("Updated clue");
+
+        await user.click(within(dialog).getByRole("button", { name: "Delete" }));
+        await waitFor(() => {
+            expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+        });
+        expect(screen.queryByText("Updated clue")).not.toBeInTheDocument();
+        expect(screen.getByText("Keep me")).toBeInTheDocument();
     });
 
     it("uses inverted tab surfaces and a background-colored tab panel", () => {
