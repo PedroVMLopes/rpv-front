@@ -78,15 +78,11 @@ export function NoteDetailModal({
     const closeModal = () => onOpenChange(false);
 
     const handleSave = () => {
-        if (isBlankNoteBody(draft)) {
-            setDraft(note.body);
-            setDraftColor(savedNoteColorChoice(note.color));
-            setEditing(false);
-            return;
+        if (!isBlankNoteBody(draft)) {
+            updateNote(characterId, note.id, draft, draftColor);
         }
 
-        updateNote(characterId, note.id, draft, draftColor);
-        setEditing(false);
+        closeModal();
     };
 
     const handleDelete = () => {

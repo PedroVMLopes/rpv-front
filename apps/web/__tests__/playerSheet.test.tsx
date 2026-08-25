@@ -819,13 +819,9 @@ describe("PlayerSheet", () => {
         );
 
         await waitFor(() => {
-            expect(
-                within(dialog).queryByRole("textbox", { name: "Note" })
-            ).not.toBeInTheDocument();
+            expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
         });
-        expect(within(dialog).getAllByText("Updated clue").length).toBeGreaterThan(
-            0
-        );
+        expect(screen.getByText("Updated clue")).toBeInTheDocument();
         expect(
             useCharacterStore
                 .getState()
@@ -833,14 +829,19 @@ describe("PlayerSheet", () => {
                 .notes?.find((note) => note.id === "garen")?.body
         ).toBe("Updated clue");
 
-        await user.click(within(dialog).getByRole("button", { name: "Edit" }));
-        await user.clear(within(dialog).getByRole("textbox", { name: "Note" }));
         await user.click(
-            within(dialog).getByRole("button", { name: "Save note" })
+            screen.getByRole("button", { name: "Open note: Updated clue" })
         );
-        expect(within(dialog).getAllByText("Updated clue").length).toBeGreaterThan(
-            0
+        const afterSave = await screen.findByRole("dialog");
+        await user.click(within(afterSave).getByRole("button", { name: "Edit" }));
+        await user.clear(within(afterSave).getByRole("textbox", { name: "Note" }));
+        await user.click(
+            within(afterSave).getByRole("button", { name: "Save note" })
         );
+        await waitFor(() => {
+            expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+        });
+        expect(screen.getByText("Updated clue")).toBeInTheDocument();
         expect(
             useCharacterStore
                 .getState()
@@ -848,12 +849,18 @@ describe("PlayerSheet", () => {
                 .notes?.find((note) => note.id === "garen")?.body
         ).toBe("Updated clue");
 
-        await user.click(within(dialog).getByRole("button", { name: "Edit" }));
+        await user.click(
+            screen.getByRole("button", { name: "Open note: Updated clue" })
+        );
+        const afterEmptySave = await screen.findByRole("dialog");
+        await user.click(within(afterEmptySave).getByRole("button", { name: "Edit" }));
         await user.type(
-            within(dialog).getByRole("textbox", { name: "Note" }),
+            within(afterEmptySave).getByRole("textbox", { name: "Note" }),
             " discarded"
         );
-        await user.click(within(dialog).getByRole("button", { name: "Close" }));
+        await user.click(
+            within(afterEmptySave).getByRole("button", { name: "Close" })
+        );
         await waitFor(() => {
             expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
         });
@@ -926,9 +933,7 @@ describe("PlayerSheet", () => {
         );
 
         await waitFor(() => {
-            expect(
-                within(dialog).queryByRole("textbox", { name: "Note" })
-            ).not.toBeInTheDocument();
+            expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
         });
         expect(
             useCharacterStore
@@ -943,14 +948,21 @@ describe("PlayerSheet", () => {
                 .notes?.find((note) => note.id === "garen")?.color
         ).toBeUndefined();
 
-        await user.click(within(dialog).getByRole("button", { name: "Edit" }));
         await user.click(
-            within(dialog).getByRole("radio", { name: "Color 1" })
+            screen.getByRole("button", { name: "Open note: Garen" })
+        );
+        const reopened = await screen.findByRole("dialog");
+        await user.click(within(reopened).getByRole("button", { name: "Edit" }));
+        await user.click(
+            within(reopened).getByRole("radio", { name: "Color 1" })
         );
         await user.click(
-            within(dialog).getByRole("button", { name: "Save note" })
+            within(reopened).getByRole("button", { name: "Save note" })
         );
 
+        await waitFor(() => {
+            expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+        });
         expect(
             useCharacterStore
                 .getState()
