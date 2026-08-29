@@ -225,7 +225,8 @@ describe("CombatTab", () => {
         ).toBe(true);
     });
 
-    it("lists equipped weapons, spells, and features with roll/use actions", () => {
+    it("lists equipped weapons, spells, and features with roll/use actions", async () => {
+        const user = userEvent.setup();
         renderWithProviders(
             <CombatTabConnected characterId={storedCharacter.id} />
         );
@@ -236,9 +237,6 @@ describe("CombatTab", () => {
         expect(screen.getByText("Dash")).toBeInTheDocument();
         expect(screen.getByText("Fire Bolt")).toBeInTheDocument();
         expect(screen.getByText("Second Wind")).toBeInTheDocument();
-        expect(
-            screen.getByText(/regain hit points equal to 1d10/i)
-        ).toBeInTheDocument();
         const longswordCard = screen
             .getByRole("button", { name: "Expand Longsword" })
             .closest("li");
@@ -261,6 +259,12 @@ describe("CombatTab", () => {
         expect(
             screen.getAllByRole("button", { name: "Use" }).length
         ).toBeGreaterThanOrEqual(1);
+        await user.click(
+            screen.getByRole("button", { name: "Expand Second Wind" })
+        );
+        expect(screen.getByRole("dialog")).toHaveTextContent(
+            /regain hit points equal to 1d10/i
+        );
     });
 
     it("shows spell slot squares above defense saves", () => {

@@ -47,7 +47,11 @@ function emptyBuckets(): GrantPreviewBuckets {
 }
 
 function isPreviewableFixedGrant(grant: Grant): boolean {
-    return grant.choose === 0 && grant.grantType !== "ability_score";
+    return (
+        grant.choose === 0 &&
+        grant.grantType !== "ability_score" &&
+        grant.grantType !== "armor_class_formula"
+    );
 }
 
 function resolveFixedSpellRef(grant: Grant): string | undefined {
@@ -156,6 +160,7 @@ export function groupGrantPreviewBuckets(
             case "stat_modifier":
             case "inventory_item":
             case "currency":
+            case "armor_class_formula":
                 buckets.actionsAndResources.resources.push(ctx);
                 break;
             default:

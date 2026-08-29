@@ -1,31 +1,5 @@
 import type { Locale, StatKey } from "@rpv/domain";
 
-export interface SpellCatalogEntry {
-    slug: string;
-    /** Language this entry's text is authored in. */
-    language: Locale;
-    name: string;
-    levelInt: number;
-    level: string;
-    school: string;
-    castingTime: string;
-    range: string;
-    components: string;
-    material: string;
-    duration: string;
-    requiresConcentration: boolean;
-    canBeCastAsRitual: boolean;
-    description: string;
-    /** Curated one-line summary of the spell effect. */
-    shortDescription: string;
-    higherLevel: string;
-    spellLists: string[];
-    archetype: string;
-    page: string;
-    sourceDocument: string;
-    sourceDocumentTitle: string;
-}
-
 export type SpellTargetKind =
     | "single"
     | "multiple"
@@ -67,3 +41,33 @@ export type SpellRollProfile =
           damageType?: string;
           flatPerDie?: number;
       };
+
+export interface SpellCatalogEntry {
+    slug: string;
+    /** Language this entry's text is authored in. */
+    language: Locale;
+    name: string;
+    levelInt: number;
+    level: string;
+    school: string;
+    castingTime: string;
+    range: string;
+    components: string;
+    material: string;
+    duration: string;
+    requiresConcentration: boolean;
+    canBeCastAsRitual: boolean;
+    description: string;
+    /** Curated one-line summary of the spell effect. */
+    shortDescription: string;
+    higherLevel: string;
+    spellLists: string[];
+    archetype: string;
+    page: string;
+    sourceDocument: string;
+    sourceDocumentTitle: string;
+    /** Combat roll recipe when the spell is used from the sheet. */
+    rollProfile?: SpellRollProfile;
+    /** Target / action-cost hints for the sheet. */
+    displayMeta?: SpellDisplayMeta;
+}

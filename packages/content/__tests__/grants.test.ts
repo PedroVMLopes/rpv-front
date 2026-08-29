@@ -259,6 +259,27 @@ describe("fixedGrantsToCharacterGrants", () => {
         ).toEqual([]);
     });
 
+    it("skips armor_class_formula grants", () => {
+        const grants: Grant[] = [
+            {
+                grantType: "armor_class_formula",
+                choose: 0,
+                amount: 10,
+                options: [
+                    { optionType: "stat", ref: "dexterity" },
+                    { optionType: "stat", ref: "constitution" },
+                ],
+            },
+        ];
+
+        expect(
+            fixedGrantsToCharacterGrants(grants, {
+                type: "class",
+                id: "barbarian",
+            })
+        ).toEqual([]);
+    });
+
     it("converts fixed resource grants", () => {
         const grants: Grant[] = [
             {

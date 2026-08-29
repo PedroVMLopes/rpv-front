@@ -63,6 +63,58 @@ describe("combatModifiers", () => {
         expect(damagePreview).toBe("1d8+3 slashing");
     });
 
+    it("uses Dexterity for longbow attacks", () => {
+        const item = getItem("srd_longbow", "dnd")!;
+        const attackBonus = computeWeaponAttackBonus(
+            [martialProficiency],
+            item,
+            fighterStats,
+            "dnd",
+            { level: 1, characterClass: "fighter" }
+        );
+
+        expect(attackBonus).toBe(4);
+        expect(computeWeaponDamagePreview(item, fighterStats, "dnd")).toBe(
+            "1d8+2 piercing"
+        );
+    });
+
+    it("uses max(STR, DEX) for a finesse dagger", () => {
+        const item = getItem("srd_dagger", "dnd")!;
+        const attackBonus = computeWeaponAttackBonus(
+            [],
+            item,
+            fighterStats,
+            "dnd",
+            { level: 1, characterClass: "wizard" }
+        );
+
+        expect(attackBonus).toBe(3);
+        expect(computeWeaponDamagePreview(item, fighterStats, "dnd")).toBe(
+            "1d4+3 piercing"
+        );
+    });
+
+    it("honors a specific longsword proficiency without martial weapons", () => {
+        const item = getItem("srd_longsword", "dnd")!;
+        const elfProficiency: CharacterGrant = {
+            id: "race-high-elf-weapon_proficiency-longsword-0",
+            kind: "proficiency",
+            ref: "longsword",
+            source: { type: "race", id: "high-elf" },
+        };
+
+        expect(
+            computeWeaponAttackBonus(
+                [elfProficiency],
+                item,
+                wizardStats,
+                "dnd",
+                { level: 1, characterClass: "wizard" }
+            )
+        ).toBe(1);
+    });
+
     it("computes spell attack and save DC for wizard L1 INT 16", () => {
         const systemData = { level: 1, characterClass: "wizard" };
 

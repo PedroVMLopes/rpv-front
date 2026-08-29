@@ -1,34 +1,22 @@
 import type { CharacterGrant, StatKey, Stats } from "@rpv/domain";
 import type { ItemEntry, SpellRollProfile } from "@rpv/content";
-import { getClass } from "@rpv/content";
+import { getClass, itemMatchesWeaponProficiency } from "@rpv/content";
 import type { SystemKey } from "@/presets";
 import { formatModifier } from "./skillModifiers";
 import { readCharacterLevel } from "./skillModifiers";
 import { getSystemRules } from "./systemRules";
 
+function proficiencyRefs(grants: CharacterGrant[]): string[] {
+    return grants
+        .filter((grant) => grant.kind === "proficiency")
+        .map((grant) => grant.ref);
+}
+
 function hasWeaponProficiency(
     grants: CharacterGrant[],
-    item: Pick<ItemEntry, "weapon">
+    item: ItemEntry
 ): boolean {
-    const weapon = item.weapon;
-    if (!weapon) {
-        return false;
-    }
-
-    const proficiencyRef = weapon.isMartial
-        ? "martial-weapons"
-        : weapon.isSimple
-          ? "simple-weapons"
-          : null;
-
-    if (!proficiencyRef) {
-        return false;
-    }
-
-    return grants.some(
-        (grant) =>
-            grant.kind === "proficiency" && grant.ref === proficiencyRef
-    );
+    return itemMatchesWeaponProficiency(item, proficiencyRefs(grants));
 }
 
 function weaponHasProperty(item: Pick<ItemEntry, "weapon">, name: string): boolean {
@@ -40,9 +28,31 @@ function weaponHasProperty(item: Pick<ItemEntry, "weapon">, name: string): boole
     );
 }
 
-function weaponAttackAbility(item: Pick<ItemEntry, "weapon">): StatKey {
-    if (weaponHasProperty(item, "ranged") || weaponHasProperty(item, "finesse")) {
+function isPureRangedWeapon(item: Pick<ItemEntry, "weapon">): boolean {
+    const thrown = weaponHasProperty(item, "thrown");
+    return (
+        weaponHasProperty(item, "ammunition") ||
+        weaponHasProperty(item, "ranged") ||
+        (item.weapon?.range != null && !thrown)
+    );
+}
+
+function higherAbility(resolved: Stats, a: StatKey, b: StatKey): StatKey {
+    return (resolved[a] ?? 10) >= (resolved[b] ?? 10) ? a : b;
+}
+
+export function weaponAttackAbility(
+    item: Pick<ItemEntry, "weapon">,
+    resolved: Stats
+): StatKey {
+    const finesse = weaponHasProperty(item, "finesse");
+
+    if (isPureRangedWeapon(item) && !finesse) {
         return "dexterity";
+    }
+
+    if (finesse) {
+        return higherAbility(resolved, "strength", "dexterity");
     }
 
     return "strength";
@@ -50,7 +60,7 @@ function weaponAttackAbility(item: Pick<ItemEntry, "weapon">): StatKey {
 
 export function computeWeaponAttackBonus(
     grants: CharacterGrant[],
-    item: Pick<ItemEntry, "weapon">,
+    item: ItemEntry,
     resolved: Stats,
     system: SystemKey,
     systemData: Record<string, unknown>
@@ -61,7 +71,7 @@ export function computeWeaponAttackBonus(
 
     const rules = getSystemRules(system);
     const level = readCharacterLevel(systemData);
-    const ability = weaponAttackAbility(item);
+    const ability = weaponAttackAbility(item, resolved);
     const abilityMod = rules.abilityModifier(resolved[ability] ?? 10);
     const proficient = hasWeaponProficiency(grants, item);
 
@@ -78,7 +88,7 @@ export function computeWeaponDamagePreview(
     }
 
     const rules = getSystemRules(system);
-    const ability = weaponAttackAbility(item);
+    const ability = weaponAttackAbility(item, resolved);
     const abilityMod = rules.abilityModifier(resolved[ability] ?? 10);
     const flat =
         abilityMod === 0
@@ -100,7 +110,7 @@ export function computeWeaponDamageFlat(
     }
 
     const rules = getSystemRules(system);
-    const ability = weaponAttackAbility(item);
+    const ability = weaponAttackAbility(item, resolved);
 
     return rules.abilityModifier(resolved[ability] ?? 10);
 }

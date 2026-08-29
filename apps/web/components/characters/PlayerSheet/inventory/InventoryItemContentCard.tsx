@@ -21,7 +21,7 @@ import {
     type WeaponContentFormatters,
 } from "@/lib/content/buildWeaponContentModel";
 import type { ContentUseActionSpec } from "@/lib/content/contentDetail.types";
-import type { StoredCharacter } from "@/lib/character/storedCharacter";
+import { itemLacksArmorProficiency } from "@/lib/character/armorProficiencyWarning";
 import {
     buildWeaponAttackOnlyRollRequest,
     buildWeaponDamageRollRequest,
@@ -45,6 +45,7 @@ export function InventoryItemContentCard({
 }: InventoryItemContentCardProps) {
     const t = useTranslations("playerSheet.inventory");
     const tRoot = useTranslations();
+    const tCombat = useTranslations("playerSheet.combat");
     const tContentDetail = useTranslations("contentDetail");
     const tItems = useTranslations("items");
     const tSlots = useTranslations("equipmentSlots");
@@ -130,6 +131,12 @@ export function InventoryItemContentCard({
         stored,
     ]);
 
+    const lacksArmorProficiency = Boolean(
+        row.equipped &&
+            itemEntry &&
+            itemLacksArmorProficiency(itemEntry, stored.grants ?? [])
+    );
+
     const { summary, detail } = useMemo(() => {
         const titled = (name: string) =>
             formatInventoryItemTitle(name, displayQuantity);
@@ -161,8 +168,14 @@ export function InventoryItemContentCard({
                 ...(models.detail.sections[0]?.rows ?? []),
                 quantityRow,
             ];
+            const badges = lacksArmorProficiency
+                ? [
+                      ...models.summary.badges,
+                      { label: tCombat("armorNotProficient") },
+                  ]
+                : models.summary.badges;
             return {
-                summary: { ...models.summary, title },
+                summary: { ...models.summary, title, badges },
                 detail: {
                     ...models.detail,
                     title,
@@ -180,6 +193,9 @@ export function InventoryItemContentCard({
                 label: itemEntry.category.name,
                 variant: "muted",
             });
+        }
+        if (lacksArmorProficiency) {
+            badges.push({ label: tCombat("armorNotProficient") });
         }
 
         const models = buildItemContentModel(
@@ -207,6 +223,8 @@ export function InventoryItemContentCard({
         tSlots,
         weaponAction,
         weaponFormatters,
+        lacksArmorProficiency,
+        tCombat,
     ]);
 
     const handleUse = (useAction: ContentUseActionSpec) => {

@@ -1,7 +1,52 @@
 import type { Open5eV2Armor, Open5eV2Item, Open5eV2Weapon } from "../open5e/open5e.types";
 import type { ItemArmor, ItemEntry, ItemWeapon } from "./item.types";
 
+const RANGE_PROPERTY_NAMES = new Set(["ammunition", "thrown"]);
+
+function parseRangeDetail(
+    detail: string | null
+): { range: number; longRange: number | null } | undefined {
+    if (!detail) {
+        return undefined;
+    }
+
+    const pair = detail.match(/(\d+)\s*\/\s*(\d+)/);
+    if (pair) {
+        return {
+            range: Number(pair[1]),
+            longRange: Number(pair[2]),
+        };
+    }
+
+    const single = detail.match(/(\d+)/);
+    if (!single) {
+        return undefined;
+    }
+
+    return { range: Number(single[1]), longRange: null };
+}
+
+function rangeFromProperties(
+    properties: Open5eV2Weapon["properties"] | undefined
+): { range: number; longRange: number | null } | undefined {
+    for (const assignment of properties ?? []) {
+        const name = assignment.property.name.trim().toLowerCase();
+        if (!RANGE_PROPERTY_NAMES.has(name)) {
+            continue;
+        }
+
+        const parsed = parseRangeDetail(assignment.detail);
+        if (parsed) {
+            return parsed;
+        }
+    }
+
+    return undefined;
+}
+
 function mapWeapon(weapon: Open5eV2Weapon): ItemWeapon {
+    const fromProperties = rangeFromProperties(weapon.properties);
+
     return {
         key: weapon.key,
         name: weapon.name,
@@ -20,8 +65,8 @@ function mapWeapon(weapon: Open5eV2Weapon): ItemWeapon {
         isMartial: weapon.is_martial,
         isImprovised: weapon.is_improvised,
         distanceUnit: weapon.distance_unit ?? null,
-        range: weapon.range ?? null,
-        longRange: weapon.long_range ?? null,
+        range: weapon.range ?? fromProperties?.range ?? null,
+        longRange: weapon.long_range ?? fromProperties?.longRange ?? null,
     };
 }
 

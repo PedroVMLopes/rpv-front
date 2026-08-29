@@ -1,6 +1,7 @@
 import { emptyInventory } from "@rpv/domain";
 import {
     listKnownLeveledSpellRefs,
+    listPrepareSpellPool,
     prunePreparedSpellsToBook,
 } from "../lib/character/knownLeveledSpells";
 import { sanitizeGrantPicks } from "../lib/character/grantPickSanitize";
@@ -16,6 +17,22 @@ function wizardSelections(
         inventory: emptyInventory(),
         choices: {
             grantPicks,
+            ...(preparedSpells !== undefined ? { preparedSpells } : {}),
+        },
+    };
+}
+
+function clericSelections(
+    preparedSpells?: string[],
+    subclass = "cleric-life"
+): CharacterSelections {
+    return {
+        race: "human",
+        characterClass: "cleric",
+        subclass,
+        inventory: emptyInventory(),
+        choices: {
+            grantPicks: {},
             ...(preparedSpells !== undefined ? { preparedSpells } : {}),
         },
     };
@@ -48,6 +65,43 @@ describe("listKnownLeveledSpellRefs", () => {
         });
 
         expect(refs).toEqual([]);
+    });
+});
+
+describe("listPrepareSpellPool", () => {
+    it("uses the cleric class list plus domain spells at L1", () => {
+        const refs = listPrepareSpellPool({
+            selections: clericSelections(),
+            locale: "en",
+            system: "dnd",
+            characterLevel: 1,
+        });
+
+        expect(refs).toEqual(
+            expect.arrayContaining([
+                "bless",
+                "cure-wounds",
+                "detect-magic",
+                "guiding-bolt",
+            ])
+        );
+        expect(refs).not.toContain("hold-person");
+        expect(refs).not.toContain("sacred-flame");
+        expect(refs).not.toContain("fire-bolt");
+    });
+
+    it("still uses known grants for wizard spellbook", () => {
+        const refs = listPrepareSpellPool({
+            selections: wizardSelections({
+                "class:wizard:1:spell:1:0": "fire-bolt",
+                "class:wizard:1:spell:2:0": "burning-hands",
+            }),
+            locale: "en",
+            system: "dnd",
+            characterLevel: 1,
+        });
+
+        expect(refs).toEqual(["burning-hands"]);
     });
 });
 
@@ -126,5 +180,16 @@ describe("sanitizeGrantPicks preparedSpells prune", () => {
         );
 
         expect(result.choices.preparedSpells).toEqual(["burning-hands"]);
+    });
+
+    it("keeps cleric prepared slugs that are on the class list", () => {
+        const result = sanitizeGrantPicks(
+            clericSelections(["guiding-bolt", "fire-bolt"]),
+            "en",
+            "dnd",
+            1
+        );
+
+        expect(result.choices.preparedSpells).toEqual(["guiding-bolt"]);
     });
 });

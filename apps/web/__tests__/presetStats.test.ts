@@ -126,9 +126,26 @@ describe("getResourceMax", () => {
         systemData: {},
     };
 
-    it("returns resolved hitPoints for hp and undefined for unknown resources", () => {
+    it("returns resolved hitPoints for hp and derived maxima for class resources", () => {
         expect(getResourceMax(stored, "hp")).toBe(22);
         expect(getResourceMax(stored, "ki-points")).toBeUndefined();
+        expect(
+            getResourceMax(
+                {
+                    ...stored,
+                    grants: [
+                        {
+                            id: "class-monk-ki",
+                            kind: "resource",
+                            ref: "ki-points",
+                            amount: 5,
+                            source: { type: "class", id: "monk" },
+                        },
+                    ],
+                },
+                "ki-points"
+            )
+        ).toBe(5);
     });
 
     it("uses resolved hitPoints including modifiers, not the base value", () => {

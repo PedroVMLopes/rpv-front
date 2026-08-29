@@ -8,6 +8,7 @@ import {
     formatModifier,
     readCharacterLevel,
 } from "@/lib/character/skillModifiers";
+import { listEquippedArmorProficiencyWarnings } from "@/lib/character/armorProficiencyWarning";
 import { getSystemRules } from "@/lib/character/systemRules";
 import { buildSavingThrowRollRequest } from "@/lib/roll/buildRollRequest";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
@@ -52,8 +53,25 @@ export function DefenseSavesPanel({ stored }: DefenseSavesPanelProps) {
         }));
     }, [resolved, stored.grants, stored.system, stored.systemData]);
 
+    const armorWarnings = useMemo(
+        () =>
+            listEquippedArmorProficiencyWarnings(
+                stored.selections.inventory,
+                stored.grants ?? [],
+                stored.system
+            ),
+        [stored.grants, stored.selections.inventory, stored.system]
+    );
+
     return (
         <OverviewPanel title={t("combat.defenseSaves")}>
+            {armorWarnings.length > 0 ? (
+                <p className="px-1 text-xs font-medium text-amber-700 dark:text-amber-400">
+                    {t("combat.armorNotProficientBanner")}
+                    {": "}
+                    {armorWarnings.map((item) => item.name).join(", ")}
+                </p>
+            ) : null}
             <div className={cn("overflow-x-auto rounded-xl", sheetInset)}>
                 <table className="w-full text-sm">
                     <thead>

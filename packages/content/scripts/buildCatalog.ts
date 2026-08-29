@@ -11,6 +11,7 @@ import { dndLanguages } from "../src/catalog/languages.seed";
 import { dndSkills } from "../src/catalog/skills.seed";
 import type { Open5eRace, Open5eSpell, Open5eV2Item } from "../src/open5e/open5e.types";
 import { getSpellShortDescription } from "../src/curation/spellShortDescriptions.dnd";
+import { withSpellOverlays } from "../src/curation/spellOverlayMerge";
 import { mapOpen5eRace } from "../src/race/race.mapper";
 import { mapOpen5eSpell } from "../src/spell/spell.mapper";
 import { mapOpen5eItem } from "../src/item/item.mapper";
@@ -41,12 +42,12 @@ const catalog: Catalog = {
     spells: rawSpells
         .map((raw) => {
             const mapped = mapOpen5eSpell(raw);
-            return {
+            return withSpellOverlays({
                 ...mapped,
                 shortDescription:
                     getSpellShortDescription(mapped.slug) ??
                     mapped.shortDescription,
-            };
+            });
         })
         .sort(bySlug),
     items: rawItems.map((raw) => mapOpen5eItem(raw)).sort(bySlug),

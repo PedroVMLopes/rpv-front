@@ -6,6 +6,7 @@ describe("emptyInventory", () => {
         expect(emptyInventory()).toEqual({
             bag: [],
             equipped: {},
+            equippedMulti: {},
         });
     });
 });

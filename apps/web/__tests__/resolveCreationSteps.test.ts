@@ -246,6 +246,23 @@ describe("resolveCreationSteps", () => {
         );
     });
 
+    it("includes prepare-spells for cleric without known leveled grants", () => {
+        const graph = resolveCreationSteps({
+            formValues: {
+                race: "human",
+                characterClass: "cleric",
+                subclass: "cleric-life",
+                level: 1,
+            },
+            system: "dnd",
+            contentLocale: "en",
+        });
+
+        expect(graph.steps.some((step) => step.id === "prepare-spells")).toBe(
+            true
+        );
+    });
+
     it("omits prepare-spells for wizard when book has only cantrips", () => {
         const graph = resolveCreationSteps({
             formValues: {

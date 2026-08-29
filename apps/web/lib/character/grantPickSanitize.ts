@@ -12,7 +12,7 @@ import {
 import { sanitizeInventory } from "./inventory";
 import { mergeStartingGrants } from "./materializeInventoryGrants";
 import {
-    listKnownLeveledSpellRefs,
+    listPrepareSpellPool,
     prunePreparedSpellsToBook,
 } from "./knownLeveledSpells";
 import { prunePreparedSpellsToQuota } from "./preparedSpellQuota";
@@ -317,16 +317,27 @@ export function sanitizeGrantPicks(
         : selections;
 
     const currentPrepared = next.choices.preparedSpells;
-    const knownLeveled = listKnownLeveledSpellRefs({
+    const knownLeveled = listPrepareSpellPool({
         selections: next,
         locale,
         system,
         characterLevel,
     });
+    const fixedSpells = getFixedRefsForGrantType(
+        next,
+        locale,
+        "spell",
+        characterLevel,
+        system
+    );
     let prunedPrepared = prunePreparedSpellsToBook(
         currentPrepared,
         knownLeveled
     );
+
+    if (prunedPrepared) {
+        prunedPrepared = prunedPrepared.filter((slug) => !fixedSpells.has(slug));
+    }
 
     if (options?.preparedQuota !== undefined) {
         prunedPrepared = prunePreparedSpellsToQuota(

@@ -13,6 +13,7 @@ import {
 } from "@rpv/domain";
 import { SystemKey } from "@/presets";
 import { getSubclass } from "@rpv/content";
+import type { Grant } from "@rpv/content";
 import {
     buildBaseStatsFromForm,
     buildResourcesFromForm,
@@ -256,7 +257,8 @@ export function characterPropsToDomain(props: CharacterProps): DomainCharacter {
 export function getResolvedStatsForCharacter(
     props: Pick<CharacterProps, "baseStats" | "modifiers">,
     inventory?: CharacterInventory,
-    system?: SystemKey
+    system?: SystemKey,
+    formulaGrants: Grant[] = []
 ): Stats {
     const resolved = resolveStats(props.baseStats, props.modifiers);
     if (!inventory || !system) {
@@ -269,7 +271,8 @@ export function getResolvedStatsForCharacter(
             props.baseStats,
             props.modifiers,
             inventory,
-            system
+            system,
+            formulaGrants
         ),
     };
 }

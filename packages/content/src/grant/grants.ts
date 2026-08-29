@@ -9,7 +9,11 @@ import type { Grant, GrantOption, SelectionFilter } from "./grant.types";
 const GRANT_TYPE_TO_KIND: Record<
     Exclude<
         Grant["grantType"],
-        "ability_score" | "stat_modifier" | "inventory_item" | "currency"
+        | "ability_score"
+        | "stat_modifier"
+        | "inventory_item"
+        | "currency"
+        | "armor_class_formula"
     >,
     CharacterGrant["kind"]
 > = {
@@ -29,7 +33,8 @@ function grantKindFromType(grantType: Grant["grantType"]): CharacterGrant["kind"
         grantType === "ability_score" ||
         grantType === "stat_modifier" ||
         grantType === "inventory_item" ||
-        grantType === "currency"
+        grantType === "currency" ||
+        grantType === "armor_class_formula"
     ) {
         return null;
     }

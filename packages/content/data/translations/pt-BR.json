@@ -325,6 +325,9 @@
     },
     "monk": {
       "name": "Monge"
+    },
+    "cleric": {
+      "name": "Clérigo"
     }
   },
   "subclasses": {
@@ -339,6 +342,9 @@
     },
     "monk-open-hand": {
       "name": "Mão Aberta"
+    },
+    "cleric-life": {
+      "name": "Vida"
     }
   },
   "items": {

@@ -16,8 +16,9 @@ flowchart TD
   readLevel --> sanitize[sanitizeSelections]
   sanitize --> collect[collectGrantSources]
   collect --> derive[deriveCharacterGrants]
-  derive --> resources[deriveResourceTotals]
-  resources --> stored[StoredCharacter]
+  derive --> maxima[deriveResourceTotals]
+  maxima --> mergeRes[mergeSessionResources]
+  mergeRes --> stored[StoredCharacter]
 ```
 
 1. **Form** — player create/edit pages collect race, class, subclass, level, grant picks.
@@ -25,7 +26,10 @@ flowchart TD
 3. **`sanitizeSelections`** — clears invalid subclass (wrong class or below `subclassLevel`), then prunes stale `grantPicks`.
 4. **`collectGrantSources`** — gathers `Grant[]` blocks from race, subrace, class, subclass (when unlocked), background, **equipped item slugs** (`selections.inventory.equipped`).
 5. **`deriveCharacterGrants`** — resolves grants + `grantPicks` into domain `CharacterGrant[]`.
-6. **`deriveResourceTotals`** — sums `kind: "resource"` grants by `ref` into `stored.resources` (HP stays form-driven).
+6. **`deriveResourceTotals`** — sums `kind: "resource"` grants by `ref` into **maxima**.
+7. **`mergeSessionResources`** — writes `stored.resources` as **current** values: for each derived ref except HP, `current = clamp(existing ?? max, 0, max)`. HP is synced separately via `syncResourceHpToResolvedMax`. Rebuild / load therefore **preserves** spent slots, rage, and ki.
+
+`getResourceMax` for class pools (ki, slots, rage) also reads `deriveResourceTotals(stored.grants)` so in-play `updateResource` clamps against the rebuilt maximum.
 
 Starting loot from class/background grants is materialized on every build via `mergeStartingGrants` (see [Starting equipment](#starting-equipment) below).
 
@@ -43,7 +47,7 @@ Starting loot from class/background grants is materialized on every build via `m
 | Race, class, subclass, background | `selections` | Slugs; normalized on load |
 | Grant pick answers | `selections.choices.grantPicks` | Keys include feature level segment (see below) |
 | Resolved abilities, spells, proficiencies | `grants[]` | Traceable via `source` |
-| Aggregated totals (spell slots, rage, ki) | `resources` | Merged with form HP; derived from grants |
+| Aggregated totals (spell slots, rage, ki) | `resources` | **Current** remaining; maxima come from grants. Rebuild preserves current (clamped). HP is form-driven + `syncResourceHpToResolvedMax`. |
 | Ability scores, AC, free text | `systemData` / `baseStats` | Preset-specific |
 
 Item definitions (Open5e catalog + RPV overlays) live in `@rpv/content`; inventory **state** lives in `selections.inventory`. Item `slug` values are Open5e keys (`srd_*`) or `rpv_*`.
@@ -115,7 +119,23 @@ Multiple grants with the same `ref` are **summed** at build time. Convention: ke
 - **`DerivedResourcesDisplay`** — spell slots + class resources on the form and character card.
 - **Labels** — `classResources.refs.{ref}` in [`apps/web/messages/*.json`](apps/web/messages/en.json); unknown refs fall back to a humanized slug.
 
-HP is form-driven via `HitPointsField`. Editable combat tracking of derived resources (rage, ki, spell slots) during play is planned via the player sheet ([`docs/FICHA_JOGADOR.md`](docs/FICHA_JOGADOR.md)).
+HP is form-driven via `HitPointsField`. During play, current uses (rage, ki, spell slots) live in `stored.resources` and survive rebuilds via `mergeSessionResources`.
+
+### Spellcasting modes
+
+`ClassEntry.spellcastingMode` plus optional `preparedQuota` (`level-plus-mod` default when `spellcastingAbility` is set; `half-level-plus-mod` for half-casters):
+
+| Mode | Prepare pool | Castable on the sheet |
+|------|----------------|------------------------|
+| `known` / omitted | — | all spell grants |
+| `spellbook` | known leveled grants | cantrips + `preparedSpells` |
+| `prepared-list` | class list up to current max slot + fixed (`choose: 0`) spells | cantrips + prepared + domain/fixed grants |
+
+Cleric is the prepared-list pilot (`spellcastingAbility: "wisdom"`, `subclassLevel: 1`, `cleric-life` domain spells).
+
+### Unarmored AC
+
+`grantType: "armor_class_formula"` (`amount` base + `options` of `{ optionType: "stat", ref }`) is **not** a `CharacterGrant`. `computeEquippedArmorClass` uses it when no body armor is worn; shields still add. Barbarian L1: `10 + DEX + CON`; monk L1: `10 + DEX + WIS`. Equipped armor without the matching `armor_proficiency` keeps the AC number and shows a warning.
 
 ---
 
@@ -161,7 +181,8 @@ When adding content, run `npm run test:packages` and `npm test -w rpv-front`.
 | Class | Resources | Subclass |
 |-------|-----------|----------|
 | Wizard | Spell slots `4/3/2/1` at L5 | `wizard-evocation` |
-| Barbarian | `rage-uses` | `barbarian-berserker` |
+| Cleric | Spell slots L1–3; `prepared-list` | `cleric-life` |
+| Barbarian | `rage-uses`; Unarmored Defense formula | `barbarian-berserker` |
 | Monk | `ki-points` | `monk-open-hand` |
 | Fighter | — (regression) | `fighter-champion` |
 
@@ -177,7 +198,7 @@ Full SRD class/background/item catalogs are future work (Supabase-backed content
 
 ## Known limitations
 
-- **Catalog spells:** pilot catalog includes cantrips plus a wizard L1 subset (8 spells); higher-level pools remain sparse until the catalog expands.
+- **Catalog spells:** pilot catalog includes wizard cantrips/leveled spells plus a small cleric list (bless, cure wounds, guiding bolt, sacred flame, plus shared entries such as light / detect magic / hold person).
 - **Multiclass, ASI/Feat:** out of scope.
 - **Variant Human** (feat vs ASI): not implemented.
 - **Legacy characters:** `normalizeStoredCharacter` coerces slugs, clears invalid subclass, backfills `schemaVersion` and `selections.inventory`, and strips legacy inventory keys from `systemData`.

@@ -15,12 +15,15 @@ describe("subclassGrants.dnd", () => {
         expect(listSubclassesForClass("unknown")).toEqual([]);
     });
 
-    it("lists barbarian and monk pilot subclasses", () => {
+    it("lists barbarian, monk, and cleric pilot subclasses", () => {
         expect(listSubclassesForClass("barbarian").map((entry) => entry.slug)).toEqual([
             "barbarian-berserker",
         ]);
         expect(listSubclassesForClass("monk").map((entry) => entry.slug)).toEqual([
             "monk-open-hand",
+        ]);
+        expect(listSubclassesForClass("cleric").map((entry) => entry.slug)).toEqual([
+            "cleric-life",
         ]);
     });
 
@@ -113,6 +116,21 @@ describe("subclassGrants.dnd", () => {
                     grantType: "ability",
                     description: "Frenzy",
                     activation: { cost: "passive" },
+                }),
+            ])
+        );
+    });
+
+    it("grants Life domain spells as fixed choose-0 spells", () => {
+        expect(getSubclassGrants("cleric-life", 1)).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    grantType: "spell",
+                    choose: 0,
+                    options: [
+                        { optionType: "spell", ref: "bless" },
+                        { optionType: "spell", ref: "cure-wounds" },
+                    ],
                 }),
             ])
         );

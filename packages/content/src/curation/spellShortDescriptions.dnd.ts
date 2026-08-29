@@ -37,6 +37,14 @@ const dndSpellShortDescriptions: Record<string, string> = {
         "reaction; +5 AC until your next turn and immune to magic missile",
     sleep:
         "5d8 HP of creatures in a 20-foot radius fall asleep, lowest HP first",
+    bless:
+        "up to three creatures add 1d4 to attack rolls and saving throws",
+    "cure-wounds":
+        "touched creature regains 1d8 + spellcasting modifier hit points",
+    "guiding-bolt":
+        "ranged spell attack; 4d6 radiant damage and the next attack against the target has advantage",
+    "sacred-flame":
+        "Dexterity save, no cover; 1d8 radiant damage on fail",
 };
 
 export function getSpellShortDescription(slug: string): string | undefined {

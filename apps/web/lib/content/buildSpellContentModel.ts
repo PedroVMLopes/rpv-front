@@ -44,7 +44,7 @@ function resolveSpellUsage(
     catalogEntry: SpellCatalogEntry | undefined,
     formatters: SpellContentFormatters
 ): string {
-    const displayMeta = getSpellDisplayMeta(spell.slug);
+    const displayMeta = getSpellDisplayMeta(spell.slug, catalogEntry);
     const usage = displayMeta?.usageOverride;
 
     if (usage) {
@@ -99,7 +99,7 @@ function resolveActionCost(
     formatters: SpellContentFormatters
 ): string {
     const displayMeta = catalogEntry
-        ? getSpellDisplayMeta(catalogEntry.slug)
+        ? getSpellDisplayMeta(catalogEntry.slug, catalogEntry)
         : undefined;
     const actionCost =
         displayMeta?.actionCost ??
@@ -112,9 +112,10 @@ function resolveActionCost(
 
 function resolveTargetLabel(
     spell: SpellAction,
+    catalogEntry: SpellCatalogEntry | undefined,
     formatters: SpellContentFormatters
 ): string | undefined {
-    const displayMeta = getSpellDisplayMeta(spell.slug);
+    const displayMeta = getSpellDisplayMeta(spell.slug, catalogEntry);
 
     if (!displayMeta) {
         return undefined;
@@ -211,7 +212,7 @@ export function buildSpellContentModel(
         catalogEntry,
         formatters
     );
-    const targetLabel = resolveTargetLabel(spell, formatters);
+    const targetLabel = resolveTargetLabel(spell, catalogEntry, formatters);
 
     const badges: ContentSummaryModel["badges"] = [];
 

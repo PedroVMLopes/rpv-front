@@ -381,7 +381,13 @@ export function sanitizeInventory(
     return reconcileEquippedWithBag(bag, equipped, equippedMulti);
 }
 
-export function equippedItemSlugs(inventory: CharacterInventory): string[] {
+export function equippedItemSlugs(
+    inventory: CharacterInventory | undefined
+): string[] {
+    if (!inventory) {
+        return [];
+    }
+
     return [...new Set(Object.values(inventory.equipped ?? {}))];
 }
 

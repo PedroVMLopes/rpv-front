@@ -58,6 +58,68 @@ describe("computeEquippedArmorClass", () => {
         };
         expect(computeEquippedArmorClass(inventory, 14, "dnd")).toBe(14);
     });
+
+    it("uses an unarmored formula when no body armor is worn", () => {
+        const formula = {
+            grantType: "armor_class_formula" as const,
+            choose: 0,
+            amount: 10,
+            options: [
+                { optionType: "stat" as const, ref: "dexterity" as const },
+                { optionType: "stat" as const, ref: "constitution" as const },
+            ],
+        };
+        const stats = {
+            strength: 16,
+            dexterity: 14,
+            constitution: 16,
+            intelligence: 8,
+            wisdom: 10,
+            charisma: 8,
+            armorClass: 10,
+            hitPoints: 14,
+        };
+
+        expect(
+            computeEquippedArmorClass(emptyInventory(), 14, "dnd", {
+                stats,
+                formulaGrants: [formula],
+            })
+        ).toBe(15);
+    });
+
+    it("ignores the unarmored formula when body armor is equipped", () => {
+        const inventory = {
+            bag: [],
+            equipped: { armor: "srd_plate-armor" },
+        };
+        const formula = {
+            grantType: "armor_class_formula" as const,
+            choose: 0,
+            amount: 10,
+            options: [
+                { optionType: "stat" as const, ref: "dexterity" as const },
+                { optionType: "stat" as const, ref: "constitution" as const },
+            ],
+        };
+        const stats = {
+            strength: 16,
+            dexterity: 14,
+            constitution: 16,
+            intelligence: 8,
+            wisdom: 10,
+            charisma: 8,
+            armorClass: 10,
+            hitPoints: 14,
+        };
+
+        expect(
+            computeEquippedArmorClass(inventory, 14, "dnd", {
+                stats,
+                formulaGrants: [formula],
+            })
+        ).toBe(18);
+    });
 });
 
 describe("itemProvidesBodyArmor", () => {

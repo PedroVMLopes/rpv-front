@@ -7,7 +7,8 @@ import type { UseFormReturn } from "react-hook-form";
 import { getSpell } from "@rpv/content";
 import type { Locale } from "@rpv/domain";
 import { buildSelectionsFromForm } from "@/lib/character/characterAdapter";
-import { listKnownLeveledSpellRefs } from "@/lib/character/knownLeveledSpells";
+import { listPrepareSpellPool } from "@/lib/character/knownLeveledSpells";
+import { getFixedRefsForGrantType } from "@/lib/character/characterGrants";
 import { readLevelFromForm } from "@/lib/character/level";
 import {
     readPreparedSpellsFromForm,
@@ -59,12 +60,25 @@ export function PreparedSpellChoiceGrid({
         const selections = buildSelectionsFromForm(formValues);
         const characterLevel = readLevelFromForm(formValues);
 
-        return listKnownLeveledSpellRefs({
+        return listPrepareSpellPool({
             selections,
             locale: contentLocale,
             system,
             characterLevel,
         });
+    }, [formValues, contentLocale, system]);
+
+    const lockedSpells = useMemo(() => {
+        const selections = buildSelectionsFromForm(formValues);
+        const characterLevel = readLevelFromForm(formValues);
+
+        return getFixedRefsForGrantType(
+            selections,
+            contentLocale,
+            "spell",
+            characterLevel,
+            system
+        );
     }, [formValues, contentLocale, system]);
 
     const spellCards = useMemo(() => {
@@ -85,7 +99,10 @@ export function PreparedSpellChoiceGrid({
         null
     );
 
-    const poolFull = preparedSpells.length >= quota;
+    const playerPrepared = preparedSpells.filter(
+        (slug) => !lockedSpells.has(slug)
+    );
+    const poolFull = playerPrepared.length >= quota;
 
     function openSpellDetail(spellRef: string) {
         const catalogEntry = getSpell(spellRef, contentLocale);
@@ -115,14 +132,16 @@ export function PreparedSpellChoiceGrid({
         <div className="flex flex-col gap-4">
             <p className="text-sm text-muted-foreground">
                 {tPrepare("count", {
-                    prepared: preparedSpells.length,
+                    prepared: playerPrepared.length,
                     quota,
                 })}
             </p>
             <div className="flex flex-col gap-3 md:grid md:grid-cols-2 md:gap-4 lg:grid-cols-3">
                 {spellCards.map((spell) => {
-                    const isSelected = preparedSet.has(spell.slug);
-                    const selectDisabled = poolFull && !isSelected;
+                    const isLocked = lockedSpells.has(spell.slug);
+                    const isSelected = isLocked || preparedSet.has(spell.slug);
+                    const selectDisabled =
+                        isLocked || (poolFull && !isSelected);
 
                     return (
                         <div

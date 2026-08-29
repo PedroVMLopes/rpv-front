@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-02T18:19:25.480Z",
+  "generatedAt": "2026-08-29T17:50:19.386Z",
   "source": "open5e",
   "defaultLocale": "en",
   "races": [
@@ -409,7 +409,45 @@
       "archetype": "",
       "page": "phb 211",
       "sourceDocument": "wotc-srd",
-      "sourceDocumentTitle": "5e Core Rules"
+      "sourceDocumentTitle": "5e Core Rules",
+      "rollProfile": {
+        "mode": "save",
+        "saveAbility": "dexterity",
+        "damageDice": "1d6",
+        "damageType": "acid"
+      },
+      "displayMeta": {
+        "targetKind": "multiple"
+      }
+    },
+    {
+      "slug": "bless",
+      "language": "en",
+      "name": "Bless",
+      "levelInt": 1,
+      "level": "1st-level",
+      "school": "Enchantment",
+      "castingTime": "1 action",
+      "range": "30 feet",
+      "components": "V, S, M",
+      "material": "A sprinkling of holy water.",
+      "duration": "Concentration, up to 1 minute",
+      "requiresConcentration": true,
+      "canBeCastAsRitual": false,
+      "description": "You bless up to three creatures of your choice within range. Whenever a target makes an attack roll or a saving throw before the spell ends, the target can roll a d4 and add the number rolled to the attack roll or saving throw.",
+      "shortDescription": "up to three creatures add 1d4 to attack rolls and saving throws",
+      "higherLevel": "When you cast this spell using a spell slot of 2nd level or higher, you can target one additional creature for each slot level above 1st.",
+      "spellLists": [
+        "cleric",
+        "paladin"
+      ],
+      "archetype": "",
+      "page": "phb 219",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules",
+      "displayMeta": {
+        "targetKind": "multiple"
+      }
     },
     {
       "slug": "burning-hands",
@@ -435,7 +473,16 @@
       "archetype": "Cleric: Light, Warlock: Fiend",
       "page": "phb 220",
       "sourceDocument": "wotc-srd",
-      "sourceDocumentTitle": "5e Core Rules"
+      "sourceDocumentTitle": "5e Core Rules",
+      "rollProfile": {
+        "mode": "save",
+        "saveAbility": "dexterity",
+        "damageDice": "3d6",
+        "damageType": "fire"
+      },
+      "displayMeta": {
+        "targetKind": "area"
+      }
     },
     {
       "slug": "counterspell",
@@ -462,7 +509,43 @@
       "archetype": "Paladin: Redemption",
       "page": "phb 228",
       "sourceDocument": "wotc-srd",
-      "sourceDocumentTitle": "5e Core Rules"
+      "sourceDocumentTitle": "5e Core Rules",
+      "displayMeta": {
+        "targetKind": "single",
+        "actionCost": "reaction"
+      }
+    },
+    {
+      "slug": "cure-wounds",
+      "language": "en",
+      "name": "Cure Wounds",
+      "levelInt": 1,
+      "level": "1st-level",
+      "school": "Evocation",
+      "castingTime": "1 action",
+      "range": "Touch",
+      "components": "V, S",
+      "material": "",
+      "duration": "Instantaneous",
+      "requiresConcentration": false,
+      "canBeCastAsRitual": false,
+      "description": "A creature you touch regains a number of hit points equal to 1d8 + your spellcasting ability modifier. This spell has no effect on undead or constructs.",
+      "shortDescription": "touched creature regains 1d8 + spellcasting modifier hit points",
+      "higherLevel": "When you cast this spell using a spell slot of 2nd level or higher, the healing increases by 1d8 for each slot level above 1st.",
+      "spellLists": [
+        "bard",
+        "cleric",
+        "druid",
+        "paladin",
+        "ranger"
+      ],
+      "archetype": "",
+      "page": "phb 230",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules",
+      "displayMeta": {
+        "targetKind": "touch"
+      }
     },
     {
       "slug": "detect-magic",
@@ -493,7 +576,10 @@
       "archetype": "",
       "page": "phb 231",
       "sourceDocument": "wotc-srd",
-      "sourceDocumentTitle": "5e Core Rules"
+      "sourceDocumentTitle": "5e Core Rules",
+      "displayMeta": {
+        "targetKind": "self"
+      }
     },
     {
       "slug": "feather-fall",
@@ -520,7 +606,10 @@
       "archetype": "",
       "page": "phb 239",
       "sourceDocument": "wotc-srd",
-      "sourceDocumentTitle": "5e Core Rules"
+      "sourceDocumentTitle": "5e Core Rules",
+      "displayMeta": {
+        "targetKind": "multiple"
+      }
     },
     {
       "slug": "fire-bolt",
@@ -546,7 +635,15 @@
       "archetype": "",
       "page": "phb 242",
       "sourceDocument": "wotc-srd",
-      "sourceDocumentTitle": "5e Core Rules"
+      "sourceDocumentTitle": "5e Core Rules",
+      "rollProfile": {
+        "mode": "attack",
+        "damageDice": "1d10",
+        "damageType": "fire"
+      },
+      "displayMeta": {
+        "targetKind": "single"
+      }
     },
     {
       "slug": "fireball",
@@ -572,7 +669,16 @@
       "archetype": "Cleric: Light, Warlock: Fiend",
       "page": "phb 241",
       "sourceDocument": "wotc-srd",
-      "sourceDocumentTitle": "5e Core Rules"
+      "sourceDocumentTitle": "5e Core Rules",
+      "rollProfile": {
+        "mode": "save",
+        "saveAbility": "dexterity",
+        "damageDice": "8d6",
+        "damageType": "fire"
+      },
+      "displayMeta": {
+        "targetKind": "area"
+      }
     },
     {
       "slug": "fly",
@@ -599,7 +705,43 @@
       "archetype": "",
       "page": "phb 243",
       "sourceDocument": "wotc-srd",
-      "sourceDocumentTitle": "5e Core Rules"
+      "sourceDocumentTitle": "5e Core Rules",
+      "displayMeta": {
+        "targetKind": "touch"
+      }
+    },
+    {
+      "slug": "guiding-bolt",
+      "language": "en",
+      "name": "Guiding Bolt",
+      "levelInt": 1,
+      "level": "1st-level",
+      "school": "Evocation",
+      "castingTime": "1 action",
+      "range": "120 feet",
+      "components": "V, S",
+      "material": "",
+      "duration": "1 round",
+      "requiresConcentration": false,
+      "canBeCastAsRitual": false,
+      "description": "A flash of light streaks toward a creature of your choice within range. Make a ranged spell attack against the target. On a hit, the target takes 4d6 radiant damage, and the next attack roll made against this target before the end of your next turn has advantage.",
+      "shortDescription": "ranged spell attack; 4d6 radiant damage and the next attack against the target has advantage",
+      "higherLevel": "When you cast this spell using a spell slot of 2nd level or higher, the damage increases by 1d6 for each slot level above 1st.",
+      "spellLists": [
+        "cleric"
+      ],
+      "archetype": "",
+      "page": "phb 248",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules",
+      "rollProfile": {
+        "mode": "attack",
+        "damageDice": "4d6",
+        "damageType": "radiant"
+      },
+      "displayMeta": {
+        "targetKind": "single"
+      }
     },
     {
       "slug": "hold-person",
@@ -629,7 +771,10 @@
       "archetype": "Paladin: Vengeance",
       "page": "phb 251",
       "sourceDocument": "wotc-srd",
-      "sourceDocumentTitle": "5e Core Rules"
+      "sourceDocumentTitle": "5e Core Rules",
+      "displayMeta": {
+        "targetKind": "single"
+      }
     },
     {
       "slug": "identify",
@@ -655,7 +800,11 @@
       "archetype": "Cleric: Knowledge",
       "page": "phb 252",
       "sourceDocument": "wotc-srd",
-      "sourceDocumentTitle": "5e Core Rules"
+      "sourceDocumentTitle": "5e Core Rules",
+      "displayMeta": {
+        "targetKind": "touch",
+        "actionCost": "minute"
+      }
     },
     {
       "slug": "invisibility",
@@ -684,7 +833,10 @@
       "archetype": "Druid: Grassland",
       "page": "phb 254",
       "sourceDocument": "wotc-srd",
-      "sourceDocumentTitle": "5e Core Rules"
+      "sourceDocumentTitle": "5e Core Rules",
+      "displayMeta": {
+        "targetKind": "touch"
+      }
     },
     {
       "slug": "light",
@@ -712,7 +864,10 @@
       "archetype": "",
       "page": "phb 255",
       "sourceDocument": "wotc-srd",
-      "sourceDocumentTitle": "5e Core Rules"
+      "sourceDocumentTitle": "5e Core Rules",
+      "displayMeta": {
+        "targetKind": "touch"
+      }
     },
     {
       "slug": "lightning-bolt",
@@ -739,7 +894,16 @@
       "archetype": "Druid: Mountain",
       "page": "phb 255",
       "sourceDocument": "wotc-srd",
-      "sourceDocumentTitle": "5e Core Rules"
+      "sourceDocumentTitle": "5e Core Rules",
+      "rollProfile": {
+        "mode": "save",
+        "saveAbility": "dexterity",
+        "damageDice": "8d6",
+        "damageType": "lightning"
+      },
+      "displayMeta": {
+        "targetKind": "area"
+      }
     },
     {
       "slug": "mage-armor",
@@ -765,7 +929,10 @@
       "archetype": "",
       "page": "phb 256",
       "sourceDocument": "wotc-srd",
-      "sourceDocumentTitle": "5e Core Rules"
+      "sourceDocumentTitle": "5e Core Rules",
+      "displayMeta": {
+        "targetKind": "touch"
+      }
     },
     {
       "slug": "mage-hand",
@@ -793,7 +960,10 @@
       "archetype": "",
       "page": "phb 256",
       "sourceDocument": "wotc-srd",
-      "sourceDocumentTitle": "5e Core Rules"
+      "sourceDocumentTitle": "5e Core Rules",
+      "displayMeta": {
+        "targetKind": "single"
+      }
     },
     {
       "slug": "magic-missile",
@@ -819,7 +989,16 @@
       "archetype": "",
       "page": "phb 257",
       "sourceDocument": "wotc-srd",
-      "sourceDocumentTitle": "5e Core Rules"
+      "sourceDocumentTitle": "5e Core Rules",
+      "rollProfile": {
+        "mode": "damage_only",
+        "damageDice": "3d4",
+        "damageType": "force",
+        "flatPerDie": 1
+      },
+      "displayMeta": {
+        "targetKind": "multiple"
+      }
     },
     {
       "slug": "misty-step",
@@ -847,7 +1026,45 @@
       "archetype": "Druid: Coast, Paladin: Ancients, Vengeance",
       "page": "phb 260",
       "sourceDocument": "wotc-srd",
-      "sourceDocumentTitle": "5e Core Rules"
+      "sourceDocumentTitle": "5e Core Rules",
+      "displayMeta": {
+        "targetKind": "self",
+        "actionCost": "bonus_action"
+      }
+    },
+    {
+      "slug": "sacred-flame",
+      "language": "en",
+      "name": "Sacred Flame",
+      "levelInt": 0,
+      "level": "Cantrip",
+      "school": "Evocation",
+      "castingTime": "1 action",
+      "range": "60 feet",
+      "components": "V, S",
+      "material": "",
+      "duration": "Instantaneous",
+      "requiresConcentration": false,
+      "canBeCastAsRitual": false,
+      "description": "Flame-like radiance descends on a creature that you can see within range. The target must succeed on a Dexterity saving throw or take 1d8 radiant damage. The target gains no benefit from cover for this saving throw.",
+      "shortDescription": "Dexterity save, no cover; 1d8 radiant damage on fail",
+      "higherLevel": "The spell's damage increases by 1d8 when you reach 5th level (2d8), 11th level (3d8), and 17th level (4d8).",
+      "spellLists": [
+        "cleric"
+      ],
+      "archetype": "",
+      "page": "phb 272",
+      "sourceDocument": "wotc-srd",
+      "sourceDocumentTitle": "5e Core Rules",
+      "rollProfile": {
+        "mode": "save",
+        "saveAbility": "dexterity",
+        "damageDice": "1d8",
+        "damageType": "radiant"
+      },
+      "displayMeta": {
+        "targetKind": "single"
+      }
     },
     {
       "slug": "scorching-ray",
@@ -875,7 +1092,15 @@
       "archetype": "Cleric: Light, Warlock: Fiend",
       "page": "phb 273",
       "sourceDocument": "wotc-srd",
-      "sourceDocumentTitle": "5e Core Rules"
+      "sourceDocumentTitle": "5e Core Rules",
+      "rollProfile": {
+        "mode": "attack",
+        "damageDice": "2d6",
+        "damageType": "fire"
+      },
+      "displayMeta": {
+        "targetKind": "multiple"
+      }
     },
     {
       "slug": "shield",
@@ -901,7 +1126,11 @@
       "archetype": "",
       "page": "phb 275",
       "sourceDocument": "wotc-srd",
-      "sourceDocumentTitle": "5e Core Rules"
+      "sourceDocumentTitle": "5e Core Rules",
+      "displayMeta": {
+        "targetKind": "self",
+        "actionCost": "reaction"
+      }
     },
     {
       "slug": "sleep",
@@ -928,7 +1157,14 @@
       "archetype": "Warlock: Archfey",
       "page": "phb 276",
       "sourceDocument": "wotc-srd",
-      "sourceDocumentTitle": "5e Core Rules"
+      "sourceDocumentTitle": "5e Core Rules",
+      "rollProfile": {
+        "mode": "damage_only",
+        "damageDice": "5d8"
+      },
+      "displayMeta": {
+        "targetKind": "area"
+      }
     }
   ],
   "items": [
@@ -1312,8 +1548,8 @@
         "isMartial": true,
         "isImprovised": false,
         "distanceUnit": "feet",
-        "range": null,
-        "longRange": null
+        "range": 25,
+        "longRange": 100
       },
       "armor": null,
       "weight": "1.000",
@@ -2112,8 +2348,8 @@
         "isMartial": true,
         "isImprovised": false,
         "distanceUnit": "feet",
-        "range": null,
-        "longRange": null
+        "range": 30,
+        "longRange": 120
       },
       "armor": null,
       "weight": "3.000",
@@ -2202,8 +2438,8 @@
         "isMartial": false,
         "isImprovised": false,
         "distanceUnit": "feet",
-        "range": null,
-        "longRange": null
+        "range": 80,
+        "longRange": 320
       },
       "armor": null,
       "weight": "5.000",
@@ -2287,8 +2523,8 @@
         "isMartial": false,
         "isImprovised": false,
         "distanceUnit": "feet",
-        "range": null,
-        "longRange": null
+        "range": 20,
+        "longRange": 60
       },
       "armor": null,
       "weight": "1.000",
@@ -2332,8 +2568,8 @@
         "isMartial": false,
         "isImprovised": false,
         "distanceUnit": "feet",
-        "range": null,
-        "longRange": null
+        "range": 20,
+        "longRange": 60
       },
       "armor": null,
       "weight": "0.250",
@@ -3230,8 +3466,8 @@
         "isMartial": false,
         "isImprovised": false,
         "distanceUnit": "feet",
-        "range": null,
-        "longRange": null
+        "range": 30,
+        "longRange": 120
       },
       "armor": null,
       "weight": "2.000",
@@ -3500,8 +3736,8 @@
         "isMartial": false,
         "isImprovised": false,
         "distanceUnit": "feet",
-        "range": null,
-        "longRange": null
+        "range": 20,
+        "longRange": 60
       },
       "armor": null,
       "weight": "2.000",
@@ -3579,8 +3815,8 @@
         "isMartial": true,
         "isImprovised": false,
         "distanceUnit": "feet",
-        "range": null,
-        "longRange": null
+        "range": 150,
+        "longRange": 600
       },
       "armor": null,
       "weight": "2.000",
@@ -3953,8 +4189,8 @@
         "isMartial": true,
         "isImprovised": false,
         "distanceUnit": "feet",
-        "range": null,
-        "longRange": null
+        "range": 5,
+        "longRange": 15
       },
       "armor": null,
       "weight": "3.000",
@@ -4988,8 +5224,8 @@
         "isMartial": false,
         "isImprovised": false,
         "distanceUnit": "feet",
-        "range": null,
-        "longRange": null
+        "range": 80,
+        "longRange": 320
       },
       "armor": null,
       "weight": "2.000",
@@ -5230,8 +5466,8 @@
         "isMartial": false,
         "isImprovised": false,
         "distanceUnit": "feet",
-        "range": null,
-        "longRange": null
+        "range": 80,
+        "longRange": 320
       },
       "armor": null,
       "weight": "0.000",
@@ -5326,8 +5562,8 @@
         "isMartial": false,
         "isImprovised": false,
         "distanceUnit": "feet",
-        "range": null,
-        "longRange": null
+        "range": 20,
+        "longRange": 60
       },
       "armor": null,
       "weight": "3.000",
@@ -5657,8 +5893,8 @@
         "isMartial": true,
         "isImprovised": false,
         "distanceUnit": "feet",
-        "range": null,
-        "longRange": null
+        "range": 20,
+        "longRange": 60
       },
       "armor": null,
       "weight": "4.000",

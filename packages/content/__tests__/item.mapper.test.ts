@@ -73,4 +73,16 @@ describe("mapOpen5eItem", () => {
         expect(shield.weapon).toBeNull();
         expect(shield.stackable).toBe(true);
     });
+
+    it("fills longbow range from Ammunition property detail", () => {
+        const longbow = byKey.srd_longbow;
+        expect(longbow.weapon?.range).toBe(150);
+        expect(longbow.weapon?.longRange).toBe(600);
+    });
+
+    it("fills dagger range from Thrown property detail", () => {
+        const dagger = byKey.srd_dagger;
+        expect(dagger.weapon?.range).toBe(20);
+        expect(dagger.weapon?.longRange).toBe(60);
+    });
 });

@@ -65,6 +65,26 @@ describe("useCharacterStore inventory", () => {
         ).toBe(true);
     });
 
+    it("does not restore spent spell slots when equipping an item", () => {
+        const character = addBaseCharacter();
+
+        act(() => {
+            useCharacterStore
+                .getState()
+                .updateResource(character.id, "spell-slots-1", -1);
+            useCharacterStore.getState().addToBag(character.id, "rpv_amulet-of-vitality");
+            useCharacterStore
+                .getState()
+                .equipItem(character.id, "amulet", "rpv_amulet-of-vitality");
+        });
+
+        const updated = useCharacterStore
+            .getState()
+            .characters.find((entry) => entry.id === character.id)!;
+
+        expect(updated.resources["spell-slots-1"]).toBe(1);
+    });
+
     it("does not add item HP bonus when item is only in bag", () => {
         const character = addBaseCharacter();
 

@@ -21,7 +21,8 @@ Reference implementation (web):
 2. **Separate three layers:**
    - **Definition** (`ItemEntry`) — global catalog per `system`
    - **State** (`CharacterInventory`) — per-character `selections.inventory`
-   - **Derived** (`modifiers`, `grants`, `resources`) — rebuilt on every change; never trusted from the client
+   - **Derived** (`modifiers`, `grants`, resource **maxima**) — rebuilt on every change; never trusted from the client
+   - **Session currents** (`resources` remaining uses) — preserved on rebuild (clamped to the new maxima). HP is synced to resolved max.
 3. **`schemaVersion`** lives on the `StoredCharacter` root (currently `1`). Inventory has no separate version in v1.
 4. **Only equipped slugs** feed `collectGrantSources`. Bag-only items do not alter stats or grants.
 5. **Starting loot** is materialized at **build/PUT** time from `inventory_item` grants (background v1), not via inventory PATCH alone. Granted stacks carry optional `provenance`; manual stacks omit it. Rebuild re-materializes provenance stacks and preserves manual ones.
@@ -64,7 +65,7 @@ shape. After `normalizeStoredCharacter`, `selections.inventory` is always presen
 | `selections.inventory` | `CharacterInventory` | **Required** after normalize |
 | `selections.choices` | `{ grantPicks?: Record<string, string> }` | Grant pick answers |
 | `selections.grantedCurrency` | `Record<string, number>` | Currency from class/background grants (rebuilt each save) |
-| `resources` | `Record<string, number>` | HP, spell slots, etc.; `hp` synced on rebuild |
+| `resources` | `Record<string, number>` | **Current** remaining for HP, spell slots, rage, ki, etc. Rebuild preserves current (except HP, which is synced to resolved max). |
 | `systemData` | `Record<string, unknown>` | Level, AC, manual `gold`/`silver`/`bronze`, free text |
 
 ### Forbidden in `systemData`
@@ -218,6 +219,9 @@ Equivalent to web: `rebuildCharacterWithInventory(existing, nextInventory, local
 ### Side effects on rebuild
 
 - `modifiers` and `grants` recalculated from equipped slugs + race/class/etc.
+- `resources` **current** values (spell slots, rage, ki, …) are preserved and
+  clamped to the new maxima via `mergeSessionResources`. Do not restore currents
+  from `deriveResourceTotals`.
 - `resources.hp` adjusted via `syncResourceHpToResolvedMax` (clamped down if max HP decreases, e.g. after unequip)
 
 ---

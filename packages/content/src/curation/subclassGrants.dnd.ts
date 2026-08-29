@@ -97,6 +97,30 @@ export const dndSubclasses: SubclassEntry[] = [
             },
         ],
     },
+    {
+        slug: "cleric-life",
+        name: "Life",
+        classSlug: "cleric",
+        description:
+            "A cleric who channels divine energy to heal and protect.",
+        grants: [
+            {
+                grantType: "spell",
+                choose: 0,
+                description: "Domain spells",
+                options: [
+                    { optionType: "spell", ref: "bless" },
+                    { optionType: "spell", ref: "cure-wounds" },
+                ],
+            },
+            {
+                grantType: "ability",
+                choose: 0,
+                description: "Disciple of Life",
+                activation: { cost: "passive" },
+            },
+        ],
+    },
 ];
 
 function localizeSubclass(entry: SubclassEntry, locale?: Locale): SubclassEntry {

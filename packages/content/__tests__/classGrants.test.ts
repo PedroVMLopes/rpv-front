@@ -3,6 +3,7 @@ import {
     getClassGrants,
     getClassGrantSourcesForLevel,
     getClassHitDie,
+    getClassPreparedQuotaKind,
     getClassSpellcastingMode,
     getClassSubclassLevel,
     listClasses,
@@ -66,8 +67,44 @@ describe("classGrants.dnd", () => {
 
     it("returns spellcasting mode by class slug", () => {
         expect(getClassSpellcastingMode("wizard")).toBe("spellbook");
+        expect(getClassSpellcastingMode("cleric")).toBe("prepared-list");
         expect(getClassSpellcastingMode("fighter")).toBeUndefined();
         expect(getClassSpellcastingMode("unknown")).toBeUndefined();
+    });
+
+    it("defaults prepared quota to level-plus-mod for casters", () => {
+        expect(getClassPreparedQuotaKind("wizard")).toBe("level-plus-mod");
+        expect(getClassPreparedQuotaKind("cleric")).toBe("level-plus-mod");
+        expect(getClassPreparedQuotaKind("fighter")).toBeUndefined();
+    });
+
+    it("returns cleric spellcasting metadata and L1 slots", () => {
+        expect(getClass("cleric")).toEqual(
+            expect.objectContaining({
+                slug: "cleric",
+                spellcastingAbility: "wisdom",
+                spellcastingMode: "prepared-list",
+                subclassLevel: 1,
+            })
+        );
+        expect(getClassSubclassLevel("cleric")).toBe(1);
+        expect(getClassGrants("cleric", 1)).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    grantType: "resource",
+                    ref: "spell-slots-1",
+                    amount: 2,
+                }),
+                expect.objectContaining({
+                    grantType: "spell",
+                    choose: 3,
+                    selectionFilter: {
+                        spellLists: ["cleric"],
+                        levelInt: 0,
+                    },
+                }),
+            ])
+        );
     });
 
     it("returns empty grants for unknown class", () => {
@@ -275,6 +312,14 @@ describe("barbarian progression", () => {
                     ref: "rage-uses",
                     amount: 2,
                 }),
+                expect.objectContaining({
+                    grantType: "armor_class_formula",
+                    amount: 10,
+                    options: [
+                        { optionType: "stat", ref: "dexterity" },
+                        { optionType: "stat", ref: "constitution" },
+                    ],
+                }),
             ])
         );
     });
@@ -294,6 +339,21 @@ describe("barbarian progression", () => {
 });
 
 describe("monk progression", () => {
+    it("grants Unarmored Defense formula at level 1", () => {
+        expect(getClassGrants("monk", 1)).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    grantType: "armor_class_formula",
+                    amount: 10,
+                    options: [
+                        { optionType: "stat", ref: "dexterity" },
+                        { optionType: "stat", ref: "wisdom" },
+                    ],
+                }),
+            ])
+        );
+    });
+
     it("includes Flurry of Blows as a bonus ki spend at level 2", () => {
         expect(getClassGrants("monk", 2)).toEqual(
             expect.arrayContaining([

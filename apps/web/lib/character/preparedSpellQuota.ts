@@ -1,4 +1,5 @@
-import { getClass } from "@rpv/content";
+import { getClass, getClassPreparedQuotaKind } from "@rpv/content";
+import type { PreparedQuotaKind } from "@rpv/content";
 import type { Locale, Stats, StatKey } from "@rpv/domain";
 import { resolveStats } from "@rpv/domain";
 import type { SystemKey } from "@/presets";
@@ -13,10 +14,15 @@ export function computePreparedSpellQuota(input: {
     characterLevel: number;
     abilityScore: number;
     system?: SystemKey;
+    kind?: PreparedQuotaKind;
 }): number {
     const rules = getSystemRules(input.system ?? "dnd");
     const mod = rules.abilityModifier(input.abilityScore);
-    return Math.max(1, input.characterLevel + mod);
+    const levelPart =
+        input.kind === "half-level-plus-mod"
+            ? Math.floor(input.characterLevel / 2)
+            : input.characterLevel;
+    return Math.max(1, levelPart + mod);
 }
 
 /**
@@ -60,10 +66,16 @@ export function computePreparedSpellQuotaFromForm(
         return undefined;
     }
 
+    const classSlug = buildSelectionsFromForm(formData).characterClass;
+    const kind = classSlug
+        ? getClassPreparedQuotaKind(classSlug)
+        : undefined;
+
     return computePreparedSpellQuota({
         characterLevel: readLevelFromForm(formData),
         abilityScore,
         system,
+        kind,
     });
 }
 
@@ -97,6 +109,7 @@ export function computePreparedSpellQuotaForStored(
         characterLevel,
         abilityScore,
         system: stored.system,
+        kind: getClassPreparedQuotaKind(classSlug),
     });
 }
 

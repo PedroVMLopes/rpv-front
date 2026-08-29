@@ -19,7 +19,7 @@ function resolveActionCost(
     catalogEntry: SpellCatalogEntry,
     formatters: SpellContentFormatters
 ): string {
-    const displayMeta = getSpellDisplayMeta(catalogEntry.slug);
+    const displayMeta = getSpellDisplayMeta(catalogEntry.slug, catalogEntry);
     const actionCost =
         displayMeta?.actionCost ??
         normalizeSpellActionCost(catalogEntry.castingTime);
@@ -31,7 +31,7 @@ function resolveTargetLabel(
     catalogEntry: SpellCatalogEntry,
     formatters: SpellContentFormatters
 ): string | undefined {
-    const displayMeta = getSpellDisplayMeta(catalogEntry.slug);
+    const displayMeta = getSpellDisplayMeta(catalogEntry.slug, catalogEntry);
 
     if (!displayMeta) {
         return undefined;
@@ -44,7 +44,7 @@ function resolveUsage(
     catalogEntry: SpellCatalogEntry,
     formatters: SpellContentFormatters
 ): string {
-    const displayMeta = getSpellDisplayMeta(catalogEntry.slug);
+    const displayMeta = getSpellDisplayMeta(catalogEntry.slug, catalogEntry);
     const usage = displayMeta?.usageOverride;
 
     if (usage === "at_will") {

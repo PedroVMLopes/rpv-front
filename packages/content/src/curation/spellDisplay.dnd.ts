@@ -1,6 +1,6 @@
-import type { SpellDisplayMeta } from "../spell/spell.types";
+import type { SpellCatalogEntry, SpellDisplayMeta } from "../spell/spell.types";
 
-const dndSpellDisplayMeta: Record<string, SpellDisplayMeta> = {
+export const dndSpellDisplayMeta: Record<string, SpellDisplayMeta> = {
     "acid-splash": { targetKind: "multiple" },
     "burning-hands": { targetKind: "area" },
     "detect-magic": { targetKind: "self" },
@@ -21,10 +21,17 @@ const dndSpellDisplayMeta: Record<string, SpellDisplayMeta> = {
     counterspell: { targetKind: "single", actionCost: "reaction" },
     fly: { targetKind: "touch" },
     "lightning-bolt": { targetKind: "area" },
+    bless: { targetKind: "multiple" },
+    "cure-wounds": { targetKind: "touch" },
+    "guiding-bolt": { targetKind: "single" },
+    "sacred-flame": { targetKind: "single" },
 };
 
-export function getSpellDisplayMeta(slug: string): SpellDisplayMeta | undefined {
-    return dndSpellDisplayMeta[slug];
+export function getSpellDisplayMeta(
+    slug: string,
+    catalogEntry?: SpellCatalogEntry
+): SpellDisplayMeta | undefined {
+    return catalogEntry?.displayMeta ?? dndSpellDisplayMeta[slug];
 }
 
 export function listSpellDisplayMetaSlugs(): string[] {

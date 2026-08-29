@@ -3,6 +3,7 @@ import type { SystemKey } from "@/presets";
 import {
     buildSelectionsFromForm,
     formDataToStoredCharacter,
+    normalizeStoredCharacter,
 } from "./characterAdapter";
 import { flattenStoredToForm } from "./presetStats";
 import { deriveCharacterGrants } from "./characterGrants";
@@ -12,6 +13,8 @@ import { sanitizeSelectionsWithStartingMaterialization } from "./grantPickSaniti
 import { syncResourceHpToResolvedMax } from "./hpSync";
 import { readLevelFromForm } from "./level";
 import { resolveCharacterNameForSave } from "./defaultCharacterName";
+import { deriveResourceTotals } from "./deriveResourceTotals";
+import { mergeSessionResources } from "./mergeSessionResources";
 import type { StoredCharacter } from "./storedCharacter";
 import type { CharacterSelections } from "./storedCharacter";
 import { sanitizeCharacterNotes } from "./notes";
@@ -97,8 +100,26 @@ export function buildStoredCharacter(input: BuildCharacterInput): StoredCharacte
 
     return {
         ...stored,
+        resources: mergeSessionResources(
+            deriveResourceTotals(grants),
+            existing?.resources,
+            stored.resources.hp
+        ),
         notes: sanitizeCharacterNotes(existing?.notes),
     };
+}
+
+/**
+ * Sanitize persisted JSON then rebuild grants, modifiers, and resources
+ * from selections + catalog. Used on localStorage / API load.
+ */
+export function loadStoredCharacter(char: unknown): StoredCharacter {
+    const stored = normalizeStoredCharacter(char);
+    return rebuildStoredCharacter(
+        stored,
+        flattenStoredToForm(stored, stored.system),
+        stored.language
+    );
 }
 
 export function buildNewStoredCharacter(

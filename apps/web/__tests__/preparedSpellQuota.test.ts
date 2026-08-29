@@ -36,6 +36,18 @@ describe("computePreparedSpellQuota", () => {
             })
         ).toBe(7);
     });
+
+    it("uses half-level-plus-mod when kind is set", () => {
+        // CHA 16 → +3; level 2 → floor(1) + 3 = 4
+        expect(
+            computePreparedSpellQuota({
+                characterLevel: 2,
+                abilityScore: 16,
+                system: "dnd",
+                kind: "half-level-plus-mod",
+            })
+        ).toBe(4);
+    });
 });
 
 describe("prunePreparedSpellsToQuota", () => {

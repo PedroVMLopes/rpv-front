@@ -3,6 +3,7 @@ import type { PresetStatConfig } from "@/presets/types";
 import type { CharacterProps, Stats } from "@rpv/domain";
 import { createDefaultStats, emptyInventory, resolveStats } from "@rpv/domain";
 import type { StoredCharacter } from "./storedCharacter";
+import { deriveResourceTotals } from "./deriveResourceTotals";
 
 function resolveCharacterStats(
     props: Pick<CharacterProps, "baseStats" | "modifiers">
@@ -272,14 +273,15 @@ export function getResourceMax(
 ): number | undefined {
     const config = getPresetStatConfig(stored.system);
     const resource = config.resources.find((r) => r.name === resourceName);
-    if (!resource?.maxStatKey) {
-        return undefined;
+    if (resource?.maxStatKey) {
+        const resolved = resolveCharacterStats({
+            baseStats: stored.baseStats,
+            modifiers: stored.modifiers,
+        });
+
+        return resolved[resource.maxStatKey];
     }
 
-    const resolved = resolveCharacterStats({
-        baseStats: stored.baseStats,
-        modifiers: stored.modifiers,
-    });
-
-    return resolved[resource.maxStatKey];
+    const derived = deriveResourceTotals(stored.grants ?? []);
+    return derived[resourceName];
 }

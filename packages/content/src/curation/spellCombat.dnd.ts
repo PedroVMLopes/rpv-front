@@ -1,6 +1,6 @@
-import type { SpellRollProfile } from "../spell/spell.types";
+import type { SpellCatalogEntry, SpellRollProfile } from "../spell/spell.types";
 
-const dndSpellRollProfiles: Record<string, SpellRollProfile> = {
+export const dndSpellRollProfiles: Record<string, SpellRollProfile> = {
     "fire-bolt": {
         mode: "attack",
         damageDice: "1d10",
@@ -45,10 +45,24 @@ const dndSpellRollProfiles: Record<string, SpellRollProfile> = {
         damageDice: "8d6",
         damageType: "lightning",
     },
+    "sacred-flame": {
+        mode: "save",
+        saveAbility: "dexterity",
+        damageDice: "1d8",
+        damageType: "radiant",
+    },
+    "guiding-bolt": {
+        mode: "attack",
+        damageDice: "4d6",
+        damageType: "radiant",
+    },
 };
 
-export function getSpellRollProfile(slug: string): SpellRollProfile | undefined {
-    return dndSpellRollProfiles[slug];
+export function getSpellRollProfile(
+    slug: string,
+    catalogEntry?: SpellCatalogEntry
+): SpellRollProfile | undefined {
+    return catalogEntry?.rollProfile ?? dndSpellRollProfiles[slug];
 }
 
 export function getSpellRollUseLabel(profile: SpellRollProfile): string {

@@ -1,7 +1,12 @@
-import type { CharacterInventory } from "@rpv/domain";
-import { getItem, type ItemArmor, type ItemEntry } from "@rpv/content";
+import type { CharacterInventory, Stats } from "@rpv/domain";
+import {
+    getItem,
+    type Grant,
+    type ItemArmor,
+    type ItemEntry,
+} from "@rpv/content";
 import type { SystemKey } from "@/presets";
-import { dndAbilityModifier } from "@/presets/dnd/math";
+import { getSystemRules } from "./systemRules";
 
 function isBodyArmor(armor: ItemArmor): boolean {
     return armor.category !== "shield";
@@ -47,29 +52,78 @@ function sumShieldBonuses(
     return total;
 }
 
+export function evaluateArmorClassFormula(
+    grant: Grant,
+    stats: Stats,
+    system: SystemKey
+): number {
+    const rules = getSystemRules(system);
+    const base = grant.amount ?? 10;
+    const bonus = (grant.options ?? []).reduce((sum, option) => {
+        if (option.optionType !== "stat") {
+            return sum;
+        }
+        return sum + rules.abilityModifier(stats[option.ref] ?? 10);
+    }, 0);
+
+    return base + bonus;
+}
+
+function unarmoredBodyAc(
+    dexterityScore: number,
+    system: SystemKey,
+    stats?: Stats,
+    formulaGrants?: Grant[]
+): number {
+    const rules = getSystemRules(system);
+    const formulas = (formulaGrants ?? []).filter(
+        (grant) => grant.grantType === "armor_class_formula"
+    );
+
+    if (stats && formulas.length > 0) {
+        return Math.max(
+            ...formulas.map((grant) =>
+                evaluateArmorClassFormula(grant, stats, system)
+            )
+        );
+    }
+
+    return 10 + rules.abilityModifier(dexterityScore);
+}
+
+export type EquippedArmorClassOptions = {
+    stats?: Stats;
+    formulaGrants?: Grant[];
+};
+
 /**
- * D&D-style AC from equipped Open5e armor profiles:
- * body armor formula (or 10 + Dex) + shield acBase sums.
+ * AC from equipped armor profiles, or an `armor_class_formula` grant when
+ * no body armor is worn. Shield bonuses still apply on top.
  */
 export function computeEquippedArmorClass(
     inventory: CharacterInventory,
     dexterityScore: number,
-    system: SystemKey
+    system: SystemKey,
+    options?: EquippedArmorClassOptions
 ): number {
-    const dexMod = dndAbilityModifier(dexterityScore);
     const body = resolveBodyArmor(inventory, system);
 
     const bodyAc = body
         ? body.acBase +
           (body.acAddDexmod
               ? Math.min(
-                    dexMod,
+                    getSystemRules(system).abilityModifier(dexterityScore),
                     body.acCapDexmod === null || body.acCapDexmod === undefined
                         ? Number.POSITIVE_INFINITY
                         : body.acCapDexmod
                 )
               : 0)
-        : 10 + dexMod;
+        : unarmoredBodyAc(
+              dexterityScore,
+              system,
+              options?.stats,
+              options?.formulaGrants
+          );
 
     return bodyAc + sumShieldBonuses(inventory, system);
 }

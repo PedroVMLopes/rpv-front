@@ -7,8 +7,11 @@ import { buildBaseStatsFromForm } from "./presetStats";
 import { getSystemRules } from "./systemRules";
 import { emptyInventory, resolveStats, type Modifier, type Stats } from "@rpv/domain";
 import type { Locale } from "@rpv/domain";
+import type { Grant } from "@rpv/content";
 import { computeEquippedArmorClass } from "./equippedArmorAc";
 import type { CharacterInventory } from "@rpv/domain";
+import { collectArmorClassFormulaGrants } from "./characterGrants";
+import { readLevelFromForm } from "./level";
 
 export function getAcRules(system: SystemKey): AcRules {
     return getSystemRules(system).ac;
@@ -50,10 +53,21 @@ export function deriveBaseAcFromForm(
     locale: Locale
 ): number | undefined {
     const selections = buildSelectionsFromForm(formData);
-    const dexterity = resolveDexterityFromForm(formData, system, locale);
+    const raceModifiers = deriveRaceModifiers(selections, locale);
+    const baseStats = buildBaseStatsFromForm(formData, system);
+    const resolved = resolveStats(baseStats, raceModifiers);
     const inventory = selections.inventory ?? emptyInventory();
+    const formulaGrants = collectArmorClassFormulaGrants(
+        selections,
+        locale,
+        readLevelFromForm(formData),
+        system
+    );
 
-    return computeEquippedArmorClass(inventory, dexterity, system);
+    return computeEquippedArmorClass(inventory, resolved.dexterity, system, {
+        stats: resolved,
+        formulaGrants,
+    });
 }
 
 export function isAcEmpty(value: unknown): boolean {
@@ -68,7 +82,8 @@ export function resolveArmorClassWithEquipment(
     baseStats: Stats,
     modifiers: Modifier[],
     inventory: CharacterInventory,
-    system: SystemKey
+    system: SystemKey,
+    formulaGrants: Grant[] = []
 ): number {
     const nonAcModifiers = modifiers.filter(
         (modifier) => modifier.stat !== "armorClass"
@@ -80,7 +95,11 @@ export function resolveArmorClassWithEquipment(
     const formulaAc = computeEquippedArmorClass(
         inventory,
         resolvedWithoutAcMods.dexterity,
-        system
+        system,
+        {
+            stats: resolvedWithoutAcMods,
+            formulaGrants,
+        }
     );
 
     return resolveStats(
@@ -105,7 +124,13 @@ export function resolveAcFromForm(
         baseStats,
         modifiers,
         selections.inventory ?? emptyInventory(),
-        system
+        system,
+        collectArmorClassFormulaGrants(
+            selections,
+            locale,
+            readLevelFromForm(formData),
+            system
+        )
     );
 }
 

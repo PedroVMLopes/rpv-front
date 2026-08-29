@@ -1,6 +1,8 @@
 import {
     buildNewStoredCharacter,
     buildStoredCharacter,
+    loadStoredCharacter,
+    rebuildCharacterWithInventory,
     rebuildStoredCharacter,
 } from "../lib/character/buildCharacter";
 import { formDataToStoredCharacter } from "../lib/character/characterAdapter";
@@ -953,5 +955,145 @@ describe("buildStoredCharacter", () => {
         );
 
         expect(rebuilt.notes).toEqual(notes);
+    });
+
+    it("preserves spent class resources when rebuilding", () => {
+        const created = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                characterClass: "wizard",
+                level: 1,
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        const rebuilt = rebuildStoredCharacter(
+            {
+                ...created,
+                resources: {
+                    ...created.resources,
+                    "spell-slots-1": 1,
+                },
+            },
+            {
+                ...baseFormData,
+                characterClass: "wizard",
+                level: 1,
+                hp: created.resources.hp,
+                inventory: created.selections.inventory,
+            },
+            "en"
+        );
+
+        expect(rebuilt.resources["spell-slots-1"]).toBe(1);
+        expect(rebuilt.resources.hp).toBe(created.resources.hp);
+    });
+
+    it("clamps spent resources when the derived maximum decreases", () => {
+        const created = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                characterClass: "wizard",
+                level: 3,
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        const rebuilt = rebuildStoredCharacter(
+            {
+                ...created,
+                resources: {
+                    ...created.resources,
+                    "spell-slots-2": 2,
+                },
+            },
+            {
+                ...baseFormData,
+                characterClass: "wizard",
+                level: 1,
+                hp: created.resources.hp,
+                inventory: created.selections.inventory,
+            },
+            "en"
+        );
+
+        expect(rebuilt.resources["spell-slots-1"]).toBe(2);
+        expect(rebuilt.resources["spell-slots-2"]).toBeUndefined();
+    });
+
+    it("preserves spent slots when inventory changes", () => {
+        const created = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                characterClass: "wizard",
+                level: 1,
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        const withSpent = {
+            ...created,
+            resources: {
+                ...created.resources,
+                "spell-slots-1": 0,
+            },
+        };
+
+        const rebuilt = rebuildCharacterWithInventory(
+            withSpent,
+            {
+                ...created.selections.inventory,
+                bag: [
+                    ...(created.selections.inventory.bag ?? []),
+                    { slug: "rpv_amulet-of-vitality", quantity: 1 },
+                ],
+            },
+            "en"
+        );
+
+        expect(rebuilt.resources["spell-slots-1"]).toBe(0);
+    });
+
+    it("rebuilds grants from selections when loading persisted JSON", () => {
+        const created = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                characterClass: "fighter",
+                level: 2,
+                choices: {
+                    grantPicks: fighterStartingWealthPick,
+                },
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        const loaded = loadStoredCharacter({
+            ...created,
+            grants: [],
+            modifiers: [],
+            resources: {
+                ...created.resources,
+                hp: 4,
+            },
+        });
+
+        expect(loaded.grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    kind: "ability",
+                    ref: "Action Surge",
+                    source: { type: "class", id: "fighter" },
+                }),
+            ])
+        );
+        expect(loaded.resources.hp).toBe(4);
     });
 });

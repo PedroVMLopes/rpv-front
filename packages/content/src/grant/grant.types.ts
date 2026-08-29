@@ -13,7 +13,8 @@ export type GrantType =
     | "spell"
     | "resource"
     | "inventory_item"
-    | "currency";
+    | "currency"
+    | "armor_class_formula";
 
 /**
  * Describes a pool to choose from when a grant is not fixed. Either a spell

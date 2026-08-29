@@ -567,6 +567,8 @@
       "mod": "Mod",
       "save": "Resist.",
       "proficientShort": "Prof",
+      "armorNotProficient": "Sem proficiência",
+      "armorNotProficientBanner": "Sem proficiência com a armadura equipada",
       "passiveInsight": "Intuição Passiva",
       "conditionsImmunities": "Condições e Imunidades",
       "features": "Características",

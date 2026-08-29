@@ -567,6 +567,8 @@
       "mod": "Mod",
       "save": "Save",
       "proficientShort": "Prof",
+      "armorNotProficient": "Not proficient",
+      "armorNotProficientBanner": "Not proficient with equipped armor",
       "passiveInsight": "Passive Insight",
       "conditionsImmunities": "Conditions & Immunities",
       "features": "Features",

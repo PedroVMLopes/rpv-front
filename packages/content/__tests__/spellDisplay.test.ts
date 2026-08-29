@@ -25,9 +25,13 @@ const PILOT_SPELL_SLUGS = [
     "mage-hand",
     "magic-missile",
     "misty-step",
+    "sacred-flame",
     "scorching-ray",
     "shield",
     "sleep",
+    "bless",
+    "cure-wounds",
+    "guiding-bolt",
 ];
 
 describe("spellDisplay.dnd", () => {

@@ -17,6 +17,8 @@ import {
  */
 export type SpellcastingMode = "known" | "prepared-list" | "spellbook";
 
+export type PreparedQuotaKind = "level-plus-mod" | "half-level-plus-mod";
+
 export interface ClassEntry {
     slug: string;
     name: string;
@@ -29,6 +31,11 @@ export interface ClassEntry {
     spellcastingAbility?: StatKey;
     /** How this class treats known vs prepared spells. */
     spellcastingMode?: SpellcastingMode;
+    /**
+     * How many spells the character may prepare.
+     * Defaults to `level-plus-mod` when `spellcastingAbility` is set.
+     */
+    preparedQuota?: PreparedQuotaKind;
     grants: Grant[];
     featuresByLevel?: LevelFeature[];
 }
@@ -459,6 +466,15 @@ export const dndClasses: ClassEntry[] = [
                         description: "Unarmored Defense",
                         activation: { cost: "passive" },
                     },
+                    {
+                        grantType: "armor_class_formula",
+                        choose: 0,
+                        amount: 10,
+                        options: [
+                            { optionType: "stat", ref: "dexterity" },
+                            { optionType: "stat", ref: "constitution" },
+                        ],
+                    },
                 ],
             },
             {
@@ -568,6 +584,15 @@ export const dndClasses: ClassEntry[] = [
                         choose: 0,
                         description: "Unarmored Defense",
                         activation: { cost: "passive" },
+                    },
+                    {
+                        grantType: "armor_class_formula",
+                        choose: 0,
+                        amount: 10,
+                        options: [
+                            { optionType: "stat", ref: "dexterity" },
+                            { optionType: "stat", ref: "wisdom" },
+                        ],
                     },
                     {
                         grantType: "ability",
@@ -718,6 +743,9 @@ export const dndClasses: ClassEntry[] = [
         description:
             "A priestly champion who wields divine magic in service of a higher power.",
         hitDie: 8,
+        subclassLevel: 1,
+        spellcastingAbility: "wisdom",
+        spellcastingMode: "prepared-list",
         grants: [
             {
                 grantType: "saving_throw_proficiency",
@@ -751,6 +779,56 @@ export const dndClasses: ClassEntry[] = [
                     { optionType: "skill", ref: "medicine" },
                     { optionType: "skill", ref: "persuasion" },
                     { optionType: "skill", ref: "religion" },
+                ],
+            },
+        ],
+        featuresByLevel: [
+            {
+                level: 1,
+                grants: [
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "spell-slots-1",
+                        amount: 2,
+                    },
+                    {
+                        grantType: "spell",
+                        choose: 3,
+                        description: "Choose cantrips",
+                        selectionFilter: {
+                            spellLists: ["cleric"],
+                            levelInt: 0,
+                        },
+                    },
+                ],
+            },
+            {
+                level: 2,
+                grants: [
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "spell-slots-1",
+                        amount: 1,
+                    },
+                ],
+            },
+            {
+                level: 3,
+                grants: [
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "spell-slots-1",
+                        amount: 1,
+                    },
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "spell-slots-2",
+                        amount: 2,
+                    },
                 ],
             },
         ],
@@ -811,4 +889,23 @@ export function getClassSpellcastingMode(
     slug: string
 ): SpellcastingMode | undefined {
     return resolveClass(slug)?.spellcastingMode;
+}
+
+export function getClassPreparedQuotaKind(
+    slug: string
+): PreparedQuotaKind | undefined {
+    const entry = resolveClass(slug);
+    if (!entry) {
+        return undefined;
+    }
+
+    if (entry.preparedQuota) {
+        return entry.preparedQuota;
+    }
+
+    if (entry.spellcastingAbility) {
+        return "level-plus-mod";
+    }
+
+    return undefined;
 }

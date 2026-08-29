@@ -299,7 +299,7 @@ export function listSpellActions(
         }
 
         const spell = contentRepo(system).getSpell(grant.ref, contentLocale);
-        const rollProfile = getSpellRollProfile(grant.ref);
+        const rollProfile = getSpellRollProfile(grant.ref, spell);
         const combatPreview =
             resolved && isStored
                 ? computeSpellCombatPreview(

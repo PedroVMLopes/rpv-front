@@ -130,6 +130,17 @@ export function collectGrantSources(
     return sources;
 }
 
+export function collectArmorClassFormulaGrants(
+    selections: CharacterSelections,
+    locale: Locale,
+    characterLevel = 1,
+    system: SystemKey = "dnd"
+): Grant[] {
+    return collectGrantSources(selections, locale, characterLevel, system)
+        .flatMap((entry) => entry.grants)
+        .filter((grant) => grant.grantType === "armor_class_formula");
+}
+
 export function getFixedRefsForGrantType(
     selections: CharacterSelections,
     locale: Locale,
@@ -151,7 +162,9 @@ export function getFixedRefsForGrantType(
             }
 
             for (const option of grant.options ?? []) {
-                refs.add(option.ref);
+                if ("ref" in option) {
+                    refs.add(option.ref);
+                }
             }
         }
     }

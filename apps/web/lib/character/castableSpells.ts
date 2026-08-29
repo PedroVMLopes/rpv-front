@@ -19,13 +19,25 @@ type FilterCastableSpellGrantsInput = {
     locale?: Locale;
 };
 
+function syntheticPreparedGrant(
+    slug: string,
+    characterClass: string
+): CharacterGrant {
+    return {
+        id: `prepared-${characterClass}-spell-${slug}`,
+        kind: "spell",
+        ref: slug,
+        source: { type: "class", id: characterClass },
+    };
+}
+
 /**
  * Returns spell grants that are currently castable given the class
  * spellcasting mode and prepared list.
  *
  * - `known` / absent mode: all spell grants
- * - `spellbook` / `prepared-list`: cantrips always; leveled only if prepared
- *   (respecting optional preparation quota)
+ * - `spellbook`: cantrips always; leveled only if prepared (from known grants)
+ * - `prepared-list`: cantrips + fixed (choose 0) grants + prepared class-list slugs
  */
 export function filterCastableSpellGrants(
     input: FilterCastableSpellGrantsInput
@@ -50,13 +62,41 @@ export function filterCastableSpellGrants(
     const system = input.system ?? "dnd";
     const repo = contentRepo(system);
 
-    return spellGrants.filter((grant) => {
-        const levelInt = repo.getSpell(grant.ref, input.locale)?.levelInt;
+    if (mode === "spellbook") {
+        return spellGrants.filter((grant) => {
+            const levelInt = repo.getSpell(grant.ref, input.locale)?.levelInt;
 
-        if (levelInt === 0) {
-            return true;
+            if (levelInt === 0) {
+                return true;
+            }
+
+            return prepared.has(grant.ref);
+        });
+    }
+
+    const result: CharacterGrant[] = [];
+    const seen = new Set<string>();
+
+    for (const grant of spellGrants) {
+        result.push(grant);
+        seen.add(grant.ref);
+    }
+
+    const classSlug = input.characterClass ?? "class";
+
+    for (const slug of withinQuota) {
+        if (seen.has(slug)) {
+            continue;
         }
 
-        return prepared.has(grant.ref);
-    });
+        const levelInt = repo.getSpell(slug, input.locale)?.levelInt;
+        if (typeof levelInt !== "number" || levelInt <= 0) {
+            continue;
+        }
+
+        result.push(syntheticPreparedGrant(slug, classSlug));
+        seen.add(slug);
+    }
+
+    return result;
 }

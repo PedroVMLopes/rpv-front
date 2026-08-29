@@ -3,6 +3,7 @@ export * from "./open5e/open5e.client";
 
 export * from "./spell/spell.types";
 export * from "./spell/spell.mapper";
+export * from "./spell/classSpellList";
 
 export * from "./grant/grant.types";
 export * from "./grant/levelFeature.types";
@@ -20,6 +21,8 @@ export * from "./race/race.mapper";
 
 export * from "./item/item.types";
 export * from "./item/item.mapper";
+export * from "./item/weaponProficiency";
+export * from "./item/armorProficiency";
 
 export * from "./catalog/catalog.types";
 export * from "./catalog/skills.seed";

@@ -100,4 +100,51 @@ describe("filterCastableSpellGrants", () => {
             "burning-hands",
         ]);
     });
+
+    it("includes cantrips, domain grants, and prepared class-list spells for prepared-list", () => {
+        const sacredFlame: CharacterGrant = {
+            id: "class-cleric-spell-sacred-flame",
+            kind: "spell",
+            ref: "sacred-flame",
+            source: { type: "class", id: "cleric" },
+            name: "Sacred Flame",
+        };
+        const bless: CharacterGrant = {
+            id: "subclass-cleric-life-spell-bless",
+            kind: "spell",
+            ref: "bless",
+            source: { type: "subclass", id: "cleric-life" },
+            name: "Bless",
+        };
+
+        const result = filterCastableSpellGrants({
+            grants: [sacredFlame, bless],
+            characterClass: "cleric",
+            preparedSpells: ["guiding-bolt", "detect-magic"],
+        });
+
+        expect(result.map((grant) => grant.ref)).toEqual([
+            "sacred-flame",
+            "bless",
+            "guiding-bolt",
+            "detect-magic",
+        ]);
+    });
+
+    it("does not require class-list spells to already be grants in prepared-list mode", () => {
+        const sacredFlame: CharacterGrant = {
+            id: "class-cleric-spell-sacred-flame",
+            kind: "spell",
+            ref: "sacred-flame",
+            source: { type: "class", id: "cleric" },
+        };
+
+        const result = filterCastableSpellGrants({
+            grants: [sacredFlame],
+            characterClass: "cleric",
+            preparedSpells: [],
+        });
+
+        expect(result.map((grant) => grant.ref)).toEqual(["sacred-flame"]);
+    });
 });

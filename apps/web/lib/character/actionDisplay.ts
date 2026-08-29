@@ -261,7 +261,7 @@ function buildSpellActions(
 
     return [...cantrips, ...spells].map((spell) => {
         const entry = contentRepo(stored.system).getSpell(spell.slug, locale);
-        const displayMeta = getSpellDisplayMeta(spell.slug);
+        const displayMeta = getSpellDisplayMeta(spell.slug, entry);
         const actionCost = displayActionCost(
             displayMeta?.actionCost ??
                 (entry ? normalizeSpellActionCost(entry.castingTime) : undefined)

@@ -1,4 +1,4 @@
-import { getClassSpellcastingMode } from "@rpv/content";
+import { getClass, getClassSpellcastingMode } from "@rpv/content";
 import type { Locale } from "@rpv/domain";
 import type { SystemKey } from "@/presets";
 import { buildSelectionsFromForm } from "@/lib/character/characterAdapter";
@@ -14,8 +14,9 @@ export type ShouldIncludePrepareSpellsStepInput = {
 };
 
 /**
- * True when the class uses prepared casting and the character already has
- * at least one leveled (non-cantrip) spell grant in their book / known list.
+ * True when the class uses prepared casting and the prepare pool is available.
+ * `prepared-list` needs only the mode and a spellcasting ability (no book).
+ * `spellbook` still requires at least one leveled known spell.
  */
 export function shouldIncludePrepareSpellsStep(
     input: ShouldIncludePrepareSpellsStepInput
@@ -31,6 +32,10 @@ export function shouldIncludePrepareSpellsStep(
 
     if (mode !== "spellbook" && mode !== "prepared-list") {
         return false;
+    }
+
+    if (mode === "prepared-list") {
+        return Boolean(getClass(characterClass)?.spellcastingAbility);
     }
 
     const characterLevel =

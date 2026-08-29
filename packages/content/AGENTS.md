@@ -22,15 +22,23 @@ data here.
   locale overlays. The base catalog is authored in `defaultLocale`; locale
   overlays are partial, so any missing slug/field falls back to the base text.
   Never assume a translation exists. Built via `scripts/buildCatalog.ts`
-  (`npm run build:catalog`).
+  (`npm run build:catalog`). Spell persistence is the **merged** `SpellCatalogEntry`
+  (`shortDescription` plus `rollProfile` / `displayMeta` from
+  `spellCombat.dnd.ts` / `spellDisplay.dnd.ts`). Item persistence is the Open5e
+  mapper output merged with `itemOverlays.dnd.ts` at runtime via `mergeItemCatalog`.
+  Weapon `range`/`longRange` come from Open5e fields or, when those are null,
+  from Ammunition/Thrown `properties[].detail` (e.g. `"range 150/600"`).
 - `grant/` — the **`Grant`** model: the declarative description of what a piece
   of content gives a character.
   - `grantType`: `ability_score | stat_modifier | ability | skill_proficiency |
     weapon_proficiency | tool_proficiency | armor_proficiency |
     saving_throw_proficiency | language | spell | resource | inventory_item |
-    currency`
+    currency | armor_class_formula`
   - `choose === 0` → fixed (everything applies); `choose > 0` → the player picks
     `choose` entries from `options` or from a `selectionFilter` pool.
+  - `armor_class_formula` — unarmored AC (`amount` base + `stat` options). **Not**
+    a `CharacterGrant` (same as `stat_modifier` / `inventory_item`). Consumed by
+    `computeEquippedArmorClass` when no body armor is worn.
   - Spell `selectionFilter`: `levelInt` = exact match (cantrips use `0`);
     `levelIntMax` = inclusive upper bound for leveled picks
     (`spell.levelInt` in `[1, levelIntMax]`). If both are set, `levelInt` wins.
@@ -69,12 +77,22 @@ data here.
 - `spellcastingAbility?` — governing ability for spell attack / save DC.
 - `spellcastingMode?` — how the class treats known vs castable spells:
   - `known` — spell grants are always castable
-  - `prepared-list` — prepare from the full class list
+  - `prepared-list` — prepare from the full class list up to current max slot
   - `spellbook` — learn into a book; prepare a subset to cast
   - omitted — no preparation rules (non-casters)
+- `preparedQuota?` — `level-plus-mod` (default when `spellcastingAbility` is set)
+  or `half-level-plus-mod`. Cleric uses the default; paladin would set half later.
 
 Helpers: `getClassGrants(slug, level)`, `getClassGrantSourcesForLevel`,
-`getClassSubclassLevel`, `getClassSpellcastingMode`.
+`getClassSubclassLevel`, `getClassSpellcastingMode`, `getClassPreparedQuotaKind`.
+Class-list helpers: `listClassListSpells`, `maxSpellSlotLevelFromGrants`,
+`listFixedSpellRefsFromGrants`.
+
+**Cleric pilot (L1–3):** `spellcastingAbility: "wisdom"`, `spellcastingMode:
+"prepared-list"`, `subclassLevel: 1`. Cantrips are `choose` from `spellLists:
+["cleric"]`. Life domain (`cleric-life`) grants bless and cure wounds as
+`choose: 0` spells. Keep the Unarmored Defense **ability** (text) even when an
+`armor_class_formula` grant supplies the number (barbarian / monk).
 
 ### System combat grants ([`systemGrants.dnd.ts`](src/curation/systemGrants.dnd.ts))
 
@@ -93,7 +111,7 @@ overlay uses `features.{slug}` (`name` / `description`).
 
 ### `SubclassEntry` ([`subclassGrants.dnd.ts`](src/curation/subclassGrants.dnd.ts))
 
-- Namespaced slugs: `fighter-champion`, `wizard-evocation`.
+- Namespaced slugs: `fighter-champion`, `wizard-evocation`, `cleric-life`.
 - `classSlug` must match the parent class.
 - `grants` (base) + optional `featuresByLevel` (e.g. L3 feature).
 
@@ -539,7 +557,7 @@ Persist the same JSON shapes as curation/catalog types:
 
 | Entity | Type | Notes |
 |--------|------|-------|
-| Class | `ClassEntry` | `grants`, `featuresByLevel`, `hitDie`, `subclassLevel`, `spellcastingMode` |
+| Class | `ClassEntry` | `grants`, `featuresByLevel`, `hitDie`, `subclassLevel`, `spellcastingMode`, `preparedQuota` |
 | Subclass | `SubclassEntry` | `classSlug`, `grants`, `featuresByLevel` |
 | Background | `BackgroundEntry` | `grants`, optional `flavorTables` |
 | Item | `ItemEntry` | Open5e-shaped; `grants`, weapon/armor, `stackable`, `category` |

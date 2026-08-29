@@ -11,15 +11,17 @@ import { SystemKey } from "@/presets";
 import {
     flattenStoredToForm,
     getResolvedStatsForCharacter,
-    normalizeStoredCharacter,
     storedCharacterToProps,
 } from "@/lib/character/characterAdapter";
 import {
     buildNewStoredCharacter,
+    loadStoredCharacter,
     rebuildCharacterWithInventory,
     rebuildStoredCharacter,
 } from "@/lib/character/buildCharacter";
 import { readLevelFromForm } from "@/lib/character/level";
+import { collectArmorClassFormulaGrants } from "@/lib/character/characterGrants";
+import { readCharacterLevel } from "@/lib/character/skillModifiers";
 import { resolveInventoryGrantProvenance } from "@/lib/character/materializeInventoryGrants";
 import {
     addToBag as addToBagInventory,
@@ -383,7 +385,13 @@ export const useCharacterStore = create<CharacterStore>()(
                 return getResolvedStatsForCharacter(
                     storedCharacterToProps(char),
                     char.selections.inventory ?? emptyInventory(),
-                    char.system
+                    char.system,
+                    collectArmorClassFormulaGrants(
+                        char.selections,
+                        char.language,
+                        readCharacterLevel(char.systemData),
+                        char.system
+                    )
                 );
             },
 
@@ -408,7 +416,7 @@ export const useCharacterStore = create<CharacterStore>()(
                 return {
                     ...current,
                     characters: state.characters.map((char) =>
-                        normalizeStoredCharacter(char)
+                        loadStoredCharacter(char)
                     ),
                 };
             },

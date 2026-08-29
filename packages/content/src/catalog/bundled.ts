@@ -7,6 +7,7 @@ import type { SpellCatalogEntry } from "../spell/spell.types";
 import type { Catalog, CatalogTranslations, Language } from "./catalog.types";
 import * as read from "./read";
 import { mergeItemCatalog } from "../curation/itemOverlays.dnd";
+import { withSpellOverlays } from "../curation/spellOverlayMerge";
 
 export const catalog = catalogData as unknown as Catalog;
 
@@ -64,14 +65,17 @@ export function getSubrace(
 }
 
 export function listSpells(locale: Locale = catalog.defaultLocale): SpellCatalogEntry[] {
-    return read.listSpells(catalog, locale, overlayFor(locale));
+    return read
+        .listSpells(catalog, locale, overlayFor(locale))
+        .map(withSpellOverlays);
 }
 
 export function getSpell(
     slug: string,
     locale: Locale = catalog.defaultLocale
 ): SpellCatalogEntry | undefined {
-    return read.getSpell(catalog, slug, locale, overlayFor(locale));
+    const entry = read.getSpell(catalog, slug, locale, overlayFor(locale));
+    return entry ? withSpellOverlays(entry) : undefined;
 }
 
 export function listLanguages(): Language[] {
