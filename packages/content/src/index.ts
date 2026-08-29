@@ -15,6 +15,7 @@ export * from "./grant/abilityScoreGrants";
 export * from "./grant/exclusiveGroups";
 
 export * from "./feat/feat.types";
+export * from "./condition/condition.types";
 export * from "./race/race.types";
 export * from "./race/ability";
 export * from "./race/trait.parser";
@@ -42,6 +43,7 @@ export * from "./curation/classGrants.dnd";
 export * from "./curation/subclassGrants.dnd";
 export * from "./curation/systemGrants.dnd";
 export * from "./curation/naturalWeapons.dnd";
+export * from "./curation/conditions.dnd";
 export * from "./curation/featureDescriptions.dnd";
 export * from "./curation/spellCombat.dnd";
 export * from "./curation/spellDisplay.dnd";
@@ -66,6 +68,8 @@ export {
     getLanguage,
     listFeats,
     getFeat,
+    listConditions,
+    getCondition,
 } from "./curation/contentRepoWrappers.dnd";
 
 export type { ContentRepository } from "./repository/contentRepository.types";

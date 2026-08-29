@@ -142,6 +142,7 @@ export function GrantPreviewList({
             tAbilities: (key) => tAbilities(key),
             tContentDetail: (key) => tContentDetail(key as never),
             tUse: () => tContentDetail("use"),
+            tRitual: () => tContentDetail("fields.ritual"),
             missingValue: "—",
         });
 

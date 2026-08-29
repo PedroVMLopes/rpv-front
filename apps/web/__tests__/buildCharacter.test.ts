@@ -957,6 +957,42 @@ describe("buildStoredCharacter", () => {
         expect(rebuilt.notes).toEqual(notes);
     });
 
+    it("preserves session concentration when rebuilding a character", () => {
+        const created = buildNewStoredCharacter(baseFormData, "player", "dnd", "en");
+        const session = {
+            concentratingOn: { slug: "detect-magic", slotLevel: 2 },
+        };
+
+        const rebuilt = rebuildStoredCharacter(
+            { ...created, session },
+            {
+                ...baseFormData,
+                inventory: created.selections.inventory,
+            },
+            "en"
+        );
+
+        expect(rebuilt.session).toEqual(session);
+    });
+
+    it("preserves session conditions when rebuilding a character", () => {
+        const created = buildNewStoredCharacter(baseFormData, "player", "dnd", "en");
+        const session = {
+            activeConditions: ["blessed", "poisoned"],
+        };
+
+        const rebuilt = rebuildStoredCharacter(
+            { ...created, session },
+            {
+                ...baseFormData,
+                inventory: created.selections.inventory,
+            },
+            "en"
+        );
+
+        expect(rebuilt.session).toEqual(session);
+    });
+
     it("preserves spent class resources when rebuilding", () => {
         const created = buildNewStoredCharacter(
             {

@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NextIntlClientProvider } from "next-intl";
+import { emptyInventory } from "@rpv/domain";
 import { PlayerSheetActionBar } from "../components/characters/PlayerSheet/PlayerSheetActionBar";
 import {
     RollAssistantProvider,
@@ -15,6 +16,7 @@ import type {
     D20TestRequest,
     DamageOnlyRequest,
 } from "../lib/roll/rollRequest.types";
+import { useCharacterStore } from "../store/useCharacterStore";
 import enMessages from "../messages/en.json";
 
 const toastMock = jest.fn();
@@ -198,6 +200,7 @@ describe("DiceRollAssistant", () => {
                     label: "Athletics",
                     die: 20,
                     modifier: 5,
+                    appliesTo: "ability_check",
                 }}
             />
         );
@@ -226,6 +229,7 @@ describe("DiceRollAssistant", () => {
                     label: "Athletics",
                     die: 20,
                     modifier: 5,
+                    appliesTo: "ability_check",
                 }}
             />
         );
@@ -314,5 +318,143 @@ describe("DiceRollAssistant", () => {
         await user.click(screen.getByRole("button", { name: "6" }));
 
         expect(toastMock).toHaveBeenCalledWith("Burning Hands: 12 damage");
+    });
+
+    it("lets the player toggle disadvantage and pick the lower d20", async () => {
+        const user = userEvent.setup();
+
+        renderAssistant(
+            <ContextRollTrigger
+                request={{
+                    kind: "d20_test",
+                    id: "skill:athletics",
+                    label: "Athletics",
+                    die: 20,
+                    modifier: 5,
+                    appliesTo: "ability_check",
+                }}
+            />
+        );
+
+        await user.click(screen.getByRole("button", { name: "Open contextual roll" }));
+        await user.click(screen.getByRole("button", { name: "Disadvantage" }));
+        await user.click(screen.getByRole("button", { name: "14" }));
+        await user.click(screen.getByRole("button", { name: "3" }));
+
+        expect(toastMock).toHaveBeenCalledWith("Athletics: 8");
+    });
+
+    it("adds a bless d4 after a save when the character is blessed", async () => {
+        const user = userEvent.setup();
+        useCharacterStore.setState({
+            characters: [
+                {
+                    id: "blessed-roller",
+                    schemaVersion: 1,
+                    type: "player",
+                    system: "dnd",
+                    language: "en",
+                    name: "Blessed",
+                    baseStats: {
+                        strength: 10,
+                        dexterity: 10,
+                        constitution: 10,
+                        intelligence: 10,
+                        wisdom: 10,
+                        charisma: 10,
+                        armorClass: 10,
+                        hitPoints: 8,
+                    },
+                    modifiers: [],
+                    grants: [],
+                    selections: { inventory: emptyInventory(), choices: {} },
+                    resources: { hp: 8 },
+                    systemData: {},
+                    session: { activeConditions: ["blessed"] },
+                },
+            ],
+        });
+
+        render(
+            <NextIntlClientProvider locale="en" messages={enMessages}>
+                <RollAssistantProvider characterId="blessed-roller">
+                    <ContextRollTrigger
+                        request={{
+                            kind: "d20_test",
+                            id: "save:wisdom",
+                            label: "Wisdom",
+                            die: 20,
+                            modifier: 2,
+                            appliesTo: "save",
+                        }}
+                    />
+                    <PlayerSheetActionBar />
+                </RollAssistantProvider>
+            </NextIntlClientProvider>
+        );
+
+        await user.click(screen.getByRole("button", { name: "Open contextual roll" }));
+        await user.click(screen.getByRole("button", { name: "14" }));
+
+        expect(toastMock).not.toHaveBeenCalled();
+        expect(screen.getByText("Wisdom — extra d4")).toBeInTheDocument();
+
+        await user.click(screen.getByRole("button", { name: "3" }));
+        expect(toastMock).toHaveBeenCalledWith("Wisdom: 19");
+    });
+
+    it("preselects disadvantage on ability checks when poisoned", async () => {
+        const user = userEvent.setup();
+        useCharacterStore.setState({
+            characters: [
+                {
+                    id: "poisoned-roller",
+                    schemaVersion: 1,
+                    type: "player",
+                    system: "dnd",
+                    language: "en",
+                    name: "Poisoned",
+                    baseStats: {
+                        strength: 10,
+                        dexterity: 10,
+                        constitution: 10,
+                        intelligence: 10,
+                        wisdom: 10,
+                        charisma: 10,
+                        armorClass: 10,
+                        hitPoints: 8,
+                    },
+                    modifiers: [],
+                    grants: [],
+                    selections: { inventory: emptyInventory(), choices: {} },
+                    resources: { hp: 8 },
+                    systemData: {},
+                    session: { activeConditions: ["poisoned"] },
+                },
+            ],
+        });
+
+        render(
+            <NextIntlClientProvider locale="en" messages={enMessages}>
+                <RollAssistantProvider characterId="poisoned-roller">
+                    <ContextRollTrigger
+                        request={{
+                            kind: "d20_test",
+                            id: "skill:athletics",
+                            label: "Athletics",
+                            die: 20,
+                            modifier: 5,
+                            appliesTo: "ability_check",
+                        }}
+                    />
+                    <PlayerSheetActionBar />
+                </RollAssistantProvider>
+            </NextIntlClientProvider>
+        );
+
+        await user.click(screen.getByRole("button", { name: "Open contextual roll" }));
+        expect(
+            screen.getByRole("button", { name: "Disadvantage" })
+        ).toHaveAttribute("aria-pressed", "true");
     });
 });

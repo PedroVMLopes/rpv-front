@@ -124,6 +124,7 @@ describe("buildWeaponAttackOnlyRollRequest", () => {
             label: "Longsword",
             die: 20,
             modifier: 5,
+            appliesTo: "attack",
         });
     });
 
@@ -197,6 +198,7 @@ describe("buildWeaponDamageRollRequest", () => {
             label: "Unarmed Strike",
             die: 20,
             modifier: 5,
+            appliesTo: "attack",
         });
 
         const damage = buildWeaponDamageRollRequest(unarmed);

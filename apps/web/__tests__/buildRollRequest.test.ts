@@ -14,6 +14,7 @@ describe("buildRollRequest", () => {
                 ability: "strength",
                 modifier: 5,
                 proficient: true,
+                proficiencyScale: 1,
             },
             "Athletics"
         );
@@ -24,6 +25,7 @@ describe("buildRollRequest", () => {
             label: "Athletics",
             die: 20,
             modifier: 5,
+            appliesTo: "ability_check",
         });
     });
 
@@ -43,6 +45,7 @@ describe("buildRollRequest", () => {
             label: "Strength",
             die: 20,
             modifier: 4,
+            appliesTo: "save",
         });
     });
 
@@ -59,6 +62,7 @@ describe("buildRollRequest", () => {
             label: "Strength",
             die: 20,
             modifier: 3,
+            appliesTo: "ability_check",
         });
     });
 });
@@ -73,6 +77,7 @@ describe("resolveD20TestTotal", () => {
                     label: "Athletics",
                     die: 20,
                     modifier: 5,
+                    appliesTo: "ability_check",
                 },
                 14
             )

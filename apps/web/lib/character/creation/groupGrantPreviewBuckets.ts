@@ -137,6 +137,7 @@ export function groupGrantPreviewBuckets(
                 buckets.proficiencies.armor.push(ctx);
                 break;
             case "skill_proficiency":
+            case "skill_expertise":
             case "saving_throw_proficiency":
                 buckets.proficiencies.skills.push(ctx);
                 break;

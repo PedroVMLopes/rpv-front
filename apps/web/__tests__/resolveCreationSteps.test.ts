@@ -115,6 +115,30 @@ describe("resolveCreationSteps", () => {
         expect(graph.steps.some((step) => step.id === "subclass")).toBe(false);
     });
 
+    it("places rogue expertise after skill choices at L1", () => {
+        const graph = resolveCreationSteps({
+            formValues: {
+                race: "human",
+                characterClass: "rogue",
+                level: 1,
+            },
+            system: "dnd",
+            contentLocale: "en",
+        });
+
+        const ids = graph.steps.map((step) => step.id);
+        const choicesIndex = ids.indexOf("class-level-1-choices");
+        const expertiseIndex = ids.indexOf("class-level-1-expertise");
+
+        expect(choicesIndex).toBeGreaterThan(-1);
+        expect(expertiseIndex).toBeGreaterThan(choicesIndex);
+        expect(graph.getStep("class-level-1-expertise")?.sourceFilter).toEqual(
+            expect.objectContaining({
+                grantTypes: ["skill_expertise"],
+            })
+        );
+    });
+
     it("caps interactive class level steps at 3 when character level is 5", () => {
         const graph = resolveCreationSteps({
             formValues: {

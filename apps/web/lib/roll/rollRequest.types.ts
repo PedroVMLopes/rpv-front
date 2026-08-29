@@ -1,5 +1,6 @@
 import type { StatKey } from "@rpv/domain";
 import type { DieSides } from "./diceRoll";
+import type { RollEffectAppliesTo } from "@rpv/content";
 
 export type RollModifierPart = {
     label: string;
@@ -13,6 +14,7 @@ export type D20TestRequest = {
     die: 20;
     modifier: number;
     breakdown?: RollModifierPart[];
+    appliesTo: RollEffectAppliesTo;
 };
 
 export type DamageStep = {

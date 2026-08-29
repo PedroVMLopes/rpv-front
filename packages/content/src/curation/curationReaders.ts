@@ -4,6 +4,8 @@ import { dndBackgrounds, type BackgroundEntry } from "./backgroundGrants.dnd";
 import { dndClasses, type ClassEntry } from "./classGrants.dnd";
 import type { ItemEntry } from "../item/item.types";
 import { dndSubclasses, type SubclassEntry } from "./subclassGrants.dnd";
+import { dndConditions } from "./conditions.dnd";
+import type { ConditionEntry } from "../condition/condition.types";
 import * as bundled from "../catalog/bundled";
 
 function localizeClass(entry: ClassEntry, locale?: Locale): ClassEntry {
@@ -19,6 +21,13 @@ function localizeBackground(
 
 function localizeSubclass(entry: SubclassEntry, locale?: Locale): SubclassEntry {
     return localizeCurationEntry(entry, "subclasses", locale);
+}
+
+function localizeCondition(
+    entry: ConditionEntry,
+    locale?: Locale
+): ConditionEntry {
+    return localizeCurationEntry(entry, "conditions", locale);
 }
 
 export function readClass(slug: string, locale?: Locale): ClassEntry | undefined {
@@ -71,4 +80,19 @@ export function readListSubclassesForClass(
     return dndSubclasses
         .filter((entry) => entry.classSlug === classSlug)
         .map((entry) => localizeSubclass(entry, locale));
+}
+
+export function readCondition(
+    slug: string,
+    locale?: Locale
+): ConditionEntry | undefined {
+    const entry = dndConditions.find((item) => item.slug === slug);
+    if (!entry) {
+        return undefined;
+    }
+    return localizeCondition(entry, locale);
+}
+
+export function readListConditions(locale?: Locale): ConditionEntry[] {
+    return dndConditions.map((entry) => localizeCondition(entry, locale));
 }

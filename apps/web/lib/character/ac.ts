@@ -5,7 +5,13 @@ import { deriveRaceModifiers } from "./raceModifiers";
 import { deriveStatModifiers } from "./characterGrants";
 import { buildBaseStatsFromForm } from "./presetStats";
 import { getSystemRules } from "./systemRules";
-import { emptyInventory, resolveStats, type Modifier, type Stats } from "@rpv/domain";
+import {
+    emptyInventory,
+    resolveStats,
+    type Modifier,
+    type ResolveContext,
+    type Stats,
+} from "@rpv/domain";
 import type { Locale } from "@rpv/domain";
 import type { Grant } from "@rpv/content";
 import { computeEquippedArmorClass } from "./equippedArmorAc";
@@ -83,7 +89,8 @@ export function resolveArmorClassWithEquipment(
     modifiers: Modifier[],
     inventory: CharacterInventory,
     system: SystemKey,
-    formulaGrants: Grant[] = []
+    formulaGrants: Grant[] = [],
+    context: ResolveContext = {}
 ): number {
     const nonAcModifiers = modifiers.filter(
         (modifier) => modifier.stat !== "armorClass"
@@ -91,7 +98,11 @@ export function resolveArmorClassWithEquipment(
     const acModifiers = modifiers.filter(
         (modifier) => modifier.stat === "armorClass"
     );
-    const resolvedWithoutAcMods = resolveStats(baseStats, nonAcModifiers);
+    const resolvedWithoutAcMods = resolveStats(
+        baseStats,
+        nonAcModifiers,
+        context
+    );
     const formulaAc = computeEquippedArmorClass(
         inventory,
         resolvedWithoutAcMods.dexterity,
@@ -104,7 +115,8 @@ export function resolveArmorClassWithEquipment(
 
     return resolveStats(
         { ...resolvedWithoutAcMods, armorClass: formulaAc },
-        acModifiers
+        acModifiers,
+        context
     ).armorClass;
 }
 

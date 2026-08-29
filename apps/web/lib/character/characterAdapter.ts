@@ -10,6 +10,7 @@ import {
     emptyInventory,
     isLocale,
     resolveStats,
+    type ResolveContext,
 } from "@rpv/domain";
 import { SystemKey } from "@/presets";
 import { getSubclass } from "@rpv/content";
@@ -28,6 +29,7 @@ import { resolveArmorClassWithEquipment } from "./ac";
 import type { StoredCharacter, CharacterSelections, CharacterChoices } from "./storedCharacter";
 import { STORED_CHARACTER_SCHEMA_VERSION } from "./storedCharacter";
 import { sanitizeCharacterNotes } from "./notes";
+import { sanitizeCharacterSession } from "./session";
 import type { CharacterInventory } from "@rpv/domain";
 
 function coerceString(value: unknown, fallback: string): string {
@@ -130,6 +132,7 @@ function finalizeStoredCharacter(
         selections: normalizedSelections,
         systemData: stripLegacyInventoryFormKeys(stored.systemData ?? {}),
         notes: sanitizeCharacterNotes(stored.notes),
+        session: sanitizeCharacterSession(stored.session),
     };
 }
 
@@ -258,9 +261,10 @@ export function getResolvedStatsForCharacter(
     props: Pick<CharacterProps, "baseStats" | "modifiers">,
     inventory?: CharacterInventory,
     system?: SystemKey,
-    formulaGrants: Grant[] = []
+    formulaGrants: Grant[] = [],
+    context: ResolveContext = {}
 ): Stats {
-    const resolved = resolveStats(props.baseStats, props.modifiers);
+    const resolved = resolveStats(props.baseStats, props.modifiers, context);
     if (!inventory || !system) {
         return resolved;
     }
@@ -272,7 +276,8 @@ export function getResolvedStatsForCharacter(
             props.modifiers,
             inventory,
             system,
-            formulaGrants
+            formulaGrants,
+            context
         ),
     };
 }

@@ -31,7 +31,7 @@ data here.
 - `grant/` — the **`Grant`** model: the declarative description of what a piece
   of content gives a character.
   - `grantType`: `ability_score | stat_modifier | ability | skill_proficiency |
-    weapon_proficiency | tool_proficiency | armor_proficiency |
+    skill_expertise | weapon_proficiency | tool_proficiency | armor_proficiency |
     saving_throw_proficiency | language | spell | resource | inventory_item |
     currency | armor_class_formula`
   - `choose === 0` → fixed (everything applies); `choose > 0` → the player picks
@@ -42,6 +42,10 @@ data here.
   - Spell `selectionFilter`: `levelInt` = exact match (cantrips use `0`);
     `levelIntMax` = inclusive upper bound for leveled picks
     (`spell.levelInt` in `[1, levelIntMax]`). If both are set, `levelInt` wins.
+  - `skill_expertise` maps to `kind: "proficiency"` with `proficiencyScale: 2`.
+    `skill_proficiency` omits scale (= 1). If both grants exist for the same
+    skill `ref`, the higher scale wins. `selectionFilter.fromProficientSkills`
+    is resolved by the consumer that has character state (not `resolveGrantPool`).
   - `grants.ts` is the **bridge**: it converts `Grant`s into domain `Modifier`s
     and `CharacterGrant`s. This is how authored content feeds the engine. Keep
     this translation generic — driven by the grant data, not by hardcoded names.
@@ -556,8 +560,14 @@ the default D&D repository. **Grant resolution** (`grants.ts`,
 not by importing `*.dnd.ts` maps. Race ASI/language overlays live on
 `RaceCatalogEntry.levelGrants` from `getRace`. Other lookups the sheet needs
 (`listEquipmentSlots`, `getNaturalWeapons`, `getSystemCombatGrants`,
-`getEquipmentPack`, `listFeats`) are repository methods. The interface stays
-**synchronous** (`@future async` is a comment only).
+`getEquipmentPack`, `listFeats`, `listConditions` / `getCondition`) are
+repository methods. The interface stays **synchronous** (`@future async` is a
+comment only).
+
+Pilot conditions are hand-curated in [`conditions.dnd.ts`](src/curation/conditions.dnd.ts)
+(`ConditionEntry`: name, optional `grants`, `rollEffects` for extra dice /
+advantage / disadvantage). They are **not** in `catalog.json`. Active slugs live
+on `StoredCharacter.session.activeConditions`; rest does not clear them.
 
 The web app must call [`contentRepo(stored.system)`](../../apps/web/lib/content/contentRepository.ts)
 rather than `dndRaceLevelGrants` / other curation maps.
@@ -577,6 +587,7 @@ Persist the same JSON shapes as curation/catalog types:
 | Background | `BackgroundEntry` | `grants`, optional `flavorTables` |
 | Item | `ItemEntry` | Open5e-shaped; `grants`, weapon/armor, `stackable`, `category` |
 | Race / spell | `RaceCatalogEntry`, `SpellCatalogEntry` | Open5e-mapped catalog rows |
+| Condition | `ConditionEntry` | Curated `*.dnd.ts`; `rollEffects` + optional `grants` |
 
 Locale overlays follow the partial-merge strategy in
 [`data/translations/pt-BR.json`](data/translations/pt-BR.json). The backend stores

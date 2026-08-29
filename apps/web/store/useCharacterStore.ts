@@ -41,6 +41,8 @@ import {
     type NoteColorChoice,
 } from "@/lib/character/notes";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
+import type { CharacterSession } from "@/lib/character/storedCharacter";
+import { mergeCharacterSession } from "@/lib/character/session";
 import { useContentLocale } from "@/store/useContentLocale";
 
 export type { CharacterType };
@@ -86,6 +88,7 @@ interface CharacterStore {
         color?: NoteColorChoice
     ) => void;
     deleteNote: (id: string, noteId: string) => void;
+    setCharacterSession: (id: string, patch: CharacterSession) => void;
     getResolvedStats: (id: string) => Stats | undefined;
     getCharacterProps: (id: string) => CharacterProps | undefined;
     getFormDefaults: (id: string) => Record<string, unknown> | undefined;
@@ -398,6 +401,18 @@ export const useCharacterStore = create<CharacterStore>()(
                     }),
                 })),
 
+            setCharacterSession: (id, patch) =>
+                set((state) => ({
+                    characters: state.characters.map((char) => {
+                        if (char.id !== id) return char;
+
+                        return {
+                            ...char,
+                            session: mergeCharacterSession(char.session, patch),
+                        };
+                    }),
+                })),
+
             getResolvedStats: (id) => {
                 const char = get().characters.find((c) => c.id === id);
                 if (!char) return undefined;
@@ -410,7 +425,8 @@ export const useCharacterStore = create<CharacterStore>()(
                         char.language,
                         readCharacterLevel(char.systemData),
                         char.system
-                    )
+                    ),
+                    { activeConditions: char.session?.activeConditions }
                 );
             },
 

@@ -112,4 +112,12 @@ export class StaticContentRepository implements ContentRepository {
     getFeat(_slug: string, _locale?: Locale) {
         return undefined;
     }
+
+    listConditions(locale?: Locale) {
+        return curationReaders.readListConditions(locale);
+    }
+
+    getCondition(slug: string, locale?: Locale) {
+        return curationReaders.readCondition(slug, locale);
+    }
 }

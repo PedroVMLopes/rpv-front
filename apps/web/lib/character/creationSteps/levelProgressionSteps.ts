@@ -69,6 +69,9 @@ export function appendGrantPickSubSteps(
     const leveledSpells = choices.filter((choice) =>
         isLeveledSpellGrant(choice.grant)
     );
+    const expertiseChoices = choices.filter(
+        (choice) => choice.grant.grantType === "skill_expertise"
+    );
     const otherChoices = choices.filter((choice) => {
         if (choice.grant.grantType === "spell") {
             return false;
@@ -76,6 +79,10 @@ export function appendGrantPickSubSteps(
 
         if (choice.grant.grantType === "ability_score") {
             return includeAbilityScorePicks;
+        }
+
+        if (choice.grant.grantType === "skill_expertise") {
+            return false;
         }
 
         return true;
@@ -114,6 +121,19 @@ export function appendGrantPickSubSteps(
                 sourceFilter: {
                     ...sourceFilterBase,
                     grantTypes: otherChoices.map((choice) => choice.grant.grantType),
+                },
+            })
+        );
+    }
+
+    if (expertiseChoices.length > 0) {
+        steps.push(
+            createStep(`${stepPrefix}-expertise`, "grant_picks", macroGroupId, {
+                parentId,
+                labelKey: "steps.expertise",
+                sourceFilter: {
+                    ...sourceFilterBase,
+                    grantTypes: ["skill_expertise"],
                 },
             })
         );

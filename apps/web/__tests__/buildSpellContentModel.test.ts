@@ -20,6 +20,9 @@ const formatters: SpellContentFormatters = {
             "usage.spellSlot": `Uses a level ${values?.level} spell slot`,
             "actionCost.action": "Action",
             "actionCost.minute": "1 minute",
+            "badge.concentration": "Concentration",
+            "badge.ritual": "Ritual",
+            "badge.concentrating": "Concentrating",
         };
 
         return table[key] ?? key;
@@ -33,6 +36,7 @@ const formatters: SpellContentFormatters = {
         return table[key] ?? key;
     },
     tUse: () => "Use",
+    tRitual: () => "Cast as ritual",
     missingValue: "—",
 };
 
@@ -186,10 +190,18 @@ describe("buildSpellContentModel", () => {
         );
 
         expect(summary.useAction).toEqual({ kind: "cast", label: "Use" });
-        expect(summary.useActions).toBeUndefined();
+        expect(summary.useActions).toEqual([
+            { kind: "cast", label: "Use" },
+            { kind: "cast", role: "ritual", label: "Cast as ritual" },
+        ]);
+        expect(summary.badges.map((badge) => badge.label)).toEqual([
+            "Self",
+            "Concentration",
+            "Ritual",
+        ]);
     });
 
-    it("omits use action for mage-hand cantrip without roll or slot consumption", () => {
+    it("builds a cast use action for mage-hand cantrip without roll profile", () => {
         const catalogEntry = getSpell("mage-hand");
         const spell = makeSpell({
             slug: "mage-hand",
@@ -206,8 +218,31 @@ describe("buildSpellContentModel", () => {
             formatters
         );
 
-        expect(summary.useAction).toBeUndefined();
+        expect(summary.useAction).toEqual({ kind: "cast", label: "Use" });
         expect(summary.useActions).toBeUndefined();
+    });
+
+    it("marks the concentration badge when concentrating", () => {
+        const catalogEntry = getSpell("detect-magic");
+        const spell = makeSpell({
+            slug: "detect-magic",
+            name: "Detect Magic",
+            levelInt: 1,
+        });
+
+        const { summary } = buildSpellContentModel(
+            {
+                spell,
+                catalogEntry,
+                spellcastingAbility: "intelligence",
+                concentrating: true,
+            },
+            formatters
+        );
+
+        expect(summary.badges.map((badge) => badge.label)).toContain(
+            "Concentrating"
+        );
     });
 
     it("includes enriched detail rows and short description for burning-hands", () => {

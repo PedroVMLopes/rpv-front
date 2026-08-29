@@ -125,6 +125,7 @@
     "skills": "Skills",
     "savingThrows": "Saving Throws",
     "proficient": "Proficient",
+    "expertise": "Expertise",
     "proficiencyBonus": "Proficiency Bonus",
     "initiative": "Initiative",
     "passivePerception": "Passive Perception",
@@ -311,6 +312,7 @@
       "class-level-1-cantrips": "Level 1 cantrips",
       "class-level-1-spells": "Level 1 spells",
       "class-level-1-choices": "Level 1 choices",
+      "expertise": "Expertise",
       "class-level-2-cantrips": "Level 2 cantrips",
       "class-level-2-spells": "Level 2 spells",
       "class-level-2-choices": "Level 2 choices",
@@ -490,7 +492,14 @@
       "damageOnlyStepTitle": "{label} — damage {index}/{total} (d{sides})",
       "saveDcLabel": "DC {dc}",
       "attackDamageToast": "{label}: attack {attackTotal}, damage {damageTotal}",
-      "damageOnlyToast": "{label}: {total} damage"
+      "damageOnlyToast": "{label}: {total} damage",
+      "advantageMode": "Roll with",
+      "normal": "Normal",
+      "advantage": "Advantage",
+      "disadvantage": "Disadvantage",
+      "extraDieStepTitle": "{label} — extra d{sides}",
+      "d20PairTitle": "{label} — d20 {modifier} ({index}/{of})",
+      "attackPairTitle": "{label} — attack d20 {modifier} ({index}/{of})"
     },
     "noneYet": "None yet",
     "levelLine": "Level {level}",
@@ -578,6 +587,15 @@
       "features": "Features",
       "roll": "Roll",
       "use": "Use",
+      "castAsRitual": "Cast as ritual",
+      "upcastSlot": "Slot level",
+      "slotLevel": "Level {level}",
+      "stopConcentrating": "Stop concentrating",
+      "concentrationHint": "Use this spell to mark concentration.",
+      "concentratingOn": "Concentrating: {name}",
+      "addCondition": "Add condition",
+      "addConditionPlaceholder": "Choose a condition",
+      "removeCondition": "Remove {name}",
       "naturalWeapon": "Unarmed",
       "noActions": "No actions available",
       "noResources": "No class resources",
@@ -788,6 +806,11 @@
         "short_rest": "short rest",
         "long_rest": "long rest"
       }
+    },
+    "badge": {
+      "concentration": "Concentration",
+      "ritual": "Ritual",
+      "concentrating": "Concentrating"
     }
   }
 }

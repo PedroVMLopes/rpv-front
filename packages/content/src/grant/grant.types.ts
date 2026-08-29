@@ -1,10 +1,11 @@
-import type { GrantActivation, StatKey } from "@rpv/domain";
+import type { GrantActivation, ModifierDuration, StatKey } from "@rpv/domain";
 
 export type GrantType =
     | "ability_score"
     | "stat_modifier"
     | "ability"
     | "skill_proficiency"
+    | "skill_expertise"
     | "weapon_proficiency"
     | "tool_proficiency"
     | "armor_proficiency"
@@ -36,6 +37,12 @@ export interface SelectionFilter {
     stats?: StatKey[];
     itemCategory?: string;
     itemTags?: string[];
+    /**
+     * When true on `skill_expertise`, the pool is the character's current
+     * skill proficiencies (fixed grants + skill_proficiency picks). Resolved
+     * by the consumer that has character state, not `resolveGrantPool`.
+     */
+    fromProficientSkills?: boolean;
 }
 
 export type CatalogGrantOption =
@@ -94,4 +101,9 @@ export interface Grant {
     recoverOn?: "short_rest" | "long_rest";
     display?: "slots" | "counter";
     slotLevel?: number;
+    /**
+     * When set on `stat_modifier`, maps onto the domain modifier duration.
+     * Omitted means permanent. Use `conditional` for condition-bound numbers.
+     */
+    duration?: ModifierDuration;
 }

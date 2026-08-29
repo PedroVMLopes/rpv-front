@@ -205,9 +205,40 @@ describe("ActionsSection", () => {
         expect(screen.getByRole("button", { name: "1d10" })).toBeInTheDocument();
         expect(screen.getByText("To hit")).toBeInTheDocument();
         expect(screen.getByText("Damage")).toBeInTheDocument();
+        expect(screen.getByText("Mage Hand")).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Use" })).toBeInTheDocument();
+    });
+
+    it("shows ritual, upcast, and concentration on detect magic", async () => {
+        const user = userEvent.setup();
+        renderSection(wizardStored);
+
+        await user.click(screen.getByRole("button", { name: "Expand Level 1:" }));
+
+        const detectMagicCard = screen
+            .getByRole("heading", { name: "Detect Magic" })
+            .closest("div.min-w-0.h-fit");
+        expect(detectMagicCard).not.toBeNull();
+
+        expect(within(detectMagicCard!).getByText(/Concentration/)).toBeInTheDocument();
         expect(
-            screen.queryByRole("button", { name: "Use", hidden: true })
-        ).not.toBeInTheDocument();
+            within(detectMagicCard!).getByRole("button", { name: "Cast as ritual" })
+        ).toBeInTheDocument();
+        expect(
+            within(detectMagicCard!).getByRole("combobox", { name: "Slot level" })
+        ).toBeInTheDocument();
+
+        await user.click(
+            within(detectMagicCard!).getByRole("button", { name: "Use" })
+        );
+
+        expect(toastMock).toHaveBeenCalledWith("Detect Magic");
+        expect(
+            within(detectMagicCard!).getByRole("button", {
+                name: "Stop concentrating",
+            })
+        ).toBeInTheDocument();
+        expect(within(detectMagicCard!).getByText(/Concentrating/)).toBeInTheDocument();
     });
 
     it("opens attack-only roll when spell to-hit button is clicked", async () => {

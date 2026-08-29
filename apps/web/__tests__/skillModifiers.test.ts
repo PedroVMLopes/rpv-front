@@ -109,6 +109,39 @@ describe("computeSkillModifiers", () => {
             expect.objectContaining({
                 modifier: 4,
                 proficient: true,
+                proficiencyScale: 1,
+            })
+        );
+    });
+
+    it("doubles proficiency bonus when proficiencyScale is 2", () => {
+        const modifiers = computeSkillModifiers(
+            "dnd",
+            stats,
+            [
+                {
+                    id: "class-stealth",
+                    kind: "proficiency",
+                    ref: "stealth",
+                    source: { type: "class", id: "rogue" },
+                },
+                {
+                    id: "class-stealth-expertise",
+                    kind: "proficiency",
+                    ref: "stealth",
+                    source: { type: "class", id: "rogue" },
+                    proficiencyScale: 2,
+                },
+            ],
+            1
+        );
+
+        const stealth = modifiers.find((entry) => entry.slug === "stealth");
+        expect(stealth).toEqual(
+            expect.objectContaining({
+                modifier: 6,
+                proficient: true,
+                proficiencyScale: 2,
             })
         );
     });
@@ -157,6 +190,7 @@ describe("sortSkillModifiersByAbilityOrder", () => {
                 ability: "intelligence",
                 modifier: 0,
                 proficient: false,
+                proficiencyScale: 0,
             },
             {
                 slug: "athletics",
@@ -164,6 +198,7 @@ describe("sortSkillModifiersByAbilityOrder", () => {
                 ability: "strength",
                 modifier: 2,
                 proficient: true,
+                proficiencyScale: 1,
             },
             {
                 slug: "stealth",
@@ -171,6 +206,7 @@ describe("sortSkillModifiersByAbilityOrder", () => {
                 ability: "dexterity",
                 modifier: 1,
                 proficient: false,
+                proficiencyScale: 0,
             },
             {
                 slug: "acrobatics",
@@ -178,6 +214,7 @@ describe("sortSkillModifiersByAbilityOrder", () => {
                 ability: "dexterity",
                 modifier: 2,
                 proficient: false,
+                proficiencyScale: 0,
             },
         ]);
 

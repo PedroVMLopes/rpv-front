@@ -52,4 +52,5 @@ export interface CatalogTranslations {
     equipmentSlots?: Record<string, CatalogEntryTranslation>;
     features?: Record<string, CatalogEntryTranslation>;
     backgrounds?: Record<string, CatalogEntryTranslation>;
+    conditions?: Record<string, CatalogEntryTranslation>;
 }

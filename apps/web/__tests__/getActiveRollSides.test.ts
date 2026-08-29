@@ -8,6 +8,10 @@ const closed = {
     stepIndex: 0,
     attackRoll: null,
     damageRolls: [] as number[],
+    advantageMode: "normal" as const,
+    d20Rolls: [] as number[],
+    extraDice: [] as number[],
+    extraDieRolls: [] as number[],
 };
 
 describe("getActiveRollSides", () => {
@@ -44,6 +48,7 @@ describe("getActiveRollSides", () => {
                     label: "Athletics",
                     die: 20,
                     modifier: 2,
+                    appliesTo: "ability_check",
                 },
             })
         ).toBe(20);
@@ -79,7 +84,7 @@ describe("getActiveRollSides", () => {
                 ...closed,
                 open: true,
                 mode: "request",
-                stepIndex: 1,
+                d20Rolls: [14],
                 request,
             })
         ).toBe(8);
@@ -89,7 +94,7 @@ describe("getActiveRollSides", () => {
                 ...closed,
                 open: true,
                 mode: "request",
-                stepIndex: 1,
+                d20Rolls: [14],
                 request: { ...request, damage: {} },
             })
         ).toBeNull();

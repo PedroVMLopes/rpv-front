@@ -135,4 +135,60 @@ describe("collectPendingChoiceGrants", () => {
             expect.arrayContaining(["magic-missile", "shield"])
         );
     });
+
+    it("lists rogue expertise slots after skill picks and pools only proficient skills", () => {
+        const pending = collectPendingChoiceGrants(
+            {
+                ...baseSelections,
+                characterClass: "rogue",
+                choices: {
+                    grantPicks: {
+                        "class:rogue:base:skill_proficiency:3:0": "stealth",
+                        "class:rogue:base:skill_proficiency:3:1": "perception",
+                        "class:rogue:base:skill_proficiency:3:2": "acrobatics",
+                        "class:rogue:base:skill_proficiency:3:3": "investigation",
+                    },
+                },
+            },
+            "en",
+            1
+        );
+
+        const expertise = pending.filter(
+            (choice) => choice.grant.grantType === "skill_expertise"
+        );
+
+        expect(expertise.map((choice) => choice.key)).toEqual([
+            "class:rogue:1:skill_expertise:0:0",
+            "class:rogue:1:skill_expertise:0:1",
+        ]);
+        expect(expertise[0]?.options.map((option) => option.value).sort()).toEqual([
+            "acrobatics",
+            "investigation",
+            "perception",
+            "stealth",
+        ]);
+    });
+
+    it("adds two more rogue expertise slots at level 6", () => {
+        const pending = collectPendingChoiceGrants(
+            {
+                ...baseSelections,
+                characterClass: "rogue",
+            },
+            "en",
+            6
+        );
+
+        const expertiseKeys = pending
+            .filter((choice) => choice.grant.grantType === "skill_expertise")
+            .map((choice) => choice.key);
+
+        expect(expertiseKeys).toEqual([
+            "class:rogue:1:skill_expertise:0:0",
+            "class:rogue:1:skill_expertise:0:1",
+            "class:rogue:6:skill_expertise:0:0",
+            "class:rogue:6:skill_expertise:0:1",
+        ]);
+    });
 });

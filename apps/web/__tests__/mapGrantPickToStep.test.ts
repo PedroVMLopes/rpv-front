@@ -64,6 +64,30 @@ describe("mapGrantPickToStep", () => {
         ).toBe("class-level-1-choices");
     });
 
+    it("maps rogue expertise picks to class-level-1-expertise", () => {
+        const rogueGraph = resolveCreationSteps({
+            formValues: {
+                race: "human",
+                characterClass: "rogue",
+                level: 1,
+            },
+            system: "dnd",
+            contentLocale: "en",
+        });
+
+        expect(
+            mapGrantPickToStep(
+                "class:rogue:1:skill_expertise:0:0",
+                {
+                    grantType: "skill_expertise",
+                    choose: 2,
+                    selectionFilter: { fromProficientSkills: true },
+                },
+                rogueGraph
+            )
+        ).toBe("class-level-1-expertise");
+    });
+
     it("maps inventory picks to equipment", () => {
         expect(
             mapGrantPickToStep("class:fighter:base:inventory_item:0:0")

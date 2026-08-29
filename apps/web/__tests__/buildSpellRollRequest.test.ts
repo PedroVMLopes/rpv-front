@@ -210,6 +210,7 @@ describe("buildSpellRollRequest", () => {
             label: "Fire Bolt",
             die: 20,
             modifier: 5,
+            appliesTo: "attack",
         });
     });
 

@@ -19,6 +19,7 @@ import { mergeSessionResources } from "./mergeSessionResources";
 import type { StoredCharacter } from "./storedCharacter";
 import type { CharacterSelections } from "./storedCharacter";
 import { sanitizeCharacterNotes } from "./notes";
+import { sanitizeCharacterSession } from "./session";
 
 export type BuildCharacterInput = {
     id: string;
@@ -143,6 +144,7 @@ export function buildStoredCharacter(input: BuildCharacterInput): StoredCharacte
             stored.resources.hp
         ),
         notes: sanitizeCharacterNotes(existing?.notes),
+        session: sanitizeCharacterSession(existing?.session),
     };
 }
 

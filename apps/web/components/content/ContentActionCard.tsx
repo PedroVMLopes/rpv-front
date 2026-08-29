@@ -20,6 +20,7 @@ export type ContentActionCardProps = {
     onDelete?: () => void;
     deleteLabel?: string;
     equipActions?: ReactNode;
+    afterContent?: ReactNode;
     /** Optional test id wrapper attribute on the summary root. */
     "data-testid"?: string;
     /** When true, omit shortDescription from the list card (detail modal still has it). */
@@ -45,6 +46,7 @@ export function ContentActionCard({
     onDelete,
     deleteLabel,
     equipActions,
+    afterContent,
     "data-testid": testId,
     hideShortDescription,
 }: ContentActionCardProps) {
@@ -69,6 +71,7 @@ export function ContentActionCard({
                 }
                 headerActions={headerActions}
                 hideShortDescription={hideShortDescription}
+                afterContent={afterContent}
             />
             <ContentDetailModal
                 model={detail}
@@ -81,6 +84,7 @@ export function ContentActionCard({
                 onDelete={handleDelete}
                 deleteLabel={deleteLabel}
                 equipActions={equipActions}
+                afterContent={afterContent}
             />
         </div>
     );

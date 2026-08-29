@@ -9,11 +9,28 @@ import {
     type ReactNode,
 } from "react";
 import type { DieSides } from "@/lib/roll/diceRoll";
+import { ROLLABLE_DICE } from "@/lib/roll/diceRoll";
 import type { RollRequest } from "@/lib/roll/rollRequest.types";
+import {
+    appliesToOf,
+    d20Needed,
+    defaultAdvantageMode,
+    extraDiceSidesFor,
+    pickD20,
+    type AdvantageMode,
+} from "@/lib/roll/rollRiders";
+import { collectRollEffectsFromActiveConditions } from "@/lib/character/conditionRollEffects";
+import { useCharacterStore } from "@/store/useCharacterStore";
 
 export type RollAssistantMode = "manual" | "request";
 
-type RollAssistantState = {
+export type RequestPhase =
+    | { type: "d20"; index: number; of: number }
+    | { type: "extra_die"; sides: DieSides; index: number }
+    | { type: "attack_damage" }
+    | { type: "damage_only"; index: number };
+
+export type RollAssistantState = {
     open: boolean;
     mode: RollAssistantMode;
     request: RollRequest | null;
@@ -21,6 +38,10 @@ type RollAssistantState = {
     stepIndex: number;
     attackRoll: number | null;
     damageRolls: number[];
+    advantageMode: AdvantageMode;
+    d20Rolls: number[];
+    extraDice: number[];
+    extraDieRolls: number[];
 };
 
 type RollAssistantContextValue = {
@@ -28,6 +49,7 @@ type RollAssistantContextValue = {
     openManualRoll: () => void;
     openRollRequest: (request: RollRequest) => void;
     selectDie: (sides: DieSides) => void;
+    setAdvantageMode: (mode: AdvantageMode) => void;
     submitRollValue: (value: number) => "continue" | "complete";
     close: () => void;
 };
@@ -40,14 +62,104 @@ const initialState: RollAssistantState = {
     stepIndex: 0,
     attackRoll: null,
     damageRolls: [],
+    advantageMode: "normal",
+    d20Rolls: [],
+    extraDice: [],
+    extraDieRolls: [],
 };
 
 type RollAssistantAction =
     | { type: "open_manual" }
-    | { type: "open_request"; request: RollRequest }
+    | {
+          type: "open_request";
+          request: RollRequest;
+          advantageMode: AdvantageMode;
+          extraDice: number[];
+      }
     | { type: "select_die"; sides: DieSides }
+    | { type: "set_advantage"; mode: AdvantageMode }
     | { type: "submit_value"; value: number }
     | { type: "close" };
+
+function toDieSides(sides: number): DieSides | null {
+    return (ROLLABLE_DICE as readonly number[]).includes(sides)
+        ? (sides as DieSides)
+        : null;
+}
+
+export function getRequestPhase(
+    state: Pick<
+        RollAssistantState,
+        | "request"
+        | "advantageMode"
+        | "d20Rolls"
+        | "extraDice"
+        | "extraDieRolls"
+        | "stepIndex"
+    >
+): RequestPhase | null {
+    const { request } = state;
+    if (!request) {
+        return null;
+    }
+
+    if (request.kind === "damage_only") {
+        return { type: "damage_only", index: state.stepIndex };
+    }
+
+    if (request.kind === "d20_test" || request.kind === "attack_then_damage") {
+        const needed = d20Needed(state.advantageMode);
+        if (state.d20Rolls.length < needed) {
+            return {
+                type: "d20",
+                index: state.d20Rolls.length,
+                of: needed,
+            };
+        }
+
+        if (state.extraDieRolls.length < state.extraDice.length) {
+            const sides = toDieSides(
+                state.extraDice[state.extraDieRolls.length] ?? 4
+            );
+            return {
+                type: "extra_die",
+                sides: sides ?? 4,
+                index: state.extraDieRolls.length,
+            };
+        }
+
+        if (request.kind === "attack_then_damage") {
+            return { type: "attack_damage" };
+        }
+    }
+
+    return null;
+}
+
+function appendRollValue(
+    state: RollAssistantState,
+    value: number
+): Pick<RollAssistantState, "d20Rolls" | "extraDieRolls"> {
+    const phase = getRequestPhase(state);
+    if (phase?.type === "d20") {
+        return {
+            d20Rolls: [...state.d20Rolls, value],
+            extraDieRolls: state.extraDieRolls,
+        };
+    }
+
+    if (phase?.type === "extra_die") {
+        return {
+            d20Rolls: state.d20Rolls,
+            extraDieRolls: [...state.extraDieRolls, value],
+        };
+    }
+
+    return {
+        d20Rolls: state.d20Rolls,
+        extraDieRolls: state.extraDieRolls,
+    };
+}
 
 function reducer(
     state: RollAssistantState,
@@ -66,6 +178,8 @@ function reducer(
                 open: true,
                 mode: "request",
                 request: action.request,
+                advantageMode: action.advantageMode,
+                extraDice: action.extraDice,
                 selectedDie:
                     action.request.kind === "d20_test"
                         ? action.request.die
@@ -76,25 +190,19 @@ function reducer(
                 ...state,
                 selectedDie: action.sides,
             };
-        case "submit_value": {
-            if (!state.request || state.mode !== "request") {
+        case "set_advantage": {
+            if (state.d20Rolls.length > 0 || state.extraDieRolls.length > 0) {
                 return state;
             }
 
-            if (state.request.kind === "d20_test") {
-                return initialState;
-            }
-
-            if (state.request.kind === "attack_then_damage") {
-                if (state.stepIndex === 0) {
-                    return {
-                        ...state,
-                        stepIndex: 1,
-                        attackRoll: action.value,
-                    };
-                }
-
-                return initialState;
+            return {
+                ...state,
+                advantageMode: action.mode,
+            };
+        }
+        case "submit_value": {
+            if (!state.request || state.mode !== "request") {
+                return state;
             }
 
             if (state.request.kind === "damage_only") {
@@ -110,6 +218,35 @@ function reducer(
                 }
 
                 return initialState;
+            }
+
+            if (state.request.kind === "attack_then_damage") {
+                const phase = getRequestPhase(state);
+                const nextRolls = appendRollValue(state, action.value);
+                const nextState = { ...state, ...nextRolls };
+                const nextPhase = getRequestPhase(nextState);
+
+                if (phase?.type === "d20" || phase?.type === "extra_die") {
+                    if (nextPhase?.type === "attack_damage") {
+                        return {
+                            ...nextState,
+                            attackRoll: pickD20(
+                                nextState.d20Rolls,
+                                state.advantageMode
+                            ),
+                        };
+                    }
+
+                    return nextState;
+                }
+
+                return initialState;
+            }
+
+            if (state.request.kind === "d20_test") {
+                const nextRolls = appendRollValue(state, action.value);
+                const nextState = { ...state, ...nextRolls };
+                return getRequestPhase(nextState) ? nextState : initialState;
             }
 
             return state;
@@ -129,18 +266,24 @@ function getSubmitResult(
         return "complete";
     }
 
-    if (state.request.kind === "d20_test") {
-        return "complete";
-    }
-
-    if (state.request.kind === "attack_then_damage") {
-        return state.stepIndex === 0 ? "continue" : "complete";
-    }
-
     if (state.request.kind === "damage_only") {
         return state.stepIndex + 1 < state.request.steps.length
             ? "continue"
             : "complete";
+    }
+
+    if (state.request.kind === "d20_test") {
+        const next = { ...state, ...appendRollValue(state, value) };
+        return getRequestPhase(next) ? "continue" : "complete";
+    }
+
+    if (state.request.kind === "attack_then_damage") {
+        const phase = getRequestPhase(state);
+        if (phase?.type === "d20" || phase?.type === "extra_die") {
+            return "continue";
+        }
+
+        return "complete";
     }
 
     return "complete";
@@ -150,26 +293,65 @@ const RollAssistantContext = createContext<RollAssistantContextValue | null>(
     null
 );
 
-export function RollAssistantProvider({ children }: { children: ReactNode }) {
+type RollAssistantProviderProps = {
+    children: ReactNode;
+    characterId?: string;
+};
+
+export function RollAssistantProvider({
+    children,
+    characterId,
+}: RollAssistantProviderProps) {
     const [state, dispatch] = useReducer(reducer, initialState);
 
     const openManualRoll = useCallback(() => {
         dispatch({ type: "open_manual" });
     }, []);
 
-    const openRollRequest = useCallback((request: RollRequest) => {
-        dispatch({ type: "open_request", request });
-    }, []);
+    const openRollRequest = useCallback(
+        (request: RollRequest) => {
+            let advantageMode: AdvantageMode = "normal";
+            let extraDice: number[] = [];
+
+            if (characterId) {
+                const character = useCharacterStore
+                    .getState()
+                    .characters.find((entry) => entry.id === characterId);
+                const effects = collectRollEffectsFromActiveConditions(
+                    character?.session?.activeConditions,
+                    character?.system ?? "dnd"
+                );
+                const appliesTo = appliesToOf(request);
+                advantageMode = defaultAdvantageMode(effects, appliesTo);
+                extraDice = extraDiceSidesFor(effects, appliesTo);
+            }
+
+            dispatch({
+                type: "open_request",
+                request,
+                advantageMode,
+                extraDice,
+            });
+        },
+        [characterId]
+    );
 
     const selectDie = useCallback((sides: DieSides) => {
         dispatch({ type: "select_die", sides });
     }, []);
 
-    const submitRollValue = useCallback((value: number): "continue" | "complete" => {
-        const result = getSubmitResult(state, value);
-        dispatch({ type: "submit_value", value });
-        return result;
-    }, [state]);
+    const setAdvantageMode = useCallback((mode: AdvantageMode) => {
+        dispatch({ type: "set_advantage", mode });
+    }, []);
+
+    const submitRollValue = useCallback(
+        (value: number): "continue" | "complete" => {
+            const result = getSubmitResult(state, value);
+            dispatch({ type: "submit_value", value });
+            return result;
+        },
+        [state]
+    );
 
     const close = useCallback(() => {
         dispatch({ type: "close" });
@@ -181,10 +363,19 @@ export function RollAssistantProvider({ children }: { children: ReactNode }) {
             openManualRoll,
             openRollRequest,
             selectDie,
+            setAdvantageMode,
             submitRollValue,
             close,
         }),
-        [state, openManualRoll, openRollRequest, selectDie, submitRollValue, close]
+        [
+            state,
+            openManualRoll,
+            openRollRequest,
+            selectDie,
+            setAdvantageMode,
+            submitRollValue,
+            close,
+        ]
     );
 
     return (
@@ -221,12 +412,20 @@ export function getActiveRollSides(
         return null;
     }
 
-    if (state.request.kind === "d20_test") {
-        return state.request.die;
+    const phase = getRequestPhase(state);
+
+    if (phase?.type === "d20") {
+        return 20;
     }
 
-    if (state.request.kind === "attack_then_damage") {
-        return state.stepIndex === 0 ? 20 : state.request.damage.sides ?? null;
+    if (phase?.type === "extra_die") {
+        return phase.sides;
+    }
+
+    if (phase?.type === "attack_damage") {
+        return state.request.kind === "attack_then_damage"
+            ? (state.request.damage.sides ?? null)
+            : null;
     }
 
     if (state.request.kind === "damage_only") {

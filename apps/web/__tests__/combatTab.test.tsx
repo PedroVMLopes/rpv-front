@@ -173,6 +173,30 @@ describe("CombatTab", () => {
         ).toBe(true);
     });
 
+    it("adds and removes catalog conditions from the panel", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(
+            <CombatTabConnected characterId={storedCharacter.id} />
+        );
+
+        expect(screen.getByText("None yet")).toBeInTheDocument();
+
+        await user.selectOptions(
+            screen.getByRole("combobox", { name: "Add condition" }),
+            "blessed"
+        );
+
+        expect(
+            screen.getByRole("button", { name: "Remove Blessed" })
+        ).toBeInTheDocument();
+        expect(screen.queryByText("None yet")).not.toBeInTheDocument();
+
+        await user.click(
+            screen.getByRole("button", { name: "Remove Blessed" })
+        );
+        expect(screen.getByText("None yet")).toBeInTheDocument();
+    });
+
     it("lists passive combat traits in reminders, not in actions", () => {
         const withReminder: StoredCharacter = {
             ...storedCharacter,

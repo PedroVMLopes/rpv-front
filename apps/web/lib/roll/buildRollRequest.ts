@@ -21,6 +21,7 @@ export function buildSkillRollRequest(
         label,
         die: 20,
         modifier: skill.modifier,
+        appliesTo: "ability_check",
     };
 }
 
@@ -34,6 +35,7 @@ export function buildSavingThrowRollRequest(
         label,
         die: 20,
         modifier: save.modifier,
+        appliesTo: "save",
     };
 }
 
@@ -48,6 +50,7 @@ export function buildAbilityCheckRollRequest(
         label,
         die: 20,
         modifier,
+        appliesTo: "ability_check",
     };
 }
 
@@ -124,6 +127,7 @@ export function buildWeaponAttackOnlyRollRequest(
         label: weapon.name,
         die: 20,
         modifier: weapon.attackModifier,
+        appliesTo: "attack",
     };
 }
 
@@ -221,6 +225,7 @@ export function buildSpellAttackOnlyRollRequest(
         label: spell.name,
         die: 20,
         modifier: spell.attackModifier,
+        appliesTo: "attack",
     };
 }
 
@@ -293,24 +298,33 @@ export function hasSpellRollAction(spell: SpellAction): boolean {
 
 export function resolveD20TestTotal(
     request: D20TestRequest,
-    dieValue: number
+    dieValue: number,
+    extraDiceValues: number[] = []
 ): number {
-    return dieValue + request.modifier;
+    const extra = extraDiceValues.reduce((total, value) => total + value, 0);
+    return dieValue + request.modifier + extra;
 }
 
 export function resolveAttackRollTotal(
     request: AttackThenDamageRequest,
-    dieValue: number
+    dieValue: number,
+    extraDiceValues: number[] = []
 ): number {
-    return dieValue + request.attack.modifier;
+    const extra = extraDiceValues.reduce((total, value) => total + value, 0);
+    return dieValue + request.attack.modifier + extra;
 }
 
 export function resolveAttackThenDamageTotal(
     request: AttackThenDamageRequest,
     attackValue: number,
-    damageValue: number
+    damageValue: number,
+    extraDiceValues: number[] = []
 ): { attackTotal: number; damageTotal: number } {
-    const attackTotal = resolveAttackRollTotal(request, attackValue);
+    const attackTotal = resolveAttackRollTotal(
+        request,
+        attackValue,
+        extraDiceValues
+    );
     const damageTotal = damageValue + (request.damage.flat ?? 0);
 
     return { attackTotal, damageTotal };

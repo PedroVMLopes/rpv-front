@@ -102,6 +102,7 @@ export function SkillsCard({ stored }: SkillsCardProps) {
                                         label={tSkills(skill.slug)}
                                         modifier={skill.modifier}
                                         proficient={skill.proficient}
+                                        proficiencyScale={skill.proficiencyScale}
                                         abilityHint={`[${tAbilitiesShort(skill.ability)}]`}
                                         className="bg-popover text-popover-foreground border-custom border-accent shadow-xs rounded-lg"
                                         onRoll={() =>

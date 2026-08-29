@@ -553,5 +553,15 @@
       "name": "Ataque desarmado",
       "description": "Em vez de usar uma arma para um ataque corpo a corpo, você pode fazer um ataque desarmado: um soco, chute, cabeçada ou golpe semelhante. Em um acerto, causa dano de concussão igual a 1 + seu modificador de Força. Você é proficiente em ataques desarmados."
     }
+  },
+  "conditions": {
+    "blessed": {
+      "name": "Abençoado",
+      "description": "Testes de ataque e salvaguardas ganham um d4 extra."
+    },
+    "poisoned": {
+      "name": "Envenenado",
+      "description": "Desvantagem em testes de ataque e testes de habilidade."
+    }
   }
 }

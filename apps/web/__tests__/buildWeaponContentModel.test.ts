@@ -9,6 +9,8 @@ const formatters: WeaponContentFormatters = {
     tItems: (key) => {
         const table: Record<string, string> = {
             "properties.versatile": "Versatile",
+            "properties.ammunition": "Ammunition",
+            "properties.two-handed": "Two-handed",
             "damageType.slashing": "Slashing",
         };
 
@@ -55,6 +57,7 @@ describe("buildWeaponContentModel", () => {
         expect(summary.kind).toBe("item");
         expect(summary.badges.map((badge) => badge.label)).toEqual([
             "Main hand",
+            "Versatile",
         ]);
         expect(summary.useActions).toEqual([
             {
@@ -158,6 +161,11 @@ describe("buildWeaponContentModel", () => {
 
         expect(summary.useAction).toBeUndefined();
         expect(summary.useActions).toBeUndefined();
+        expect(summary.badges.map((badge) => badge.label)).toEqual([
+            "Main hand",
+            "Ammunition",
+            "Two-handed",
+        ]);
         expect(
             detail.sections[0]?.rows.find((row) => row.labelKey === "attackBonus")
                 ?.value

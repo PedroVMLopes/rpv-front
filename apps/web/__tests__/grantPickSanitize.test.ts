@@ -299,4 +299,33 @@ describe("sanitizeSelections", () => {
         });
         expect(selections.grantedCurrency).toEqual({ gold: 50 });
     });
+
+    it("drops expertise picks whose skill is no longer proficient", () => {
+        const selections = sanitizeGrantPicks(
+            {
+                ...baseSelections,
+                characterClass: "rogue",
+                choices: {
+                    grantPicks: {
+                        "class:rogue:base:skill_proficiency:3:0": "stealth",
+                        "class:rogue:base:skill_proficiency:3:1": "perception",
+                        "class:rogue:base:skill_proficiency:3:2": "acrobatics",
+                        "class:rogue:base:skill_proficiency:3:3": "investigation",
+                        "class:rogue:1:skill_expertise:0:0": "stealth",
+                        "class:rogue:1:skill_expertise:0:1": "history",
+                    },
+                },
+            },
+            "en",
+            "dnd"
+        );
+
+        expect(selections.choices.grantPicks).toEqual({
+            "class:rogue:base:skill_proficiency:3:0": "stealth",
+            "class:rogue:base:skill_proficiency:3:1": "perception",
+            "class:rogue:base:skill_proficiency:3:2": "acrobatics",
+            "class:rogue:base:skill_proficiency:3:3": "investigation",
+            "class:rogue:1:skill_expertise:0:0": "stealth",
+        });
+    });
 });

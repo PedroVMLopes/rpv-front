@@ -25,7 +25,7 @@ Reference implementation (web):
    - **Definition** (`ItemEntry`) — global catalog per `system`
    - **State** (`CharacterInventory`) — per-character `selections.inventory`
    - **Derived** (`modifiers`, `grants`, resource **maxima**) — rebuilt on every change; never trusted from the client
-   - **Session currents** (`resources` remaining uses) — preserved on rebuild (clamped to the new maxima). HP is synced to resolved max.
+   - **Session currents** (`resources` remaining uses, plus `session` concentration / active conditions) — preserved on rebuild. Resources are clamped to the new maxima; `session` is sanitized but not derived. HP is synced to resolved max. Rest does **not** clear `session`.
 3. **`schemaVersion`** lives on the `StoredCharacter` root (currently `1`). Inventory has no separate version in v1.
 4. **Only equipped slugs** feed `collectGrantSources`. Bag-only items do not alter stats or grants.
 5. **Starting loot** is materialized at **build/PUT** time from `inventory_item` grants (background v1), not via inventory PATCH alone. Granted stacks carry optional `provenance`; manual stacks omit it. Rebuild re-materializes provenance stacks and preserves manual ones.
@@ -69,6 +69,7 @@ shape. After `normalizeStoredCharacter`, `selections.inventory` is always presen
 | `selections.choices` | `{ grantPicks?: Record<string, string> }` | Grant pick answers |
 | `selections.grantedCurrency` | `Record<string, number>` | Currency from class/background grants (rebuilt each save) |
 | `resources` | `Record<string, number>` | **Current** remaining for HP, spell slots, rage, ki, etc. Rebuild preserves current (except HP, which is synced to resolved max). |
+| `session` | `{ concentratingOn?, activeConditions? }` | Optional table-session currents (one concentrating slug, active condition slugs). Rebuild preserves like `resources`. Omitted when empty. `schemaVersion` stays **1**. |
 | `systemData` | `Record<string, unknown>` | Level, AC, manual `gold`/`silver`/`bronze`, free text |
 
 ### Forbidden in `systemData`
@@ -225,6 +226,8 @@ Equivalent to web: `rebuildCharacterWithInventory(existing, nextInventory, local
 - `resources` **current** values (spell slots, rage, ki, …) are preserved and
   clamped to the new maxima via `mergeSessionResources`. Do not restore currents
   from `deriveResourceTotals`.
+- `session` (concentration, active conditions) is preserved via
+  `sanitizeCharacterSession`. Do not drop it on rebuild or rest.
 - `resources.hp` adjusted via `syncResourceHpToResolvedMax` (clamped down if max HP decreases, e.g. after unequip)
 
 ---

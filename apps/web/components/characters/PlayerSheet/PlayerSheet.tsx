@@ -22,7 +22,7 @@ export function PlayerSheet({ stored }: PlayerSheetProps) {
     const [activeTab, setActiveTab] = useState<PlayerSheetTabId>("overview");
 
     return (
-        <RollAssistantProvider>
+        <RollAssistantProvider characterId={stored.id}>
             <div className="flex min-h-full flex-col">
                 <PlayerSheetHeader
                     stored={stored}

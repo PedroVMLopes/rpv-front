@@ -101,3 +101,11 @@ export function getFeat(slug: string, locale?: Locale) {
     return getContentRepository("dnd").getFeat(slug, locale);
 }
 
+export function listConditions(locale?: Locale) {
+    return getContentRepository("dnd").listConditions(locale);
+}
+
+export function getCondition(slug: string, locale?: Locale) {
+    return getContentRepository("dnd").getCondition(slug, locale);
+}
+

@@ -36,27 +36,40 @@ function localizeDamageType(
     return localized === key ? damageType : localized;
 }
 
+function localizePropertyName(
+    name: string,
+    formatters: WeaponContentFormatters
+): string {
+    const propKey = name.toLowerCase().replace(/\s+/g, "-");
+    const key = `properties.${propKey}`;
+    try {
+        const localized = formatters.tItems(key);
+        return localized === key ? name : localized;
+    } catch {
+        return name;
+    }
+}
+
+function localizedPropertyLabels(
+    item: ItemEntry | undefined,
+    formatters: WeaponContentFormatters
+): string[] {
+    const properties = item?.weapon?.properties;
+    if (!properties || properties.length === 0) {
+        return [];
+    }
+
+    return properties.map((property) =>
+        localizePropertyName(property.name, formatters)
+    );
+}
+
 function localizeProperties(
     item: ItemEntry | undefined,
     formatters: WeaponContentFormatters
 ): string {
-    const properties = item?.weapon?.properties;
-    if (!properties || properties.length === 0) {
-        return formatters.missingValue;
-    }
-
-    return properties
-        .map((property) => {
-            const propKey = property.name.toLowerCase().replace(/\s+/g, "-");
-            const key = `properties.${propKey}`;
-            try {
-                const localized = formatters.tItems(key);
-                return localized === key ? property.name : localized;
-            } catch {
-                return property.name;
-            }
-        })
-        .join(", ");
+    const labels = localizedPropertyLabels(item, formatters);
+    return labels.length > 0 ? labels.join(", ") : formatters.missingValue;
 }
 
 function versatileDamage(item: ItemEntry | undefined): string | undefined {
@@ -107,9 +120,17 @@ function resolveUseActions(weapon: WeaponAction): ContentUseActionSpec[] {
 }
 
 function buildSummaryBadges(
-    slotLabel: string
+    slotLabel: string,
+    itemEntry: ItemEntry | undefined,
+    formatters: WeaponContentFormatters
 ): ContentSummaryModel["badges"] {
-    return [{ label: slotLabel, variant: "muted" }];
+    return [
+        { label: slotLabel, variant: "muted" },
+        ...localizedPropertyLabels(itemEntry, formatters).map((label) => ({
+            label,
+            variant: "muted" as const,
+        })),
+    ];
 }
 
 export function buildWeaponContentModel(
@@ -154,7 +175,7 @@ export function buildWeaponContentModel(
         id: weapon.id,
         kind: "item",
         title: weapon.name,
-        badges: buildSummaryBadges(slotLabel),
+        badges: buildSummaryBadges(slotLabel, itemEntry, formatters),
         useAction,
         useActions: useActions.length > 0 ? useActions : undefined,
     };

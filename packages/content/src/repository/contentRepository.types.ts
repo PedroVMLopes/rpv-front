@@ -9,7 +9,9 @@ import type { SubclassEntry } from "../curation/subclassGrants.dnd";
 import type { Grant } from "../grant/grant.types";
 import type { Language } from "../catalog/catalog.types";
 import type { RaceCatalogEntry, SubraceCatalogEntry } from "../race/race.types";
+import type { SpellCatalogEntry } from "../spell/spell.types";
 import type { FeatEntry } from "../feat/feat.types";
+import type { ConditionEntry } from "../condition/condition.types";
 
 /**
  * Read-only content access for catalog entries and grant-bearing curation.
@@ -47,4 +49,7 @@ export interface ContentRepository {
 
     listFeats(locale?: Locale): FeatEntry[];
     getFeat(slug: string, locale?: Locale): FeatEntry | undefined;
+
+    listConditions(locale?: Locale): ConditionEntry[];
+    getCondition(slug: string, locale?: Locale): ConditionEntry | undefined;
 }

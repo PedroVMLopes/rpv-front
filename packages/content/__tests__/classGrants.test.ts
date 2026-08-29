@@ -216,6 +216,31 @@ describe("classGrants.dnd", () => {
         );
     });
 
+    it("grants rogue expertise at levels 1 and 6", () => {
+        expect(getClassGrants("rogue", 1)).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    grantType: "skill_expertise",
+                    choose: 2,
+                    selectionFilter: { fromProficientSkills: true },
+                }),
+            ])
+        );
+
+        const level1 = getClassGrantSourcesForLevel("rogue", 1);
+        expect(level1.some((block) => block.featureLevel === 1)).toBe(true);
+        expect(level1.some((block) => block.featureLevel === 6)).toBe(false);
+
+        const level6 = getClassGrantSourcesForLevel("rogue", 6);
+        const expertiseBlocks = level6.filter((block) =>
+            block.grants.some((grant) => grant.grantType === "skill_expertise")
+        );
+        expect(expertiseBlocks).toHaveLength(2);
+        expect(expertiseBlocks.map((block) => block.featureLevel).sort()).toEqual([
+            1, 6,
+        ]);
+    });
+
     it("getClassGrantSourcesForLevel separates base and level blocks", () => {
         const blocks = getClassGrantSourcesForLevel("fighter", 3);
 

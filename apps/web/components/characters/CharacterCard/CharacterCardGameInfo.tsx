@@ -18,6 +18,7 @@ import {
 } from "@/lib/character/derivedStats";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { CharacterCardSlide } from "./characterCardUi";
+import { ProficiencyPips } from "@/components/characters/PlayerSheet/ProficiencyPips";
 import { cn } from "@/lib/utils";
 
 interface CharacterCardGameInfoProps {
@@ -164,10 +165,10 @@ export default function CharacterCardGameInfo({ characterId }: CharacterCardGame
                             >
                                 <span className="flex items-center gap-2">
                                     {save.proficient && (
-                                        <span
-                                            className="size-1.5 shrink-0 rounded-full bg-primary"
-                                            title={t("character.proficient")}
-                                            aria-label={t("character.proficient")}
+                                        <ProficiencyPips
+                                            scale={1}
+                                            proficientLabel={t("character.proficient")}
+                                            expertiseLabel={t("character.expertise")}
                                         />
                                     )}
                                     <span>{tAbilities(save.stat)}</span>
@@ -192,13 +193,11 @@ export default function CharacterCardGameInfo({ characterId }: CharacterCardGame
                                 )}
                             >
                                 <span className="flex items-center gap-2">
-                                    {skill.proficient && (
-                                        <span
-                                            className="size-1.5 shrink-0 rounded-full bg-primary"
-                                            title={t("character.proficient")}
-                                            aria-label={t("character.proficient")}
-                                        />
-                                    )}
+                                    <ProficiencyPips
+                                        scale={skill.proficiencyScale}
+                                        proficientLabel={t("character.proficient")}
+                                        expertiseLabel={t("character.expertise")}
+                                    />
                                     <span>{tSkills(skill.slug)}</span>
                                 </span>
                                 <span className="font-semibold tabular-nums">

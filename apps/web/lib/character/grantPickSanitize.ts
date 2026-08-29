@@ -4,11 +4,12 @@ import { getClassSubclassLevel, getSubclass } from "@rpv/content";
 import type { SystemKey } from "@/presets";
 import { getStepIndexForGrantPickKey } from "./characterCreationSteps";
 import { getFixedRefsForGrantType } from "./characterGrants";
-import { collectPendingChoiceGrants } from "./grantChoices";
+import { collectPendingChoiceGrants, listProficientSkillRefs } from "./grantChoices";
 import {
     findGrantPicksOnOwnedRefs,
     getOtherPickedRefsForGrantType,
 } from "./grantChoiceOptions";
+import { parseGrantPickKey } from "./creationSteps/grantPickKey";
 import { sanitizeInventory } from "./inventory";
 import { mergeStartingGrants } from "./materializeInventoryGrants";
 import {
@@ -122,6 +123,36 @@ export function pruneConflictingGrantPicks(
             return nextPicks;
         }
     }
+}
+
+function pruneExpertisePicksWithoutProficiency(
+    grantPicks: Record<string, string>,
+    selections: CharacterSelections,
+    locale: Locale,
+    system: SystemKey,
+    characterLevel: number
+): Record<string, string> {
+    const proficient = listProficientSkillRefs(
+        selections,
+        locale,
+        characterLevel,
+        system
+    );
+    const next = { ...grantPicks };
+
+    for (const [key, raw] of Object.entries(next)) {
+        const parsed = parseGrantPickKey(key);
+        if (parsed?.grantType !== "skill_expertise") {
+            continue;
+        }
+
+        const ref = raw.trim();
+        if (!ref || !proficient.has(ref)) {
+            delete next[key];
+        }
+    }
+
+    return next;
 }
 
 function isSubclassValidForClass(
@@ -303,15 +334,29 @@ export function sanitizeGrantPicks(
         characterLevel
     );
 
+    const expertiseFilteredPicks = pruneExpertisePicksWithoutProficiency(
+        sanitizedPicks,
+        {
+            ...selections,
+            choices: {
+                ...selections.choices,
+                grantPicks: sanitizedPicks,
+            },
+        },
+        locale,
+        system,
+        characterLevel
+    );
+
     const picksChanged =
-        JSON.stringify(sanitizedPicks) !== JSON.stringify(grantPicks);
+        JSON.stringify(expertiseFilteredPicks) !== JSON.stringify(grantPicks);
 
     let next: CharacterSelections = picksChanged
         ? {
               ...selections,
               choices: {
                   ...selections.choices,
-                  grantPicks: sanitizedPicks,
+                  grantPicks: expertiseFilteredPicks,
               },
           }
         : selections;

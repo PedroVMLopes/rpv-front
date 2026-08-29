@@ -85,6 +85,20 @@ export function mapGrantPickToStep(
             return stepId;
         }
 
+        if (grant?.grantType === "skill_expertise") {
+            const stepId = `${prefix}-expertise`;
+
+            if (graph?.isValidStepId(stepId) || !graph) {
+                return stepId;
+            }
+
+            if (graph?.isValidStepId(`${prefix}-choices`)) {
+                return `${prefix}-choices`;
+            }
+
+            return stepId;
+        }
+
         const choicesStepId = `${prefix}-choices`;
 
         if (graph?.isValidStepId(choicesStepId) || !graph) {

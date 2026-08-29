@@ -14,7 +14,7 @@ export type ContentUseActionSpec = {
     label: string;
     kind: "roll" | "cast";
     /** Distinguishes split attack vs damage buttons on item cards. */
-    role?: "attack" | "damage";
+    role?: "attack" | "damage" | "ritual";
     /** i18n key under contentDetail for caption below the button. */
     captionKey?: "toHitCaption" | "damageCaption";
     disabled?: boolean;

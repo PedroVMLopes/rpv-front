@@ -19,6 +19,7 @@ const GRANT_TYPE_TO_KIND: Record<
 > = {
     ability: "ability",
     skill_proficiency: "proficiency",
+    skill_expertise: "proficiency",
     weapon_proficiency: "proficiency",
     tool_proficiency: "proficiency",
     armor_proficiency: "proficiency",
@@ -27,6 +28,10 @@ const GRANT_TYPE_TO_KIND: Record<
     spell: "spell",
     resource: "resource",
 };
+
+function proficiencyScaleFromGrant(grant: Grant): number | undefined {
+    return grant.grantType === "skill_expertise" ? 2 : undefined;
+}
 
 function grantKindFromType(grantType: Grant["grantType"]): CharacterGrant["kind"] | null {
     if (
@@ -90,7 +95,7 @@ export function statModifierGrantsToModifiers(
             operation: "add" as const,
             value: grant.amount!,
             source,
-            duration: { type: "permanent" as const },
+            duration: grant.duration ?? { type: "permanent" as const },
             stacking: "stack" as const,
             priority: 0,
         }));
@@ -117,12 +122,14 @@ function optionToGrant(
             : option.optionType === "language"
               ? "language"
               : "proficiency");
+    const proficiencyScale = proficiencyScaleFromGrant(grant);
 
     return {
         id: `${source.type}-${source.id}-${grant.grantType}-${option.ref}-${index}`,
         kind,
         ref: option.ref,
         source,
+        ...(proficiencyScale !== undefined ? { proficiencyScale } : {}),
     };
 }
 
@@ -241,6 +248,8 @@ export function choiceGrantToCharacterGrant(
         return null;
     }
 
+    const proficiencyScale = proficiencyScaleFromGrant(grant);
+
     return {
         id: `${source.type}-${source.id}-${choiceKey}-${ref}`,
         kind,
@@ -248,6 +257,7 @@ export function choiceGrantToCharacterGrant(
         source,
         name,
         ...(grant.activation ? { activation: grant.activation } : {}),
+        ...(proficiencyScale !== undefined ? { proficiencyScale } : {}),
     };
 }
 

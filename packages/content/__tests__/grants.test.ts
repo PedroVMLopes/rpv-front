@@ -173,6 +173,28 @@ describe("fixedGrantsToCharacterGrants", () => {
         });
     });
 
+    it("copies proficiencyScale onto skill_expertise character grants", () => {
+        const grant: Grant = {
+            grantType: "skill_expertise",
+            choose: 1,
+            selectionFilter: { fromProficientSkills: true },
+        };
+
+        const result = choiceGrantToCharacterGrant(
+            grant,
+            { type: "class", id: "rogue" },
+            "class:rogue:1:skill_expertise:0:0",
+            "stealth",
+            "Stealth"
+        );
+
+        expect(result).toMatchObject({
+            kind: "proficiency",
+            ref: "stealth",
+            proficiencyScale: 2,
+        });
+    });
+
     it("copies activation onto ability character grants", () => {
         const grants: Grant[] = [
             {

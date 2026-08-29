@@ -26,6 +26,7 @@ export type SpellContentFormatters = {
     tAbilities: (key: StatKey) => string;
     tContentDetail: (key: string) => string;
     tUse: () => string;
+    tRitual: () => string;
     missingValue: string;
 };
 
@@ -33,6 +34,7 @@ export type BuildSpellContentModelInput = {
     spell: SpellAction;
     catalogEntry?: SpellCatalogEntry;
     spellcastingAbility?: StatKey | null;
+    concentrating?: boolean;
 };
 
 function schoolToKey(school: string): string {
@@ -124,11 +126,6 @@ function resolveTargetLabel(
     return formatters.tSpells(`target.${displayMeta.targetKind}`);
 }
 
-function consumesSpellSlot(spell: SpellAction, catalogEntry?: SpellCatalogEntry): boolean {
-    const levelInt = catalogEntry?.levelInt ?? spell.levelInt;
-    return levelInt !== null && levelInt > 0;
-}
-
 function resolveSpellDamageButtonLabel(profile: SpellRollProfile): string {
     return formatRollButtonLabel({
         primary: getSpellRollUseLabel(profile),
@@ -136,7 +133,41 @@ function resolveSpellDamageButtonLabel(profile: SpellRollProfile): string {
     });
 }
 
-function resolveUseActions(
+function appendRitualAction(
+    result: {
+        useAction?: ContentUseActionSpec;
+        useActions?: ContentUseActionSpec[];
+    },
+    catalogEntry: SpellCatalogEntry | undefined,
+    formatters: SpellContentFormatters
+): {
+    useAction?: ContentUseActionSpec;
+    useActions?: ContentUseActionSpec[];
+} {
+    if (!catalogEntry?.canBeCastAsRitual) {
+        return result;
+    }
+
+    const ritual: ContentUseActionSpec = {
+        kind: "cast",
+        role: "ritual",
+        label: formatters.tRitual(),
+    };
+    const existing =
+        result.useActions && result.useActions.length > 0
+            ? result.useActions
+            : result.useAction
+              ? [result.useAction]
+              : [];
+    const next = [...existing, ritual];
+
+    return {
+        useAction: next[0],
+        useActions: next,
+    };
+}
+
+function resolvePrimaryUseActions(
     spell: SpellAction,
     catalogEntry: SpellCatalogEntry | undefined,
     formatters: SpellContentFormatters
@@ -190,23 +221,34 @@ function resolveUseActions(
         };
     }
 
-    if (consumesSpellSlot(spell, catalogEntry)) {
-        return {
-            useAction: {
-                kind: "cast",
-                label: formatters.tUse(),
-            },
-        };
-    }
+    return {
+        useAction: {
+            kind: "cast",
+            label: formatters.tUse(),
+        },
+    };
+}
 
-    return {};
+function resolveUseActions(
+    spell: SpellAction,
+    catalogEntry: SpellCatalogEntry | undefined,
+    formatters: SpellContentFormatters
+): {
+    useAction?: ContentUseActionSpec;
+    useActions?: ContentUseActionSpec[];
+} {
+    return appendRitualAction(
+        resolvePrimaryUseActions(spell, catalogEntry, formatters),
+        catalogEntry,
+        formatters
+    );
 }
 
 export function buildSpellContentModel(
     input: BuildSpellContentModelInput,
     formatters: SpellContentFormatters
 ): SpellContentModels {
-    const { spell, catalogEntry, spellcastingAbility } = input;
+    const { spell, catalogEntry, spellcastingAbility, concentrating } = input;
     const { useAction, useActions } = resolveUseActions(
         spell,
         catalogEntry,
@@ -218,6 +260,22 @@ export function buildSpellContentModel(
 
     if (targetLabel) {
         badges.push({ label: targetLabel, variant: "muted" });
+    }
+
+    if (catalogEntry?.requiresConcentration) {
+        badges.push({
+            label: concentrating
+                ? formatters.tSpells("badge.concentrating")
+                : formatters.tSpells("badge.concentration"),
+            variant: concentrating ? "default" : "muted",
+        });
+    }
+
+    if (catalogEntry?.canBeCastAsRitual) {
+        badges.push({
+            label: formatters.tSpells("badge.ritual"),
+            variant: "muted",
+        });
     }
 
     const baseRows = [

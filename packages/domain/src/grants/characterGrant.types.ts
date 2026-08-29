@@ -39,6 +39,11 @@ export interface CharacterGrant {
     name?: string;
     /** Quantity for resource grants (e.g. spell slot count). */
     amount?: number;
+    /**
+     * How many times proficiency bonus applies when `kind` is `"proficiency"`.
+     * Omitted means 1. Values ≥ 2 are double (or more) proficiency.
+     */
+    proficiencyScale?: number;
     /** Present when this grant belongs in the action catalog. */
     activation?: GrantActivation;
     /** Present on resource grants. */

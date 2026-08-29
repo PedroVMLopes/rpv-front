@@ -16,6 +16,7 @@ type ContentSummaryCardProps = {
     onUse?: (useAction: ContentUseActionSpec) => void;
     /** Rendered to the left of the expand button (e.g. inventory equip menu). */
     headerActions?: ReactNode;
+    afterContent?: ReactNode;
     /** When true, omit shortDescription from the list card (detail modal still has it). */
     hideShortDescription?: boolean;
 };
@@ -35,6 +36,7 @@ export function ContentSummaryCard({
     onExpand,
     onUse,
     headerActions,
+    afterContent,
     hideShortDescription = false,
 }: ContentSummaryCardProps) {
     const t = useTranslations("contentDetail");
@@ -44,7 +46,7 @@ export function ContentSummaryCard({
     const shortDescription = hideShortDescription
         ? undefined
         : model.shortDescription;
-    const showBody = showUse || Boolean(shortDescription);
+    const showBody = showUse || Boolean(shortDescription) || Boolean(afterContent);
 
     return (
         <div className="flex h-full flex-col overflow-hidden rounded-lg border-custom shadow-xs bg-popover text-popover-foreground">
@@ -112,6 +114,7 @@ export function ContentSummaryCard({
                             ))}
                         </div>
                     ) : null}
+                    {afterContent}
                 </div>
             ) : null}
         </div>

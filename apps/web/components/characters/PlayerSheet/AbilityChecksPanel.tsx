@@ -17,7 +17,7 @@ import {
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { cn } from "@/lib/utils";
 import { AbilityStone } from "./AbilityStone";
-import { sheetInset } from "./playerSheetSurfaces";
+import { ProficiencyPips } from "./ProficiencyPips";
 import { useRollAssistant } from "./roll/RollAssistantProvider";
 
 type AbilityChecksPanelProps = {
@@ -29,6 +29,7 @@ type CheckRowProps = {
     rollLabel: string;
     modifier: number;
     proficient: boolean;
+    proficiencyScale?: number;
     quiet?: boolean;
     onRoll: () => void;
 };
@@ -38,15 +39,20 @@ function CheckRow({
     rollLabel,
     modifier,
     proficient,
+    proficiencyScale,
     quiet = false,
     onRoll,
 }: CheckRowProps) {
     const tCharacter = useTranslations("character");
     const tSheet = useTranslations("playerSheet");
     const tRoll = useTranslations("playerSheet.roll");
-    const proficiencyLabel = proficient
-        ? tCharacter("proficient")
-        : tSheet("notProficient");
+    const scale = proficiencyScale ?? (proficient ? 1 : 0);
+    const proficiencyLabel =
+        scale >= 2
+            ? tCharacter("expertise")
+            : proficient
+              ? tCharacter("proficient")
+              : tSheet("notProficient");
 
     return (
         <button
@@ -55,20 +61,16 @@ function CheckRow({
             aria-label={tRoll("rollAction", { label: rollLabel })}
             className={cn(
                 "flex w-full items-center justify-between gap-2 rounded-lg px-2.5 text-left text-sm",
-                proficient && "border-primary/40",
+                scale > 0 && "border-primary/40",
                 "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             )}
         >
             <span className="flex min-w-0 flex-1 items-center gap-2">
-                <span
-                    className={cn(
-                        "size-1.5 shrink-0 rounded-full border",
-                        proficient
-                            ? "border-primary bg-primary"
-                            : "border-muted-foreground/40"
-                    )}
-                    title={proficiencyLabel}
-                    aria-label={proficiencyLabel}
+                <ProficiencyPips
+                    scale={scale}
+                    proficientLabel={proficiencyLabel}
+                    expertiseLabel={tCharacter("expertise")}
+                    showEmpty
                 />
                 <span
                     className={cn(
@@ -213,6 +215,7 @@ export function AbilityChecksPanel({ stored }: AbilityChecksPanelProps) {
                                                 rollLabel={skillLabel}
                                                 modifier={skill.modifier}
                                                 proficient={skill.proficient}
+                                                proficiencyScale={skill.proficiencyScale}
                                                 onRoll={() =>
                                                     openRollRequest(
                                                         buildSkillRollRequest(

@@ -30,7 +30,13 @@ export function CastingStatsPanel({ stored }: CastingStatsPanelProps) {
     const getResolvedStats = useCharacterStore((state) => state.getResolvedStats);
     const resolved =
         getResolvedStats(stored.id) ??
-        getResolvedStatsForCharacter(storedCharacterToProps(stored));
+        getResolvedStatsForCharacter(
+            storedCharacterToProps(stored),
+            stored.selections.inventory,
+            stored.system,
+            [],
+            { activeConditions: stored.session?.activeConditions }
+        );
 
     const classSlug = stored.selections.characterClass;
     const classEntry = classSlug

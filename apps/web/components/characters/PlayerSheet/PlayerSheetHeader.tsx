@@ -125,6 +125,8 @@ type PlayerSheetHeaderProps = {
     onTabChange: (tab: PlayerSheetTabId) => void;
 };
 
+const EMPTY_CONDITIONS: string[] = [];
+
 export function PlayerSheetHeader({
     stored,
     activeTab,
@@ -135,6 +137,19 @@ export function PlayerSheetHeader({
     const tCombat = useTranslations("combat");
     const contentLocale = useContentLocale((state) => state.contentLocale);
     const getResolvedStats = useCharacterStore((state) => state.getResolvedStats);
+    const setCharacterSession = useCharacterStore(
+        (state) => state.setCharacterSession
+    );
+    const concentratingOn = useCharacterStore(
+        (state) =>
+            state.characters.find((c) => c.id === stored.id)?.session
+                ?.concentratingOn
+    );
+    const activeConditions = useCharacterStore(
+        (state) =>
+            state.characters.find((c) => c.id === stored.id)?.session
+                ?.activeConditions ?? EMPTY_CONDITIONS
+    );
     const currentHp = useCharacterStore(
         (state) =>
             state.characters.find((c) => c.id === stored.id)?.resources[
@@ -153,6 +168,24 @@ export function PlayerSheetHeader({
         : 0;
     const walkSpeed = getCharacterWalkSpeed(stored.selections, contentLocale);
     const initiativeLabel = formatModifier(initiative);
+    const concentratingSpell = concentratingOn
+        ? contentRepo(stored.system).getSpell(
+              concentratingOn.slug,
+              contentLocale
+          )
+        : undefined;
+    const concentratingLabel = concentratingOn
+        ? t("combat.concentratingOn", {
+              name: concentratingSpell?.name ?? concentratingOn.slug,
+          })
+        : null;
+    const conditionChips = activeConditions.map((slug) => {
+        const entry = contentRepo(stored.system).getCondition(
+            slug,
+            contentLocale
+        );
+        return { slug, name: entry?.name ?? slug };
+    });
 
     const raceLine = getRaceLineFromSelections(
         stored.selections,
@@ -214,6 +247,55 @@ export function PlayerSheetHeader({
                             <p className="truncate text-xs sm:text-sm font-medium">
                                 {levelLine}
                             </p>
+                        ) : null}
+                        {concentratingLabel ? (
+                            <button
+                                type="button"
+                                className="mt-1 inline-flex max-w-full items-center gap-1 rounded-full bg-primary/15 px-2 py-0.5 text-xs font-medium text-primary"
+                                onClick={() =>
+                                    setCharacterSession(stored.id, {
+                                        concentratingOn: null,
+                                    })
+                                }
+                                aria-label={t("combat.stopConcentrating")}
+                            >
+                                <span className="truncate">{concentratingLabel}</span>
+                                {concentratingOn?.slotLevel !== undefined ? (
+                                    <span className="shrink-0 tabular-nums">
+                                        {t("combat.slotLevel", {
+                                            level: concentratingOn.slotLevel,
+                                        })}
+                                    </span>
+                                ) : null}
+                            </button>
+                        ) : null}
+                        {conditionChips.length > 0 ? (
+                            <ul className="mt-1 flex flex-wrap gap-1">
+                                {conditionChips.map((chip) => (
+                                    <li key={chip.slug}>
+                                        <button
+                                            type="button"
+                                            className="inline-flex max-w-full items-center rounded-full bg-secondary px-2 py-0.5 text-xs font-medium"
+                                            onClick={() =>
+                                                setCharacterSession(stored.id, {
+                                                    activeConditions:
+                                                        activeConditions.filter(
+                                                            (entry) =>
+                                                                entry !==
+                                                                chip.slug
+                                                        ),
+                                                })
+                                            }
+                                            aria-label={t(
+                                                "combat.removeCondition",
+                                                { name: chip.name }
+                                            )}
+                                        >
+                                            {chip.name}
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
                         ) : null}
                     </div>
 

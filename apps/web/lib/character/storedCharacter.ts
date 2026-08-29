@@ -49,6 +49,17 @@ export type CharacterNote = {
     color?: NoteColor;
 };
 
+export type CharacterConcentration = {
+    slug: string;
+    /** Slot level used as a label only; does not change damage dice. */
+    slotLevel?: number;
+};
+
+export type CharacterSession = {
+    concentratingOn?: CharacterConcentration | null;
+    activeConditions?: string[];
+};
+
 export type StoredCharacter = {
     id: string;
     schemaVersion: number;
@@ -65,4 +76,9 @@ export type StoredCharacter = {
     systemData: Record<string, unknown>;
     /** Session notes authored on the sheet. Missing means none yet. */
     notes?: CharacterNote[];
+    /**
+     * Table-session currents that rebuild must not wipe (concentration,
+     * active conditions). Distinct from derived grants/modifiers.
+     */
+    session?: CharacterSession;
 };

@@ -86,5 +86,13 @@ describe("StaticContentRepository", () => {
         expect(repo.getEquipmentPack("missing")).toBeUndefined();
         expect(repo.listFeats()).toEqual([]);
         expect(repo.getFeat("lucky")).toBeUndefined();
+        expect(repo.listConditions().map((entry) => entry.slug)).toEqual([
+            "blessed",
+            "poisoned",
+        ]);
+        expect(repo.getCondition("blessed")?.rollEffects?.[0]?.kind).toBe(
+            "extra_die"
+        );
+        expect(repo.getCondition("poisoned", "pt-BR")?.name).toBe("Envenenado");
     });
 });

@@ -125,6 +125,7 @@
     "skills": "Perícias",
     "savingThrows": "Testes de Resistência",
     "proficient": "Proficiente",
+    "expertise": "Especialização",
     "proficiencyBonus": "Bônus de Proficiência",
     "initiative": "Iniciativa",
     "passivePerception": "Percepção Passiva",
@@ -311,6 +312,7 @@
       "class-level-1-cantrips": "Truques de nível 1",
       "class-level-1-spells": "Magias de nível 1",
       "class-level-1-choices": "Escolhas de nível 1",
+      "expertise": "Especialização",
       "class-level-2-cantrips": "Truques de nível 2",
       "class-level-2-spells": "Magias de nível 2",
       "class-level-2-choices": "Escolhas de nível 2",
@@ -490,7 +492,14 @@
       "damageOnlyStepTitle": "{label} — dano {index}/{total} (d{sides})",
       "saveDcLabel": "CD {dc}",
       "attackDamageToast": "{label}: ataque {attackTotal}, dano {damageTotal}",
-      "damageOnlyToast": "{label}: {total} de dano"
+      "damageOnlyToast": "{label}: {total} de dano",
+      "advantageMode": "Rolar com",
+      "normal": "Normal",
+      "advantage": "Vantagem",
+      "disadvantage": "Desvantagem",
+      "extraDieStepTitle": "{label} — d{sides} extra",
+      "d20PairTitle": "{label} — d20 {modifier} ({index}/{of})",
+      "attackPairTitle": "{label} — ataque d20 {modifier} ({index}/{of})"
     },
     "noneYet": "Nenhum ainda",
     "levelLine": "Nível {level}",
@@ -578,6 +587,15 @@
       "features": "Características",
       "roll": "Rolar",
       "use": "Usar",
+      "castAsRitual": "Conjurar como ritual",
+      "upcastSlot": "Nível do espaço",
+      "slotLevel": "Nível {level}",
+      "stopConcentrating": "Parar concentração",
+      "concentrationHint": "Use esta magia para marcar concentração.",
+      "concentratingOn": "Concentrando: {name}",
+      "addCondition": "Adicionar condição",
+      "addConditionPlaceholder": "Escolha uma condição",
+      "removeCondition": "Remover {name}",
       "naturalWeapon": "Desarmado",
       "noActions": "Nenhuma ação disponível",
       "noResources": "Nenhum recurso de classe",
@@ -788,6 +806,11 @@
         "short_rest": "descanso curto",
         "long_rest": "descanso longo"
       }
+    },
+    "badge": {
+      "concentration": "Concentração",
+      "ritual": "Ritual",
+      "concentrating": "Concentrando"
     }
   }
 }

@@ -42,10 +42,11 @@ export function InventorySummaryRow({ stored }: InventorySummaryRowProps) {
         [stored.selections.inventory, stored.system]
     );
     const capacity = useMemo(() => {
-        const strength = resolveStats(stored.baseStats, stored.modifiers)
-            .strength;
+        const strength = resolveStats(stored.baseStats, stored.modifiers, {
+            activeConditions: stored.session?.activeConditions,
+        }).strength;
         return deriveCarryingCapacity(strength, stored.system);
-    }, [stored.baseStats, stored.modifiers, stored.system]);
+    }, [stored.baseStats, stored.modifiers, stored.session, stored.system]);
     const capacityValue = capacity ?? 0;
     const fillPercent =
         capacityValue > 0

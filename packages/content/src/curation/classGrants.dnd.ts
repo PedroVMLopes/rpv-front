@@ -779,6 +779,30 @@ export const dndClasses: ClassEntry[] = [
                 ],
             },
         ],
+        featuresByLevel: [
+            {
+                level: 1,
+                grants: [
+                    {
+                        grantType: "skill_expertise",
+                        choose: 2,
+                        description: "Expertise",
+                        selectionFilter: { fromProficientSkills: true },
+                    },
+                ],
+            },
+            {
+                level: 6,
+                grants: [
+                    {
+                        grantType: "skill_expertise",
+                        choose: 2,
+                        description: "Expertise",
+                        selectionFilter: { fromProficientSkills: true },
+                    },
+                ],
+            },
+        ],
     },
     {
         slug: "cleric",

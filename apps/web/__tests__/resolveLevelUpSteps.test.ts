@@ -183,4 +183,24 @@ describe("resolveLevelUpSteps", () => {
             false
         );
     });
+
+    it("includes rogue expertise picks when leveling to 6", () => {
+        const graph = resolveLevelUpSteps({
+            formValues: {
+                race: "human",
+                characterClass: "rogue",
+                level: 6,
+            },
+            fromLevel: 5,
+            targetLevel: 6,
+            system: "dnd",
+            contentLocale: "en",
+        });
+
+        const ids = graph.steps.map((step) => step.id);
+
+        expect(ids).toContain("class-level-6");
+        expect(ids).toContain("class-level-6-expertise");
+        expect(ids).not.toContain("class-level-1-expertise");
+    });
 });

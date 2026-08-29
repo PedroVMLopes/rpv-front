@@ -28,6 +28,7 @@ flowchart TD
 5. **`deriveCharacterGrants`** — resolves grants + `grantPicks` into domain `CharacterGrant[]`.
 6. **`deriveResourceTotals`** — sums `kind: "resource"` grants by `ref` into **maxima**.
 7. **`mergeSessionResources`** — writes `stored.resources` as **current** values: for each derived ref except HP, `current = clamp(existing ?? max, 0, max)`. HP is synced separately via `syncResourceHpToResolvedMax`. Rebuild / load therefore **preserves** spent slots, rage, and ki.
+8. **`session`** — table-session currents (`concentratingOn`, `activeConditions`) are **not** derived. Rebuild sanitizes and keeps them, same as notes. Rest does **not** clear them. Live stats (`getResolvedStats`) pass `ResolveContext { activeConditions }` so `duration.conditional` modifiers apply; roll riders (advantage, extra dice) are not StatKeys and stay in the dice assistant.
 
 `getResourceMax` for class pools (ki, slots, rage) also reads `deriveResourceTotals(stored.grants)` so in-play `updateResource` clamps against the rebuilt maximum.
 
@@ -48,6 +49,7 @@ Starting loot from class/background grants is materialized on every build via `m
 | Grant pick answers | `selections.choices.grantPicks` | Keys include feature level segment (see below) |
 | Resolved abilities, spells, proficiencies | `grants[]` | Traceable via `source` |
 | Aggregated totals (spell slots, rage, ki) | `resources` | **Current** remaining; maxima come from grants. Rebuild preserves current (clamped). HP is form-driven + `syncResourceHpToResolvedMax`. |
+| Table session (concentration, conditions) | `session` | Optional. Rebuild preserves like notes. `schemaVersion` stays **1**. |
 | Ability scores, AC, free text | `systemData` / `baseStats` | Preset-specific |
 
 Item definitions (Open5e catalog + RPV overlays) live in `@rpv/content`; inventory **state** lives in `selections.inventory`. Item `slug` values are Open5e keys (`srd_*`) or `rpv_*`.
@@ -218,7 +220,7 @@ Read-only content access is abstracted in `@rpv/content` (`ContentRepository`,
 `StaticContentRepository`, `getContentRepository`). The web app uses
 `apps/web/lib/content/contentRepository.ts` (`contentRepo(system)`). Lookups
 (slots, natural weapons, system combat grants, packs, race `levelGrants`,
-classes, items) go through the repository — not raw `dnd*` maps. The API is
+classes, items, conditions) go through the repository — not raw `dnd*` maps. The API is
 **synchronous**; remote I/O is still deferred (P3). A future
 `SupabaseContentRepository` will store the same `ClassEntry` / `ItemEntry` /
 catalog JSON shapes; grant resolution stays in `@rpv/content` grant helpers.

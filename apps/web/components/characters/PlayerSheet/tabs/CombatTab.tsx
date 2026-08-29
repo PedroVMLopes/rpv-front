@@ -24,7 +24,7 @@ export function CombatTab({ stored }: CombatTabProps) {
                 <CastingStatsPanel stored={stored} />
                 <ClassResourcesPanel stored={stored} />
                 <DefenseSavesPanel stored={stored} />
-                <ConditionsPanel />
+                <ConditionsPanel stored={stored} />
                 <CombatRemindersPanel stored={stored} />
             </div>
         </div>

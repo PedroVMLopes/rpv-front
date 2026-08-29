@@ -11,6 +11,7 @@ import { getRace, getSubrace } from "@/lib/catalog/raceCatalog";
 import { collectGrantSources } from "./characterGrants";
 import { buildSelectionsFromForm } from "./characterAdapter";
 import { readLevelFromForm } from "./level";
+import { parseGrantPickKey } from "./creationSteps/grantPickKey";
 import type { CharacterSelections } from "./storedCharacter";
 
 export type PendingChoiceGrant = {
@@ -20,6 +21,56 @@ export type PendingChoiceGrant = {
     label: string;
     options: Array<{ value: string; label: string }>;
 };
+
+const SKILL_SLUGS = new Set(dndSkills.map((skill) => skill.slug));
+
+/**
+ * Skill slugs the character is already proficient in: fixed skill_proficiency
+ * grants plus current skill_proficiency grant picks.
+ */
+export function listProficientSkillRefs(
+    selections: CharacterSelections,
+    locale: Locale,
+    characterLevel = 1,
+    system: SystemKey = "dnd"
+): Set<string> {
+    const refs = new Set<string>();
+
+    for (const entry of collectGrantSources(
+        selections,
+        locale,
+        characterLevel,
+        system
+    )) {
+        for (const grant of entry.grants) {
+            if (grant.grantType !== "skill_proficiency" || grant.choose !== 0) {
+                continue;
+            }
+
+            for (const option of grant.options ?? []) {
+                if (option.optionType === "skill" && SKILL_SLUGS.has(option.ref)) {
+                    refs.add(option.ref);
+                }
+            }
+        }
+    }
+
+    const grantPicks = selections.choices.grantPicks ?? {};
+
+    for (const [key, raw] of Object.entries(grantPicks)) {
+        const ref = raw.trim();
+        if (!ref || !SKILL_SLUGS.has(ref)) {
+            continue;
+        }
+
+        const parsed = parseGrantPickKey(key);
+        if (parsed?.grantType === "skill_proficiency") {
+            refs.add(ref);
+        }
+    }
+
+    return refs;
+}
 
 function formatChoiceLabel(
     baseLabel: string,
@@ -44,7 +95,8 @@ function expandChoiceGrant(
     traitName: string,
     featureLevel?: number,
     system: SystemKey = "dnd",
-    locale: Locale = "en"
+    locale: Locale = "en",
+    proficientSkillRefs: ReadonlySet<string> = new Set()
 ): PendingChoiceGrant[] {
     if (grant.choose <= 0) {
         return [];
@@ -97,6 +149,19 @@ function expandChoiceGrant(
         }));
     }
 
+    if (
+        grant.grantType === "skill_expertise" &&
+        grant.selectionFilter?.fromProficientSkills
+    ) {
+        const skillNames = new Map(
+            dndSkills.map((skill) => [skill.slug, skill.name])
+        );
+        options = [...proficientSkillRefs].map((slug) => ({
+            value: slug,
+            label: skillNames.get(slug) ?? slug,
+        }));
+    }
+
     const baseLabel =
         grant.description?.trim() ||
         traitName ||
@@ -128,7 +193,8 @@ function collectFromTraits(
     traits: Array<{ name: string; grants: Grant[] }>,
     source: ModifierSource,
     system: SystemKey = "dnd",
-    locale: Locale = "en"
+    locale: Locale = "en",
+    proficientSkillRefs: ReadonlySet<string> = new Set()
 ): PendingChoiceGrant[] {
     const pending: PendingChoiceGrant[] = [];
 
@@ -142,7 +208,8 @@ function collectFromTraits(
                     trait.name,
                     undefined,
                     system,
-                    locale
+                    locale,
+                    proficientSkillRefs
                 )
             );
         });
@@ -156,7 +223,8 @@ function collectFromGrants(
     source: ModifierSource,
     featureLevel?: number,
     system: SystemKey = "dnd",
-    locale: Locale = "en"
+    locale: Locale = "en",
+    proficientSkillRefs: ReadonlySet<string> = new Set()
 ): PendingChoiceGrant[] {
     const pending: PendingChoiceGrant[] = [];
 
@@ -169,7 +237,8 @@ function collectFromGrants(
                 "",
                 featureLevel,
                 system,
-                locale
+                locale,
+                proficientSkillRefs
             )
         );
     });
@@ -184,6 +253,12 @@ export function collectPendingChoiceGrants(
     system: SystemKey = "dnd"
 ): PendingChoiceGrant[] {
     const pending: PendingChoiceGrant[] = [];
+    const proficientSkillRefs = listProficientSkillRefs(
+        selections,
+        locale,
+        characterLevel,
+        system
+    );
 
     for (const entry of collectGrantSources(
         selections,
@@ -199,7 +274,13 @@ export function collectPendingChoiceGrants(
             const subrace = getSubrace(selections.subrace, locale);
             if (subrace) {
                 pending.push(
-                    ...collectFromTraits(subrace.traits, entry.source, system, locale)
+                    ...collectFromTraits(
+                        subrace.traits,
+                        entry.source,
+                        system,
+                        locale,
+                        proficientSkillRefs
+                    )
                 );
             }
             continue;
@@ -217,13 +298,20 @@ export function collectPendingChoiceGrants(
                     entry.source,
                     undefined,
                     system,
-                    locale
+                    locale,
+                    proficientSkillRefs
                 )
             );
 
             if (race) {
                 pending.push(
-                    ...collectFromTraits(race.traits, entry.source, system, locale)
+                    ...collectFromTraits(
+                        race.traits,
+                        entry.source,
+                        system,
+                        locale,
+                        proficientSkillRefs
+                    )
                 );
             }
             continue;
@@ -235,7 +323,8 @@ export function collectPendingChoiceGrants(
                 entry.source,
                 entry.featureLevel,
                 system,
-                locale
+                locale,
+                proficientSkillRefs
             )
         );
     }

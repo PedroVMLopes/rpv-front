@@ -8,10 +8,13 @@ import {
     resolveDamageOnlyTotal,
 } from "@/lib/roll/buildRollRequest";
 import { formatModifier } from "@/lib/character/skillModifiers";
+import { pickD20, type AdvantageMode } from "@/lib/roll/rollRiders";
+import { Button } from "@/components/ui/button";
 import { DiceResultStep } from "./DiceResultStep";
 import { DiceSelectStep } from "./DiceSelectStep";
 import {
     getActiveRollSides,
+    getRequestPhase,
     useRollAssistant,
 } from "./RollAssistantProvider";
 
@@ -19,11 +22,29 @@ type DiceRollAssistantProps = {
     onDismiss: () => void;
 };
 
+const ADVANTAGE_MODES: AdvantageMode[] = [
+    "normal",
+    "advantage",
+    "disadvantage",
+];
+
 export function DiceRollAssistant({ onDismiss }: DiceRollAssistantProps) {
     const t = useTranslations("playerSheet.roll");
-    const { state, selectDie, submitRollValue } = useRollAssistant();
+    const {
+        state,
+        selectDie,
+        submitRollValue,
+        setAdvantageMode,
+    } = useRollAssistant();
     const { mode, request, selectedDie, stepIndex, attackRoll, damageRolls } =
         state;
+    const phase = getRequestPhase(state);
+    const showAdvantageToggle =
+        mode === "request" &&
+        (request?.kind === "d20_test" ||
+            request?.kind === "attack_then_damage") &&
+        state.d20Rolls.length === 0 &&
+        state.extraDieRolls.length === 0;
 
     const handleDismiss = () => {
         onDismiss();
@@ -45,22 +66,42 @@ export function DiceRollAssistant({ onDismiss }: DiceRollAssistantProps) {
         }
 
         if (request.kind === "d20_test") {
-            const total = resolveD20TestTotal(request, value);
+            const result = submitRollValue(value);
+            if (result === "continue") {
+                return;
+            }
+
+            const d20Rolls =
+                phase?.type === "d20"
+                    ? [...state.d20Rolls, value]
+                    : state.d20Rolls;
+            const extraDieRolls =
+                phase?.type === "extra_die"
+                    ? [...state.extraDieRolls, value]
+                    : state.extraDieRolls;
+            const total = resolveD20TestTotal(
+                request,
+                pickD20(d20Rolls, state.advantageMode),
+                extraDieRolls
+            );
             toast(t("contextToast", { label: request.label, total }));
             handleDismiss();
             return;
         }
 
         if (request.kind === "attack_then_damage") {
-            if (stepIndex === 0) {
+            if (phase?.type === "d20" || phase?.type === "extra_die") {
                 submitRollValue(value);
                 return;
             }
 
             const { attackTotal, damageTotal } = resolveAttackThenDamageTotal(
                 request,
-                attackRoll ?? value,
-                value
+                pickD20(state.d20Rolls, state.advantageMode) ||
+                    attackRoll ||
+                    value,
+                value,
+                state.extraDieRolls
             );
             toast(
                 t("attackDamageToast", {
@@ -94,18 +135,45 @@ export function DiceRollAssistant({ onDismiss }: DiceRollAssistantProps) {
 
     const panelTitle = (() => {
         if (mode === "request" && request) {
+            if (phase?.type === "extra_die") {
+                return t("extraDieStepTitle", {
+                    label: request.label,
+                    sides: phase.sides,
+                });
+            }
+
             if (request.kind === "d20_test") {
+                const modifier = formatModifier(request.modifier);
+                if (phase?.type === "d20" && phase.of > 1) {
+                    return t("d20PairTitle", {
+                        label: request.label,
+                        modifier,
+                        index: phase.index + 1,
+                        of: phase.of,
+                    });
+                }
+
                 return t("contextTitle", {
                     label: request.label,
-                    modifier: formatModifier(request.modifier),
+                    modifier,
                 });
             }
 
             if (request.kind === "attack_then_damage") {
-                if (stepIndex === 0) {
+                if (phase?.type === "d20") {
+                    const modifier = formatModifier(request.attack.modifier);
+                    if (phase.of > 1) {
+                        return t("attackPairTitle", {
+                            label: request.label,
+                            modifier,
+                            index: phase.index + 1,
+                            of: phase.of,
+                        });
+                    }
+
                     return t("attackStepTitle", {
                         label: request.label,
-                        modifier: formatModifier(request.attack.modifier),
+                        modifier,
                     });
                 }
 
@@ -145,6 +213,30 @@ export function DiceRollAssistant({ onDismiss }: DiceRollAssistantProps) {
             <p className="text-center text-sm font-medium sm:text-left">
                 {panelTitle}
             </p>
+            {showAdvantageToggle ? (
+                <div
+                    role="group"
+                    aria-label={t("advantageMode")}
+                    className="flex flex-wrap justify-center gap-1 sm:justify-start"
+                >
+                    {ADVANTAGE_MODES.map((entry) => (
+                        <Button
+                            key={entry}
+                            type="button"
+                            size="sm"
+                            variant={
+                                state.advantageMode === entry
+                                    ? "default"
+                                    : "outline"
+                            }
+                            aria-pressed={state.advantageMode === entry}
+                            onClick={() => setAdvantageMode(entry)}
+                        >
+                            {t(entry)}
+                        </Button>
+                    ))}
+                </div>
+            ) : null}
             {showDieSelection ? (
                 <DiceSelectStep onSelectDie={selectDie} />
             ) : null}

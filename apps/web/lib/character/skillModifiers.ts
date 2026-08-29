@@ -10,7 +10,26 @@ export type SkillModifier = {
     ability: StatKey;
     modifier: number;
     proficient: boolean;
+    /** 0 = not proficient, 1 = proficient, ≥2 = doubled (or more) PB. */
+    proficiencyScale: number;
 };
+
+export function getSkillProficiencyScale(
+    grants: CharacterGrant[],
+    skillSlug: string
+): number {
+    let scale = 0;
+
+    for (const grant of grants) {
+        if (grant.kind !== "proficiency" || grant.ref !== skillSlug) {
+            continue;
+        }
+
+        scale = Math.max(scale, grant.proficiencyScale ?? 1);
+    }
+
+    return scale;
+}
 
 export function readCharacterLevel(systemData: Record<string, unknown>): number {
     return readLevelFromForm(systemData);
@@ -79,14 +98,18 @@ export function computeSkillModifiers(
 
     return rules.skills.map((skill) => {
         const abilityMod = rules.abilityModifier(stats[skill.ability] ?? 10);
-        const proficient = proficientSlugs.has(skill.slug);
+        const proficiencyScale = proficientSlugs.has(skill.slug)
+            ? getSkillProficiencyScale(grants, skill.slug)
+            : 0;
+        const proficient = proficiencyScale > 0;
 
         return {
             slug: skill.slug,
             name: skill.name,
             ability: skill.ability,
-            modifier: abilityMod + (proficient ? bonus : 0),
+            modifier: abilityMod + bonus * proficiencyScale,
             proficient,
+            proficiencyScale,
         };
     });
 }
