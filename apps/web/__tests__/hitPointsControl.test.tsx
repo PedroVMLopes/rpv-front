@@ -119,7 +119,6 @@ describe("HitPointsControl", () => {
 
     it("applies damage and heal from the amount input once per click", async () => {
         const user = userEvent.setup();
-        const updateResource = spyUpdateResource();
 
         renderWithProviders(
             <HitPointsControl characterId={storedCharacter.id} />
@@ -129,29 +128,69 @@ describe("HitPointsControl", () => {
         fireEvent.change(amountInput, { target: { value: "3" } });
         await user.click(screen.getByRole("button", { name: "Apply damage" }));
 
-        expect(updateResource).toHaveBeenCalledTimes(1);
-        expect(updateResource).toHaveBeenCalledWith(
-            storedCharacter.id,
-            "hp",
-            -3
-        );
         expect(
             useCharacterStore.getState().characters[0]?.resources.hp
         ).toBe(12);
 
-        updateResource.mockClear();
         fireEvent.change(amountInput, { target: { value: "4" } });
         await user.click(screen.getByRole("button", { name: "Apply healing" }));
 
-        expect(updateResource).toHaveBeenCalledTimes(1);
-        expect(updateResource).toHaveBeenCalledWith(
-            storedCharacter.id,
-            "hp",
-            4
-        );
         expect(
             useCharacterStore.getState().characters[0]?.resources.hp
         ).toBe(16);
+    });
+
+    it("spends temporary hit points before current HP", async () => {
+        const user = userEvent.setup();
+        useCharacterStore.setState({
+            characters: [
+                {
+                    ...storedCharacter,
+                    resources: { hp: 15 },
+                    session: { tempHp: 5 },
+                },
+            ],
+        });
+
+        renderWithProviders(
+            <HitPointsControl characterId={storedCharacter.id} />
+        );
+
+        const amountInput = screen.getByLabelText("Amount");
+        fireEvent.change(amountInput, { target: { value: "3" } });
+        await user.click(screen.getByRole("button", { name: "Apply damage" }));
+
+        const next = useCharacterStore.getState().characters[0];
+        expect(next?.resources.hp).toBe(15);
+        expect(next?.session?.tempHp).toBe(2);
+    });
+
+    it("does not spend temporary hit points when the slider is committed", async () => {
+        const user = userEvent.setup();
+        useCharacterStore.setState({
+            characters: [
+                {
+                    ...storedCharacter,
+                    resources: { hp: 15 },
+                    session: { tempHp: 5 },
+                },
+            ],
+        });
+        const updateResource = spyUpdateResource();
+
+        renderWithProviders(
+            <HitPointsControl characterId={storedCharacter.id} />
+        );
+
+        await user.click(screen.getByRole("button", { name: "commit-slider" }));
+        expect(updateResource).toHaveBeenCalledWith(
+            storedCharacter.id,
+            "hp",
+            -10
+        );
+        expect(
+            useCharacterStore.getState().characters[0]?.session?.tempHp
+        ).toBe(5);
     });
 
     it("does not write to the store until slider value is committed", async () => {
@@ -179,6 +218,51 @@ describe("HitPointsControl", () => {
         expect(
             useCharacterStore.getState().characters[0]?.resources.hp
         ).toBe(5);
+    });
+
+    it("sets temporary hit points from the vitality control", async () => {
+        const user = userEvent.setup();
+
+        renderWithProviders(
+            <HitPointsControl characterId={storedCharacter.id} />
+        );
+
+        await user.click(
+            screen.getByRole("button", {
+                name: "Increase temporary hit points",
+            })
+        );
+
+        expect(
+            useCharacterStore.getState().characters[0]?.session?.tempHp
+        ).toBe(1);
+    });
+
+    it("shows death-save pips at 0 HP and marks them without rolling", async () => {
+        const user = userEvent.setup();
+        useCharacterStore.setState({
+            characters: [
+                {
+                    ...storedCharacter,
+                    resources: { hp: 0 },
+                },
+            ],
+        });
+
+        renderWithProviders(
+            <HitPointsControl characterId={storedCharacter.id} />
+        );
+
+        expect(screen.getByText("Death saves")).toBeInTheDocument();
+        await user.click(
+            screen.getByRole("button", {
+                name: "Mark death save success 1 of 3",
+            })
+        );
+
+        expect(
+            useCharacterStore.getState().characters[0]?.session?.deathSaves
+        ).toEqual({ successes: 1, failures: 0 });
     });
 });
 

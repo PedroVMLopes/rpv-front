@@ -133,6 +133,15 @@ describe("getResourceMax", () => {
             getResourceMax(
                 {
                     ...stored,
+                    systemData: { level: 5 },
+                },
+                "hit-dice"
+            )
+        ).toBe(5);
+        expect(
+            getResourceMax(
+                {
+                    ...stored,
                     grants: [
                         {
                             id: "class-monk-ki",

@@ -1,5 +1,7 @@
 import {
     buildAbilityCheckRollRequest,
+    buildDeathSaveRollRequest,
+    buildHitDieRollRequest,
     buildSavingThrowRollRequest,
     buildSkillRollRequest,
     resolveD20TestTotal,
@@ -63,6 +65,26 @@ describe("buildRollRequest", () => {
             die: 20,
             modifier: 3,
             appliesTo: "ability_check",
+        });
+    });
+
+    it("builds a death save d20 request", () => {
+        expect(buildDeathSaveRollRequest("hero-1", "Death saves")).toEqual({
+            kind: "death_save",
+            id: "death-save:hero-1",
+            label: "Death saves",
+            characterId: "hero-1",
+            die: 20,
+        });
+    });
+
+    it("builds a hit die request", () => {
+        expect(buildHitDieRollRequest("hero-1", "Hit dice", 10)).toEqual({
+            kind: "hit_die",
+            id: "hit-die:hero-1",
+            label: "Hit dice",
+            characterId: "hero-1",
+            die: 10,
         });
     });
 });

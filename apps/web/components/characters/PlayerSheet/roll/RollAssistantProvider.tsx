@@ -28,7 +28,9 @@ export type RequestPhase =
     | { type: "d20"; index: number; of: number }
     | { type: "extra_die"; sides: DieSides; index: number }
     | { type: "attack_damage" }
-    | { type: "damage_only"; index: number };
+    | { type: "damage_only"; index: number }
+    | { type: "hit_die" }
+    | { type: "death_save_outcome" };
 
 export type RollAssistantState = {
     open: boolean;
@@ -107,7 +109,15 @@ export function getRequestPhase(
         return { type: "damage_only", index: state.stepIndex };
     }
 
-    if (request.kind === "d20_test" || request.kind === "attack_then_damage") {
+    if (request.kind === "hit_die") {
+        return { type: "hit_die" };
+    }
+
+    if (
+        request.kind === "d20_test" ||
+        request.kind === "attack_then_damage" ||
+        request.kind === "death_save"
+    ) {
         const needed = d20Needed(state.advantageMode);
         if (state.d20Rolls.length < needed) {
             return {
@@ -130,6 +140,10 @@ export function getRequestPhase(
 
         if (request.kind === "attack_then_damage") {
             return { type: "attack_damage" };
+        }
+
+        if (request.kind === "death_save") {
+            return { type: "death_save_outcome" };
         }
     }
 
@@ -181,9 +195,12 @@ function reducer(
                 advantageMode: action.advantageMode,
                 extraDice: action.extraDice,
                 selectedDie:
-                    action.request.kind === "d20_test"
+                    action.request.kind === "d20_test" ||
+                    action.request.kind === "death_save"
                         ? action.request.die
-                        : null,
+                        : action.request.kind === "hit_die"
+                          ? action.request.die
+                          : null,
             };
         case "select_die":
             return {
@@ -218,6 +235,15 @@ function reducer(
                 }
 
                 return initialState;
+            }
+
+            if (state.request.kind === "hit_die") {
+                return initialState;
+            }
+
+            if (state.request.kind === "death_save") {
+                const nextRolls = appendRollValue(state, action.value);
+                return { ...state, ...nextRolls };
             }
 
             if (state.request.kind === "attack_then_damage") {
@@ -270,6 +296,14 @@ function getSubmitResult(
         return state.stepIndex + 1 < state.request.steps.length
             ? "continue"
             : "complete";
+    }
+
+    if (state.request.kind === "hit_die") {
+        return "complete";
+    }
+
+    if (state.request.kind === "death_save") {
+        return "continue";
     }
 
     if (state.request.kind === "d20_test") {
@@ -385,6 +419,10 @@ export function RollAssistantProvider({
     );
 }
 
+export function useOptionalRollAssistant(): RollAssistantContextValue | null {
+    return useContext(RollAssistantContext);
+}
+
 export function useRollAssistant(): RollAssistantContextValue {
     const context = useContext(RollAssistantContext);
 
@@ -430,6 +468,10 @@ export function getActiveRollSides(
 
     if (state.request.kind === "damage_only") {
         return state.request.steps[state.stepIndex]?.sides ?? null;
+    }
+
+    if (state.request.kind === "hit_die") {
+        return state.request.die;
     }
 
     return null;

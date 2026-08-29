@@ -14,6 +14,15 @@ import {
 } from "@/components/ui/tooltip";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { cn } from "@/lib/utils";
+import { getSystemRules } from "@/lib/character/systemRules";
+import { getHitDicePool } from "@/lib/character/hitDice";
+import {
+    buildDeathSaveRollRequest,
+    buildHitDieRollRequest,
+} from "@/lib/roll/buildRollRequest";
+import { DeathSavePips } from "@/components/characters/PlayerSheet/combat/DeathSavePips";
+import { HitDiceControl } from "@/components/characters/PlayerSheet/combat/HitDiceControl";
+import { useOptionalRollAssistant } from "@/components/characters/PlayerSheet/roll/RollAssistantProvider";
 
 const HP_RESOURCE = "hp";
 
@@ -30,16 +39,26 @@ export function HitPointsControl({
 }: HitPointsControlProps) {
     const t = useTranslations("playerSheet");
     const updateResource = useCharacterStore((state) => state.updateResource);
-    const getResolvedStats = useCharacterStore((state) => state.getResolvedStats);
-    const currentHp = useCharacterStore(
-        (state) =>
-            state.characters.find((c) => c.id === characterId)?.resources[
-                HP_RESOURCE
-            ] ?? 0
+    const applyVitalityChange = useCharacterStore(
+        (state) => state.applyVitalityChange
     );
+    const setCharacterSession = useCharacterStore(
+        (state) => state.setCharacterSession
+    );
+    const getResolvedStats = useCharacterStore((state) => state.getResolvedStats);
+    const stored = useCharacterStore((state) =>
+        state.characters.find((character) => character.id === characterId)
+    );
+    const rollAssistant = useOptionalRollAssistant();
 
+    const currentHp = stored?.resources[HP_RESOURCE] ?? 0;
+    const tempHp = stored?.session?.tempHp ?? 0;
+    const deathSaves = stored?.session?.deathSaves;
     const resolved = getResolvedStats(characterId);
     const maxHp = resolved?.hitPoints ?? 0;
+    const hasVitality = stored
+        ? getSystemRules(stored.system).vitality !== undefined
+        : false;
 
     const [draftHp, setDraftHp] = useState(currentHp);
     const [amount, setAmount] = useState<number | undefined>();
@@ -72,20 +91,48 @@ export function HitPointsControl({
 
     const handleDamage = () => {
         if (amount !== undefined && amount > 0) {
-            updateResource(characterId, HP_RESOURCE, -amount);
+            applyVitalityChange(characterId, {
+                type: "damage",
+                amount,
+            });
             setAmount(undefined);
         }
     };
 
     const handleHeal = () => {
         if (amount !== undefined && amount > 0) {
-            updateResource(characterId, HP_RESOURCE, amount);
+            applyVitalityChange(characterId, {
+                type: "heal",
+                amount,
+            });
             setAmount(undefined);
         }
     };
 
+    const setTemp = (value: number) => {
+        applyVitalityChange(characterId, {
+            type: "setTempHp",
+            value,
+        });
+    };
+
+    const handleDeathSaveCounts = (
+        successes: number,
+        failures: number
+    ) => {
+        setCharacterSession(characterId, {
+            deathSaves:
+                successes === 0 && failures === 0
+                    ? null
+                    : { successes, failures },
+        });
+    };
+
     const showSlider = maxHp > 0 || draftHp > 0;
     const sliderMax = Math.max(maxHp, draftHp, 1);
+    const showDeathSaves =
+        hasVitality && stored !== undefined && currentHp === 0;
+    const hitDicePool = stored ? getHitDicePool(stored) : undefined;
 
     const amountInput = (
         <Input
@@ -105,6 +152,89 @@ export function HitPointsControl({
         />
     );
 
+    const tempRow = hasVitality ? (
+        <div className="flex items-center justify-between gap-2">
+            <span className="text-xs font-semibold uppercase">
+                {t("vitality.tempHp")}
+            </span>
+            <div className="flex items-center gap-1">
+                <Button
+                    type="button"
+                    size="icon"
+                    variant="ghost"
+                    className="size-7"
+                    aria-label={t("vitality.decreaseTemp")}
+                    onClick={() => setTemp(tempHp - 1)}
+                    disabled={tempHp <= 0}
+                >
+                    <FaMinus className="size-3" />
+                </Button>
+                <span
+                    className="min-w-6 text-center text-sm font-bold tabular-nums"
+                    aria-label={t("vitality.tempHpAria", { value: tempHp })}
+                >
+                    {tempHp}
+                </span>
+                <Button
+                    type="button"
+                    size="icon"
+                    variant="ghost"
+                    className="size-7"
+                    aria-label={t("vitality.increaseTemp")}
+                    onClick={() => setTemp(tempHp + 1)}
+                >
+                    <FaPlus className="size-3" />
+                </Button>
+            </div>
+        </div>
+    ) : null;
+
+    const deathSaveBlock =
+        showDeathSaves && stored ? (
+            <DeathSavePips
+                hp={currentHp}
+                saves={deathSaves}
+                compact={variant === "compact"}
+                onSuccessCount={(count) =>
+                    handleDeathSaveCounts(count, deathSaves?.failures ?? 0)
+                }
+                onFailureCount={(count) =>
+                    handleDeathSaveCounts(deathSaves?.successes ?? 0, count)
+                }
+                onRoll={
+                    variant === "sheet" && rollAssistant
+                        ? () =>
+                              rollAssistant.openRollRequest(
+                                  buildDeathSaveRollRequest(
+                                      characterId,
+                                      t("vitality.deathSaves")
+                                  )
+                              )
+                        : undefined
+                }
+            />
+        ) : null;
+
+    const hitDiceBlock =
+        variant === "sheet" && stored && hitDicePool && rollAssistant ? (
+            <HitDiceControl
+                stored={stored}
+                onSpend={() => {
+                    if (!hitDicePool.sides) {
+                        return;
+                    }
+
+                    rollAssistant.openRollRequest(
+                        buildHitDieRollRequest(
+                            characterId,
+                            t("vitality.hitDice"),
+                            hitDicePool.sides
+                        )
+                    );
+                }}
+            />
+        ) : null;
+
     if (variant === "compact") {
         return (
             <div className={cn("flex flex-col gap-1", className)}>
@@ -114,6 +244,11 @@ export function HitPointsControl({
                         <p>
                             {draftHp}
                             <span className="opacity-50"> / {maxHp}</span>
+                            {tempHp > 0 ? (
+                                <span className="ml-1 text-xs font-medium opacity-80">
+                                    +{tempHp}
+                                </span>
+                            ) : null}
                         </p>
                     </div>
                     <div className="flex flex-row items-center gap-1">
@@ -162,6 +297,8 @@ export function HitPointsControl({
                         onValueCommit={handleSliderCommit}
                     />
                 ) : null}
+                {tempRow}
+                {deathSaveBlock}
             </div>
         );
     }
@@ -181,6 +318,11 @@ export function HitPointsControl({
                 <span className="text-sm font-bold tabular-nums">
                     {draftHp}
                     <span className="font-semibold opacity-60"> / {maxHp}</span>
+                    {tempHp > 0 ? (
+                        <span className="ml-1 text-xs font-semibold opacity-80">
+                            +{tempHp}
+                        </span>
+                    ) : null}
                 </span>
             </div>
 
@@ -215,6 +357,9 @@ export function HitPointsControl({
                     {t("damage")}
                 </Button>
             </div>
+            {tempRow}
+            {deathSaveBlock}
+            {hitDiceBlock}
         </div>
     );
 }

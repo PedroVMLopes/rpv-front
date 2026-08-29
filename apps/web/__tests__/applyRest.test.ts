@@ -84,4 +84,43 @@ describe("applyRest", () => {
             "action-surge-uses": 0,
         });
     });
+
+    it("leaves hit dice unchanged on a short rest and recovers them on a long rest", () => {
+        const resources = {
+            hp: 4,
+            "hit-dice": 1,
+            "spell-slots-1": 1,
+            "pact-slots": 0,
+            "rage-uses": 0,
+            "action-surge-uses": 0,
+        };
+        const hitDice = {
+            ref: "hit-dice",
+            max: 4,
+            recover: (current: number, max: number) =>
+                Math.min(max, current + Math.max(1, Math.floor(max / 2))),
+        };
+
+        expect(
+            applyRest(resources, grants, "short_rest", { maxHp: 12, hitDice })
+        ).toEqual({
+            hp: 4,
+            "hit-dice": 1,
+            "spell-slots-1": 1,
+            "pact-slots": 2,
+            "rage-uses": 0,
+            "action-surge-uses": 0,
+        });
+
+        expect(
+            applyRest(resources, grants, "long_rest", { maxHp: 12, hitDice })
+        ).toEqual({
+            hp: 12,
+            "hit-dice": 3,
+            "spell-slots-1": 4,
+            "pact-slots": 2,
+            "rage-uses": 2,
+            "action-surge-uses": 0,
+        });
+    });
 });

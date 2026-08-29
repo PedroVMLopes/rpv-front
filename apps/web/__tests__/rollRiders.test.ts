@@ -47,6 +47,15 @@ describe("rollRiders", () => {
                 steps: [{ sides: 6 }],
             })
         ).toBeUndefined();
+        expect(
+            appliesToOf({
+                kind: "death_save",
+                id: "death-save:hero",
+                label: "Death saves",
+                characterId: "hero",
+                die: 20,
+            })
+        ).toBe("save");
     });
 
     it("preselects disadvantage from poisoned on matching rolls", () => {

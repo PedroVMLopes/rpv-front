@@ -20,6 +20,8 @@ import type { StoredCharacter } from "./storedCharacter";
 import type { CharacterSelections } from "./storedCharacter";
 import { sanitizeCharacterNotes } from "./notes";
 import { sanitizeCharacterSession } from "./session";
+import { buildHitDiceMerge } from "./hitDice";
+import { readCharacterLevel } from "./skillModifiers";
 
 export type BuildCharacterInput = {
     id: string;
@@ -136,12 +138,20 @@ export function buildStoredCharacter(input: BuildCharacterInput): StoredCharacte
         selections
     );
 
+    const hitDice = buildHitDiceMerge(
+        system,
+        characterLevel,
+        selections.characterClass,
+        existing ? readCharacterLevel(existing.systemData) : undefined
+    );
+
     return {
         ...stored,
         resources: mergeSessionResources(
             deriveResourceTotals(grants),
             existing?.resources,
-            stored.resources.hp
+            stored.resources.hp,
+            hitDice
         ),
         notes: sanitizeCharacterNotes(existing?.notes),
         session: sanitizeCharacterSession(existing?.session),

@@ -1,7 +1,10 @@
 import type {
     CharacterConcentration,
+    CharacterDeathSaves,
     CharacterSession,
 } from "./storedCharacter";
+
+const DEATH_SAVE_MAX = 3;
 
 function sanitizeSlotLevel(value: unknown): number | undefined {
     if (typeof value !== "number" || !Number.isFinite(value)) {
@@ -56,6 +59,48 @@ function sanitizeConditionSlugs(value: unknown): string[] | undefined {
     return slugs.length > 0 ? slugs : undefined;
 }
 
+function sanitizePipCount(value: unknown): number {
+    if (typeof value !== "number" || !Number.isFinite(value)) {
+        return 0;
+    }
+
+    return Math.max(0, Math.min(DEATH_SAVE_MAX, Math.floor(value)));
+}
+
+export function sanitizeDeathSaves(
+    value: unknown
+): CharacterDeathSaves | undefined {
+    if (!value || typeof value !== "object") {
+        return undefined;
+    }
+
+    const successes = sanitizePipCount(
+        (value as CharacterDeathSaves).successes
+    );
+    const failures = sanitizePipCount(
+        (value as CharacterDeathSaves).failures
+    );
+
+    if (successes === 0 && failures === 0) {
+        return undefined;
+    }
+
+    return { successes, failures };
+}
+
+function sanitizeTempHp(value: unknown): number | undefined {
+    if (typeof value !== "number" || !Number.isFinite(value)) {
+        return undefined;
+    }
+
+    const tempHp = Math.floor(value);
+    if (tempHp <= 0) {
+        return undefined;
+    }
+
+    return tempHp;
+}
+
 export function sanitizeCharacterSession(
     session: CharacterSession | undefined
 ): CharacterSession | undefined {
@@ -65,14 +110,18 @@ export function sanitizeCharacterSession(
 
     const concentratingOn = sanitizeConcentration(session.concentratingOn);
     const activeConditions = sanitizeConditionSlugs(session.activeConditions);
+    const tempHp = sanitizeTempHp(session.tempHp);
+    const deathSaves = sanitizeDeathSaves(session.deathSaves);
 
-    if (!concentratingOn && !activeConditions) {
+    if (!concentratingOn && !activeConditions && !tempHp && !deathSaves) {
         return undefined;
     }
 
     return {
         ...(concentratingOn ? { concentratingOn } : {}),
         ...(activeConditions ? { activeConditions } : {}),
+        ...(tempHp !== undefined ? { tempHp } : {}),
+        ...(deathSaves ? { deathSaves } : {}),
     };
 }
 
@@ -92,6 +141,22 @@ export function mergeCharacterSession(
 
     if ("activeConditions" in patch) {
         next.activeConditions = patch.activeConditions;
+    }
+
+    if ("tempHp" in patch) {
+        if (patch.tempHp === undefined || patch.tempHp === 0) {
+            delete next.tempHp;
+        } else {
+            next.tempHp = patch.tempHp;
+        }
+    }
+
+    if ("deathSaves" in patch) {
+        if (patch.deathSaves === null || patch.deathSaves === undefined) {
+            delete next.deathSaves;
+        } else {
+            next.deathSaves = patch.deathSaves;
+        }
     }
 
     return sanitizeCharacterSession(next);

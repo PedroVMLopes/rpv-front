@@ -92,7 +92,9 @@ Sempre visível. Referência de interação de HP: [`IniciativeCard`](../apps/we
 |----------|---------------|
 | Nome, nível, classe/subclasse | Leitura |
 | Avatar | Opcional, compacto |
-| HP | Editável (`+`/`-` ou slider) |
+| HP | Editável (dano/cura com pipeline de vitalidade; slider só no HP atual). Temp HP (set) no mesmo bloco quando o sistema tem `vitality`. |
+| Death saves | Visíveis com HP = 0; pips + rolagem opcional. Estável / morto são flags visuais. |
+| Dados de vida | Pool `current/max` + gastar 1 (assistente Type C). Short rest **não** abre modal. |
 | AC | Leitura |
 | Iniciativa | Leitura + atalho para abrir container de rolagem (Tipo A) |
 | Recursos de classe | Editável (`+`/`-`) — spell slots, rage, ki, etc. |
@@ -311,6 +313,7 @@ Helpers relevantes:
 
 - Header colapsável em mobile
 - Aba Anotações: criar na action bar + lista com modal de ler/editar/excluir — Feito
+- Temp HP, death saves, dados de vida (tracker) — Feito
 - Condições temporárias no header (Bless, etc.) — extensão futura
 - **Level-up:** CTA na overview (`AbilitiesSection`) abre `/edit/{id}?mode=level-up&from={N}` — wizard delta (`resolveLevelUpSteps`) com progressão do nível N+1, subclass se desbloquear, e passo Confirmar (HP + recursos).
 

@@ -342,7 +342,7 @@ describe("PlayerSheet", () => {
 
         expect(screen.getByText("Soldier")).toBeInTheDocument();
         expect(screen.getByText("Hit die")).toBeInTheDocument();
-        expect(screen.getByText("d10")).toBeInTheDocument();
+        expect(screen.getAllByText("d10").length).toBeGreaterThan(0);
         expect(screen.queryByText("Adult")).not.toBeInTheDocument();
         expect(screen.queryByText("Protect the realm")).not.toBeInTheDocument();
         expect(screen.queryByText("I face danger head-on.")).not.toBeInTheDocument();

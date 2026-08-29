@@ -6,6 +6,10 @@ import type { RestKind } from "@/lib/character/applyRest";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { OverviewPanel } from "../overview/OverviewPanel";
+import { HitDiceControl } from "./HitDiceControl";
+import { useRollAssistant } from "../roll/RollAssistantProvider";
+import { buildHitDieRollRequest } from "@/lib/roll/buildRollRequest";
+import { getHitDicePool } from "@/lib/character/hitDice";
 
 type RestActionsProps = {
     stored: StoredCharacter;
@@ -13,7 +17,10 @@ type RestActionsProps = {
 
 export function RestActions({ stored }: RestActionsProps) {
     const t = useTranslations("playerSheet.combat");
+    const tVitality = useTranslations("playerSheet.vitality");
     const applyRest = useCharacterStore((state) => state.applyRest);
+    const { openRollRequest } = useRollAssistant();
+    const pool = getHitDicePool(stored);
 
     const rest = (kind: RestKind) => {
         applyRest(stored.id, kind);
@@ -37,6 +44,24 @@ export function RestActions({ stored }: RestActionsProps) {
                     {t("longRest")}
                 </Button>
             </div>
+            {pool ? (
+                <HitDiceControl
+                    stored={stored}
+                    onSpend={() => {
+                        if (!pool.sides) {
+                            return;
+                        }
+
+                        openRollRequest(
+                            buildHitDieRollRequest(
+                                stored.id,
+                                tVitality("hitDice"),
+                                pool.sides
+                            )
+                        );
+                    }}
+                />
+            ) : null}
         </OverviewPanel>
     );
 }

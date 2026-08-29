@@ -46,6 +46,20 @@ describe("listCombatResources", () => {
         ]);
     });
 
+    it("excludes hit-dice from class resource lists", () => {
+        const entries = listCombatResources(grants, {
+            hp: 10,
+            "hit-dice": 3,
+            "spell-slots-1": 3,
+            "rage-uses": 2,
+        });
+
+        expect(entries.map((entry) => entry.ref)).toEqual([
+            "spell-slots-1",
+            "rage-uses",
+        ]);
+    });
+
     it("keeps zero-current resources when max is positive", () => {
         const entries = listCombatResources(grants, {
             "spell-slots-1": 0,

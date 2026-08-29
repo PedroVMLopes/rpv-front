@@ -55,9 +55,18 @@ export type CharacterConcentration = {
     slotLevel?: number;
 };
 
+export type CharacterDeathSaves = {
+    successes: number;
+    failures: number;
+};
+
 export type CharacterSession = {
     concentratingOn?: CharacterConcentration | null;
     activeConditions?: string[];
+    /** Temporary hit points. 0 / omitted means none. */
+    tempHp?: number;
+    /** Death-save pips. Omitted when none are marked. Null in a patch clears. */
+    deathSaves?: CharacterDeathSaves | null;
 };
 
 export type StoredCharacter = {
@@ -78,7 +87,8 @@ export type StoredCharacter = {
     notes?: CharacterNote[];
     /**
      * Table-session currents that rebuild must not wipe (concentration,
-     * active conditions). Distinct from derived grants/modifiers.
+     * active conditions, temp HP, death saves). Distinct from derived
+     * grants/modifiers.
      */
     session?: CharacterSession;
 };

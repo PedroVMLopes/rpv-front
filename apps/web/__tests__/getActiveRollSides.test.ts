@@ -100,6 +100,52 @@ describe("getActiveRollSides", () => {
         ).toBeNull();
     });
 
+    it("uses d20 for a death save until the outcome step", () => {
+        const request = {
+            kind: "death_save" as const,
+            id: "death-save:hero",
+            label: "Death saves",
+            characterId: "hero",
+            die: 20 as const,
+        };
+
+        expect(
+            getActiveRollSides({
+                ...closed,
+                open: true,
+                mode: "request",
+                request,
+            })
+        ).toBe(20);
+
+        expect(
+            getActiveRollSides({
+                ...closed,
+                open: true,
+                mode: "request",
+                d20Rolls: [10],
+                request,
+            })
+        ).toBeNull();
+    });
+
+    it("uses the hit die faces", () => {
+        expect(
+            getActiveRollSides({
+                ...closed,
+                open: true,
+                mode: "request",
+                request: {
+                    kind: "hit_die",
+                    id: "hit-die:hero",
+                    label: "Hit dice",
+                    characterId: "hero",
+                    die: 10,
+                },
+            })
+        ).toBe(10);
+    });
+
     it("uses the current damage_only step sides", () => {
         expect(
             getActiveRollSides({

@@ -36,6 +36,11 @@ import {
 import { getResourceMax } from "@/lib/character/presetStats";
 import { applyRest as applyRestResources, type RestKind } from "@/lib/character/applyRest";
 import {
+    applyVitalityToCharacter,
+    type VitalityChange,
+} from "@/lib/character/vitality";
+import { getSystemRules } from "@/lib/character/systemRules";
+import {
     createCharacterNote,
     updateCharacterNote,
     type NoteColorChoice,
@@ -79,6 +84,7 @@ interface CharacterStore {
         multiSlug?: string
     ) => void;
     updateResource: (id: string, resourceName: string, delta: number) => void;
+    applyVitalityChange: (id: string, change: VitalityChange) => void;
     applyRest: (id: string, kind: RestKind) => void;
     addNote: (id: string, body: string) => void;
     updateNote: (
@@ -334,19 +340,74 @@ export const useCharacterStore = create<CharacterStore>()(
                     }),
                 })),
 
+            applyVitalityChange: (id, change) =>
+                set((state) => ({
+                    characters: state.characters.map((char) => {
+                        if (char.id !== id) {
+                            return char;
+                        }
+
+                        const vitality = getSystemRules(char.system).vitality;
+                        const maxHp = getResourceMax(char, "hp") ?? 0;
+                        const resolved = getResolvedStatsForCharacter(
+                            storedCharacterToProps(char),
+                            char.selections.inventory,
+                            char.system,
+                            [],
+                            { activeConditions: char.session?.activeConditions }
+                        );
+
+                        return applyVitalityToCharacter(char, change, {
+                            maxHp,
+                            constitution: resolved.constitution,
+                            hitDieHeal:
+                                vitality?.hitDieHeal ??
+                                ((dieRoll) => Math.max(1, dieRoll)),
+                            hitDiceRef: vitality?.hitDiceRef ?? "hit-dice",
+                        });
+                    }),
+                })),
+
             applyRest: (id, kind) =>
                 set((state) => ({
                     characters: state.characters.map((char) => {
                         if (char.id !== id) return char;
 
+                        const vitality = getSystemRules(char.system).vitality;
+                        const hitDiceMax = vitality
+                            ? getResourceMax(char, vitality.hitDiceRef)
+                            : undefined;
+                        const resources = applyRestResources(
+                            char.resources,
+                            char.grants ?? [],
+                            kind,
+                            {
+                                maxHp: getResourceMax(char, "hp"),
+                                hitDice:
+                                    vitality &&
+                                    hitDiceMax !== undefined &&
+                                    hitDiceMax > 0
+                                        ? {
+                                              ref: vitality.hitDiceRef,
+                                              max: hitDiceMax,
+                                              recover:
+                                                  vitality.longRestHitDiceRecover,
+                                          }
+                                        : undefined,
+                            }
+                        );
+                        const session =
+                            kind === "long_rest"
+                                ? mergeCharacterSession(char.session, {
+                                      tempHp: 0,
+                                      deathSaves: null,
+                                  })
+                                : char.session;
+
                         return {
                             ...char,
-                            resources: applyRestResources(
-                                char.resources,
-                                char.grants ?? [],
-                                kind,
-                                { maxHp: getResourceMax(char, "hp") }
-                            ),
+                            resources,
+                            session,
                         };
                     }),
                 })),

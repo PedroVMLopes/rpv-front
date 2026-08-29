@@ -162,6 +162,16 @@ describe("CombatTab", () => {
         ).toBeInTheDocument();
         expect(screen.getByText("None yet")).toBeInTheDocument();
         expect(screen.queryByText("Passive Reminders")).not.toBeInTheDocument();
+        expect(screen.getByText("Hit dice")).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: "Spend a hit die" })
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: "Short Rest" })
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: "Long Rest" })
+        ).toBeInTheDocument();
 
         const slotsHeading = screen.getByText("Spell Slots");
         const defenseHeading = screen.getByText("Defense & Saves");

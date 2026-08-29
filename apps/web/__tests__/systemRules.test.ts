@@ -19,6 +19,9 @@ describe("getSystemRules", () => {
         expect(typeof rules.ac.formatBreakdown).toBe("function");
         expect(typeof rules.initiative).toBe("function");
         expect(typeof rules.passivePerception).toBe("function");
+        expect(rules.vitality?.hitDiceRef).toBe("hit-dice");
+        expect(rules.vitality?.hitDiceMax(5)).toBe(5);
+        expect(rules.vitality?.hitDieHeal(8, 14)).toBe(10);
     });
 
     it("formats HP breakdown through the contract", () => {

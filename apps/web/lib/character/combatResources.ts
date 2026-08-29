@@ -1,5 +1,6 @@
 import type { CharacterGrant, ResourceDisplay, ResourceMeta } from "@rpv/domain";
 import { deriveResourceTotals } from "./deriveResourceTotals";
+import { HIT_DICE_RESOURCE } from "./vitality";
 
 const HP_RESOURCE = "hp";
 const SPELL_SLOT_REF_PREFIX = "spell-slots-";
@@ -68,7 +69,7 @@ export function isSlotDisplay(entry: CombatResourceEntry): boolean {
 
 /**
  * Class/combat resources with current (session) and max (from grants).
- * Excludes HP. Includes zero-current entries when max > 0.
+ * Excludes HP and hit-dice. Includes zero-current entries when max > 0.
  */
 export function listCombatResources(
     grants: CharacterGrant[],
@@ -83,7 +84,7 @@ export function listCombatResources(
     const entries: CombatResourceEntry[] = [];
 
     for (const ref of refs) {
-        if (ref === HP_RESOURCE) {
+        if (ref === HP_RESOURCE || ref === HIT_DICE_RESOURCE) {
             continue;
         }
 

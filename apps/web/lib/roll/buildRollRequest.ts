@@ -9,6 +9,8 @@ import type {
     DamageOnlyRequest,
     DamageStep,
     D20TestRequest,
+    DeathSaveRequest,
+    HitDieRequest,
 } from "./rollRequest.types";
 
 export function buildSkillRollRequest(
@@ -346,4 +348,31 @@ export function resolveDamageOnlyTotal(
         },
         0
     );
+}
+
+export function buildDeathSaveRollRequest(
+    characterId: string,
+    label: string
+): DeathSaveRequest {
+    return {
+        kind: "death_save",
+        id: `death-save:${characterId}`,
+        label,
+        characterId,
+        die: 20,
+    };
+}
+
+export function buildHitDieRollRequest(
+    characterId: string,
+    label: string,
+    die: DieSides
+): HitDieRequest {
+    return {
+        kind: "hit_die",
+        id: `hit-die:${characterId}`,
+        label,
+        characterId,
+        die,
+    };
 }

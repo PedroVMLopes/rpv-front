@@ -11,11 +11,7 @@ import {
     RollAssistantProvider,
     useRollAssistant,
 } from "../components/characters/PlayerSheet/roll/RollAssistantProvider";
-import type {
-    AttackThenDamageRequest,
-    D20TestRequest,
-    DamageOnlyRequest,
-} from "../lib/roll/rollRequest.types";
+import type { RollRequest } from "../lib/roll/rollRequest.types";
 import { useCharacterStore } from "../store/useCharacterStore";
 import enMessages from "../messages/en.json";
 
@@ -39,7 +35,7 @@ function renderAssistant(children?: ReactNode) {
 function ContextRollTrigger({
     request,
 }: {
-    request: D20TestRequest | AttackThenDamageRequest | DamageOnlyRequest;
+    request: RollRequest;
 }) {
     const { openRollRequest } = useRollAssistant();
 
@@ -456,5 +452,122 @@ describe("DiceRollAssistant", () => {
         expect(
             screen.getByRole("button", { name: "Disadvantage" })
         ).toHaveAttribute("aria-pressed", "true");
+    });
+
+    it("suggests a death-save outcome and only writes on confirm", async () => {
+        const user = userEvent.setup();
+        useCharacterStore.setState({
+            characters: [
+                {
+                    id: "dying-roller",
+                    schemaVersion: 1,
+                    type: "player",
+                    system: "dnd",
+                    language: "en",
+                    name: "Dying",
+                    baseStats: {
+                        strength: 10,
+                        dexterity: 10,
+                        constitution: 10,
+                        intelligence: 10,
+                        wisdom: 10,
+                        charisma: 10,
+                        armorClass: 10,
+                        hitPoints: 8,
+                    },
+                    modifiers: [],
+                    grants: [],
+                    selections: { inventory: emptyInventory(), choices: {} },
+                    resources: { hp: 0 },
+                    systemData: { level: 1 },
+                },
+            ],
+        });
+
+        renderAssistant(
+            <ContextRollTrigger
+                request={{
+                    kind: "death_save",
+                    id: "death-save:dying-roller",
+                    label: "Death saves",
+                    characterId: "dying-roller",
+                    die: 20,
+                }}
+            />
+        );
+
+        await user.click(
+            screen.getByRole("button", { name: "Open contextual roll" })
+        );
+        await user.click(screen.getByRole("button", { name: "10" }));
+
+        expect(screen.getByText("Mark the death save")).toBeInTheDocument();
+        expect(
+            useCharacterStore.getState().characters[0]?.session?.deathSaves
+        ).toBeUndefined();
+
+        const suggested = screen.getByRole("button", { name: /Success/ });
+        expect(suggested).toHaveTextContent("Suggested");
+        await user.click(suggested);
+
+        expect(
+            useCharacterStore.getState().characters[0]?.session?.deathSaves
+        ).toEqual({ successes: 1, failures: 0 });
+        expect(
+            useCharacterStore.getState().characters[0]?.resources.hp
+        ).toBe(0);
+    });
+
+    it("heals and spends a hit die when the roll completes", async () => {
+        const user = userEvent.setup();
+        useCharacterStore.setState({
+            characters: [
+                {
+                    id: "resting-roller",
+                    schemaVersion: 1,
+                    type: "player",
+                    system: "dnd",
+                    language: "en",
+                    name: "Resting",
+                    baseStats: {
+                        strength: 10,
+                        dexterity: 10,
+                        constitution: 14,
+                        intelligence: 10,
+                        wisdom: 10,
+                        charisma: 10,
+                        armorClass: 10,
+                        hitPoints: 20,
+                    },
+                    modifiers: [],
+                    grants: [],
+                    selections: { inventory: emptyInventory(), choices: {} },
+                    resources: { hp: 5, "hit-dice": 3 },
+                    systemData: { level: 3 },
+                },
+            ],
+        });
+
+        renderAssistant(
+            <ContextRollTrigger
+                request={{
+                    kind: "hit_die",
+                    id: "hit-die:resting-roller",
+                    label: "Hit dice",
+                    characterId: "resting-roller",
+                    die: 10,
+                }}
+            />
+        );
+
+        await user.click(
+            screen.getByRole("button", { name: "Open contextual roll" })
+        );
+        await user.click(screen.getByRole("button", { name: "8" }));
+
+        const next = useCharacterStore.getState().characters[0];
+        expect(next?.resources.hp).toBe(15);
+        expect(next?.resources["hit-dice"]).toBe(2);
+        expect(toastMock).toHaveBeenCalledWith("Hit dice: recover 10 HP");
     });
 });

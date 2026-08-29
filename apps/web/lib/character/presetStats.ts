@@ -4,6 +4,8 @@ import type { CharacterProps, Stats } from "@rpv/domain";
 import { createDefaultStats, emptyInventory, resolveStats } from "@rpv/domain";
 import type { StoredCharacter } from "./storedCharacter";
 import { deriveResourceTotals } from "./deriveResourceTotals";
+import { getSystemRules } from "./systemRules";
+import { readCharacterLevel } from "./skillModifiers";
 
 function resolveCharacterStats(
     props: Pick<CharacterProps, "baseStats" | "modifiers">
@@ -280,6 +282,12 @@ export function getResourceMax(
         });
 
         return resolved[resource.maxStatKey];
+    }
+
+    const vitality = getSystemRules(stored.system).vitality;
+    if (vitality && resourceName === vitality.hitDiceRef) {
+        const max = vitality.hitDiceMax(readCharacterLevel(stored.systemData));
+        return max > 0 ? max : undefined;
     }
 
     const derived = deriveResourceTotals(stored.grants ?? []);

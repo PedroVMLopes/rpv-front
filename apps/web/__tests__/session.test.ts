@@ -33,6 +33,27 @@ describe("sanitizeCharacterSession", () => {
             activeConditions: ["blessed", "poisoned"],
         });
     });
+
+    it("keeps temp HP and death-save pips", () => {
+        expect(
+            sanitizeCharacterSession({
+                tempHp: 5.8,
+                deathSaves: { successes: 2.2, failures: 1 },
+            })
+        ).toEqual({
+            tempHp: 5,
+            deathSaves: { successes: 2, failures: 1 },
+        });
+    });
+
+    it("drops zero temp HP and empty death saves", () => {
+        expect(
+            sanitizeCharacterSession({
+                tempHp: 0,
+                deathSaves: { successes: 0, failures: 0 },
+            })
+        ).toBeUndefined();
+    });
 });
 
 describe("mergeCharacterSession", () => {
@@ -67,6 +88,20 @@ describe("mergeCharacterSession", () => {
         ).toEqual({
             concentratingOn: { slug: "detect-magic", slotLevel: 1 },
             activeConditions: ["blessed", "poisoned"],
+        });
+    });
+
+    it("clears temp HP and death saves without dropping concentration", () => {
+        const current = {
+            concentratingOn: { slug: "detect-magic", slotLevel: 1 },
+            tempHp: 8,
+            deathSaves: { successes: 1, failures: 2 },
+        };
+
+        expect(
+            mergeCharacterSession(current, { tempHp: 0, deathSaves: null })
+        ).toEqual({
+            concentratingOn: { slug: "detect-magic", slotLevel: 1 },
         });
     });
 });

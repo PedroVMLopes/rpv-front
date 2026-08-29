@@ -94,6 +94,18 @@ export type CarryingRules = {
     deriveCapacity: (strength: number) => number;
 };
 
+/**
+ * Optional table-vitality tracker (temp HP, death saves, hit dice).
+ * Omit when the system has no such bookkeeping.
+ */
+export type VitalityRules = {
+    hitDiceRef: string;
+    hitDiceMax: (level: number) => number;
+    /** Heal from one hit die. Receives the constitution score (5e uses the modifier). */
+    hitDieHeal: (dieRoll: number, constitution: number) => number;
+    longRestHitDiceRecover: (current: number, max: number) => number;
+};
+
 export interface SystemRules {
     abilityModifier: (score: number) => number;
     proficiencyBonus: (level: number) => number;
@@ -101,6 +113,8 @@ export interface SystemRules {
     ac: AcRules;
     /** Optional; omit when the system has no encumbrance numbers. */
     carrying?: CarryingRules;
+    /** Optional; omit when the system has no temp HP / death saves / hit dice. */
+    vitality?: VitalityRules;
     initiative: (stats: Stats) => number;
     passivePerception: (
         skillModifiers: { slug: string; modifier: number }[]

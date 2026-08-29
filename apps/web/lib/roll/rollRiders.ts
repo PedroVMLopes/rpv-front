@@ -18,6 +18,10 @@ export function appliesToOf(
         return request.appliesTo;
     }
 
+    if (request.kind === "death_save") {
+        return "save";
+    }
+
     return undefined;
 }
 

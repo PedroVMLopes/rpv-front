@@ -27,7 +27,14 @@ export function applyRest(
     resources: Record<string, number>,
     grants: CharacterGrant[],
     kind: RestKind,
-    options?: { maxHp?: number }
+    options?: {
+        maxHp?: number;
+        hitDice?: {
+            ref: string;
+            max: number;
+            recover: (current: number, max: number) => number;
+        };
+    }
 ): Record<string, number> {
     const next = { ...resources };
     const entries = listCombatResources(grants, resources);
@@ -40,6 +47,14 @@ export function applyRest(
 
     if (kind === "long_rest" && options?.maxHp !== undefined) {
         next.hp = options.maxHp;
+    }
+
+    if (kind === "long_rest" && options?.hitDice && options.hitDice.max > 0) {
+        const current = resources[options.hitDice.ref] ?? 0;
+        next[options.hitDice.ref] = options.hitDice.recover(
+            current,
+            options.hitDice.max
+        );
     }
 
     return next;

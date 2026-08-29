@@ -1027,6 +1027,74 @@ describe("buildStoredCharacter", () => {
         expect(rebuilt.resources.hp).toBe(created.resources.hp);
     });
 
+    it("starts hit dice at max and preserves spent dice on rebuild", () => {
+        const created = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                characterClass: "fighter",
+                level: 3,
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        expect(created.resources["hit-dice"]).toBe(3);
+
+        const rebuilt = rebuildStoredCharacter(
+            {
+                ...created,
+                resources: {
+                    ...created.resources,
+                    "hit-dice": 1,
+                },
+            },
+            {
+                ...baseFormData,
+                characterClass: "fighter",
+                level: 3,
+                hp: created.resources.hp,
+                inventory: created.selections.inventory,
+            },
+            "en"
+        );
+
+        expect(rebuilt.resources["hit-dice"]).toBe(1);
+    });
+
+    it("credits a new unused hit die on level-up", () => {
+        const created = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                characterClass: "fighter",
+                level: 3,
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        const rebuilt = rebuildStoredCharacter(
+            {
+                ...created,
+                resources: {
+                    ...created.resources,
+                    "hit-dice": 1,
+                },
+            },
+            {
+                ...baseFormData,
+                characterClass: "fighter",
+                level: 4,
+                hp: created.resources.hp,
+                inventory: created.selections.inventory,
+            },
+            "en"
+        );
+
+        expect(rebuilt.resources["hit-dice"]).toBe(2);
+    });
+
     it("clamps spent resources when the derived maximum decreases", () => {
         const created = buildNewStoredCharacter(
             {

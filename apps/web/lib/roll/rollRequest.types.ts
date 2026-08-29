@@ -40,7 +40,25 @@ export type DamageOnlyRequest = {
     steps: DamageStep[];
 };
 
+export type HitDieRequest = {
+    kind: "hit_die";
+    id: string;
+    label: string;
+    characterId: string;
+    die: DieSides;
+};
+
+export type DeathSaveRequest = {
+    kind: "death_save";
+    id: string;
+    label: string;
+    characterId: string;
+    die: 20;
+};
+
 export type RollRequest =
     | D20TestRequest
     | AttackThenDamageRequest
-    | DamageOnlyRequest;
+    | DamageOnlyRequest
+    | HitDieRequest
+    | DeathSaveRequest;
