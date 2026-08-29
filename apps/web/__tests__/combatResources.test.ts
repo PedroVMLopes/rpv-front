@@ -2,6 +2,7 @@ import type { CharacterGrant } from "@rpv/domain";
 import {
     canAdjustCombatResource,
     listCombatResources,
+    listShortRestRecoveries,
 } from "../lib/character/combatResources";
 
 const grants: CharacterGrant[] = [
@@ -186,5 +187,37 @@ describe("canAdjustCombatResource", () => {
         const full = { ref: "rage-uses", current: 2, max: 2 };
         expect(canAdjustCombatResource(full, 1)).toBe(false);
         expect(canAdjustCombatResource(full, -1)).toBe(true);
+    });
+});
+
+describe("listShortRestRecoveries", () => {
+    it("snapshots short-rest pools before they are restored", () => {
+        expect(
+            listShortRestRecoveries(
+                [
+                    {
+                        id: "class-warlock-resource-pact-slots",
+                        kind: "resource",
+                        ref: "pact-slots",
+                        amount: 2,
+                        source: { type: "class", id: "warlock" },
+                        resource: {
+                            display: "slots",
+                            slotLevel: 1,
+                            recoverOn: "short_rest",
+                        },
+                    },
+                    {
+                        id: "class-barbarian-resource-rage-uses",
+                        kind: "resource",
+                        ref: "rage-uses",
+                        amount: 2,
+                        source: { type: "class", id: "barbarian" },
+                        resource: { recoverOn: "long_rest" },
+                    },
+                ],
+                { "pact-slots": 0, "rage-uses": 0, hp: 4 }
+            )
+        ).toEqual([{ ref: "pact-slots", previous: 0, max: 2 }]);
     });
 });

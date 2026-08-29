@@ -601,6 +601,15 @@
       "rest": "Rest",
       "shortRest": "Short Rest",
       "longRest": "Long Rest",
+      "shortRestModal": {
+        "title": "Short rest",
+        "recovered": "Recovered",
+        "recoveredItem": "{previous} → {max}",
+        "noClassPools": "No class resources recover on a short rest.",
+        "hpNote": "Hit points are not restored. Spend hit dice below to heal.",
+        "done": "Done",
+        "cancelDie": "Cancel"
+      },
       "defenseSaves": "Defense & Saves",
       "stat": "Stat",
       "mod": "Mod",

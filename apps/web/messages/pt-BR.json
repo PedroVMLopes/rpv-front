@@ -601,6 +601,15 @@
       "rest": "Descanso",
       "shortRest": "Descanso curto",
       "longRest": "Descanso longo",
+      "shortRestModal": {
+        "title": "Descanso curto",
+        "recovered": "Recuperado",
+        "recoveredItem": "{previous} → {max}",
+        "noClassPools": "Nenhum recurso de classe recupera neste descanso curto.",
+        "hpNote": "Pontos de vida não são restaurados. Gaste dados de vida abaixo para curar.",
+        "done": "Concluir",
+        "cancelDie": "Cancelar"
+      },
       "defenseSaves": "Defesa e Resistências",
       "stat": "Atributo",
       "mod": "Mod",

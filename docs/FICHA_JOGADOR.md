@@ -94,7 +94,7 @@ Sempre visível. Referência de interação de HP: [`IniciativeCard`](../apps/we
 | Avatar | Opcional, compacto |
 | HP | Editável (dano/cura com pipeline de vitalidade; slider só no HP atual). Temp HP (set) no mesmo bloco quando o sistema tem `vitality`. |
 | Death saves | Visíveis com HP = 0; pips + rolagem opcional. Estável / morto são flags visuais. |
-| Dados de vida | Pool `current/max` + gastar 1 (assistente Type C). Short rest **não** abre modal. |
+| Dados de vida | Pool restante (somente leitura) no painel Descanso da aba Ações. Gastar 1 só no modal do descanso curto. |
 | AC | Leitura |
 | Iniciativa | Leitura + atalho para abrir container de rolagem (Tipo A) |
 | Recursos de classe | Editável (`+`/`-`) — spell slots, rage, ki, etc. |
@@ -116,7 +116,7 @@ Recursos de classe reutilizam a lógica de [`DerivedResourcesDisplay`](../apps/w
 #### Decisões de UX
 
 - **Visão geral** não lista as 18 perícias por padrão — apenas as **proficientes**. Toggle "todas" já está na ficha. Saves completos ficam na aba Ações. Personalidade, idade aparente e prosa de antecedente saíram da Overview (Persona na aba Anotações).
-- **Combate** é adaptativo: seção Magia oculta se o personagem não tiver spell grants.
+- **Combate** é adaptativo: seção Magia oculta se o personagem não tiver spell grants. Descanso curto abre modal (recupera `recoverOn: short_rest`, gasta dados de vida aí); descanso longo continua um clique. Sem teto de shorts por longo.
 - **Anotações:** Persona no topo (presença, disposição, campos D&D). Personalidade, idade, porte, voz, marcas e vestimenta vêm de `systemData`; eixos de disposição gravados (1–20) mostram slider somente leitura, omitidos mostram `—`. Rótulos vazios mostram `—`. Notas de sessão: criar pela action bar (`Quick note`); a aba lista os recados. Card mostra preview (primeira linha + até 3 linhas de corpo) e timestamp no topo, ao lado do expandir; cards da grade ocupam a altura da célula. Expandir abre modal (timestamp no topo na leitura). Editar reusa o compositor (primeira linha estilo iPhone) e mostra uma linha de cores (`bg-card` + `chart-1`…`chart-5`) acima de Excluir/Salvar; clicar na cor é preview no modal; Salvar nota grava (`color` no recorde) e fecha o modal. Save vazio na edição descarta o rascunho (texto e cor) e fecha sem gravar. Excluir apaga na hora. `visibility: "private"` no recorde, sem UI de share.
 
 ### 3.3 Responsividade

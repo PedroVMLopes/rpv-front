@@ -15,13 +15,8 @@ import {
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { cn } from "@/lib/utils";
 import { getSystemRules } from "@/lib/character/systemRules";
-import { getHitDicePool } from "@/lib/character/hitDice";
-import {
-    buildDeathSaveRollRequest,
-    buildHitDieRollRequest,
-} from "@/lib/roll/buildRollRequest";
+import { buildDeathSaveRollRequest } from "@/lib/roll/buildRollRequest";
 import { DeathSavePips } from "@/components/characters/PlayerSheet/combat/DeathSavePips";
-import { HitDiceControl } from "@/components/characters/PlayerSheet/combat/HitDiceControl";
 import { useOptionalRollAssistant } from "@/components/characters/PlayerSheet/roll/RollAssistantProvider";
 
 const HP_RESOURCE = "hp";
@@ -132,7 +127,6 @@ export function HitPointsControl({
     const sliderMax = Math.max(maxHp, draftHp, 1);
     const showDeathSaves =
         hasVitality && stored !== undefined && currentHp === 0;
-    const hitDicePool = stored ? getHitDicePool(stored) : undefined;
 
     const amountInput = (
         <Input
@@ -212,26 +206,6 @@ export function HitPointsControl({
                               )
                         : undefined
                 }
-            />
-        ) : null;
-
-    const hitDiceBlock =
-        variant === "sheet" && stored && hitDicePool && rollAssistant ? (
-            <HitDiceControl
-                stored={stored}
-                onSpend={() => {
-                    if (!hitDicePool.sides) {
-                        return;
-                    }
-
-                    rollAssistant.openRollRequest(
-                        buildHitDieRollRequest(
-                            characterId,
-                            t("vitality.hitDice"),
-                            hitDicePool.sides
-                        )
-                    );
-                }}
             />
         ) : null;
 
@@ -359,7 +333,6 @@ export function HitPointsControl({
             </div>
             {tempRow}
             {deathSaveBlock}
-            {hitDiceBlock}
         </div>
     );
 }

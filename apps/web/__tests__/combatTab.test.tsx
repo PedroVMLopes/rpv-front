@@ -11,7 +11,12 @@ import { PlayerSheet } from "../components/characters/PlayerSheet/PlayerSheet";
 import { useCharacterStore } from "../store/useCharacterStore";
 import type { StoredCharacter } from "../lib/character/storedCharacter";
 import { RollAssistantProvider } from "../components/characters/PlayerSheet/roll/RollAssistantProvider";
+import { HIT_DICE_RESOURCE } from "../lib/character/vitality";
 import enMessages from "../messages/en.json";
+
+jest.mock("sonner", () => ({
+    toast: jest.fn(),
+}));
 
 jest.mock("../components/ui/HealthSlider", () => ({
     HealthSlider: () => <div data-testid="health-slider" />,
@@ -164,8 +169,8 @@ describe("CombatTab", () => {
         expect(screen.queryByText("Passive Reminders")).not.toBeInTheDocument();
         expect(screen.getByText("Hit dice")).toBeInTheDocument();
         expect(
-            screen.getByRole("button", { name: "Spend a hit die" })
-        ).toBeInTheDocument();
+            screen.queryByRole("button", { name: "Spend a hit die" })
+        ).not.toBeInTheDocument();
         expect(
             screen.getByRole("button", { name: "Short Rest" })
         ).toBeInTheDocument();
@@ -478,6 +483,116 @@ describe("CombatTab", () => {
         expect(
             screen.getByRole("button", { name: "Slot 4 of 4, used" })
         ).toHaveStyle({ gridColumn: "2", gridRow: "2" });
+    });
+
+    it("opens a short rest modal that restores class pools without spending hit dice", async () => {
+        const user = userEvent.setup();
+        const warlock: StoredCharacter = {
+            ...storedCharacter,
+            id: "char-short-rest-warlock",
+            grants: storedCharacter.grants
+                .filter((grant) => grant.ref !== "spell-slots-1")
+                .concat([
+                    {
+                        id: "class-warlock-resource-pact-slots",
+                        kind: "resource",
+                        ref: "pact-slots",
+                        amount: 1,
+                        source: { type: "class", id: "warlock" },
+                        resource: {
+                            display: "slots",
+                            slotLevel: 1,
+                            recoverOn: "short_rest",
+                        },
+                    },
+                ]),
+            selections: {
+                ...storedCharacter.selections,
+                characterClass: "warlock",
+            },
+            resources: {
+                hp: 10,
+                "pact-slots": 0,
+                [HIT_DICE_RESOURCE]: 2,
+            },
+            systemData: {
+                characterClass: "warlock",
+                level: 3,
+            },
+        };
+
+        useCharacterStore.setState({
+            characters: [{ ...warlock, resources: { ...warlock.resources } }],
+        });
+
+        render(
+            <NextIntlClientProvider locale="en" messages={enMessages}>
+                <RollAssistantProvider>
+                    <CombatTabConnected characterId={warlock.id} />
+                </RollAssistantProvider>
+            </NextIntlClientProvider>
+        );
+
+        expect(
+            screen.queryByRole("button", { name: "Spend a hit die" })
+        ).not.toBeInTheDocument();
+
+        await user.click(screen.getByRole("button", { name: "Short Rest" }));
+
+        const dialog = await screen.findByRole("dialog");
+        expect(
+            within(dialog).getByRole("heading", { name: "Short rest" })
+        ).toBeInTheDocument();
+        expect(within(dialog).getByText("Pact Slots")).toBeInTheDocument();
+        expect(within(dialog).getByText("0 → 1")).toBeInTheDocument();
+        expect(
+            useCharacterStore.getState().characters[0]?.resources["pact-slots"]
+        ).toBe(1);
+        expect(
+            useCharacterStore.getState().characters[0]?.resources.hp
+        ).toBe(10);
+        expect(
+            useCharacterStore.getState().characters[0]?.resources[
+                HIT_DICE_RESOURCE
+            ]
+        ).toBe(2);
+
+        await user.click(
+            within(dialog).getByRole("button", { name: "Spend a hit die" })
+        );
+        await user.click(within(dialog).getByRole("button", { name: "8" }));
+
+        const afterSpend = useCharacterStore.getState().characters[0];
+        expect(afterSpend?.resources[HIT_DICE_RESOURCE]).toBe(1);
+        expect(afterSpend?.resources.hp).toBe(20);
+        expect(
+            within(dialog).getByRole("button", { name: "Spend a hit die" })
+        ).toBeInTheDocument();
+
+        await user.click(within(dialog).getByRole("button", { name: "Done" }));
+        expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+
+    it("closes the short rest modal without spending remaining hit dice", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(
+            <CombatTabConnected characterId={storedCharacter.id} />
+        );
+
+        await user.click(screen.getByRole("button", { name: "Short Rest" }));
+        const dialog = await screen.findByRole("dialog");
+        expect(
+            within(dialog).getByText(
+                "No class resources recover on a short rest."
+            )
+        ).toBeInTheDocument();
+
+        await user.click(within(dialog).getByRole("button", { name: "Done" }));
+        expect(
+            useCharacterStore.getState().characters[0]?.resources[
+                HIT_DICE_RESOURCE
+            ]
+        ).toBeUndefined();
     });
 });
 

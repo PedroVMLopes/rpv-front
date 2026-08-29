@@ -115,6 +115,10 @@ describe("HitPointsControl", () => {
         expect(
             screen.getByLabelText(/Hit Points 15 \/ 20/i)
         ).toBeInTheDocument();
+        expect(screen.queryByText("Hit dice")).not.toBeInTheDocument();
+        expect(
+            screen.queryByRole("button", { name: "Spend a hit die" })
+        ).not.toBeInTheDocument();
     });
 
     it("applies damage and heal from the amount input once per click", async () => {

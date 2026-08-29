@@ -9,13 +9,15 @@ import { cn } from "@/lib/utils";
 
 type HitDiceControlProps = {
     stored: StoredCharacter;
-    onSpend: () => void;
+    onSpend?: () => void;
+    showSpend?: boolean;
     className?: string;
 };
 
 export function HitDiceControl({
     stored,
     onSpend,
+    showSpend = true,
     className,
 }: HitDiceControlProps) {
     const t = useTranslations("playerSheet.vitality");
@@ -25,7 +27,7 @@ export function HitDiceControl({
         return null;
     }
 
-    const canSpend = pool.current > 0;
+    const canSpend = pool.current > 0 && pool.max > 0;
 
     return (
         <div
@@ -47,18 +49,20 @@ export function HitDiceControl({
                     ) : null}
                 </p>
             </div>
-            <Button
-                type="button"
-                size="sm"
-                variant="secondary"
-                className="h-8 gap-1.5 px-2 text-xs"
-                disabled={!canSpend}
-                onClick={onSpend}
-                aria-label={t("spendHitDie")}
-            >
-                <Dices className="size-3.5" aria-hidden />
-                {t("spendHitDie")}
-            </Button>
+            {showSpend && onSpend ? (
+                <Button
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    className="h-8 gap-1.5 px-2 text-xs"
+                    disabled={!canSpend}
+                    onClick={onSpend}
+                    aria-label={t("spendHitDie")}
+                >
+                    <Dices className="size-3.5" aria-hidden />
+                    {t("spendHitDie")}
+                </Button>
+            ) : null}
         </div>
     );
 }

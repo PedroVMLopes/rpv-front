@@ -1,15 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import type { RestKind } from "@/lib/character/applyRest";
+import {
+    listShortRestRecoveries,
+    type ShortRestRecovery,
+} from "@/lib/character/combatResources";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { OverviewPanel } from "../overview/OverviewPanel";
 import { HitDiceControl } from "./HitDiceControl";
-import { useRollAssistant } from "../roll/RollAssistantProvider";
-import { buildHitDieRollRequest } from "@/lib/roll/buildRollRequest";
-import { getHitDicePool } from "@/lib/character/hitDice";
+import { ShortRestModal } from "./ShortRestModal";
 
 type RestActionsProps = {
     stored: StoredCharacter;
@@ -17,12 +20,20 @@ type RestActionsProps = {
 
 export function RestActions({ stored }: RestActionsProps) {
     const t = useTranslations("playerSheet.combat");
-    const tVitality = useTranslations("playerSheet.vitality");
     const applyRest = useCharacterStore((state) => state.applyRest);
-    const { openRollRequest } = useRollAssistant();
-    const pool = getHitDicePool(stored);
+    const [shortRestOpen, setShortRestOpen] = useState(false);
+    const [recoveries, setRecoveries] = useState<ShortRestRecovery[]>([]);
 
     const rest = (kind: RestKind) => {
+        if (kind === "short_rest") {
+            setRecoveries(
+                listShortRestRecoveries(stored.grants ?? [], stored.resources)
+            );
+            applyRest(stored.id, "short_rest");
+            setShortRestOpen(true);
+            return;
+        }
+
         applyRest(stored.id, kind);
     };
 
@@ -44,24 +55,13 @@ export function RestActions({ stored }: RestActionsProps) {
                     {t("longRest")}
                 </Button>
             </div>
-            {pool ? (
-                <HitDiceControl
-                    stored={stored}
-                    onSpend={() => {
-                        if (!pool.sides) {
-                            return;
-                        }
-
-                        openRollRequest(
-                            buildHitDieRollRequest(
-                                stored.id,
-                                tVitality("hitDice"),
-                                pool.sides
-                            )
-                        );
-                    }}
-                />
-            ) : null}
+            <HitDiceControl stored={stored} showSpend={false} />
+            <ShortRestModal
+                stored={stored}
+                recoveries={recoveries}
+                open={shortRestOpen}
+                onOpenChange={setShortRestOpen}
+            />
         </OverviewPanel>
     );
 }

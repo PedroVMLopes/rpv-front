@@ -130,3 +130,23 @@ export function canAdjustCombatResource(
     const next = entry.current + delta;
     return next >= 0 && next <= entry.max;
 }
+
+export type ShortRestRecovery = {
+    ref: string;
+    previous: number;
+    max: number;
+};
+
+/** Class pools that `applyRest(..., "short_rest")` restores. Snapshot before rest. */
+export function listShortRestRecoveries(
+    grants: CharacterGrant[],
+    resources: Record<string, number>
+): ShortRestRecovery[] {
+    return listCombatResources(grants, resources)
+        .filter((entry) => entry.recoverOn === "short_rest")
+        .map((entry) => ({
+            ref: entry.ref,
+            previous: entry.current,
+            max: entry.max,
+        }));
+}
