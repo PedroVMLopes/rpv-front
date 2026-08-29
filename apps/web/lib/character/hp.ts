@@ -2,11 +2,13 @@ import type { SystemKey } from "@/presets";
 import type { HpDerivationContext, HpRules } from "@/presets/types";
 import { getClassHitDie } from "@/lib/catalog/grantCatalog";
 import { buildSelectionsFromForm } from "./characterAdapter";
-import { deriveRaceModifiers } from "./raceModifiers";
-import { deriveStatModifiers } from "./characterGrants";
+import {
+    deriveAbilityScoreModifiers,
+    deriveStatModifiers,
+} from "./characterGrants";
 import { buildBaseStatsFromForm } from "./presetStats";
 import { getSystemRules } from "./systemRules";
-import { resolveStats } from "@rpv/domain";
+import { createDefaultStats, resolveStats } from "@rpv/domain";
 import type { Locale } from "@rpv/domain";
 
 import { readLevelFromForm } from "./level";
@@ -35,9 +37,15 @@ export function resolveConstitutionFromForm(
     locale: Locale
 ): number {
     const selections = buildSelectionsFromForm(formData);
-    const raceModifiers = deriveRaceModifiers(selections, locale);
+    const characterLevel = readLevelFromForm(formData);
+    const abilityModifiers = deriveAbilityScoreModifiers(
+        selections,
+        locale,
+        characterLevel,
+        system
+    );
     const baseStats = buildBaseStatsFromForm(formData, system);
-    const resolved = resolveStats(baseStats, raceModifiers);
+    const resolved = resolveStats(baseStats, abilityModifiers);
 
     return resolved.constitution;
 }
@@ -90,13 +98,23 @@ export function resolveMaxHpFromForm(
     locale: Locale
 ): number | undefined {
     const selections = buildSelectionsFromForm(formData);
+    const characterLevel = readLevelFromForm(formData);
+    const formulaHp = deriveMaxHpFromForm(formData, system, locale);
     const baseStats = buildBaseStatsFromForm(formData, system);
-    const modifiers = [
-        ...deriveRaceModifiers(selections, locale),
-        ...deriveStatModifiers(selections, locale),
-    ];
+    const hitPointBase =
+        formulaHp ??
+        (typeof formData.maxHp === "number" ? formData.maxHp : baseStats.hitPoints);
+    const hpModifiers = deriveStatModifiers(
+        selections,
+        locale,
+        characterLevel,
+        system
+    ).filter((modifier) => modifier.stat === "hitPoints");
 
-    return resolveStats(baseStats, modifiers).hitPoints;
+    return resolveStats(
+        { ...createDefaultStats(baseStats), hitPoints: hitPointBase },
+        hpModifiers
+    ).hitPoints;
 }
 
 export function formatMaxHpBreakdownFromForm(

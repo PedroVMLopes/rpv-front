@@ -34,6 +34,7 @@ import {
     unequipItemFromMultiSlot as unequipItemFromMultiSlotInventory,
 } from "@/lib/character/inventory";
 import { getResourceMax } from "@/lib/character/presetStats";
+import { applyRest as applyRestResources, type RestKind } from "@/lib/character/applyRest";
 import {
     createCharacterNote,
     updateCharacterNote,
@@ -76,6 +77,7 @@ interface CharacterStore {
         multiSlug?: string
     ) => void;
     updateResource: (id: string, resourceName: string, delta: number) => void;
+    applyRest: (id: string, kind: RestKind) => void;
     addNote: (id: string, body: string) => void;
     updateNote: (
         id: string,
@@ -325,6 +327,23 @@ export const useCharacterStore = create<CharacterStore>()(
                                 ...char.resources,
                                 [resourceName]: clamped,
                             },
+                        };
+                    }),
+                })),
+
+            applyRest: (id, kind) =>
+                set((state) => ({
+                    characters: state.characters.map((char) => {
+                        if (char.id !== id) return char;
+
+                        return {
+                            ...char,
+                            resources: applyRestResources(
+                                char.resources,
+                                char.grants ?? [],
+                                kind,
+                                { maxHp: getResourceMax(char, "hp") }
+                            ),
                         };
                     }),
                 })),

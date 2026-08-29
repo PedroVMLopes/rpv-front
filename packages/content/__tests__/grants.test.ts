@@ -308,6 +308,41 @@ describe("fixedGrantsToCharacterGrants", () => {
         ]);
     });
 
+    it("copies recoverOn, display, and slotLevel onto resource grants", () => {
+        const grants: Grant[] = [
+            {
+                grantType: "resource",
+                choose: 0,
+                ref: "pact-slots",
+                amount: 1,
+                display: "slots",
+                slotLevel: 1,
+                recoverOn: "short_rest",
+            },
+        ];
+
+        expect(
+            fixedGrantsToCharacterGrants(grants, {
+                type: "class",
+                id: "warlock",
+            })
+        ).toEqual([
+            {
+                id: "class-warlock-base-resource-pact-slots",
+                kind: "resource",
+                ref: "pact-slots",
+                amount: 1,
+                source: { type: "class", id: "warlock" },
+                name: undefined,
+                resource: {
+                    recoverOn: "short_rest",
+                    display: "slots",
+                    slotLevel: 1,
+                },
+            },
+        ]);
+    });
+
     it("uses distinct ids for resource grants at different feature levels", () => {
         const grant: Grant = {
             grantType: "resource",

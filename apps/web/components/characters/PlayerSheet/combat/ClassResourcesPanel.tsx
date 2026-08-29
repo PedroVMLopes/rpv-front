@@ -6,6 +6,7 @@ import { FaMinus, FaPlus } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
 import {
     canAdjustCombatResource,
+    isSlotDisplay,
     listCombatResources,
     type CombatResourceEntry,
 } from "@/lib/character/combatResources";
@@ -17,14 +18,6 @@ import { isSlotUsed } from "../overview/sheetResourceSquares";
 import { SpellSlotLevelBlock } from "./SpellSlotLevelBlock";
 import { sheetInset } from "../playerSheetSurfaces";
 import { cn } from "@/lib/utils";
-
-type SpellSlotCombatEntry = CombatResourceEntry & { spellLevel: number };
-
-function isSpellSlotEntry(
-    entry: CombatResourceEntry
-): entry is SpellSlotCombatEntry {
-    return entry.spellLevel !== undefined;
-}
 
 type ClassResourcesPanelProps = {
     stored: StoredCharacter;
@@ -40,19 +33,31 @@ export function ClassResourcesPanel({ stored }: ClassResourcesPanelProps) {
         [stored.grants, stored.resources]
     );
 
-    const other = useMemo(
-        () => entries.filter((entry) => entry.spellLevel === undefined),
-        [entries]
-    );
-    const slots = useMemo(
+    const wizardSlots = useMemo(
         () =>
             entries
-                .filter(isSpellSlotEntry)
-                .sort((a, b) => a.spellLevel - b.spellLevel),
+                .filter((entry) => entry.ref.startsWith("spell-slots-"))
+                .sort((a, b) => (a.spellLevel ?? 0) - (b.spellLevel ?? 0)),
+        [entries]
+    );
+    const pactSlots = useMemo(
+        () =>
+            entries.filter(
+                (entry) =>
+                    isSlotDisplay(entry) && !entry.ref.startsWith("spell-slots-")
+            ),
+        [entries]
+    );
+    const other = useMemo(
+        () =>
+            entries.filter(
+                (entry) =>
+                    !isSlotDisplay(entry) && !entry.ref.startsWith("spell-slots-")
+            ),
         [entries]
     );
 
-    if (other.length === 0 && slots.length === 0) {
+    if (other.length === 0 && wizardSlots.length === 0 && pactSlots.length === 0) {
         return null;
     }
 
@@ -142,10 +147,52 @@ export function ClassResourcesPanel({ stored }: ClassResourcesPanelProps) {
                 </OverviewPanel>
             ) : null}
 
-            {slots.length > 0 ? (
+            {pactSlots.length > 0 ? (
+                <OverviewPanel
+                    title={formatResourceRefLabel(
+                        pactSlots[0]?.ref ?? "pact-slots",
+                        (key) => tResources(key)
+                    )}
+                >
+                    <div className="flex min-w-0 flex-wrap items-start gap-2">
+                        {pactSlots.map((entry) => {
+                            const usedCount = entry.max - entry.current;
+                            const displayLabel = formatResourceRefLabel(
+                                entry.ref,
+                                (key) => tResources(key)
+                            );
+
+                            return (
+                                <SpellSlotLevelBlock
+                                    key={entry.ref}
+                                    rowKey={entry.ref}
+                                    label={
+                                        entry.spellLevel !== undefined
+                                            ? `${displayLabel} (${entry.spellLevel})`
+                                            : displayLabel
+                                    }
+                                    count={entry.max}
+                                    usedCount={usedCount}
+                                    onToggle={(index) => {
+                                        const used = isSlotUsed(
+                                            index,
+                                            entry.max,
+                                            usedCount
+                                        );
+                                        adjust(entry, used ? 1 : -1);
+                                    }}
+                                    slotAriaLabel={slotAria}
+                                />
+                            );
+                        })}
+                    </div>
+                </OverviewPanel>
+            ) : null}
+
+            {wizardSlots.length > 0 ? (
                 <OverviewPanel title={t("combat.spellSlots")}>
                     <div className="flex min-w-0 flex-wrap items-start gap-2">
-                        {slots.map((entry) => {
+                        {wizardSlots.map((entry) => {
                             const spellLevel = entry.spellLevel;
                             if (spellLevel === undefined) {
                                 return null;

@@ -18,6 +18,7 @@ describe("item catalog + overlays", () => {
             "rpv_scroll-of-fire-bolt",
             "rpv_amulet-of-vitality",
             "rpv_ring-of-hardiness",
+            "rpv_belt-of-constitution",
             "rpv_pilot-test-dagger",
             "rpv_pilot-test-pack-a",
             "rpv_pilot-test-starter-kit",
@@ -80,6 +81,13 @@ describe("item catalog + overlays", () => {
                 grantType: "stat_modifier",
                 targetStat: "hitPoints",
                 amount: 10,
+            }),
+        ]);
+        expect(getItemGrants("rpv_belt-of-constitution")).toEqual([
+            expect.objectContaining({
+                grantType: "ability_score",
+                targetStat: "constitution",
+                amount: 2,
             }),
         ]);
         expect(getItemGrants("rpv_scroll-of-fire-bolt")).toEqual([

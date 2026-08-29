@@ -1,4 +1,4 @@
-import { readItem } from "../curation/curationReaders";
+import { getContentRepository } from "../repository/getContentRepository";
 import type { ItemSystem } from "../curation/itemGrants.dnd";
 import type { Locale } from "@rpv/domain";
 import type { Grant, GrantOption } from "./grant.types";
@@ -109,7 +109,7 @@ export function formatInventoryBundleLabel(
     }
 
     const names = option.items
-        .map((item) => readItem(item.ref, locale)?.name ?? item.ref)
+        .map((item) => getContentRepository("dnd").getItem(item.ref, locale)?.name ?? item.ref)
         .filter((name) => name.length > 0);
 
     return names.length > 0 ? names.join(" + ") : "Bundle";
@@ -163,7 +163,7 @@ export function isValidInventoryItemPick(
         return false;
     }
 
-    return entries.every((entry) => readItem(entry.slug) !== undefined);
+    return entries.every((entry) => getContentRepository("dnd").getItem(entry.slug) !== undefined);
 }
 
 export function extractInventoryItemGrants(grants: Grant[]): InventoryItemGrantEntry[] {
@@ -276,7 +276,7 @@ export function resolveInventoryItemGrants(
             const resolved = resolveInventoryItemPick(grant, pickValue);
 
             for (const item of resolved) {
-                if (readItem(item.slug) === undefined) {
+                if (getContentRepository("dnd").getItem(item.slug) === undefined) {
                     continue;
                 }
 

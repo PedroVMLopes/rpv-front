@@ -108,6 +108,48 @@ describe("useCharacterStore inventory", () => {
         ).toBe(false);
     });
 
+    it("raises class max HP when a constitution item is equipped, not when it is in the bag", () => {
+        act(() => {
+            useCharacterStore.getState().addCharacter(
+                {
+                    ...baseFormData,
+                    attributes: baseAttributes.map((attribute) =>
+                        attribute.name === "constitution"
+                            ? { ...attribute, value: 10 }
+                            : attribute
+                    ),
+                },
+                "player",
+                "dnd"
+            );
+        });
+        const character = useCharacterStore.getState().characters[0];
+        expect(character.baseStats.hitPoints).toBe(6);
+
+        act(() => {
+            useCharacterStore
+                .getState()
+                .addToBag(character.id, "rpv_belt-of-constitution");
+        });
+        const bagOnly = useCharacterStore
+            .getState()
+            .characters.find((entry) => entry.id === character.id)!;
+        expect(bagOnly.baseStats.hitPoints).toBe(6);
+
+        act(() => {
+            useCharacterStore
+                .getState()
+                .equipItem(character.id, "amulet", "rpv_belt-of-constitution");
+        });
+        const equipped = useCharacterStore
+            .getState()
+            .characters.find((entry) => entry.id === character.id)!;
+        expect(equipped.baseStats.hitPoints).toBe(7);
+        expect(
+            useCharacterStore.getState().getResolvedStats(equipped.id)?.constitution
+        ).toBe(12);
+    });
+
     it("clamps current hp when unequipping an item that raised max hp", () => {
         const character = addBaseCharacter();
 

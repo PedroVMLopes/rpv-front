@@ -731,11 +731,3 @@ export const dndBackgrounds: BackgroundEntry[] = [
         ],
     },
 ];
-
-function resolveBackground(slug: string): BackgroundEntry | undefined {
-    return dndBackgrounds.find((entry) => entry.slug === slug);
-}
-
-export function getBackgroundGrants(slug: string): Grant[] {
-    return resolveBackground(slug)?.grants ?? [];
-}

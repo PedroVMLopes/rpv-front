@@ -1,21 +1,42 @@
-import type { Locale, StatKey } from "@rpv/domain";
+import type { StatKey } from "@rpv/domain";
 import type { Grant } from "../grant/grant.types";
 import type { LevelFeature } from "../grant/levelFeature.types";
-import { resolveLevelFeatures } from "../grant/levelFeatures";
-import { localizeCurationEntry } from "./curationLocale";
 import {
     dungeoneersPackBundle,
     explorersPackBundle,
 } from "./equipmentPacks.dnd";
+
+const ALL_ABILITY_STATS: StatKey[] = [
+    "strength",
+    "dexterity",
+    "constitution",
+    "intelligence",
+    "wisdom",
+    "charisma",
+];
+
+function abilityScoreImprovementGrant(): Grant {
+    return {
+        grantType: "ability_score",
+        choose: 2,
+        amount: 1,
+        description: "Ability Score Improvement",
+        options: ALL_ABILITY_STATS.map((ref) => ({
+            optionType: "stat" as const,
+            ref,
+        })),
+    };
+}
 
 /**
  * How a class treats learned vs castable spells.
  * - `known` — spell grants are always castable (e.g. sorcerer).
  * - `prepared-list` — prepare from the full class list (e.g. cleric).
  * - `spellbook` — learn into a book; prepare a subset to cast (e.g. wizard).
+ * - `pact` — known spells; slots are a separate pact pool (e.g. warlock).
  * Absent = no preparation rules (non-casters / current default).
  */
-export type SpellcastingMode = "known" | "prepared-list" | "spellbook";
+export type SpellcastingMode = "known" | "prepared-list" | "spellbook" | "pact";
 
 export type PreparedQuotaKind = "level-plus-mod" | "half-level-plus-mod";
 
@@ -215,6 +236,22 @@ export const dndClasses: ClassEntry[] = [
                     },
                 ],
             },
+            { level: 4, grants: [abilityScoreImprovementGrant()] },
+            {
+                level: 5,
+                grants: [
+                    {
+                        grantType: "ability",
+                        choose: 0,
+                        description: "Extra Attack",
+                        activation: { cost: "passive" },
+                    },
+                ],
+            },
+            { level: 8, grants: [abilityScoreImprovementGrant()] },
+            { level: 12, grants: [abilityScoreImprovementGrant()] },
+            { level: 16, grants: [abilityScoreImprovementGrant()] },
+            { level: 19, grants: [abilityScoreImprovementGrant()] },
         ],
     },
     {
@@ -452,6 +489,7 @@ export const dndClasses: ClassEntry[] = [
                         grantType: "resource",
                         choose: 0,
                         ref: "rage-uses",
+                        recoverOn: "long_rest",
                         amount: 2,
                     },
                     {
@@ -501,6 +539,7 @@ export const dndClasses: ClassEntry[] = [
                         grantType: "resource",
                         choose: 0,
                         ref: "rage-uses",
+                        recoverOn: "long_rest",
                         amount: 1,
                     },
                 ],
@@ -609,6 +648,7 @@ export const dndClasses: ClassEntry[] = [
                         grantType: "resource",
                         choose: 0,
                         ref: "ki-points",
+                        recoverOn: "short_rest",
                         amount: 2,
                     },
                     {
@@ -646,6 +686,7 @@ export const dndClasses: ClassEntry[] = [
                         grantType: "resource",
                         choose: 0,
                         ref: "ki-points",
+                        recoverOn: "short_rest",
                         amount: 1,
                     },
                 ],
@@ -657,6 +698,7 @@ export const dndClasses: ClassEntry[] = [
                         grantType: "resource",
                         choose: 0,
                         ref: "ki-points",
+                        recoverOn: "short_rest",
                         amount: 1,
                     },
                 ],
@@ -668,6 +710,7 @@ export const dndClasses: ClassEntry[] = [
                         grantType: "resource",
                         choose: 0,
                         ref: "ki-points",
+                        recoverOn: "short_rest",
                         amount: 1,
                     },
                     {
@@ -833,79 +876,85 @@ export const dndClasses: ClassEntry[] = [
             },
         ],
     },
+    {
+        slug: "warlock",
+        name: "Warlock",
+        description:
+            "A wielder of magic derived from a bargain with an otherworldly being.",
+        hitDie: 8,
+        subclassLevel: 3,
+        spellcastingAbility: "charisma",
+        spellcastingMode: "pact",
+        grants: [
+            {
+                grantType: "saving_throw_proficiency",
+                choose: 0,
+                options: [
+                    { optionType: "proficiency", ref: "wisdom" },
+                    { optionType: "proficiency", ref: "charisma" },
+                ],
+            },
+            {
+                grantType: "armor_proficiency",
+                choose: 0,
+                options: [{ optionType: "proficiency", ref: "light" }],
+            },
+            {
+                grantType: "spell",
+                choose: 1,
+                description: "Warlock cantrips",
+                selectionFilter: { spellLists: ["warlock"], levelInt: 0 },
+            },
+            {
+                grantType: "spell",
+                choose: 2,
+                description: "Warlock spells",
+                options: [
+                    { optionType: "spell", ref: "burning-hands" },
+                    { optionType: "spell", ref: "magic-missile" },
+                    { optionType: "spell", ref: "mage-hand" },
+                ],
+            },
+            {
+                grantType: "resource",
+                choose: 0,
+                ref: "pact-slots",
+                amount: 1,
+                display: "slots",
+                slotLevel: 1,
+                recoverOn: "short_rest",
+            },
+        ],
+        featuresByLevel: [
+            {
+                level: 2,
+                grants: [
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "pact-slots",
+                        amount: 1,
+                        display: "slots",
+                        slotLevel: 1,
+                        recoverOn: "short_rest",
+                    },
+                ],
+            },
+            {
+                level: 3,
+                grants: [
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "pact-slots",
+                        amount: 0,
+                        display: "slots",
+                        slotLevel: 2,
+                        recoverOn: "short_rest",
+                    },
+                ],
+            },
+        ],
+    },
 ];
 
-function localizeClass(entry: ClassEntry, locale?: Locale): ClassEntry {
-    return localizeCurationEntry(entry, "classes", locale);
-}
-
-function resolveClass(slug: string, locale?: Locale): ClassEntry | undefined {
-    const entry = dndClasses.find((item) => item.slug === slug);
-    if (!entry) {
-        return undefined;
-    }
-    return localizeClass(entry, locale);
-}
-
-export function getClassSubclassLevel(classSlug: string): number | undefined {
-    return resolveClass(classSlug)?.subclassLevel;
-}
-
-export function getClassGrantSourcesForLevel(
-    slug: string,
-    characterLevel: number
-): ClassGrantSourceBlock[] {
-    const entry = resolveClass(slug);
-    if (!entry) {
-        return [];
-    }
-
-    const blocks: ClassGrantSourceBlock[] = [{ grants: entry.grants }];
-
-    for (const feature of resolveLevelFeatures(
-        entry.featuresByLevel ?? [],
-        characterLevel
-    )) {
-        blocks.push({
-            grants: feature.grants,
-            featureLevel: feature.level,
-        });
-    }
-
-    return blocks;
-}
-
-export function getClassGrants(slug: string, characterLevel = 1): Grant[] {
-    return getClassGrantSourcesForLevel(slug, characterLevel).flatMap(
-        (block) => block.grants
-    );
-}
-
-export function getClassHitDie(slug: string): number | undefined {
-    return resolveClass(slug)?.hitDie;
-}
-
-export function getClassSpellcastingMode(
-    slug: string
-): SpellcastingMode | undefined {
-    return resolveClass(slug)?.spellcastingMode;
-}
-
-export function getClassPreparedQuotaKind(
-    slug: string
-): PreparedQuotaKind | undefined {
-    const entry = resolveClass(slug);
-    if (!entry) {
-        return undefined;
-    }
-
-    if (entry.preparedQuota) {
-        return entry.preparedQuota;
-    }
-
-    if (entry.spellcastingAbility) {
-        return "level-plus-mod";
-    }
-
-    return undefined;
-}

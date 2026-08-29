@@ -1,4 +1,4 @@
-import type { CharacterGrant } from "@rpv/domain";
+import type { CharacterGrant, ResourceDisplay, ResourceMeta } from "@rpv/domain";
 import { deriveResourceTotals } from "./deriveResourceTotals";
 
 const HP_RESOURCE = "hp";
@@ -8,8 +8,10 @@ export type CombatResourceEntry = {
     ref: string;
     current: number;
     max: number;
-    /** Present for spell-slots-N refs. */
+    /** Present for slot-style resources (spell-slots-N or display: slots). */
     spellLevel?: number;
+    display?: ResourceDisplay;
+    recoverOn?: ResourceMeta["recoverOn"];
 };
 
 function spellLevelFromRef(ref: string): number | undefined {
@@ -19,6 +21,49 @@ function spellLevelFromRef(ref: string): number | undefined {
 
     const level = Number.parseInt(ref.slice(SPELL_SLOT_REF_PREFIX.length), 10);
     return Number.isFinite(level) ? level : undefined;
+}
+
+function mergeResourceMeta(
+    grants: CharacterGrant[],
+    ref: string
+): Pick<CombatResourceEntry, "spellLevel" | "display" | "recoverOn"> {
+    const matching = grants.filter(
+        (grant) => grant.kind === "resource" && grant.ref === ref
+    );
+
+    let slotLevel: number | undefined;
+    let display: ResourceDisplay | undefined;
+    let recoverOn: ResourceMeta["recoverOn"] | undefined;
+
+    for (const grant of matching) {
+        const meta = grant.resource;
+        if (meta?.slotLevel !== undefined) {
+            slotLevel = Math.max(slotLevel ?? 0, meta.slotLevel);
+        }
+        if (meta?.display) {
+            display = meta.display;
+        }
+        if (meta?.recoverOn) {
+            recoverOn = meta.recoverOn;
+        }
+    }
+
+    const fromRef = spellLevelFromRef(ref);
+    if (fromRef !== undefined) {
+        slotLevel = fromRef;
+        display = display ?? "slots";
+        recoverOn = recoverOn ?? "long_rest";
+    }
+
+    return {
+        ...(slotLevel !== undefined ? { spellLevel: slotLevel } : {}),
+        ...(display ? { display } : {}),
+        ...(recoverOn ? { recoverOn } : {}),
+    };
+}
+
+export function isSlotDisplay(entry: CombatResourceEntry): boolean {
+    return entry.display === "slots" || entry.spellLevel !== undefined;
 }
 
 /**
@@ -57,11 +102,13 @@ export function listCombatResources(
             Math.min(resources[ref] ?? effectiveMax, effectiveMax)
         );
 
+        const meta = mergeResourceMeta(grants, ref);
+
         entries.push({
             ref,
             current,
             max: effectiveMax,
-            spellLevel: spellLevelFromRef(ref),
+            ...meta,
         });
     }
 

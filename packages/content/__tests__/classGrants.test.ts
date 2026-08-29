@@ -1,4 +1,5 @@
 import {
+    classGrantSourcesFromEntry,
     getClass,
     getClassGrants,
     getClassGrantSourcesForLevel,
@@ -22,6 +23,7 @@ describe("classGrants.dnd", () => {
                 "monk",
                 "rogue",
                 "cleric",
+                "warlock",
             ])
         );
     });
@@ -68,6 +70,7 @@ describe("classGrants.dnd", () => {
     it("returns spellcasting mode by class slug", () => {
         expect(getClassSpellcastingMode("wizard")).toBe("spellbook");
         expect(getClassSpellcastingMode("cleric")).toBe("prepared-list");
+        expect(getClassSpellcastingMode("warlock")).toBe("pact");
         expect(getClassSpellcastingMode("fighter")).toBeUndefined();
         expect(getClassSpellcastingMode("unknown")).toBeUndefined();
     });
@@ -221,6 +224,31 @@ describe("classGrants.dnd", () => {
         expect(blocks[1].featureLevel).toBe(2);
         expect(blocks[2].featureLevel).toBe(3);
     });
+
+    it("grants Ability Score Improvement at 4/8/12/16/19 and Extra Attack at 5", () => {
+        expect(
+            getClassGrants("fighter", 1).some(
+                (grant) => grant.description === "Extra Attack"
+            )
+        ).toBe(false);
+        expect(
+            getClassGrants("fighter", 4).some(
+                (grant) =>
+                    grant.grantType === "ability_score" &&
+                    grant.description === "Ability Score Improvement"
+            )
+        ).toBe(true);
+        expect(
+            getClassGrants("fighter", 5).some(
+                (grant) => grant.description === "Extra Attack"
+            )
+        ).toBe(true);
+        expect(
+            getClassGrantSourcesForLevel("fighter", 20).map(
+                (block) => block.featureLevel
+            )
+        ).toEqual([undefined, 2, 3, 4, 5, 8, 12, 16, 19]);
+    });
 });
 
 describe("wizard spell slot resources", () => {
@@ -298,6 +326,55 @@ describe("wizard spell slot resources", () => {
         expect(getClassSubclassLevel("fighter")).toBe(3);
         expect(getClassSubclassLevel("barbarian")).toBe(3);
         expect(getClassSubclassLevel("monk")).toBe(3);
+        expect(getClassSubclassLevel("warlock")).toBe(3);
+    });
+});
+
+describe("warlock pact resources", () => {
+    it("grants pact slots at level 1, not wizard spell-slots", () => {
+        expect(getClass("warlock")).toEqual(
+            expect.objectContaining({
+                slug: "warlock",
+                spellcastingAbility: "charisma",
+                spellcastingMode: "pact",
+            })
+        );
+
+        const grants = getClassGrants("warlock", 1);
+        expect(grants).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    grantType: "resource",
+                    ref: "pact-slots",
+                    amount: 1,
+                    display: "slots",
+                    slotLevel: 1,
+                    recoverOn: "short_rest",
+                }),
+            ])
+        );
+        expect(
+            grants.some(
+                (grant) =>
+                    grant.grantType === "resource" &&
+                    grant.ref?.startsWith("spell-slots-")
+            )
+        ).toBe(false);
+    });
+
+    it("raises pact slot count at level 2 and slotLevel at level 3", () => {
+        const l2 = getClassGrants("warlock", 2).filter(
+            (grant) =>
+                grant.grantType === "resource" && grant.ref === "pact-slots"
+        );
+        const l3 = getClassGrants("warlock", 3).filter(
+            (grant) =>
+                grant.grantType === "resource" && grant.ref === "pact-slots"
+        );
+
+        expect(l2.reduce((sum, grant) => sum + (grant.amount ?? 0), 0)).toBe(2);
+        expect(l3.reduce((sum, grant) => sum + (grant.amount ?? 0), 0)).toBe(2);
+        expect(Math.max(...l3.map((grant) => grant.slotLevel ?? 0))).toBe(2);
     });
 });
 
@@ -422,5 +499,43 @@ describe("wizard L5 progression", () => {
         expect(
             spellChoices.reduce((sum, grant) => sum + grant.choose, 0)
         ).toBe(9);
+    });
+});
+
+describe("classGrantSourcesFromEntry", () => {
+    it("resolves features from the entry without looking up curated classes", () => {
+        const blocks = classGrantSourcesFromEntry(
+            {
+                slug: "custom-class",
+                name: "Custom",
+                description: "Not in the bundled catalog",
+                hitDie: 8,
+                grants: [
+                    {
+                        grantType: "ability",
+                        choose: 0,
+                        description: "Base Trait",
+                    },
+                ],
+                featuresByLevel: [
+                    {
+                        level: 4,
+                        grants: [
+                            {
+                                grantType: "ability_score",
+                                choose: 2,
+                                amount: 1,
+                            },
+                        ],
+                    },
+                ],
+            },
+            4
+        );
+
+        expect(blocks).toHaveLength(2);
+        expect(blocks[0]?.grants[0]?.description).toBe("Base Trait");
+        expect(blocks[1]?.featureLevel).toBe(4);
+        expect(getClass("custom-class")).toBeUndefined();
     });
 });

@@ -17,7 +17,7 @@ function ClassResourcesHarness({
 
     return (
         <NextIntlClientProvider locale="en" messages={messages}>
-            <ClassResourcesField form={form} contentLocale="en" />
+            <ClassResourcesField form={form} contentLocale="en" system="dnd" />
             <label>
                 Level
                 <input

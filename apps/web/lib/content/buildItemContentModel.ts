@@ -1,4 +1,4 @@
-import type { ItemEntry } from "@rpv/content";
+import type { Grant, ItemEntry } from "@rpv/content";
 import type {
     ContentDetailRow,
     ContentSummaryModel,
@@ -26,6 +26,45 @@ function formatWeight(item: ItemEntry | undefined | null): string | undefined {
     return item.weightUnit
         ? `${item.weight} ${item.weightUnit}`
         : item.weight;
+}
+
+function formatGrantLine(grant: Grant): string {
+    if (grant.description?.trim()) {
+        return grant.description.trim();
+    }
+
+    const signed =
+        grant.amount !== undefined
+            ? `${grant.amount > 0 ? "+" : ""}${grant.amount}`
+            : undefined;
+
+    if (
+        (grant.grantType === "stat_modifier" ||
+            grant.grantType === "ability_score") &&
+        grant.targetStat
+    ) {
+        return signed
+            ? `${grant.targetStat} ${signed}`
+            : grant.targetStat;
+    }
+
+    if (grant.grantType === "spell") {
+        const refs = [
+            grant.ref,
+            ...(grant.options ?? [])
+                .filter((option) => option.optionType === "spell")
+                .map((option) => option.ref),
+        ].filter((ref): ref is string => Boolean(ref));
+        if (refs.length > 0) {
+            return refs.join(", ");
+        }
+    }
+
+    if (grant.ref && signed) {
+        return `${grant.ref} ${signed}`;
+    }
+
+    return grant.grantType.replace(/_/g, " ");
 }
 
 export function buildItemContentModel(
@@ -59,6 +98,15 @@ export function buildItemContentModel(
         });
     }
 
+    const grants = itemEntry?.grants ?? [];
+    if (grants.length > 0) {
+        rows.push({
+            labelKey: "grants",
+            value: grants.map(formatGrantLine).join("\n"),
+            fullWidth: true,
+        });
+    }
+
     const summaryBadges =
         badges.length > 0
             ? badges
@@ -80,6 +128,7 @@ export function buildItemContentModel(
             title,
             sections: [{ rows }],
             description,
+            catalogGrants: grants.length > 0 ? grants : undefined,
         },
     };
 }

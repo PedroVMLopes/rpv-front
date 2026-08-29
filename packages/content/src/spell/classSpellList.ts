@@ -1,7 +1,7 @@
 import type { Locale } from "@rpv/domain";
 import type { Grant } from "../grant/grant.types";
 import type { SpellCatalogEntry } from "./spell.types";
-import { listSpells } from "../catalog/bundled";
+import { getContentRepository } from "../repository/getContentRepository";
 
 const SPELL_SLOT_REF = /^spell-slots-(\d+)$/;
 
@@ -59,7 +59,7 @@ export function listClassListSpells(
         return [];
     }
 
-    return listSpells(locale).filter(
+    return getContentRepository("dnd").listSpells(locale).filter(
         (spell) =>
             spell.spellLists.includes(classSlug) &&
             spell.levelInt >= 1 &&

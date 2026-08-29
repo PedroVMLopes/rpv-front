@@ -1,8 +1,8 @@
-import type { Modifier, StatKey } from "@rpv/domain";
+import type { Modifier, ModifierSourceType, StatKey } from "@rpv/domain";
 import type { Grant, GrantOption } from "./grant.types";
 
 export type AbilityScoreGrantResolveContext = {
-    sourceType: string;
+    sourceType: ModifierSourceType;
     sourceId: string;
     featureLevel?: number;
 };
@@ -98,7 +98,7 @@ export function resolveAbilityScoreGrants(
                 stat,
                 operation: "add",
                 value: grant.amount ?? 1,
-                source: { type: "race", id: context.sourceId },
+                source: { type: context.sourceType, id: context.sourceId },
                 duration: { type: "permanent" },
                 stacking: "stack",
                 priority: 0,

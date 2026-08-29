@@ -3,7 +3,6 @@ import {
     getAbilityFeatureDescription,
     getAbilityFeatureName,
     getItem,
-    getNaturalWeapons,
     getSpellRollProfile,
     itemProvidesWeaponAttack,
     type SpellRollProfile,
@@ -216,7 +215,7 @@ export function listNaturalWeaponActions(
 ): WeaponAction[] {
     const context = toCombatContext(stored, resolved, locale);
 
-    return getNaturalWeapons(context.system, context.locale).map((weapon) => {
+    return contentRepo(context.system).getNaturalWeapons(context.locale).map((weapon) => {
         const attackModifier = computeNaturalWeaponAttackBonus(
             weapon,
             context.resolved,

@@ -31,6 +31,14 @@ function localizeNaturalWeapon(
     return localizeCurationEntry(entry, "features", locale);
 }
 
+export function localizeNaturalWeaponEntries(
+    locale?: Locale
+): NaturalWeaponEntry[] {
+    return dndNaturalWeapons.map((entry) =>
+        localizeNaturalWeapon(entry, locale)
+    );
+}
+
 /** Natural weapons that every character of this system has (not inventory items). */
 export function getNaturalWeapons(
     system: string,
@@ -40,7 +48,5 @@ export function getNaturalWeapons(
         return [];
     }
 
-    return dndNaturalWeapons.map((entry) =>
-        localizeNaturalWeapon(entry, locale)
-    );
+    return localizeNaturalWeaponEntries(locale);
 }

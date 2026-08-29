@@ -47,8 +47,11 @@ function grantKindFromType(grantType: Grant["grantType"]): CharacterGrant["kind"
  */
 export function abilityScoreGrantsToModifiers(
     grants: Grant[],
-    sourceId: string
+    source: ModifierSource | string
 ): Modifier[] {
+    const resolvedSource: ModifierSource =
+        typeof source === "string" ? { type: "race", id: source } : source;
+
     return grants
         .filter(
             (grant) =>
@@ -58,11 +61,11 @@ export function abilityScoreGrantsToModifiers(
                 grant.amount !== undefined
         )
         .map((grant) => ({
-            id: `race-${sourceId}-${grant.targetStat}`,
+            id: `${resolvedSource.type}-${resolvedSource.id}-${grant.targetStat}`,
             stat: grant.targetStat!,
             operation: "add" as const,
             value: grant.amount!,
-            source: { type: "race" as const, id: sourceId },
+            source: resolvedSource,
             duration: { type: "permanent" as const },
             stacking: "stack" as const,
             priority: 0,
@@ -146,6 +149,13 @@ export function fixedGrantsToCharacterGrants(
 
         if (grant.grantType === "resource") {
             if (grant.ref !== undefined && grant.amount !== undefined) {
+                const resource = {
+                    ...(grant.recoverOn ? { recoverOn: grant.recoverOn } : {}),
+                    ...(grant.display ? { display: grant.display } : {}),
+                    ...(grant.slotLevel !== undefined
+                        ? { slotLevel: grant.slotLevel }
+                        : {}),
+                };
                 result.push({
                     id: `${source.type}-${source.id}-${levelKey}-resource-${grant.ref}`,
                     kind: "resource",
@@ -153,6 +163,7 @@ export function fixedGrantsToCharacterGrants(
                     amount: grant.amount,
                     source,
                     name: grant.description,
+                    ...(Object.keys(resource).length > 0 ? { resource } : {}),
                 });
             }
             continue;

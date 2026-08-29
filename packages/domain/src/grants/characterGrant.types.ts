@@ -19,6 +19,16 @@ export type GrantActivation = {
     resourceRef?: string;
 };
 
+export type ResourceRecoverOn = "short_rest" | "long_rest";
+export type ResourceDisplay = "slots" | "counter";
+
+/** Session pool metadata for `kind: "resource"` grants. */
+export type ResourceMeta = {
+    recoverOn?: ResourceRecoverOn;
+    display?: ResourceDisplay;
+    slotLevel?: number;
+};
+
 export interface CharacterGrant {
     id: string;
     kind: CharacterGrantKind;
@@ -31,4 +41,6 @@ export interface CharacterGrant {
     amount?: number;
     /** Present when this grant belongs in the action catalog. */
     activation?: GrantActivation;
+    /** Present on resource grants. */
+    resource?: ResourceMeta;
 }

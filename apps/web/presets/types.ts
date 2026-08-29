@@ -67,7 +67,7 @@ export type PresetStatConfig = {
 
 export type HpDerivationContext = {
     level: number;
-    /** Resolved Constitution (base + race ASI). */
+    /** Resolved Constitution (base + race/item/class ability grants). */
     constitution: number;
     classSlug?: string;
     /** Hit die sides resolved from class data. */
@@ -89,11 +89,18 @@ export type AcRules = {
     formatBreakdown: (ctx: AcDerivationContext) => string | undefined;
 };
 
+export type CarryingRules = {
+    /** Maximum carried weight from resolved Strength. Same unit as item weights. */
+    deriveCapacity: (strength: number) => number;
+};
+
 export interface SystemRules {
     abilityModifier: (score: number) => number;
     proficiencyBonus: (level: number) => number;
     hp: HpRules;
     ac: AcRules;
+    /** Optional; omit when the system has no encumbrance numbers. */
+    carrying?: CarryingRules;
     initiative: (stats: Stats) => number;
     passivePerception: (
         skillModifiers: { slug: string; modifier: number }[]

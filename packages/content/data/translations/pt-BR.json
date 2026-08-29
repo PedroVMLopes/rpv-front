@@ -328,6 +328,9 @@
     },
     "cleric": {
       "name": "Clérigo"
+    },
+    "warlock": {
+      "name": "Bruxo"
     }
   },
   "subclasses": {
@@ -345,6 +348,9 @@
     },
     "cleric-life": {
       "name": "Vida"
+    },
+    "warlock-fiend": {
+      "name": "O Demônio"
     }
   },
   "items": {
@@ -356,6 +362,9 @@
     },
     "rpv_ring-of-hardiness": {
       "name": "Anel de Robustez"
+    },
+    "rpv_belt-of-constitution": {
+      "name": "Cinto de Constituição"
     },
     "srd_longsword": {
       "name": "Espada Longa"

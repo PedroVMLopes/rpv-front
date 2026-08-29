@@ -276,6 +276,28 @@ describe("sanitizeInventory", () => {
         expect(result.bag).toEqual([{ slug: "rpv_amulet-of-vitality", quantity: 1 }]);
     });
 
+    it("does not stack duplicate longswords or shields", () => {
+        const swords = sanitizeInventory(
+            {
+                bag: [{ slug: "srd_longsword", quantity: 2 }],
+                equipped: {},
+                equippedMulti: {},
+            },
+            "dnd"
+        );
+        const shields = sanitizeInventory(
+            {
+                bag: [{ slug: "srd_shield", quantity: 2 }],
+                equipped: {},
+                equippedMulti: {},
+            },
+            "dnd"
+        );
+
+        expect(swords.bag).toEqual([{ slug: "srd_longsword", quantity: 1 }]);
+        expect(shields.bag).toEqual([{ slug: "srd_shield", quantity: 1 }]);
+    });
+
     it("does not re-subtract equipped units when reconcileEquipped is false", () => {
         const remainder = sanitizeInventory(
             {

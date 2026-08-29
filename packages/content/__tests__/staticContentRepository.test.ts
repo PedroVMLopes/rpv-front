@@ -60,4 +60,31 @@ describe("StaticContentRepository", () => {
     it("returns the same instance from getContentRepository", () => {
         expect(getContentRepository("dnd")).toBe(getContentRepository("dnd"));
     });
+
+    it("attaches race levelGrants on getRace and listRaces", () => {
+        const elf = repo.getRace("elf");
+        expect(elf?.levelGrants?.some((grant) => grant.grantType === "language")).toBe(
+            true
+        );
+        expect(
+            repo.listRaces().find((race) => race.slug === "elf")?.levelGrants
+        ).toEqual(elf?.levelGrants);
+    });
+
+    it("exposes equipment slots, natural weapons, system grants, and packs", () => {
+        expect(repo.listEquipmentSlots().some((slot) => slot.id === "melee-main")).toBe(
+            true
+        );
+        expect(repo.getNaturalWeapons().some((weapon) => weapon.slug === "unarmed-strike")).toBe(
+            true
+        );
+        expect(repo.systemCombatSourceId).toBe("dnd-basic-combat");
+        expect(repo.getSystemCombatGrants().length).toBeGreaterThan(0);
+        expect(repo.getEquipmentPack("dungeoneers-pack")?.optionType).toBe(
+            "inventory_bundle"
+        );
+        expect(repo.getEquipmentPack("missing")).toBeUndefined();
+        expect(repo.listFeats()).toEqual([]);
+        expect(repo.getFeat("lucky")).toBeUndefined();
+    });
 });

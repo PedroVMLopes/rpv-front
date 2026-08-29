@@ -98,7 +98,7 @@ describe("InventoryTab", () => {
         renderWithProviders(<InventoryTab stored={storedCharacter} />);
 
         expect(screen.getByText("Encumbrance")).toBeInTheDocument();
-        expect(screen.getByText("— / —")).toBeInTheDocument();
+        expect(screen.getByText("2.5 / 210")).toBeInTheDocument();
         expect(screen.getByText("Currency")).toBeInTheDocument();
         expect(screen.getByText("452 gold")).toBeInTheDocument();
         expect(screen.getByText("12 silver")).toBeInTheDocument();

@@ -147,4 +147,17 @@ describe("filterCastableSpellGrants", () => {
 
         expect(result.map((grant) => grant.ref)).toEqual(["sacred-flame"]);
     });
+
+    it("returns all spell grants for pact mode without requiring preparedSpells", () => {
+        const result = filterCastableSpellGrants({
+            grants: [fireBolt, burningHands],
+            characterClass: "warlock",
+            preparedSpells: [],
+        });
+
+        expect(result.map((grant) => grant.ref)).toEqual([
+            "fire-bolt",
+            "burning-hands",
+        ]);
+    });
 });

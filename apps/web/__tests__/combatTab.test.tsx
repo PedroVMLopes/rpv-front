@@ -348,6 +348,60 @@ describe("CombatTab", () => {
         ).toBe(true);
     });
 
+    it("shows pact slots without wizard Level N labels", () => {
+        const warlock: StoredCharacter = {
+            ...storedCharacter,
+            id: "char-combat-warlock",
+            grants: storedCharacter.grants
+                .filter((grant) => grant.ref !== "spell-slots-1")
+                .concat([
+                    {
+                        id: "class-warlock-resource-pact-slots",
+                        kind: "resource",
+                        ref: "pact-slots",
+                        amount: 1,
+                        source: { type: "class", id: "warlock" },
+                        resource: {
+                            display: "slots",
+                            slotLevel: 1,
+                            recoverOn: "short_rest",
+                        },
+                    },
+                ]),
+            selections: {
+                ...storedCharacter.selections,
+                characterClass: "warlock",
+            },
+            resources: { hp: 18, "pact-slots": 1 },
+            systemData: {
+                characterClass: "warlock",
+                level: 1,
+            },
+        };
+
+        useCharacterStore.setState({
+            characters: [{ ...warlock, resources: { ...warlock.resources } }],
+        });
+
+        render(
+            <NextIntlClientProvider locale="en" messages={enMessages}>
+                <RollAssistantProvider>
+                    <CombatTab stored={warlock} />
+                </RollAssistantProvider>
+            </NextIntlClientProvider>
+        );
+
+        expect(screen.getByText("Pact Slots")).toBeInTheDocument();
+        expect(screen.getByText("Pact Slots (1)")).toBeInTheDocument();
+        expect(screen.queryByText("Spell Slots")).not.toBeInTheDocument();
+        expect(screen.queryByText("Level 1:")).not.toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: "Slot 1 of 1, available" })
+        ).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Short Rest" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Long Rest" })).toBeInTheDocument();
+    });
+
     it("marks the last spell slots used first in the two-row grid", () => {
         const fourSlots: StoredCharacter = {
             ...storedCharacter,

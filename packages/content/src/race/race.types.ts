@@ -47,4 +47,9 @@ export interface RaceCatalogEntry {
     asiDesc: string;
     traits: CatalogTrait[];
     subraces: SubraceCatalogEntry[];
+    /**
+     * Race-level grants that are not modeled as traits (e.g. languages).
+     * Populated by ContentRepository; omitted on raw catalog JSON.
+     */
+    levelGrants?: Grant[];
 }

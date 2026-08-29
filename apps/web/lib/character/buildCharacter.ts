@@ -10,6 +10,7 @@ import { deriveCharacterGrants } from "./characterGrants";
 import { deriveModifiersForCharacter } from "./deriveModifiers";
 import { applyDerivedCombatStats } from "./applyDerivedCombatStats";
 import { sanitizeSelectionsWithStartingMaterialization } from "./grantPickSanitize";
+import { deriveMaxHpFromForm } from "./hp";
 import { syncResourceHpToResolvedMax } from "./hpSync";
 import { readLevelFromForm } from "./level";
 import { resolveCharacterNameForSave } from "./defaultCharacterName";
@@ -44,6 +45,35 @@ function withSanitizedSelectionFields(
     };
 }
 
+/** Re-run class HP formula when the stored max still matches the previous formula. */
+function formAllowingDerivedMaxHpRefresh(
+    formData: Record<string, unknown>,
+    existing: StoredCharacter | undefined,
+    system: SystemKey,
+    locale: Locale
+): Record<string, unknown> {
+    if (!existing) {
+        return formData;
+    }
+
+    const previousFormula = deriveMaxHpFromForm(
+        flattenStoredToForm(existing, system),
+        system,
+        locale
+    );
+    const currentMax =
+        typeof formData.maxHp === "number"
+            ? formData.maxHp
+            : existing.baseStats.hitPoints;
+
+    if (previousFormula !== undefined && currentMax === previousFormula) {
+        const { maxHp: _ignored, ...rest } = formData;
+        return rest;
+    }
+
+    return formData;
+}
+
 export function buildStoredCharacter(input: BuildCharacterInput): StoredCharacter {
     const { id, type, system, locale, formData: rawFormData, existing } = input;
     const formData = {
@@ -61,11 +91,18 @@ export function buildStoredCharacter(input: BuildCharacterInput): StoredCharacte
     );
     const modifiers = deriveModifiersForCharacter(selections, locale, {
         preserve: existing?.modifiers,
+        characterLevel,
+        system,
     });
     const grants = deriveCharacterGrants(selections, locale, characterLevel, system);
 
     let processedForm = applyDerivedCombatStats(
-        withSanitizedSelectionFields(formData, selections),
+        formAllowingDerivedMaxHpRefresh(
+            withSanitizedSelectionFields(formData, selections),
+            existing,
+            system,
+            locale
+        ),
         system,
         locale
     );

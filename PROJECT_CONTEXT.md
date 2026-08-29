@@ -110,7 +110,15 @@ Resources (spell slots, rage uses, ki points) are **declarative deltas** per lev
 { grantType: "resource", choose: 0, ref: "spell-slots-1", amount: 2 }
 ```
 
-Multiple grants with the same `ref` are **summed** at build time. Convention: kebab-case refs (`spell-slots-1`, `rage-uses`, `ki-points`).
+Multiple grants with the same `ref` are **summed** at build time. Convention: kebab-case refs (`spell-slots-1`, `rage-uses`, `ki-points`, `pact-slots`).
+
+Optional resource metadata on the grant (copied to `CharacterGrant.resource`):
+
+- `recoverOn` — `"short_rest"` | `"long_rest"` (sheet rest actions restore matching pools; omitted refs are left alone)
+- `display` — `"slots"` | `"counter"` (pact and similar pools use `slots` without the `spell-slots-N` prefix)
+- `slotLevel` — slot level for pact-style pools (may rise independently of `amount`)
+
+`spell-slots-N` still means wizard-style slots in the UI. Warlock uses `ref: "pact-slots"` with `display: "slots"`.
 
 ### UI
 
@@ -119,7 +127,7 @@ Multiple grants with the same `ref` are **summed** at build time. Convention: ke
 - **`DerivedResourcesDisplay`** — spell slots + class resources on the form and character card.
 - **Labels** — `classResources.refs.{ref}` in [`apps/web/messages/*.json`](apps/web/messages/en.json); unknown refs fall back to a humanized slug.
 
-HP is form-driven via `HitPointsField`. During play, current uses (rage, ki, spell slots) live in `stored.resources` and survive rebuilds via `mergeSessionResources`.
+HP is class formula + resolved Constitution (race/item/class ability grants, equipped only) plus equipped `hitPoints` `stat_modifier`s. Bag items do not change HP. During play, current uses live in `stored.resources` and survive rebuilds via `mergeSessionResources`. Short/long rest (`applyRest`) restores pools by `recoverOn` and sets HP to resolved max on a long rest.
 
 ### Spellcasting modes
 
@@ -127,11 +135,11 @@ HP is form-driven via `HitPointsField`. During play, current uses (rage, ki, spe
 
 | Mode | Prepare pool | Castable on the sheet |
 |------|----------------|------------------------|
-| `known` / omitted | — | all spell grants |
+| `known` / `pact` / omitted | — | all spell grants |
 | `spellbook` | known leveled grants | cantrips + `preparedSpells` |
 | `prepared-list` | class list up to current max slot + fixed (`choose: 0`) spells | cantrips + prepared + domain/fixed grants |
 
-Cleric is the prepared-list pilot (`spellcastingAbility: "wisdom"`, `subclassLevel: 1`, `cleric-life` domain spells).
+Cleric is the prepared-list pilot. Warlock is the pact pilot (`pact-slots`, L1–3). Fighter ASI is an `ability_score` `choose` grant at class levels 4/8/12/16/19 (creation wizard still caps at level 3).
 
 ### Unarmored AC
 
@@ -199,7 +207,8 @@ Full SRD class/background/item catalogs are future work (Supabase-backed content
 ## Known limitations
 
 - **Catalog spells:** pilot catalog includes wizard cantrips/leveled spells plus a small cleric list (bless, cure wounds, guiding bolt, sacred flame, plus shared entries such as light / detect magic / hold person).
-- **Multiclass, ASI/Feat:** out of scope.
+- **Multiclass:** out of scope.
+- **Feat catalog:** `listFeats` / `getFeat` exist on the repository but return empty until SRD feats are authored.
 - **Variant Human** (feat vs ASI): not implemented.
 - **Legacy characters:** `normalizeStoredCharacter` coerces slugs, clears invalid subclass, backfills `schemaVersion` and `selections.inventory`, and strips legacy inventory keys from `systemData`.
 
@@ -207,9 +216,12 @@ Full SRD class/background/item catalogs are future work (Supabase-backed content
 
 Read-only content access is abstracted in `@rpv/content` (`ContentRepository`,
 `StaticContentRepository`, `getContentRepository`). The web app uses
-`apps/web/lib/content/contentRepository.ts`. A future `SupabaseContentRepository`
-will store the same `ClassEntry` / `ItemEntry` / catalog JSON shapes; grant
-resolution stays in `@rpv/content` grant helpers, not in the backend.
+`apps/web/lib/content/contentRepository.ts` (`contentRepo(system)`). Lookups
+(slots, natural weapons, system combat grants, packs, race `levelGrants`,
+classes, items) go through the repository — not raw `dnd*` maps. The API is
+**synchronous**; remote I/O is still deferred (P3). A future
+`SupabaseContentRepository` will store the same `ClassEntry` / `ItemEntry` /
+catalog JSON shapes; grant resolution stays in `@rpv/content` grant helpers.
 
 ---
 

@@ -255,7 +255,8 @@
     "refs": {
       "rage-uses": "Usos de Fúria",
       "ki-points": "Pontos de Ki",
-      "action-surge-uses": "Usos de Surto de Ação"
+      "action-surge-uses": "Usos de Surto de Ação",
+      "pact-slots": "Espaços de Pacto"
     }
   },
   "equipmentSlots": {
@@ -562,6 +563,9 @@
       "casting": "Conjuração",
       "classResources": "Recursos de Classe",
       "spellSlots": "Espaços de Magia",
+      "rest": "Descanso",
+      "shortRest": "Descanso curto",
+      "longRest": "Descanso longo",
       "defenseSaves": "Defesa e Resistências",
       "stat": "Atributo",
       "mod": "Mod",

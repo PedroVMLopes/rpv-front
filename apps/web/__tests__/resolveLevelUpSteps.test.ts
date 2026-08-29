@@ -97,6 +97,45 @@ describe("resolveLevelUpSteps", () => {
         expect(classLevel2?.labelValues).toEqual({ level: 2 });
     });
 
+    it("includes ASI grant picks on fighter 3→4 level-up, not at L1 create", () => {
+        const levelUp = resolveLevelUpSteps({
+            formValues: {
+                race: "human",
+                characterClass: "fighter",
+                level: 4,
+            },
+            fromLevel: 3,
+            targetLevel: 4,
+            system: "dnd",
+            contentLocale: "en",
+        });
+
+        expect(levelUp.steps.map((step) => step.id)).toEqual(
+            expect.arrayContaining(["class-level-4", "class-level-4-choices"])
+        );
+
+        const fromL1 = resolveLevelUpSteps({
+            formValues: {
+                race: "human",
+                characterClass: "fighter",
+                level: 1,
+            },
+            fromLevel: 1,
+            targetLevel: 1,
+            system: "dnd",
+            contentLocale: "en",
+        });
+
+        expect(fromL1.steps.some((step) => step.id === "class-level-4")).toBe(
+            false
+        );
+        expect(
+            fromL1.steps.some((step) =>
+                step.id.includes("ability_score")
+            )
+        ).toBe(false);
+    });
+
     it("includes prepare-spells before confirm when wizard book has leveled spells", () => {
         const graph = resolveLevelUpSteps({
             formValues: {

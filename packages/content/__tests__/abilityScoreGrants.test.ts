@@ -56,7 +56,7 @@ describe("isValidAbilityScorePick", () => {
 
 describe("resolveAbilityScoreGrants", () => {
     const context = {
-        sourceType: "race",
+        sourceType: "race" as const,
         sourceId: "half-elf",
     };
 

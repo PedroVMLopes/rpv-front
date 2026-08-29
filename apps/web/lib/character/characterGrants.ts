@@ -1,5 +1,6 @@
 import type { CharacterGrant, Locale, Modifier, ModifierSource, ModifierSourceType } from "@rpv/domain";
 import {
+    abilityScoreGrantsToModifiers,
     choiceGrantToCharacterGrant,
     countLanguageChoices,
     fixedGrantsToCharacterGrants,
@@ -11,13 +12,12 @@ import {
     getSubclassGrantSourcesForLevel,
     getLanguage,
     getSpell,
-    dndRaceLevelGrants,
+    resolveAbilityScoreGrants,
     statModifierGrantsToModifiers,
-    getSystemCombatGrants,
-    DND_BASIC_COMBAT_SOURCE_ID,
     type Grant,
 } from "@rpv/content";
 import { getRace, getSubrace } from "@/lib/catalog/raceCatalog";
+import { contentRepo } from "@/lib/content/contentRepository";
 import type { SystemKey } from "@/presets";
 import type { CharacterSelections } from "./storedCharacter";
 import {
@@ -40,17 +40,21 @@ export function collectGrantSources(
 ): GrantSourceEntry[] {
     const sources: GrantSourceEntry[] = [];
 
-    const systemGrants = getSystemCombatGrants(system);
+    const repo = contentRepo(system);
+    const systemGrants = repo.getSystemCombatGrants();
     if (systemGrants.length > 0) {
         sources.push({
-            source: { type: "system", id: DND_BASIC_COMBAT_SOURCE_ID },
+            source: {
+                type: "system",
+                id: repo.systemCombatSourceId ?? `${system}-combat`,
+            },
             grants: systemGrants,
         });
     }
 
     if (selections.race) {
         const race = getRace(selections.race, locale);
-        const raceLevelGrants = dndRaceLevelGrants[selections.race] ?? [];
+        const raceLevelGrants = race?.levelGrants ?? [];
         const traitGrants = race?.traits.flatMap((trait) => trait.grants) ?? [];
 
         sources.push({
@@ -173,6 +177,26 @@ export function getFixedRefsForGrantType(
 }
 
 export const STAT_MODIFIER_SOURCE_TYPES: ModifierSourceType[] = ["item", "feat"];
+
+export function deriveAbilityScoreModifiers(
+    selections: CharacterSelections,
+    locale: Locale,
+    characterLevel = 1,
+    system: SystemKey = "dnd"
+): Modifier[] {
+    const grantPicks = selections.choices?.grantPicks ?? {};
+
+    return collectGrantSources(selections, locale, characterLevel, system).flatMap(
+        (entry) => [
+            ...abilityScoreGrantsToModifiers(entry.grants, entry.source),
+            ...resolveAbilityScoreGrants(entry.grants, grantPicks, {
+                sourceType: entry.source.type,
+                sourceId: entry.source.id,
+                featureLevel: entry.featureLevel,
+            }),
+        ]
+    );
+}
 
 export function deriveStatModifiers(
     selections: CharacterSelections,

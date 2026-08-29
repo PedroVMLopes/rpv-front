@@ -96,7 +96,7 @@ export function ContentDetailPanel({
                                     </span>
                                 ) : null}
                             </dt>
-                            <dd className="font-medium">{row.value}</dd>
+                            <dd className="font-medium whitespace-pre-line">{row.value}</dd>
                         </div>
                     ))}
                 </dl>

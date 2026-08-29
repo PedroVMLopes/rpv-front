@@ -3,7 +3,13 @@
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { FaBox, FaCoins, FaWeightHanging } from "react-icons/fa6";
+import { resolveStats } from "@rpv/domain";
 import { countMiscItems } from "@/lib/character/inventoryDisplay";
+import {
+    deriveCarryingCapacity,
+    formatCarriedWeight,
+    sumInventoryWeight,
+} from "@/lib/character/inventoryWeight";
 import { getTotalCurrency } from "@/lib/character/materializeCurrencyGrants";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { cn } from "@/lib/utils";
@@ -31,6 +37,24 @@ export function InventorySummaryRow({ stored }: InventorySummaryRowProps) {
         stored.selections.inventory?.bag ?? [],
         stored.system
     );
+    const carried = useMemo(
+        () => sumInventoryWeight(stored.selections.inventory, stored.system),
+        [stored.selections.inventory, stored.system]
+    );
+    const capacity = useMemo(() => {
+        const strength = resolveStats(stored.baseStats, stored.modifiers)
+            .strength;
+        return deriveCarryingCapacity(strength, stored.system);
+    }, [stored.baseStats, stored.modifiers, stored.system]);
+    const capacityValue = capacity ?? 0;
+    const fillPercent =
+        capacityValue > 0
+            ? Math.min(100, (carried / capacityValue) * 100)
+            : 0;
+    const weightLabel =
+        capacity === undefined
+            ? `${formatCarriedWeight(carried)} / —`
+            : `${formatCarriedWeight(carried)} / ${formatCarriedWeight(capacity)}`;
 
     return (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -44,19 +68,22 @@ export function InventorySummaryRow({ stored }: InventorySummaryRowProps) {
                 }
             >
                 <div className="flex flex-col gap-2">
-                    <p className="text-lg font-bold tabular-nums">— / —</p>
+                    <p className="text-lg font-bold tabular-nums">{weightLabel}</p>
                     <div
                         className={cn(
                             "h-2 w-full overflow-hidden rounded-full",
                             sheetInset
                         )}
                         role="progressbar"
-                        aria-valuenow={0}
+                        aria-valuenow={Math.round(fillPercent)}
                         aria-valuemin={0}
                         aria-valuemax={100}
                         aria-label={t("summary.encumbrance")}
                     >
-                        <div className="h-full w-0 rounded-full bg-primary" />
+                        <div
+                            className="h-full rounded-full bg-primary"
+                            style={{ width: `${fillPercent}%` }}
+                        />
                     </div>
                 </div>
             </OverviewPanel>

@@ -2,7 +2,7 @@ import type { Grant } from "../grant/grant.types";
 
 export const DND_BASIC_COMBAT_SOURCE_ID = "dnd-basic-combat";
 
-const dndBasicCombatGrants: Grant[] = [
+export const dndBasicCombatGrants: Grant[] = [
     {
         grantType: "ability",
         choose: 0,

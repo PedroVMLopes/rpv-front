@@ -1,6 +1,5 @@
 import {
     abilityScoreGrantsToModifiers,
-    dndRaceLevelGrants,
     resolveAbilityScoreGrants,
 } from "@rpv/content";
 import type { Locale, Modifier } from "@rpv/domain";
@@ -17,7 +16,7 @@ function collectRaceAbilityScoreModifiers(
     if (selections.race) {
         const race = getRace(selections.race, locale);
         if (race) {
-            const raceLevelGrants = dndRaceLevelGrants[selections.race] ?? [];
+            const raceLevelGrants = race.levelGrants ?? [];
             modifiers.push(
                 ...abilityScoreGrantsToModifiers(raceLevelGrants, race.slug)
             );

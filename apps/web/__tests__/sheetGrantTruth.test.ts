@@ -61,6 +61,24 @@ describe("sheet grant truth after rebuild", () => {
         expect(classTraits.map((trait) => trait.name)).toContain("Action Surge");
     });
 
+    it("lists Extra Attack at fighter level 5, not level 1", () => {
+        const l1 = buildNewStoredCharacter(
+            { ...fighterForm, level: 1 },
+            "player",
+            "dnd",
+            "en"
+        );
+        const l5 = buildNewStoredCharacter(
+            { ...fighterForm, level: 5 },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        expect(abilityNames(l1)).not.toContain("Extra Attack");
+        expect(abilityNames(l5)).toContain("Extra Attack");
+    });
+
     it("omits subclass features below the unlock level", () => {
         const stored = buildNewStoredCharacter(
             {

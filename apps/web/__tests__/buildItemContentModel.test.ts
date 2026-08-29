@@ -72,4 +72,22 @@ describe("buildItemContentModel", () => {
 
         expect(summary.badges[0]?.label).toBe(itemEntry?.category.name);
     });
+
+    it("lists item grants on the detail model", () => {
+        const itemEntry = getItem("rpv_amulet-of-vitality", "dnd");
+        const { detail } = buildItemContentModel(
+            {
+                id: "amulet",
+                itemEntry,
+                fallbackTitle: "Amulet",
+            },
+            formatters
+        );
+
+        expect(detail.catalogGrants).toEqual(itemEntry?.grants);
+        expect(
+            detail.sections[0]?.rows.find((row) => row.labelKey === "grants")
+                ?.value
+        ).toBe("hitPoints +5");
+    });
 });

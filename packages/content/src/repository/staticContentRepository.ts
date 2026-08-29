@@ -1,17 +1,40 @@
 import type { Locale } from "@rpv/domain";
 import * as bundled from "../catalog/bundled";
 import * as curationReaders from "../curation/curationReaders";
+import { dndEquipmentPackBundles } from "../curation/equipmentPacks.dnd";
+import { dndEquipmentSlots } from "../curation/equipmentSlots.dnd";
+import { localizeNaturalWeaponEntries } from "../curation/naturalWeapons.dnd";
+import { dndRaceLevelGrants } from "../curation/raceGrants.dnd";
+import {
+    DND_BASIC_COMBAT_SOURCE_ID,
+    dndBasicCombatGrants,
+} from "../curation/systemGrants.dnd";
+import type { RaceCatalogEntry } from "../race/race.types";
 import type { ContentRepository } from "./contentRepository.types";
+
+function withRaceLevelGrants(
+    race: RaceCatalogEntry | undefined
+): RaceCatalogEntry | undefined {
+    if (!race) {
+        return undefined;
+    }
+
+    return {
+        ...race,
+        levelGrants: dndRaceLevelGrants[race.slug] ?? [],
+    };
+}
 
 export class StaticContentRepository implements ContentRepository {
     readonly system = "dnd";
+    readonly systemCombatSourceId = DND_BASIC_COMBAT_SOURCE_ID;
 
     listRaces(locale?: Locale) {
-        return bundled.listRaces(locale);
+        return bundled.listRaces(locale).map((race) => withRaceLevelGrants(race)!);
     }
 
     getRace(slug: string, locale?: Locale) {
-        return bundled.getRace(slug, locale);
+        return withRaceLevelGrants(bundled.getRace(slug, locale));
     }
 
     getSubrace(slug: string, locale?: Locale) {
@@ -64,5 +87,29 @@ export class StaticContentRepository implements ContentRepository {
 
     getSubclass(slug: string, locale?: Locale) {
         return curationReaders.readSubclass(slug, locale);
+    }
+
+    listEquipmentSlots() {
+        return dndEquipmentSlots;
+    }
+
+    getNaturalWeapons(locale?: Locale) {
+        return localizeNaturalWeaponEntries(locale);
+    }
+
+    getSystemCombatGrants() {
+        return dndBasicCombatGrants;
+    }
+
+    getEquipmentPack(key: string) {
+        return dndEquipmentPackBundles[key as keyof typeof dndEquipmentPackBundles];
+    }
+
+    listFeats(_locale?: Locale) {
+        return [];
+    }
+
+    getFeat(_slug: string, _locale?: Locale) {
+        return undefined;
     }
 }

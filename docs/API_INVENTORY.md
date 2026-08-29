@@ -4,6 +4,9 @@ This document describes the **future HTTP API** for character persistence and
 inventory. It is aligned with the web app implementation today. **No routes exist
 in this repository yet** — this is contract notes only.
 
+P1 (playable table, bundled catalog, `localStorage` disk) **does not change this
+HTTP contract**. Remote character persistence remains deferred (conversation P3).
+
 Reference implementation (web):
 
 - Types: [`packages/domain/src/inventory/inventory.types.ts`](../packages/domain/src/inventory/inventory.types.ts)

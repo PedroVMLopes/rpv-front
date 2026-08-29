@@ -14,6 +14,7 @@ export * from "./grant/currencyGrants";
 export * from "./grant/abilityScoreGrants";
 export * from "./grant/exclusiveGroups";
 
+export * from "./feat/feat.types";
 export * from "./race/race.types";
 export * from "./race/ability";
 export * from "./race/trait.parser";
@@ -56,14 +57,6 @@ export {
     listItems,
     getSubclass,
     listSubclassesForClass,
-} from "./curation/contentRepoWrappers.dnd";
-
-export type { ContentRepository } from "./repository/contentRepository.types";
-export { StaticContentRepository } from "./repository/staticContentRepository";
-export { getContentRepository } from "./repository/getContentRepository";
-
-export {
-    catalog,
     listRaces,
     getRace,
     getSubrace,
@@ -71,4 +64,30 @@ export {
     getSpell,
     listLanguages,
     getLanguage,
-} from "./catalog/bundled";
+    listFeats,
+    getFeat,
+} from "./curation/contentRepoWrappers.dnd";
+
+export type { ContentRepository } from "./repository/contentRepository.types";
+export { StaticContentRepository } from "./repository/staticContentRepository";
+export { getContentRepository } from "./repository/getContentRepository";
+
+export { catalog } from "./catalog/bundled";
+
+export {
+    getClassGrantSourcesForLevel,
+    getClassGrants,
+    getClassHitDie,
+    getClassSpellcastingMode,
+    getClassPreparedQuotaKind,
+    getClassSubclassLevel,
+    classGrantSourcesFromEntry,
+} from "./grant/classGrantSources";
+
+export {
+    getSubclassGrantSourcesForLevel,
+    getSubclassGrants,
+    subclassGrantSourcesFromEntry,
+} from "./grant/subclassGrantSources";
+
+export { getBackgroundGrants } from "./grant/backgroundGrantSources";

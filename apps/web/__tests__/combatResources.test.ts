@@ -35,6 +35,8 @@ describe("listCombatResources", () => {
                 current: 3,
                 max: 4,
                 spellLevel: 1,
+                display: "slots",
+                recoverOn: "long_rest",
             },
             {
                 ref: "rage-uses",
@@ -55,6 +57,8 @@ describe("listCombatResources", () => {
             current: 0,
             max: 4,
             spellLevel: 1,
+            display: "slots",
+            recoverOn: "long_rest",
         });
     });
 
@@ -81,6 +85,8 @@ describe("listCombatResources", () => {
             current: 9,
             max: 9,
             spellLevel: 1,
+            display: "slots",
+            recoverOn: "long_rest",
         });
         expect(entries.find((entry) => entry.ref === "rage-uses")).toEqual({
             ref: "rage-uses",
@@ -123,6 +129,37 @@ describe("listCombatResources", () => {
             current: 3,
             max: 3,
         });
+    });
+
+    it("treats display slots without spell-slots prefix as pact-style slots", () => {
+        const entries = listCombatResources(
+            [
+                {
+                    id: "class-warlock-resource-pact-slots",
+                    kind: "resource",
+                    ref: "pact-slots",
+                    amount: 1,
+                    source: { type: "class", id: "warlock" },
+                    resource: {
+                        display: "slots",
+                        slotLevel: 1,
+                        recoverOn: "short_rest",
+                    },
+                },
+            ],
+            { "pact-slots": 1 }
+        );
+
+        expect(entries).toEqual([
+            {
+                ref: "pact-slots",
+                current: 1,
+                max: 1,
+                spellLevel: 1,
+                display: "slots",
+                recoverOn: "short_rest",
+            },
+        ]);
     });
 });
 

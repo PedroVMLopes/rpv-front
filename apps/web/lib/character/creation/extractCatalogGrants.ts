@@ -6,7 +6,6 @@ import type {
     SubraceCatalogEntry,
 } from "@rpv/content";
 import {
-    dndRaceLevelGrants,
     getClassGrants,
     getSubclassGrants,
     type Grant,
@@ -14,7 +13,7 @@ import {
 
 export function extractRaceGrants(race: RaceCatalogEntry): Grant[] {
     return [
-        ...(dndRaceLevelGrants[race.slug] ?? []),
+        ...(race.levelGrants ?? []),
         ...race.traits.flatMap((trait) => trait.grants),
     ];
 }

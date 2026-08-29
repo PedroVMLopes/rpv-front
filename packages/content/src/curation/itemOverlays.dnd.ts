@@ -72,6 +72,28 @@ export const rpvExtraItems: ItemEntry[] = [
         ],
     },
     {
+        slug: "rpv_belt-of-constitution",
+        system: "dnd",
+        name: "Belt of Constitution",
+        description:
+            "A thick belt that hardens the wearer's body against hardship.",
+        category: { name: "Wondrous Item", key: "wondrous-item" },
+        weapon: null,
+        armor: null,
+        weight: "1.000",
+        weightUnit: "lb",
+        cost: null,
+        stackable: false,
+        grants: [
+            {
+                grantType: "ability_score",
+                choose: 0,
+                targetStat: "constitution",
+                amount: 2,
+            },
+        ],
+    },
+    {
         slug: "rpv_pilot-test-dagger",
         system: "dnd",
         name: "Pilot Test Dagger",

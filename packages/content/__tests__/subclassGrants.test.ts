@@ -25,6 +25,9 @@ describe("subclassGrants.dnd", () => {
         expect(listSubclassesForClass("cleric").map((entry) => entry.slug)).toEqual([
             "cleric-life",
         ]);
+        expect(listSubclassesForClass("warlock").map((entry) => entry.slug)).toEqual([
+            "warlock-fiend",
+        ]);
     });
 
     it("returns subclass metadata by namespaced slug", () => {

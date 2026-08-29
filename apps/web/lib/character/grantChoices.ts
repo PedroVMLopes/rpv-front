@@ -2,7 +2,6 @@ import {
     dndSkills,
     listLanguages,
     resolveGrantPool,
-    dndRaceLevelGrants,
     type Grant,
 } from "@rpv/content";
 import type { Locale, ModifierSource } from "@rpv/domain";
@@ -211,12 +210,17 @@ export function collectPendingChoiceGrants(
             selections.race &&
             entry.source.id === selections.race
         ) {
-            const raceLevelGrants = dndRaceLevelGrants[selections.race] ?? [];
+            const race = getRace(selections.race, locale);
             pending.push(
-                ...collectFromGrants(raceLevelGrants, entry.source, undefined, system, locale)
+                ...collectFromGrants(
+                    race?.levelGrants ?? [],
+                    entry.source,
+                    undefined,
+                    system,
+                    locale
+                )
             );
 
-            const race = getRace(selections.race, locale);
             if (race) {
                 pending.push(
                     ...collectFromTraits(race.traits, entry.source, system, locale)

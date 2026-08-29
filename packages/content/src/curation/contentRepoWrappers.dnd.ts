@@ -4,6 +4,9 @@ import type { BackgroundEntry } from "./backgroundGrants.dnd";
 import type { ClassEntry } from "./classGrants.dnd";
 import type { ItemEntry, ItemSystem } from "../item/item.types";
 import type { SubclassEntry } from "./subclassGrants.dnd";
+import type { Language } from "../catalog/catalog.types";
+import type { RaceCatalogEntry, SubraceCatalogEntry } from "../race/race.types";
+import type { SpellCatalogEntry } from "../spell/spell.types";
 
 export function getClass(slug: string, locale?: Locale): ClassEntry | undefined {
     return getContentRepository("dnd").getClass(slug, locale);
@@ -52,3 +55,49 @@ export function listSubclassesForClass(
 ): SubclassEntry[] {
     return getContentRepository("dnd").listSubclassesForClass(classSlug, locale);
 }
+
+export function listRaces(locale?: Locale): RaceCatalogEntry[] {
+    return getContentRepository("dnd").listRaces(locale);
+}
+
+export function getRace(
+    slug: string,
+    locale?: Locale
+): RaceCatalogEntry | undefined {
+    return getContentRepository("dnd").getRace(slug, locale);
+}
+
+export function getSubrace(
+    slug: string,
+    locale?: Locale
+): SubraceCatalogEntry | undefined {
+    return getContentRepository("dnd").getSubrace(slug, locale);
+}
+
+export function listSpells(locale?: Locale): SpellCatalogEntry[] {
+    return getContentRepository("dnd").listSpells(locale);
+}
+
+export function getSpell(
+    slug: string,
+    locale?: Locale
+): SpellCatalogEntry | undefined {
+    return getContentRepository("dnd").getSpell(slug, locale);
+}
+
+export function listLanguages(): Language[] {
+    return getContentRepository("dnd").listLanguages();
+}
+
+export function getLanguage(slug: string): Language | undefined {
+    return getContentRepository("dnd").getLanguage(slug);
+}
+
+export function listFeats(locale?: Locale) {
+    return getContentRepository("dnd").listFeats(locale);
+}
+
+export function getFeat(slug: string, locale?: Locale) {
+    return getContentRepository("dnd").getFeat(slug, locale);
+}
+

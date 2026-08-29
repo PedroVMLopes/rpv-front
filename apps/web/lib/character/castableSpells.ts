@@ -35,7 +35,7 @@ function syntheticPreparedGrant(
  * Returns spell grants that are currently castable given the class
  * spellcasting mode and prepared list.
  *
- * - `known` / absent mode: all spell grants
+ * - `known` / `pact` / absent mode: all spell grants
  * - `spellbook`: cantrips always; leveled only if prepared (from known grants)
  * - `prepared-list`: cantrips + fixed (choose 0) grants + prepared class-list slugs
  */

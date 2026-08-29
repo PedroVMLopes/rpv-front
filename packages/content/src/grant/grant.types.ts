@@ -90,4 +90,8 @@ export interface Grant {
      * action catalog. Omitted abilities are traits only (overview / features).
      */
     activation?: GrantActivation;
+    /** Resource pool metadata when grantType is "resource". */
+    recoverOn?: "short_rest" | "long_rest";
+    display?: "slots" | "counter";
+    slotLevel?: number;
 }

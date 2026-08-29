@@ -79,7 +79,14 @@ data here.
   - `known` — spell grants are always castable
   - `prepared-list` — prepare from the full class list up to current max slot
   - `spellbook` — learn into a book; prepare a subset to cast
+  - `pact` — known spells; slots are a separate pact pool (`ref` + `display: "slots"`, not `spell-slots-N`)
   - omitted — no preparation rules (non-casters)
+- Ability Score Improvement is a class `ability_score` `choose` grant at the
+  levels listed in `featuresByLevel` (fighter: 4/8/12/16/19). Do not special-case
+  class slugs in the web app.
+- `grantType: "resource"` may set `recoverOn` (`short_rest` | `long_rest`),
+  `display` (`slots` | `counter`), and `slotLevel`. These copy onto
+  `CharacterGrant.resource`.
 - `preparedQuota?` — `level-plus-mod` (default when `spellcastingAbility` is set)
   or `half-level-plus-mod`. Cleric uses the default; paladin would set half later.
 
@@ -544,8 +551,16 @@ Content **lookup** (catalog entries + curation entries) goes through
   `"dnd"` is the only system registered now.
 
 Legacy exports (`getClass`, `listItems`, `listSpells`, …) are thin wrappers over
-the default repository. **Grant resolution** (`grants.ts`, `getClassGrants`, …)
-stays outside the repository — it reads entries via those helpers.
+the default D&D repository. **Grant resolution** (`grants.ts`,
+`getClassGrantSourcesForLevel`, …) reads entries via `getContentRepository(system)`,
+not by importing `*.dnd.ts` maps. Race ASI/language overlays live on
+`RaceCatalogEntry.levelGrants` from `getRace`. Other lookups the sheet needs
+(`listEquipmentSlots`, `getNaturalWeapons`, `getSystemCombatGrants`,
+`getEquipmentPack`, `listFeats`) are repository methods. The interface stays
+**synchronous** (`@future async` is a comment only).
+
+The web app must call [`contentRepo(stored.system)`](../../apps/web/lib/content/contentRepository.ts)
+rather than `dndRaceLevelGrants` / other curation maps.
 
 ### Future Supabase contract
 

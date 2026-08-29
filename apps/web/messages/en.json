@@ -255,7 +255,8 @@
     "refs": {
       "rage-uses": "Rage Uses",
       "ki-points": "Ki Points",
-      "action-surge-uses": "Action Surge Uses"
+      "action-surge-uses": "Action Surge Uses",
+      "pact-slots": "Pact Slots"
     }
   },
   "equipmentSlots": {
@@ -562,6 +563,9 @@
       "casting": "Spellcasting",
       "classResources": "Class Resources",
       "spellSlots": "Spell Slots",
+      "rest": "Rest",
+      "shortRest": "Short Rest",
+      "longRest": "Long Rest",
       "defenseSaves": "Defense & Saves",
       "stat": "Stat",
       "mod": "Mod",
