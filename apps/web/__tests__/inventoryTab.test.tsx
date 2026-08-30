@@ -91,8 +91,12 @@ function panelByTitle(title: string) {
     return panel;
 }
 
-function bagPanel() {
-    return panelByTitle("Bag");
+function equipmentPanel() {
+    return panelByTitle("Equipment");
+}
+
+function possessionsPanel() {
+    return panelByTitle("Possessions");
 }
 
 function cardForName(name: string, scope: HTMLElement = document.body) {
@@ -145,19 +149,24 @@ describe("InventoryTab", () => {
         ).toBe(460);
     });
 
-    it("places Equipped between summary and Bag", () => {
+    it("places panels in order: summary, Equipment, Possessions, Cosmetics", () => {
         renderWithProviders(<InventoryTab stored={storedCharacter} />);
 
         const encumbrance = screen.getByText("Encumbrance");
-        const equipped = panelByTitle("Equipped");
-        const bag = panelByTitle("Bag");
+        const equipment = equipmentPanel();
+        const possessions = possessionsPanel();
+        const cosmetics = panelByTitle("Cosmetics");
 
         expect(
-            encumbrance.compareDocumentPosition(equipped) &
+            encumbrance.compareDocumentPosition(equipment) &
                 Node.DOCUMENT_POSITION_FOLLOWING
         ).toBeTruthy();
         expect(
-            equipped.compareDocumentPosition(bag) &
+            equipment.compareDocumentPosition(possessions) &
+                Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy();
+        expect(
+            possessions.compareDocumentPosition(cosmetics) &
                 Node.DOCUMENT_POSITION_FOLLOWING
         ).toBeTruthy();
     });
@@ -182,8 +191,8 @@ describe("InventoryTab", () => {
 
         renderWithProviders(<InventoryTab stored={withBothGroups} />);
 
-        const wearable = screen.getByTestId("inventory-equipped-wearable");
-        const usable = screen.getByTestId("inventory-equipped-usable");
+        const wearable = screen.getByTestId("inventory-equipment-wearable");
+        const usable = screen.getByTestId("inventory-equipment-usable");
 
         expect(within(wearable).getByText("Leather Armor")).toBeInTheDocument();
         expect(
@@ -200,7 +209,7 @@ describe("InventoryTab", () => {
         ).not.toBeInTheDocument();
 
         expect(
-            screen.queryByTestId("inventory-equipped-empty")
+            screen.queryByTestId("inventory-equipment-empty")
         ).not.toBeInTheDocument();
         expect(screen.queryByText("Empty")).not.toBeInTheDocument();
     });
@@ -221,10 +230,10 @@ describe("InventoryTab", () => {
         renderWithProviders(<InventoryTab stored={emptyEquipped} />);
 
         expect(
-            screen.getByTestId("inventory-equipped-empty")
+            screen.getByTestId("inventory-equipment-empty")
         ).toHaveTextContent("No items equipped.");
         expect(
-            screen.queryByTestId("inventory-equipped-wearable")
+            screen.queryByTestId("inventory-equipment-wearable")
         ).not.toBeInTheDocument();
     });
 
@@ -239,16 +248,23 @@ describe("InventoryTab", () => {
         ).toHaveAttribute("aria-disabled", "true");
     });
 
-    it("lists bag possessions without duplicating equipped items", () => {
+    it("lists carried possessions and stowed equipment in separate panels", () => {
         renderWithProviders(<InventoryTab stored={storedCharacter} />);
 
-        const bag = bagPanel();
-        expect(within(bag).getByText("Arrow (bow) (10)")).toBeInTheDocument();
-        expect(within(bag).getByText("Pilot Test Pack A")).toBeInTheDocument();
-        expect(within(bag).getByText("Amulet of Vitality")).toBeInTheDocument();
-        expect(within(bag).queryByText("Longbow")).not.toBeInTheDocument();
+        const possessions = possessionsPanel();
+        const equipment = equipmentPanel();
+
+        expect(within(possessions).getByText("Arrow (bow) (10)")).toBeInTheDocument();
+        expect(within(possessions).getByText("Pilot Test Pack A")).toBeInTheDocument();
         expect(
-            within(bag).queryByRole("button", { name: "Equipped" })
+            within(possessions).queryByText("Amulet of Vitality")
+        ).not.toBeInTheDocument();
+        expect(
+            within(equipment).getByText("Amulet of Vitality")
+        ).toBeInTheDocument();
+        expect(within(equipment).getByText("Longbow")).toBeInTheDocument();
+        expect(
+            within(possessions).queryByRole("button", { name: "Equipped" })
         ).not.toBeInTheDocument();
     });
 
@@ -273,38 +289,42 @@ describe("InventoryTab", () => {
         expect(screen.getAllByText("Longsword")).toHaveLength(1);
         expect(screen.getAllByText("Leather Armor")).toHaveLength(1);
 
-        const wearable = screen.getByTestId("inventory-equipped-wearable");
-        const usable = screen.getByTestId("inventory-equipped-usable");
+        const wearable = screen.getByTestId("inventory-equipment-wearable");
+        const usable = screen.getByTestId("inventory-equipment-usable");
         expect(within(wearable).getByText("Leather Armor")).toBeInTheDocument();
         expect(within(usable).getByText("Longsword")).toBeInTheDocument();
-        expect(within(bagPanel()).queryByText("Longsword")).not.toBeInTheDocument();
+        expect(within(possessionsPanel()).queryByText("Longsword")).not.toBeInTheDocument();
     });
 
-    it("filters Bag items by category tab without hiding Equipped panel", async () => {
+    it("filters Possessions by category tab without hiding Equipment panel", async () => {
         const user = userEvent.setup();
         renderWithProviders(<InventoryTab stored={storedCharacter} />);
 
         const tablist = screen.getByRole("tablist", {
             name: "Inventory filters",
         });
-        const bag = bagPanel();
-        const usable = screen.getByTestId("inventory-equipped-usable");
+        const possessions = possessionsPanel();
+        const usable = screen.getByTestId("inventory-equipment-usable");
+        const equipment = equipmentPanel();
 
         await user.click(
             within(tablist).getByRole("tab", { name: "Consumables" })
         );
-        expect(within(bag).getByText("Arrow (bow) (10)")).toBeInTheDocument();
-        expect(within(bag).queryByText("Longbow")).not.toBeInTheDocument();
+        expect(within(possessions).getByText("Arrow (bow) (10)")).toBeInTheDocument();
+        expect(within(possessions).queryByText("Longbow")).not.toBeInTheDocument();
         expect(
-            within(bag).queryByText("Pilot Test Pack A")
+            within(possessions).queryByText("Pilot Test Pack A")
         ).not.toBeInTheDocument();
         expect(within(usable).getByText("Longbow")).toBeInTheDocument();
+        expect(
+            within(equipment).getByText("Amulet of Vitality")
+        ).toBeInTheDocument();
 
         await user.click(
             within(tablist).getByRole("tab", { name: "Misc / Other" })
         );
-        expect(within(bag).getByText("Pilot Test Pack A")).toBeInTheDocument();
-        expect(within(bag).queryByText("Arrow (bow) (10)")).not.toBeInTheDocument();
+        expect(within(possessions).getByText("Pilot Test Pack A")).toBeInTheDocument();
+        expect(within(possessions).queryByText("Arrow (bow) (10)")).not.toBeInTheDocument();
         expect(within(usable).getByText("Longbow")).toBeInTheDocument();
     });
 });
@@ -336,23 +356,23 @@ describe("InventoryTab equip actions", () => {
 
         renderWithProviders(<InventoryTab stored={partial} />);
 
-        const bag = bagPanel();
-        expect(within(bag).getAllByText(/Torch/).length).toBe(1);
-        expect(within(bag).getByText("Torch (9)")).toBeInTheDocument();
+        const possessions = possessionsPanel();
+        expect(within(possessions).getAllByText(/Torch/).length).toBe(1);
+        expect(within(possessions).getByText("Torch (9)")).toBeInTheDocument();
         expect(
-            within(bag).queryByRole("button", { name: "Equip" })
+            within(possessions).queryByRole("button", { name: "Equip" })
         ).not.toBeInTheDocument();
     });
 
     it("does not show Equip for carried adventuring gear", () => {
         renderWithProviders(<InventoryTab stored={storedCharacter} />);
 
-        const packCard = cardForName("Pilot Test Pack A", bagPanel());
+        const packCard = cardForName("Pilot Test Pack A", possessionsPanel());
         expect(
             within(packCard).queryByRole("button", { name: "Equip" })
         ).not.toBeInTheDocument();
 
-        const arrowCard = cardForName("Arrow (bow) (10)", bagPanel());
+        const arrowCard = cardForName("Arrow (bow) (10)", possessionsPanel());
         expect(
             within(arrowCard).queryByRole("button", { name: "Equip" })
         ).not.toBeInTheDocument();
@@ -364,7 +384,7 @@ describe("InventoryTab equip actions", () => {
             <InventoryTabLive characterId={storedCharacter.id} />
         );
 
-        const amuletCard = cardForName("Amulet of Vitality", bagPanel());
+        const amuletCard = cardForName("Amulet of Vitality", equipmentPanel());
         await user.click(
             within(amuletCard).getByRole("button", { name: "Equip" })
         );
@@ -383,7 +403,7 @@ describe("InventoryTab equip actions", () => {
             <InventoryTabLive characterId={storedCharacter.id} />
         );
 
-        const amuletCard = cardForName("Amulet of Vitality", bagPanel());
+        const amuletCard = cardForName("Amulet of Vitality", equipmentPanel());
         await user.click(
             within(amuletCard).getByRole("button", { name: "Equip" })
         );
@@ -396,12 +416,12 @@ describe("InventoryTab equip actions", () => {
                 ?.equipped.amulet
         ).toBe("rpv_amulet-of-vitality");
 
-        const wearable = screen.getByTestId("inventory-equipped-wearable");
+        const wearable = screen.getByTestId("inventory-equipment-wearable");
         expect(
             within(wearable).getByText("Amulet of Vitality")
         ).toBeInTheDocument();
         expect(
-            within(bagPanel()).queryByText("Amulet of Vitality")
+            within(possessionsPanel()).queryByText("Amulet of Vitality")
         ).not.toBeInTheDocument();
     });
 
@@ -411,7 +431,7 @@ describe("InventoryTab equip actions", () => {
             <InventoryTabLive characterId={storedCharacter.id} />
         );
 
-        const usable = screen.getByTestId("inventory-equipped-usable");
+        const usable = screen.getByTestId("inventory-equipment-usable");
         const longbowCard = cardForName("Longbow", usable);
         await user.click(
             within(longbowCard).getByRole("button", { name: "Equipped" })
@@ -432,7 +452,7 @@ describe("InventoryTab equip actions", () => {
             <InventoryTabLive characterId={storedCharacter.id} />
         );
 
-        const amuletCard = cardForName("Amulet of Vitality", bagPanel());
+        const amuletCard = cardForName("Amulet of Vitality", equipmentPanel());
         await user.click(
             within(amuletCard).getByRole("button", { name: "Equip" })
         );
@@ -459,7 +479,7 @@ describe("InventoryTab equip actions", () => {
             <InventoryTabLive characterId={storedCharacter.id} />
         );
 
-        const arrowCard = cardForName("Arrow (bow) (10)", bagPanel());
+        const arrowCard = cardForName("Arrow (bow) (10)", possessionsPanel());
         await user.click(
             within(arrowCard).getByRole("button", {
                 name: "Expand Arrow (bow) (10)",
@@ -491,7 +511,7 @@ describe("InventoryTab equip actions", () => {
             <InventoryTabLive characterId={storedCharacter.id} />
         );
 
-        const packCard = cardForName("Pilot Test Pack A", bagPanel());
+        const packCard = cardForName("Pilot Test Pack A", possessionsPanel());
         await user.click(
             within(packCard).getByRole("button", {
                 name: "Expand Pilot Test Pack A",
@@ -515,7 +535,7 @@ describe("InventoryTab equip actions", () => {
             <InventoryTabLive characterId={storedCharacter.id} />
         );
 
-        const usable = screen.getByTestId("inventory-equipped-usable");
+        const usable = screen.getByTestId("inventory-equipment-usable");
         const longbowCard = cardForName("Longbow", usable);
         await user.click(
             within(longbowCard).getByRole("button", {
@@ -552,7 +572,7 @@ describe("InventoryTab equip actions", () => {
             <InventoryTabLive characterId={storedCharacter.id} />
         );
 
-        const arrowCard = cardForName("Arrow (bow) (10)", bagPanel());
+        const arrowCard = cardForName("Arrow (bow) (10)", possessionsPanel());
         await user.click(
             within(arrowCard).getByRole("button", {
                 name: "Expand Arrow (bow) (10)",
@@ -591,7 +611,7 @@ describe("InventoryTab equip actions", () => {
             <InventoryTabLive characterId={storedCharacter.id} />
         );
 
-        const amuletCard = cardForName("Amulet of Vitality", bagPanel());
+        const amuletCard = cardForName("Amulet of Vitality", equipmentPanel());
         await user.click(
             within(amuletCard).getByRole("button", {
                 name: "Expand Amulet of Vitality",

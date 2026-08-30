@@ -1,5 +1,5 @@
 import { emptyInventory } from "@rpv/domain";
-import type { ItemEntry } from "@rpv/content";
+import { getItem, type ItemEntry } from "@rpv/content";
 import {
     countMiscItems,
     filterInventoryRows,
@@ -7,11 +7,16 @@ import {
     listBagDisplayRows,
     listCarriedRows,
     listCosmeticEquippedRows,
+    listCosmeticPanelRows,
     listEquippedRowsByGroup,
+    listEquipmentColumnRows,
     listInventoryRows,
     listMechanicalEquippedRows,
+    listStowedCosmeticRows,
     listStowedEquippableRows,
+    listStowedMechanicalRows,
     resolveItemFilterCategory,
+    resolveMechanicalColumn,
 } from "../lib/character/inventoryDisplay";
 
 function stubItem(
@@ -216,6 +221,93 @@ describe("listCosmeticEquippedRows", () => {
 
         expect(listCosmeticEquippedRows(inventory, "dnd")).toEqual(
             listEquippedRowsByGroup(inventory, "dnd", "cosmetic")
+        );
+    });
+});
+
+describe("listStowedCosmeticRows", () => {
+    it("lists cosmetic-policy stowed items only", () => {
+        const inventory = {
+            bag: [
+                { slug: "srd_clothes-travelers", quantity: 1 },
+                { slug: "rpv_amulet-of-vitality", quantity: 1 },
+            ],
+            equipped: {},
+            equippedMulti: {},
+        };
+
+        expect(listStowedCosmeticRows(inventory, "dnd").map((row) => row.slug)).toEqual([
+            "srd_clothes-travelers",
+        ]);
+    });
+});
+
+describe("listStowedMechanicalRows", () => {
+    it("lists mechanical stowed items excluding carried and cosmetic", () => {
+        const inventory = {
+            bag: [
+                { slug: "srd_arrow-bow", quantity: 5 },
+                { slug: "rpv_amulet-of-vitality", quantity: 1 },
+                { slug: "srd_longsword", quantity: 1 },
+                { slug: "srd_clothes-travelers", quantity: 1 },
+            ],
+            equipped: {},
+            equippedMulti: {},
+        };
+
+        expect(listStowedMechanicalRows(inventory, "dnd").map((row) => row.slug).sort()).toEqual(
+            ["rpv_amulet-of-vitality", "srd_longsword"].sort()
+        );
+    });
+});
+
+describe("resolveMechanicalColumn", () => {
+    it("routes amulet to wearable and weapons to usable", () => {
+        expect(
+            resolveMechanicalColumn(getItem("rpv_amulet-of-vitality", "dnd")!, "dnd")
+        ).toBe("wearable");
+        expect(
+            resolveMechanicalColumn(getItem("srd_longbow", "dnd")!, "dnd")
+        ).toBe("usable");
+        expect(
+            resolveMechanicalColumn(getItem("srd_leather-armor", "dnd")!, "dnd")
+        ).toBe("wearable");
+    });
+});
+
+describe("listEquipmentColumnRows", () => {
+    it("merges equipped and stowed mechanical rows per column", () => {
+        const inventory = {
+            bag: [
+                { slug: "rpv_amulet-of-vitality", quantity: 1 },
+                { slug: "srd_longsword", quantity: 1 },
+            ],
+            equipped: {
+                breast: "srd_leather-armor",
+                "ranged-main": "srd_longbow",
+            },
+            equippedMulti: {},
+        };
+
+        expect(
+            listEquipmentColumnRows(inventory, "dnd", "wearable").map((row) => row.slug)
+        ).toEqual(["srd_leather-armor", "rpv_amulet-of-vitality"]);
+        expect(
+            listEquipmentColumnRows(inventory, "dnd", "usable").map((row) => row.slug)
+        ).toEqual(["srd_longbow", "srd_longsword"]);
+    });
+});
+
+describe("listCosmeticPanelRows", () => {
+    it("merges equipped and stowed cosmetic rows", () => {
+        const inventory = {
+            bag: [{ slug: "srd_clothes-travelers", quantity: 1 }],
+            equipped: {},
+            equippedMulti: { cosmetic: ["srd_signet-ring"] },
+        };
+
+        expect(listCosmeticPanelRows(inventory, "dnd").map((row) => row.slug).sort()).toEqual(
+            ["srd_clothes-travelers", "srd_signet-ring"].sort()
         );
     });
 });

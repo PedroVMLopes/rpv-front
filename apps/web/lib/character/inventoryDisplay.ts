@@ -1,8 +1,10 @@
 import type { CharacterInventory } from "@rpv/domain";
 import type { EquipmentSlotGroup, ItemEntry } from "@rpv/content";
 import {
+    getEquipmentSlots,
     getEquipmentSlotsByGroup,
     getItem,
+    getSuggestedEquipmentSlotIds,
     isItemEquippable,
     resolveItemEquipPolicy,
 } from "@rpv/content";
@@ -201,6 +203,90 @@ export function listMechanicalEquippedRows(
     return [
         ...listEquippedRowsByGroup(inventory, system, "wearable"),
         ...listEquippedRowsByGroup(inventory, system, "usable"),
+    ];
+}
+
+export type EquipmentColumnId = "wearable" | "usable";
+
+/** Stowed equippable rows with policy `cosmetic` (Cosmetics panel). */
+export function listStowedCosmeticRows(
+    inventory: CharacterInventory,
+    system: SystemKey
+): InventoryDisplayRow[] {
+    const equippedSlugs = equippedSlugSet(inventory);
+    return bagStacksToRows(
+        inventory.bag,
+        equippedSlugs,
+        (entry) => resolveItemEquipPolicy(entry) === "cosmetic",
+        system,
+        "stowed"
+    );
+}
+
+/** Stowed equippable rows excluding cosmetic policy (Equipment panel). */
+export function listStowedMechanicalRows(
+    inventory: CharacterInventory,
+    system: SystemKey
+): InventoryDisplayRow[] {
+    return listStowedEquippableRows(inventory, system).filter((row) => {
+        const entry = getItem(row.slug, system);
+        return (
+            entry !== undefined &&
+            resolveItemEquipPolicy(entry) !== "cosmetic"
+        );
+    });
+}
+
+/** Routes a mechanical stowed/equippable item to Gear vs Usable column. */
+export function resolveMechanicalColumn(
+    entry: ItemEntry,
+    system: SystemKey
+): EquipmentColumnId {
+    if (resolveItemEquipPolicy(entry) === "wieldable") {
+        return "usable";
+    }
+
+    const slotById = new Map(
+        getEquipmentSlots(system).map((slot) => [slot.id, slot.group])
+    );
+
+    for (const slotId of getSuggestedEquipmentSlotIds(entry)) {
+        const group = slotById.get(slotId);
+        if (group === "usable") {
+            return "usable";
+        }
+        if (group === "wearable") {
+            return "wearable";
+        }
+    }
+
+    return "wearable";
+}
+
+/** Equipment panel column: equipped group rows + stowed mechanical routed here. */
+export function listEquipmentColumnRows(
+    inventory: CharacterInventory,
+    system: SystemKey,
+    column: EquipmentColumnId
+): InventoryDisplayRow[] {
+    const group: EquipmentSlotGroup = column;
+    const equipped = listEquippedRowsByGroup(inventory, system, group);
+    const stowed = listStowedMechanicalRows(inventory, system).filter((row) => {
+        const entry = getItem(row.slug, system);
+        return entry !== undefined && resolveMechanicalColumn(entry, system) === column;
+    });
+
+    return [...equipped, ...stowed];
+}
+
+/** Cosmetics panel: equipped multi + stowed cosmetic. */
+export function listCosmeticPanelRows(
+    inventory: CharacterInventory,
+    system: SystemKey
+): InventoryDisplayRow[] {
+    return [
+        ...listCosmeticEquippedRows(inventory, system),
+        ...listStowedCosmeticRows(inventory, system),
     ];
 }
 

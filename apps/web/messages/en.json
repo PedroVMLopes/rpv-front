@@ -683,11 +683,15 @@
         "currencyAmount": "{name} amount"
       },
       "itemsTitle": "Bag",
+      "equipmentTitle": "Equipment",
+      "possessionsTitle": "Possessions",
+      "cosmeticTitle": "Cosmetics",
       "equippedTitle": "Equipped",
       "equippedWearableHeading": "Gear",
       "equippedUsableHeading": "Usable",
       "equippedCosmeticHeading": "Cosmetics",
       "equippedEmpty": "No items equipped.",
+      "cosmeticEmpty": "No cosmetic items.",
       "equippedColumnEmpty": "None equipped",
       "filterNavLabel": "Inventory filters",
       "filters": {

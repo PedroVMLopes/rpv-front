@@ -173,33 +173,45 @@ Até lá, o scroll piloto continua exigindo equip para o spell grant aparecer.
 
 ---
 
-## Display na ficha (Etapa 4 — implementado)
+## Display na ficha (Etapas 4–5 — implementado)
 
 Helpers policy-aware em [`inventoryDisplay.ts`](../apps/web/lib/character/inventoryDisplay.ts)
-separam **o que aparece no grid Bag** do **painel Equipped**:
+separam posses, equipamento mecânico e cosmético:
 
 | Helper | Conteúdo |
 |--------|----------|
-| `listCarriedRows` | Stacks na bag com policy `carried` (posses passivas) |
-| `listStowedEquippableRows` | Stacks equipáveis na bag que não ocupam slot |
-| `listBagDisplayRows` | União carried + stowed — **grid Bag** (`InventoryTab`) |
+| `listCarriedRows` | Stacks na bag com policy `carried` — painel **Posses** |
+| `listStowedEquippableRows` | Todos os equipáveis guardados na bag (conveniência) |
+| `listStowedMechanicalRows` / `listStowedCosmeticRows` | Stowed split por policy |
+| `listEquipmentColumnRows` | Coluna Gear ou Usable: equipped + stowed mecânico roteado |
+| `listCosmeticPanelRows` | Equipped multi + stowed cosmetic — painel **Cosmético** |
+| `listBagDisplayRows` | União carried + stowed (legado / testes) |
 | `listEquippedRowsByGroup` | Slots preenchidos por grupo (`wearable`, `usable`, `cosmetic`) |
-| `listMechanicalEquippedRows` | Wearable + usable single (prepara layout Etapa 5) |
-| `listCosmeticEquippedRows` | Alias de `listEquippedRowsByGroup(..., "cosmetic")` |
+| `resolveMechanicalColumn` | Roteia stowed mecânico → coluna Gear vs Usable |
 
 **Nomenclatura:** `listCarriedRows` (display) ≠ `listCarriedQuantities` (peso em
 [`inventoryWeight.ts`](../apps/web/lib/character/inventoryWeight.ts)) — o helper de
 peso inclui bag **e** equipado; o de display lista só policy `carried` na bag.
 
-Comportamento Etapa 4:
+### Layout da aba (Etapa 5)
 
-- Grid **Bag** = posses + equipáveis guardados; **sem** duplicar linhas já no painel Equipped.
-- Dedup: se o slug está em `equipped` ou `equippedMulti`, o remainder não aparece na bag.
-- Legacy `equippedMulti.usable` omitido do grupo `usable` no display mecânico.
-- `listInventoryRows` deprecado — alias de `listBagDisplayRows`.
+Ordem: resumo (peso/moeda/misc) → **Equipamento** → **Posses** → **Cosmético**.
+
+| Painel | Componente | Dados |
+|--------|------------|-------|
+| Equipamento | `InventoryEquipmentPanel` | Colunas Gear + Usable (`listEquipmentColumnRows`) |
+| Posses | `InventoryPossessionsPanel` | `listCarriedRows` + filtros categoria |
+| Cosmético | `InventoryCosmeticPanel` | `listCosmeticPanelRows` |
+
+Regras:
+
+- Stowed mecânico (ex. amuleto na bag) aparece no painel **Equipamento**, na coluna
+  adequada (`resolveMechanicalColumn`).
+- Stowed cosmetic (ex. clothes) aparece no painel **Cosmético**.
+- Filtros categoria aplicam-se **só** ao painel Posses.
+- Dedup Etapa 4 preservado: slug equipado não repete como stowed.
+- Legacy `equippedMulti.usable` omitido do display mecânico.
 - `countMiscItems` conta só posses (`listCarriedRows`) na categoria misc.
-
-Layout em três painéis titulados (Posses / Equipamento / Cosmético) fica para **Etapa 5**.
 
 ---
 
@@ -212,7 +224,7 @@ Layout em três painéis titulados (Posses / Equipamento / Cosmético) fica para
 | Roupas | Só slot `cosmetic` no menu | `cosmetic` |
 | Scroll | Equip + spell grant passivo | Usar da bag + consumir (futuro) |
 | Adicionar item manual | Stub na Player Sheet | Picker do catálogo → `addToBag` |
-| Layout da aba | Equipados + grid Bag (posses + stowed; equipado só no painel Equipped) | Equipamento ativo / Posses / Cosmético (3 painéis) |
+| Layout da aba | Três painéis: Equipamento / Posses / Cosmético | — |
 | Homebrew publicado | Fora de escopo | Mesmo `ItemEntry` via repositório |
 
 ---
@@ -227,7 +239,7 @@ Cada etapa fecha com testes antes da próxima.
 | **2** | `sanitizeInventory` + `equipItem` respeitam policy ✅ | `apps/web/lib/character/inventory.ts` |
 | **3** | UI: esconder Equipar para `carried`; filtrar slots ✅ | `InventoryEquipMenu`, `InventoryItemContentCard` |
 | **4** | Display: `listCarriedRows` vs equipados vs cosmético ✅ | `inventoryDisplay.ts`, `InventoryTab` |
-| **5** | Layout aba Inventário (Posses / Equipamento / Cosmético) | `InventoryTab`, painéis |
+| **5** | Layout aba Inventário (Equipamento / Posses / Cosmético) ✅ | `InventoryTab`, painéis |
 | **6** | Adicionar item do catálogo | `InventoryToolbar` + modal picker |
 | **7** | Polish: swap de slot ocupado; consumíveis com **Usar** | grants + `activation`, qty |
 

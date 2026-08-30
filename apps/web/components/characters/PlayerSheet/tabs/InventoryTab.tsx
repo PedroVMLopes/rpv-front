@@ -7,22 +7,21 @@ import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { sanitizeInventory } from "@/lib/character/inventory";
 import {
     filterInventoryRows,
-    listBagDisplayRows,
-    listEquippedRowsByGroup,
+    listCarriedRows,
+    listCosmeticPanelRows,
+    listEquipmentColumnRows,
     type InventoryFilterId,
 } from "@/lib/character/inventoryDisplay";
-import { InventoryEquippedPanel } from "../inventory/InventoryEquippedPanel";
+import { InventoryCosmeticPanel } from "../inventory/InventoryCosmeticPanel";
+import { InventoryEquipmentPanel } from "../inventory/InventoryEquipmentPanel";
+import { InventoryPossessionsPanel } from "../inventory/InventoryPossessionsPanel";
 import { InventorySummaryRow } from "../inventory/InventorySummaryRow";
-import { InventoryToolbar } from "../inventory/InventoryToolbar";
-import { InventoryItemGrid } from "../inventory/InventoryItemGrid";
-import { OverviewPanel } from "../overview/OverviewPanel";
 
 type InventoryTabProps = {
     stored: StoredCharacter;
 };
 
 export function InventoryTab({ stored }: InventoryTabProps) {
-    const t = useTranslations("playerSheet.inventory");
     const [activeFilter, setActiveFilter] = useState<InventoryFilterId>("all");
 
     const inventory = useMemo(
@@ -35,50 +34,49 @@ export function InventoryTab({ stored }: InventoryTabProps) {
         [stored.selections.inventory, stored.system]
     );
 
-    const bagRows = useMemo(
-        () => listBagDisplayRows(inventory, stored.system),
+    const carriedRows = useMemo(
+        () => listCarriedRows(inventory, stored.system),
         [inventory, stored.system]
     );
 
-    const equippedRowCount = useMemo(() => {
-        const groups = ["wearable", "usable", "cosmetic"] as const;
-        return groups.reduce(
-            (total, group) =>
-                total +
-                listEquippedRowsByGroup(inventory, stored.system, group).length,
-            0
-        );
-    }, [inventory, stored.system]);
-
-    const filteredRows = useMemo(
-        () => filterInventoryRows(bagRows, activeFilter, stored.system),
-        [bagRows, activeFilter, stored.system]
+    const filteredCarriedRows = useMemo(
+        () => filterInventoryRows(carriedRows, activeFilter, stored.system),
+        [carriedRows, activeFilter, stored.system]
     );
 
-    const hasAnyItems = bagRows.length > 0 || equippedRowCount > 0;
+    const hasAnyItems = useMemo(() => {
+        const system = stored.system;
+        return (
+            carriedRows.length +
+                listEquipmentColumnRows(inventory, system, "wearable").length +
+                listEquipmentColumnRows(inventory, system, "usable").length +
+                listCosmeticPanelRows(inventory, system).length >
+            0
+        );
+    }, [carriedRows.length, inventory, stored.system]);
 
     return (
         <div className="flex flex-col gap-4">
             <InventorySummaryRow stored={stored} />
-            <InventoryEquippedPanel
+            <InventoryEquipmentPanel
                 inventory={inventory}
                 system={stored.system}
                 stored={stored}
             />
-            <OverviewPanel title={t("itemsTitle")}>
-                <div className="flex flex-col gap-4">
-                    <InventoryToolbar
-                        activeFilter={activeFilter}
-                        onFilterChange={setActiveFilter}
-                    />
-                    <InventoryItemGrid
-                        rows={filteredRows}
-                        stored={stored}
-                        hasAnyItems={hasAnyItems}
-                        inventory={inventory}
-                    />
-                </div>
-            </OverviewPanel>
+            <InventoryPossessionsPanel
+                rows={filteredCarriedRows}
+                carriedRowCount={carriedRows.length}
+                activeFilter={activeFilter}
+                onFilterChange={setActiveFilter}
+                stored={stored}
+                inventory={inventory}
+                hasAnyItems={hasAnyItems}
+            />
+            <InventoryCosmeticPanel
+                inventory={inventory}
+                system={stored.system}
+                stored={stored}
+            />
         </div>
     );
 }

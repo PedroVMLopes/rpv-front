@@ -683,11 +683,15 @@
         "currencyAmount": "Quantidade de {name}"
       },
       "itemsTitle": "Mochila",
+      "equipmentTitle": "Equipamento",
+      "possessionsTitle": "Posses",
+      "cosmeticTitle": "Cosmético",
       "equippedTitle": "Equipados",
       "equippedWearableHeading": "Equipamento",
       "equippedUsableHeading": "Utilizáveis",
       "equippedCosmeticHeading": "Cosméticos",
       "equippedEmpty": "Nenhum item equipado.",
+      "cosmeticEmpty": "Nenhum item cosmético.",
       "equippedColumnEmpty": "Nenhum equipado",
       "filterNavLabel": "Filtros do inventário",
       "filters": {
