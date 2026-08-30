@@ -81,6 +81,7 @@ export function InventorySummaryRow({ stored }: InventorySummaryRowProps) {
 
             <OverviewPanel
                 title={t("summary.currency")}
+                contentClassName="overflow-visible"
                 headerAction={
                     <FaCoins
                         className="size-4 shrink-0 text-muted-foreground"

@@ -105,34 +105,32 @@ describe("InventoryTab", () => {
         expect(screen.getByText("sp")).toBeInTheDocument();
         expect(
             screen.getByLabelText("Gold (gp) amount")
-        ).toHaveValue(452);
+        ).toHaveValue("452");
         expect(
             screen.getByLabelText("Silver (sp) amount")
-        ).toHaveValue(12);
+        ).toHaveValue("12");
         expect(
             screen.getByLabelText("Copper (cp) amount")
-        ).toHaveValue(0);
+        ).toHaveValue("0");
         expect(screen.getByText("Misc items")).toBeInTheDocument();
         expect(screen.getByText("1")).toBeInTheDocument();
     });
 
-    it("adjusts a denomination from the currency pouch", async () => {
+    it("adjusts a denomination by editing the amount directly", async () => {
         const user = userEvent.setup();
         renderWithProviders(<InventoryTab stored={storedCharacter} />);
 
-        await user.click(
-            screen.getByRole("button", { name: "Increase Gold (gp)" })
-        );
+        const goldInput = screen.getByLabelText("Gold (gp) amount");
+        await user.click(goldInput);
+        await user.keyboard("{Control>}a{/Control}460");
 
-        expect(
-            screen.getByLabelText("Gold (gp) amount")
-        ).toHaveValue(453);
+        expect(goldInput).toHaveValue("460");
         expect(
             useCharacterStore
                 .getState()
                 .characters.find((entry) => entry.id === storedCharacter.id)
                 ?.selections.currency?.gold
-        ).toBe(453);
+        ).toBe(460);
     });
 
     it("places Equipped between summary and Bag", () => {
