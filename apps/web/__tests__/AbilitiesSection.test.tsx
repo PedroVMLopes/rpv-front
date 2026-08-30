@@ -140,7 +140,7 @@ describe("AbilitiesSection", () => {
         ).toBe(1);
     });
 
-    it("does not clear inspiration when the toggle is clicked while active", async () => {
+    it("clears inspiration when the toggle is clicked while active", async () => {
         const user = userEvent.setup();
         const stored = baseStored({
             session: { metaPoints: { inspiration: 1 } },
@@ -148,12 +148,12 @@ describe("AbilitiesSection", () => {
         renderSection(stored);
 
         await user.click(
-            screen.getByRole("button", { name: "You have Inspiration" })
+            screen.getByRole("button", { name: "You do not have Inspiration" })
         );
 
         expect(
             useCharacterStore.getState().characters[0]?.session?.metaPoints
                 ?.inspiration
-        ).toBe(1);
+        ).toBeUndefined();
     });
 });

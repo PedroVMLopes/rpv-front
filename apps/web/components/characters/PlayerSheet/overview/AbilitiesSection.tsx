@@ -113,8 +113,6 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
                 })}
             </div>
 
-            <InspirationToggle stored={stored} />
-
             <div className="mt-2 flex flex-col gap-1 text-sm">
                 <div
                     className={cn(
@@ -147,6 +145,8 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
                     </div>
                 ))}
             </div>
+
+            <InspirationToggle stored={stored} />
         </OverviewPanel>
     );
 }

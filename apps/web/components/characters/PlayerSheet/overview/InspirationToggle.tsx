@@ -33,19 +33,15 @@ export function InspirationToggle({ stored }: InspirationToggleProps) {
     const isActive = count > 0;
 
     const handleToggle = () => {
-        if (isActive) {
-            return;
-        }
-
         setCharacterSession(stored.id, {
-            metaPoints: { [INSPIRATION_REF]: 1 },
+            metaPoints: { [INSPIRATION_REF]: isActive ? 0 : 1 },
         });
     };
 
     return (
         <div
             className={cn(
-                "flex items-center justify-between gap-2 rounded-lg px-3 py-2",
+                "mt-1 flex items-center justify-between gap-2 rounded-lg px-3 py-2",
                 sheetInset
             )}
         >
@@ -57,8 +53,8 @@ export function InspirationToggle({ stored }: InspirationToggleProps) {
                 size="sm"
                 variant={isActive ? "default" : "outline"}
                 aria-pressed={isActive}
-                aria-label={isActive ? t("hasInspiration") : t("toggleOn")}
-                title={isActive ? t("hasInspiration") : t("toggleOn")}
+                aria-label={isActive ? t("toggleOff") : t("toggleOn")}
+                title={isActive ? t("toggleOff") : t("toggleOn")}
                 onClick={handleToggle}
             >
                 <Sparkles
