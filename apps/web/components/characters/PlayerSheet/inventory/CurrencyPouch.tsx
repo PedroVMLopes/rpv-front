@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { contentRepo } from "@/lib/content/contentRepository";
 import { getTotalCurrency } from "@/lib/character/materializeCurrencyGrants";
@@ -20,7 +21,13 @@ export function CurrencyPouch({ stored }: CurrencyPouchProps) {
             state.characters.find((character) => character.id === stored.id)
                 ?.selections.currency
     );
-    const denoms = contentRepo(stored.system).listCurrencies();
+    const denoms = useMemo(
+        () =>
+            [...contentRepo(stored.system).listCurrencies()].sort(
+                (left, right) => left.valueInCopper - right.valueInCopper
+            ),
+        [stored.system]
+    );
     const amounts = getTotalCurrency({
         ...stored,
         selections: {
