@@ -138,7 +138,7 @@ describe("sanitizeInventory", () => {
         expect(result.equippedMulti).toEqual({});
     });
 
-    it("migrates legacy single usable into equippedMulti", () => {
+    it("strips legacy usable multi entries that violate equip policy", () => {
         const result = sanitizeInventory(
             {
                 bag: [{ slug: "rpv_scroll-of-fire-bolt", quantity: 1 }],
@@ -149,42 +149,40 @@ describe("sanitizeInventory", () => {
         );
 
         expect(result.equipped).toEqual({});
-        expect(result.equippedMulti).toEqual({
-            usable: ["rpv_scroll-of-fire-bolt"],
-        });
+        expect(result.equippedMulti).toEqual({});
     });
 
-    it("equips multiple distinct items into usable without a cap", () => {
+    it("rejects equipping into legacy usable multi slot", () => {
         let inventory = addToBag(emptyInventory(), "rpv_scroll-of-fire-bolt", 1);
         inventory = addToBag(inventory, "rpv_pilot-test-pack-a", 1);
-        inventory = equipItem(
-            inventory,
-            "usable",
-            "rpv_scroll-of-fire-bolt",
-            "dnd"
-        );
-        inventory = equipItem(
-            inventory,
-            "usable",
-            "rpv_pilot-test-pack-a",
-            "dnd"
-        );
+        const before = inventory;
 
-        expect(inventory.equippedMulti.usable).toEqual([
+        inventory = equipItem(
+            inventory,
+            "usable",
             "rpv_scroll-of-fire-bolt",
+            "dnd"
+        );
+        expect(inventory).toBe(before);
+
+        inventory = equipItem(
+            inventory,
+            "usable",
             "rpv_pilot-test-pack-a",
-        ]);
+            "dnd"
+        );
+        expect(inventory).toBe(before);
     });
 
     it("equips multiple cosmetics without feeding equippedItemSlugs", () => {
-        let inventory = addToBag(emptyInventory(), "rpv_pilot-test-pack-a", 1);
-        inventory = addToBag(inventory, "rpv_scroll-of-fire-bolt", 1);
-        inventory = equipItem(inventory, "cosmetic", "rpv_pilot-test-pack-a", "dnd");
-        inventory = equipItem(inventory, "cosmetic", "rpv_scroll-of-fire-bolt", "dnd");
+        let inventory = addToBag(emptyInventory(), "srd_clothes-travelers", 1);
+        inventory = addToBag(inventory, "srd_signet-ring", 1);
+        inventory = equipItem(inventory, "cosmetic", "srd_clothes-travelers", "dnd");
+        inventory = equipItem(inventory, "cosmetic", "srd_signet-ring", "dnd");
 
         expect(inventory.equippedMulti.cosmetic).toEqual([
-            "rpv_pilot-test-pack-a",
-            "rpv_scroll-of-fire-bolt",
+            "srd_clothes-travelers",
+            "srd_signet-ring",
         ]);
         expect(equippedItemSlugs(inventory)).toEqual([]);
     });
@@ -254,7 +252,21 @@ describe("sanitizeInventory", () => {
         expect(result.equipped).toEqual({});
     });
 
-    it("keeps any valid item in a valid equipment slot", () => {
+    it("removes policy-invalid equipped entries", () => {
+        const result = sanitizeInventory(
+            {
+                bag: [{ slug: "srd_waterskin", quantity: 1 }],
+                equipped: { "melee-main": "srd_waterskin" },
+                equippedMulti: {},
+            },
+            "dnd"
+        );
+
+        expect(result.equipped).toEqual({});
+        expect(result.bag).toEqual([{ slug: "srd_waterskin", quantity: 1 }]);
+    });
+
+    it("keeps granted items in allowed slots", () => {
         const result = sanitizeInventory(
             inventoryWithEquipped("rpv_ring-of-hardiness", "amulet"),
             "dnd"
@@ -303,24 +315,31 @@ describe("sanitizeInventory", () => {
             {
                 bag: [{ slug: "srd_piton", quantity: 10 }],
                 equipped: {},
+                equippedMulti: {},
+            },
+            "dnd"
+        );
+
+        expect(remainder.bag).toEqual([{ slug: "srd_piton", quantity: 10 }]);
+
+        const again = sanitizeInventory(remainder, "dnd", {
+            reconcileEquipped: false,
+        });
+        expect(again.bag).toEqual([{ slug: "srd_piton", quantity: 10 }]);
+    });
+
+    it("strips policy-invalid usable multi without restoring to bag", () => {
+        const result = sanitizeInventory(
+            {
+                bag: [{ slug: "srd_piton", quantity: 9 }],
+                equipped: {},
                 equippedMulti: { usable: ["srd_piton"] },
             },
             "dnd"
         );
 
-        expect(remainder.bag).toEqual([
-            { slug: "srd_piton", quantity: 9 },
-        ]);
-
-        const again = sanitizeInventory(remainder, "dnd", {
-            reconcileEquipped: false,
-        });
-        expect(again.bag).toEqual([{ slug: "srd_piton", quantity: 9 }]);
-
-        const doubleReconcile = sanitizeInventory(remainder, "dnd");
-        expect(doubleReconcile.bag).toEqual([
-            { slug: "srd_piton", quantity: 8 },
-        ]);
+        expect(result.equippedMulti).toEqual({});
+        expect(result.bag).toEqual([{ slug: "srd_piton", quantity: 9 }]);
     });
 });
 
@@ -466,13 +485,46 @@ describe("equipItem", () => {
         expect(equipItem(inventory, "melee-off", "srd_longsword", "dnd")).toBe(inventory);
     });
 
-    it("allows equipping any item into a valid slot", () => {
+    it("rejects equipping when item policy disallows the slot", () => {
         const inventory = addToBag(emptyInventory(), "srd_longsword", 1);
 
-        expect(equipItem(inventory, "ring", "srd_longsword", "dnd")).toEqual({
+        expect(equipItem(inventory, "ring", "srd_longsword", "dnd")).toBe(inventory);
+    });
+
+    it("rejects carried items in any slot", () => {
+        const inventory = addToBag(emptyInventory(), "srd_waterskin", 1);
+
+        expect(equipItem(inventory, "melee-main", "srd_waterskin", "dnd")).toBe(
+            inventory
+        );
+    });
+
+    it("equips wieldable scroll override in hand slots only", () => {
+        const inventory = addToBag(emptyInventory(), "rpv_scroll-of-fire-bolt", 1);
+
+        expect(
+            equipItem(inventory, "melee-main", "rpv_scroll-of-fire-bolt", "dnd")
+        ).toEqual({
             bag: [],
-            equipped: { ring: "srd_longsword" },
+            equipped: { "melee-main": "rpv_scroll-of-fire-bolt" },
             equippedMulti: {},
+        });
+
+        const withScroll = addToBag(emptyInventory(), "rpv_scroll-of-fire-bolt", 1);
+        expect(
+            equipItem(withScroll, "amulet", "rpv_scroll-of-fire-bolt", "dnd")
+        ).toBe(withScroll);
+    });
+
+    it("equips cosmetic items into cosmetic multi slot", () => {
+        const inventory = addToBag(emptyInventory(), "srd_clothes-travelers", 1);
+
+        expect(
+            equipItem(inventory, "cosmetic", "srd_clothes-travelers", "dnd")
+        ).toEqual({
+            bag: [],
+            equipped: {},
+            equippedMulti: { cosmetic: ["srd_clothes-travelers"] },
         });
     });
 });

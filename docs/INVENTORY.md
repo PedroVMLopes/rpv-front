@@ -176,7 +176,7 @@ Até lá, o scroll piloto continua exigindo equip para o spell grant aparecer.
 
 | Aspecto | Hoje (piloto) | Alvo (roadmap) |
 |---------|---------------|----------------|
-| Qualquer item em qualquer slot | Sim — sem `canEquipItem` | Policy + sanitize rejeita mismatch |
+| Qualquer item em qualquer slot | Não — `sanitizeInventory` + `equipItem` usam `canEquipItem` | Policy + sanitize rejeita mismatch |
 | Waterskin equipável | Sim (UI) | `carried` — só Posses |
 | Roupas | Equipável em qualquer slot | `cosmetic` |
 | Scroll | Equip + spell grant passivo | Usar da bag + consumir (futuro) |
@@ -193,7 +193,7 @@ Cada etapa fecha com testes antes da próxima.
 | Etapa | Escopo | Pacotes / arquivos principais |
 |-------|--------|-------------------------------|
 | **1** | `ItemEquipPolicy` + `canEquipItem` ✅ | `packages/content` — `itemEquipPolicy.dnd.ts` |
-| **2** | `sanitizeInventory` + `equipItem` respeitam policy | `apps/web/lib/character/inventory.ts` |
+| **2** | `sanitizeInventory` + `equipItem` respeitam policy ✅ | `apps/web/lib/character/inventory.ts` |
 | **3** | UI: esconder Equipar para `carried`; filtrar slots | `InventoryEquipMenu`, `InventoryItemContentCard` |
 | **4** | Display: `listCarriedRows` vs equipados vs cosmético | `inventoryDisplay.ts` |
 | **5** | Layout aba Inventário (Posses / Equipamento / Cosmético) | `InventoryTab`, painéis |

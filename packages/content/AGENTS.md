@@ -272,6 +272,7 @@ Policy enum (`ItemEquipPolicy`): `carried | cosmetic | wieldable | shield | wear
 default `carried` for adventuring gear / tools / ammunition / etc.
 
 Implementation: `src/curation/itemEquipPolicy.dnd.ts`.
+Enforcement in web ops/sanitize: `apps/web/lib/character/inventory.ts`.
 Full spec: [`docs/INVENTORY.md`](../../docs/INVENTORY.md).
 
 **Overrides:** set `equipPolicy` on `ItemEntry` or in `itemEntryOverrides`. Example:

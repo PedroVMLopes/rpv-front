@@ -206,10 +206,10 @@ describe("mergeStartingGrants", () => {
             merged.inventory?.bag.find((stack) => stack.slug === "srd_piton")
         ).toEqual({
             slug: "srd_piton",
-            quantity: 9,
+            quantity: 10,
             provenance: "grant:class:fighter:7",
         });
-        expect(merged.inventory?.equippedMulti?.usable).toEqual(["srd_piton"]);
+        expect(merged.inventory?.equippedMulti?.usable).toBeUndefined();
     });
 
     it("drops manual bag copies when the same slug is still granted", () => {

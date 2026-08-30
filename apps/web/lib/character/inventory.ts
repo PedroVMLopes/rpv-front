@@ -1,5 +1,6 @@
 import type { CharacterInventory } from "@rpv/domain";
 import {
+    canEquipItem,
     getItem,
     isItemStackable,
     isMultiEquipmentSlot,
@@ -164,6 +165,7 @@ function sanitizeEquipped(
             !isValidEquipmentSlot(slotId, system) ||
             isMultiEquipmentSlot(slotId, system) ||
             !isValidItemSlug(slug, system) ||
+            !canEquipItem(slug, slotId, system) ||
             seenSlugs.has(slug)
         ) {
             continue;
@@ -194,6 +196,7 @@ function sanitizeEquippedMulti(
             if (
                 !slug ||
                 !isValidItemSlug(slug, system) ||
+                !canEquipItem(slug, slotId, system) ||
                 reservedSlugs.has(slug) ||
                 slugs.includes(slug)
             ) {
@@ -599,6 +602,7 @@ export function equipItem(
         !normalizedSlug ||
         !isValidEquipmentSlot(slotId, system) ||
         !isValidItemSlug(normalizedSlug, system) ||
+        !canEquipItem(normalizedSlug, slotId, system) ||
         withMulti.equipped[slotId] ||
         isSlugEquippedAnywhere(withMulti, normalizedSlug, {
             kind: "single",
@@ -635,6 +639,7 @@ export function equipItemToMultiSlot(
         !normalizedSlug ||
         !isMultiEquipmentSlot(slotId, system) ||
         !isValidItemSlug(normalizedSlug, system) ||
+        !canEquipItem(normalizedSlug, slotId, system) ||
         isSlugEquippedAnywhere(withMulti, normalizedSlug) ||
         getBagQuantity(withMulti.bag, normalizedSlug) < 1
     ) {

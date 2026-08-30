@@ -161,7 +161,7 @@ before persisting. Behavior matches
 | `quantity < 0` | Stack removed |
 | `quantity === 0` | Kept in bag until explicitly deleted |
 | Invalid slot ID for `system` | Equipped entry discarded |
-| Item↔slot type mismatch | Entry discarded when `!canEquipItem(slug, slotId, system)` ([`ItemEquipPolicy`](INVENTORY.md#itemequippolicy-etapa-1--content); **pilot web today:** not checked yet) |
+| Item↔slot type mismatch | Entry discarded when `!canEquipItem(slug, slotId, system)` ([`ItemEquipPolicy`](INVENTORY.md#itemequippolicy-etapa-1--implementado)) |
 | Same slug in two slots | Only the first iterated slot kept |
 | Non-stackable item with `quantity > 1` in bag | Clamped to 1 |
 | Duplicate bag stacks (same slug + same provenance) | Merged |
