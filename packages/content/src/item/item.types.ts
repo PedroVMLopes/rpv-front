@@ -1,4 +1,5 @@
 import type { Grant } from "../grant/grant.types";
+import type { ItemEquipPolicy } from "./itemEquipPolicy.types";
 
 export type ItemSystem = "dnd";
 
@@ -57,6 +58,8 @@ export interface ItemEntry {
     cost: string | null;
     grants: Grant[];
     stackable: boolean;
+    /** When set, skips auto-derivation in resolveItemEquipPolicy. */
+    equipPolicy?: ItemEquipPolicy;
 }
 
 export function isItemStackable(entry: ItemEntry): boolean {

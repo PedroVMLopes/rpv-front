@@ -104,11 +104,12 @@ Ver [`packages/content/AGENTS.md`](../packages/content/AGENTS.md) — seção It
 
 ---
 
-## ItemEquipPolicy (Etapa 1 — content)
+## ItemEquipPolicy (Etapa 1 — implementado)
 
 Policy data-driven em `@rpv/content` que define **se** e **onde** um item pode equipar.
-Helpers planejados: `deriveItemEquipPolicy`, `resolveItemEquipPolicy`,
-`getEquipableSlotIds`, `canEquipItem`.
+Implementação: [`itemEquipPolicy.dnd.ts`](../packages/content/src/curation/itemEquipPolicy.dnd.ts).
+Helpers exportados: `deriveItemEquipPolicy`, `resolveItemEquipPolicy`,
+`getEquipableSlotIds`, `canEquipItem`, `isItemEquippable`.
 
 ```ts
 type ItemEquipPolicy =
@@ -191,7 +192,7 @@ Cada etapa fecha com testes antes da próxima.
 
 | Etapa | Escopo | Pacotes / arquivos principais |
 |-------|--------|-------------------------------|
-| **1** | `ItemEquipPolicy` + `canEquipItem` | `packages/content` |
+| **1** | `ItemEquipPolicy` + `canEquipItem` ✅ | `packages/content` — `itemEquipPolicy.dnd.ts` |
 | **2** | `sanitizeInventory` + `equipItem` respeitam policy | `apps/web/lib/character/inventory.ts` |
 | **3** | UI: esconder Equipar para `carried`; filtrar slots | `InventoryEquipMenu`, `InventoryItemContentCard` |
 | **4** | Display: `listCarriedRows` vs equipados vs cosmético | `inventoryDisplay.ts` |

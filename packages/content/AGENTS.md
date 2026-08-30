@@ -251,7 +251,7 @@ interface ItemEntry {
 
 Helpers: `getItem`, `listItems`, `getItemGrants`, `isItemStackable`,
 `itemProvidesWeaponAttack`, `mapOpen5eItem`, `mergeItemCatalog`,
-`resolveItemEquipPolicy`, `canEquipItem`, `getEquipableSlotIds` (Etapa 1). Exported from
+`resolveItemEquipPolicy`, `canEquipItem`, `getEquipableSlotIds`. Exported from
 [`src/index.ts`](src/index.ts).
 
 ### Item equip policy
@@ -271,7 +271,7 @@ Policy enum (`ItemEquipPolicy`): `carried | cosmetic | wieldable | shield | wear
 `grants.length > 0` → clothes/robes heuristic → ring without grants → wondrous-item →
 default `carried` for adventuring gear / tools / ammunition / etc.
 
-Implementation: `src/curation/itemEquipPolicy.dnd.ts` (Etapa 1 — planned).
+Implementation: `src/curation/itemEquipPolicy.dnd.ts`.
 Full spec: [`docs/INVENTORY.md`](../../docs/INVENTORY.md).
 
 **Overrides:** set `equipPolicy` on `ItemEntry` or in `itemEntryOverrides`. Example:

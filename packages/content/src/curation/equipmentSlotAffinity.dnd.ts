@@ -1,65 +1,67 @@
 import type { ItemEntry } from "../item/item.types";
+import {
+    isBodyArmor,
+    isRangedWeapon,
+    isRangedWeaponItem,
+    isShield,
+} from "../item/itemProfile";
+import { getEquipableSlotIds, resolveItemEquipPolicy } from "./itemEquipPolicy.dnd";
 
-function isRangedWeapon(item: ItemEntry): boolean {
-    if (!item.weapon) {
-        return false;
+function intersect(preferred: string[], allowed: string[]): string[] {
+    const allowedSet = new Set(allowed);
+    const ordered = preferred.filter((slotId) => allowedSet.has(slotId));
+    if (ordered.length > 0) {
+        return ordered;
     }
-    if (item.weapon.range != null || item.weapon.longRange != null) {
-        return true;
-    }
-    return item.weapon.properties.some((property) => {
-        const name = property.name.toLowerCase();
-        return name === "ammunition" || name.includes("ammunition");
-    });
+    return allowed;
 }
 
-function isBodyArmor(item: ItemEntry): boolean {
-    return Boolean(item.armor && item.armor.category !== "shield");
-}
-
-function isShield(item: ItemEntry): boolean {
-    if (item.category.key === "shield") {
-        return true;
-    }
-    return Boolean(item.armor && item.armor.category === "shield");
+function isAmuletLike(item: ItemEntry): boolean {
+    return (
+        item.category.key === "wondrous-item" ||
+        item.slug.includes("amulet") ||
+        item.name.toLowerCase().includes("amulet")
+    );
 }
 
 /**
  * Soft affinity: suggested slot ids for the equip menu (compatible first).
- * Empty array means no preference — all slots are equally available.
+ * Never returns slots outside getEquipableSlotIds.
  */
 export function getSuggestedEquipmentSlotIds(item: ItemEntry): string[] {
+    const allowed = getEquipableSlotIds(item);
+    if (allowed.length === 0) {
+        return [];
+    }
+
     if (isBodyArmor(item)) {
-        return ["breast"];
+        return intersect(["breast"], allowed);
     }
 
     if (isShield(item)) {
-        return ["melee-off"];
+        return intersect(["melee-off"], allowed);
     }
 
     if (item.weapon) {
         if (isRangedWeapon(item)) {
-            return ["ranged-main", "ranged-off"];
+            return intersect(["ranged-main", "ranged-off"], allowed);
         }
-        return ["melee-main", "melee-off"];
+        return intersect(["melee-main", "melee-off"], allowed);
     }
 
     if (item.category.key === "ring") {
-        return ["ring", "ring-2"];
+        return intersect(["ring", "ring-2"], allowed);
     }
 
-    if (
-        item.category.key === "wondrous-item" ||
-        item.slug.includes("amulet") ||
-        item.name.toLowerCase().includes("amulet")
-    ) {
-        return ["amulet"];
+    if (isAmuletLike(item)) {
+        return intersect(["amulet"], allowed);
     }
 
-    return [];
+    if (resolveItemEquipPolicy(item) === "cosmetic") {
+        return intersect(["cosmetic"], allowed);
+    }
+
+    return allowed;
 }
 
-/** Whether a weapon slug should migrate from main-hand to ranged-main. */
-export function isRangedWeaponItem(item: ItemEntry | undefined): boolean {
-    return item ? isRangedWeapon(item) : false;
-}
+export { isRangedWeaponItem };

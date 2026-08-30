@@ -20,6 +20,7 @@ export const rpvExtraItems: ItemEntry[] = [
         weightUnit: null,
         cost: null,
         stackable: true,
+        equipPolicy: "wieldable",
         grants: [
             {
                 grantType: "spell",

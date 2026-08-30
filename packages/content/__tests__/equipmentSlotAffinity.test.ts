@@ -37,4 +37,22 @@ describe("getSuggestedEquipmentSlotIds", () => {
             getSuggestedEquipmentSlotIds(getItem("srd_arrow-bow", "dnd")!)
         ).toEqual([]);
     });
+
+    it("suggests cosmetic for travelers clothes", () => {
+        expect(
+            getSuggestedEquipmentSlotIds(getItem("srd_clothes-travelers", "dnd")!)
+        ).toEqual(["cosmetic"]);
+    });
+
+    it("suggests cosmetic for signet ring", () => {
+        expect(
+            getSuggestedEquipmentSlotIds(getItem("srd_signet-ring", "dnd")!)
+        ).toEqual(["cosmetic"]);
+    });
+
+    it("suggests amulet first for granted wondrous item", () => {
+        expect(
+            getSuggestedEquipmentSlotIds(getItem("rpv_amulet-of-vitality", "dnd")!)
+        ).toEqual(["amulet"]);
+    });
 });
