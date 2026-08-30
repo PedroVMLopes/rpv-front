@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { getEquipmentSlots, getItem, isItemStackable } from "@rpv/content";
+import { getEquipmentSlots, getItem, isItemStackable, isItemEquippable } from "@rpv/content";
 import type { CharacterInventory } from "@rpv/domain";
 import {
     buildWeaponActionForEquippedSlot,
@@ -22,6 +22,7 @@ import {
 } from "@/lib/content/buildWeaponContentModel";
 import type { ContentUseActionSpec } from "@/lib/content/contentDetail.types";
 import { itemLacksArmorProficiency } from "@/lib/character/armorProficiencyWarning";
+import { isInventorySlugEquippable } from "@/lib/character/inventoryEquipActions";
 import {
     buildWeaponAttackOnlyRollRequest,
     buildWeaponDamageRollRequest,
@@ -78,6 +79,11 @@ export function InventoryItemContentCard({
         ? bagQuantity + equippedCount
         : row.quantity;
     const stackable = itemEntry ? isItemStackable(itemEntry) : true;
+    const showEquipMenu =
+        row.equipped ||
+        (itemEntry
+            ? isItemEquippable(itemEntry)
+            : isInventorySlugEquippable(row.slug, stored.system));
 
     const itemFormatters = useMemo<ItemContentFormatters>(
         () => ({ missingValue: "—" }),
@@ -280,22 +286,22 @@ export function InventoryItemContentCard({
         deleteInventoryItem(stored.id, { slug: row.slug });
     };
 
-    const equipMenuCard = (
+    const equipMenuCard = showEquipMenu ? (
         <InventoryEquipMenu
             row={row}
             stored={stored}
             inventory={inventory}
             size="card"
         />
-    );
-    const equipMenuFooter = (
+    ) : undefined;
+    const equipMenuFooter = showEquipMenu ? (
         <InventoryEquipMenu
             row={row}
             stored={stored}
             inventory={inventory}
             size="footer"
         />
-    );
+    ) : undefined;
 
     return (
         <ContentActionCard

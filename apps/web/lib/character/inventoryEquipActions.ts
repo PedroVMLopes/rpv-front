@@ -1,5 +1,10 @@
 import type { CharacterInventory } from "@rpv/domain";
-import { isMultiEquipmentSlot } from "@rpv/content";
+import {
+    canEquipItem,
+    getItem,
+    isItemEquippable,
+    isMultiEquipmentSlot,
+} from "@rpv/content";
 import type { SystemKey } from "@/presets";
 
 function normalizeSlug(slug: string): string {
@@ -32,6 +37,10 @@ export function canEquipSlugToSlot(
 ): boolean {
     const normalizedSlug = normalizeSlug(slug);
     if (!normalizedSlug || !slotId) {
+        return false;
+    }
+
+    if (!canEquipItem(normalizedSlug, slotId, system)) {
         return false;
     }
 
@@ -76,4 +85,18 @@ export function isSlugEquipped(
     }
 
     return isSlugInMulti(equippedMulti, normalizedSlug);
+}
+
+/** Whether a catalog slug can be equipped at all (policy !== carried). */
+export function isInventorySlugEquippable(
+    slug: string,
+    system: SystemKey = "dnd"
+): boolean {
+    const normalizedSlug = normalizeSlug(slug);
+    if (!normalizedSlug) {
+        return false;
+    }
+
+    const item = getItem(normalizedSlug, system);
+    return item ? isItemEquippable(item) : false;
 }

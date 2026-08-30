@@ -45,6 +45,7 @@ const storedCharacter: StoredCharacter = {
             bag: [
                 { slug: "srd_arrow-bow", quantity: 10 },
                 { slug: "rpv_pilot-test-pack-a", quantity: 1 },
+                { slug: "rpv_amulet-of-vitality", quantity: 1 },
             ],
             equipped: { "ranged-main": "srd_longbow" },
         },
@@ -162,7 +163,7 @@ describe("InventoryTab", () => {
                         armor: "srd_leather-armor",
                         amulet: "rpv_amulet-of-vitality",
                         "ranged-main": "srd_longbow",
-                        usable: "rpv_scroll-of-fire-bolt",
+                        "melee-main": "rpv_scroll-of-fire-bolt",
                     },
                 },
             },
@@ -313,7 +314,7 @@ describe("InventoryTab equip actions", () => {
         return <InventoryTab stored={stored} />;
     }
 
-    it("does not duplicate stackable items in Bag when partially equipped", () => {
+    it("does not duplicate stackable carried items in Bag after policy sanitize", () => {
         const partial: StoredCharacter = {
             ...storedCharacter,
             id: "char-torch-partial",
@@ -331,31 +332,43 @@ describe("InventoryTab equip actions", () => {
 
         const bag = bagPanel();
         expect(within(bag).getAllByText(/Torch/).length).toBe(1);
+        expect(within(bag).getByText("Torch (9)")).toBeInTheDocument();
         expect(
-            within(cardForName("Torch (10)", bag)).getByRole("button", {
-                name: "Equipped",
-            })
-        ).toBeInTheDocument();
-        expect(
-            within(screen.getByTestId("inventory-equipped-usable")).getByText(
-                /Torch/
-            )
-        ).toBeInTheDocument();
+            within(bag).queryByRole("button", { name: "Equip" })
+        ).not.toBeInTheDocument();
     });
 
-    it("includes Usable in the equip menu", async () => {
+    it("does not show Equip for carried adventuring gear", () => {
+        renderWithProviders(<InventoryTab stored={storedCharacter} />);
+
+        const packCard = cardForName("Pilot Test Pack A", bagPanel());
+        expect(
+            within(packCard).queryByRole("button", { name: "Equip" })
+        ).not.toBeInTheDocument();
+
+        const arrowCard = cardForName("Arrow (bow) (10)", bagPanel());
+        expect(
+            within(arrowCard).queryByRole("button", { name: "Equip" })
+        ).not.toBeInTheDocument();
+    });
+
+    it("shows only policy-allowed slots in equip menu", async () => {
         const user = userEvent.setup();
         renderWithProviders(
             <InventoryTabLive characterId={storedCharacter.id} />
         );
 
-        const packCard = cardForName("Pilot Test Pack A", bagPanel());
+        const amuletCard = cardForName("Amulet of Vitality", bagPanel());
         await user.click(
-            within(packCard).getByRole("button", { name: "Equip" })
+            within(amuletCard).getByRole("button", { name: "Equip" })
         );
+
         expect(
-            screen.getByRole("menuitem", { name: "Equip to Usable" })
+            screen.getByRole("menuitem", { name: "Equip to Amulet" })
         ).toBeInTheDocument();
+        expect(
+            screen.queryByRole("menuitem", { name: "Equip to Usable" })
+        ).not.toBeInTheDocument();
     });
 
     it("equips a bag item into a free slot from the card menu", async () => {
@@ -364,9 +377,9 @@ describe("InventoryTab equip actions", () => {
             <InventoryTabLive characterId={storedCharacter.id} />
         );
 
-        const packCard = cardForName("Pilot Test Pack A", bagPanel());
+        const amuletCard = cardForName("Amulet of Vitality", bagPanel());
         await user.click(
-            within(packCard).getByRole("button", { name: "Equip" })
+            within(amuletCard).getByRole("button", { name: "Equip" })
         );
         await user.click(
             screen.getByRole("menuitem", { name: "Equip to Amulet" })
@@ -375,14 +388,14 @@ describe("InventoryTab equip actions", () => {
         expect(
             useCharacterStore.getState().characters[0]?.selections.inventory
                 ?.equipped.amulet
-        ).toBe("rpv_pilot-test-pack-a");
+        ).toBe("rpv_amulet-of-vitality");
 
         const wearable = screen.getByTestId("inventory-equipped-wearable");
         expect(
-            within(wearable).getByText("Pilot Test Pack A")
+            within(wearable).getByText("Amulet of Vitality")
         ).toBeInTheDocument();
         expect(
-            within(cardForName("Pilot Test Pack A", bagPanel())).getByRole(
+            within(cardForName("Amulet of Vitality", bagPanel())).getByRole(
                 "button",
                 { name: "Equipped" }
             )
@@ -416,9 +429,9 @@ describe("InventoryTab equip actions", () => {
             <InventoryTabLive characterId={storedCharacter.id} />
         );
 
-        const packCard = cardForName("Pilot Test Pack A", bagPanel());
+        const amuletCard = cardForName("Amulet of Vitality", bagPanel());
         await user.click(
-            within(packCard).getByRole("button", { name: "Equip" })
+            within(amuletCard).getByRole("button", { name: "Equip" })
         );
 
         const rangedMain = screen.getByRole("menuitem", {
@@ -575,10 +588,10 @@ describe("InventoryTab equip actions", () => {
             <InventoryTabLive characterId={storedCharacter.id} />
         );
 
-        const packCard = cardForName("Pilot Test Pack A", bagPanel());
+        const amuletCard = cardForName("Amulet of Vitality", bagPanel());
         await user.click(
-            within(packCard).getByRole("button", {
-                name: "Expand Pilot Test Pack A",
+            within(amuletCard).getByRole("button", {
+                name: "Expand Amulet of Vitality",
             })
         );
 

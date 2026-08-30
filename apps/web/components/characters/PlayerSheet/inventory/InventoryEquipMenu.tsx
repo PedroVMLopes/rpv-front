@@ -4,13 +4,16 @@ import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import {
     getEquipmentSlots,
+    getEquipableSlotIds,
     getItem,
     getSuggestedEquipmentSlotIds,
+    isItemEquippable,
 } from "@rpv/content";
 import type { CharacterInventory } from "@rpv/domain";
 import type { InventoryDisplayRow } from "@/lib/character/inventoryDisplay";
 import {
     canEquipSlugToSlot,
+    isInventorySlugEquippable,
     isSlugEquipped,
 } from "@/lib/character/inventoryEquipActions";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
@@ -59,14 +62,40 @@ export function InventoryEquipMenu({
         equippedMulti
     );
 
+    const eligibleSlots = useMemo(() => {
+        if (!itemEntry) {
+            return [];
+        }
+
+        const allowedIds = new Set(getEquipableSlotIds(itemEntry, stored.system));
+        return slots.filter((slot) => allowedIds.has(slot.id));
+    }, [itemEntry, slots, stored.system]);
+
     const orderedSlots = useMemo(() => {
-        const suggestedIds = itemEntry
-            ? getSuggestedEquipmentSlotIds(itemEntry)
-            : [];
-        const suggested = slots.filter((slot) => suggestedIds.includes(slot.id));
-        const rest = slots.filter((slot) => !suggestedIds.includes(slot.id));
+        if (!itemEntry) {
+            return { suggested: [], rest: [] };
+        }
+
+        const suggestedIds = getSuggestedEquipmentSlotIds(itemEntry);
+        const suggested = eligibleSlots.filter((slot) =>
+            suggestedIds.includes(slot.id)
+        );
+        const rest = eligibleSlots.filter((slot) => !suggestedIds.includes(slot.id));
         return { suggested, rest };
-    }, [itemEntry, slots]);
+    }, [eligibleSlots, itemEntry]);
+
+    if (
+        !row.equipped &&
+        (itemEntry
+            ? !isItemEquippable(itemEntry)
+            : !isInventorySlugEquippable(row.slug, stored.system))
+    ) {
+        return null;
+    }
+
+    if (!row.equipped && eligibleSlots.length === 0) {
+        return null;
+    }
 
     return (
         <DropdownMenu>
@@ -146,7 +175,7 @@ export function InventoryEquipMenu({
                         ) : null}
                         {(orderedSlots.suggested.length > 0
                             ? orderedSlots.rest
-                            : slots
+                            : eligibleSlots
                         ).map((slot) => {
                             const canEquip =
                                 !slugAlreadyEquipped &&

@@ -273,7 +273,7 @@ stateDiagram-v2
 | Atributos, AC, HP | `getResolvedStats`, `stored.resources` | — |
 | Proficiências | `grants` com `kind: "proficiency"` | UI de agrupamento por tipo (arma, ferramenta, skill, save) |
 | Features e magias | `CharacterCardAbilities` / `stored.grants` | `activation` nas abilities de combate; spell attack/DC |
-| Armas equipadas | `selections.inventory.equipped` + `getItem` | Policy de slots (`canEquipItem`); separar posses de equipamento |
+| Armas equipadas | `selections.inventory.equipped` + `getItem` | Policy de slots (`canEquipItem`); botão Equipar só para itens equipáveis; separar posses de equipamento |
 | Recursos de classe | `stored.resources` + `parseDerivedResources` | UI `+`/`-` na ficha |
 | Objetivos | `systemData.goals` | — |
 | Anotações | `StoredCharacter.notes` (`CharacterNote[]`, `color?`) | Share, pin, arquivo

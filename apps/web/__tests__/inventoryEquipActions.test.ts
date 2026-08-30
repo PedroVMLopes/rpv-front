@@ -1,5 +1,6 @@
 import {
     canEquipSlugToSlot,
+    isInventorySlugEquippable,
     isSlugEquipped,
 } from "../lib/character/inventoryEquipActions";
 
@@ -10,7 +11,7 @@ describe("canEquipSlugToSlot", () => {
         ).toBe(true);
         expect(
             canEquipSlugToSlot(
-                { armor: "srd_leather-armor" },
+                { breast: "srd_leather-armor" },
                 "melee-main",
                 "srd_longsword"
             )
@@ -52,7 +53,7 @@ describe("canEquipSlugToSlot", () => {
         ).toBe(false);
     });
 
-    it("allows a new slug on a multi slot even when that slot already has items", () => {
+    it("rejects legacy usable multi slot under equip policy", () => {
         expect(
             canEquipSlugToSlot(
                 { "melee-main": "srd_longsword" },
@@ -60,6 +61,22 @@ describe("canEquipSlugToSlot", () => {
                 "rpv_amulet-of-vitality",
                 { usable: ["srd_potion-of-healing"] }
             )
+        ).toBe(false);
+    });
+
+    it("rejects policy-invalid slot for wieldable item", () => {
+        expect(canEquipSlugToSlot({}, "ring", "srd_longsword")).toBe(false);
+    });
+
+    it("rejects carried items in any slot", () => {
+        expect(canEquipSlugToSlot({}, "melee-main", "srd_waterskin")).toBe(
+            false
+        );
+    });
+
+    it("allows cosmetic items in cosmetic multi slot", () => {
+        expect(
+            canEquipSlugToSlot({}, "cosmetic", "srd_clothes-travelers")
         ).toBe(true);
     });
 
@@ -67,17 +84,9 @@ describe("canEquipSlugToSlot", () => {
         expect(
             canEquipSlugToSlot(
                 {},
-                "usable",
-                "rpv_amulet-of-vitality",
-                { usable: ["RPV_Amulet-of-Vitality"] }
-            )
-        ).toBe(false);
-        expect(
-            canEquipSlugToSlot(
-                {},
                 "cosmetic",
-                "srd_cloak-of-protection",
-                { cosmetic: ["srd_cloak-of-protection"] }
+                "srd_clothes-travelers",
+                { cosmetic: ["srd_clothes-travelers"] }
             )
         ).toBe(false);
     });
@@ -86,10 +95,22 @@ describe("canEquipSlugToSlot", () => {
         expect(
             canEquipSlugToSlot(
                 { amulet: "rpv_amulet-of-vitality" },
-                "usable",
+                "cosmetic",
                 "rpv_amulet-of-vitality"
             )
         ).toBe(false);
+    });
+});
+
+describe("isInventorySlugEquippable", () => {
+    it("is false for carried adventuring gear", () => {
+        expect(isInventorySlugEquippable("srd_waterskin")).toBe(false);
+        expect(isInventorySlugEquippable("rpv_pilot-test-pack-a")).toBe(false);
+    });
+
+    it("is true for weapons and granted wondrous items", () => {
+        expect(isInventorySlugEquippable("srd_longsword")).toBe(true);
+        expect(isInventorySlugEquippable("rpv_amulet-of-vitality")).toBe(true);
     });
 });
 
@@ -108,11 +129,11 @@ describe("isSlugEquipped", () => {
             isSlugEquipped(
                 {},
                 "rpv_amulet-of-vitality",
-                { usable: ["RPV_Amulet-of-Vitality"] }
+                { cosmetic: ["RPV_Amulet-of-Vitality"] }
             )
         ).toBe(true);
         expect(
-            isSlugEquipped({}, "srd_longsword", { usable: ["rpv_amulet-of-vitality"] })
+            isSlugEquipped({}, "srd_longsword", { cosmetic: ["rpv_amulet-of-vitality"] })
         ).toBe(false);
         expect(isSlugEquipped({ amulet: "rpv_amulet-of-vitality" }, "  ")).toBe(
             false
