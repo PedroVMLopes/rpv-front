@@ -122,4 +122,38 @@ describe("AbilitiesSection", () => {
 
         expect(screen.getByLabelText("Strength 16 +3")).toBeInTheDocument();
     });
+
+    it("shows inspiration at zero and marks it on toggle", async () => {
+        const user = userEvent.setup();
+        const stored = baseStored();
+        renderSection(stored);
+
+        expect(screen.getByText("Inspiration: 0")).toBeInTheDocument();
+
+        await user.click(
+            screen.getByRole("button", { name: "Mark that you have Inspiration" })
+        );
+
+        expect(
+            useCharacterStore.getState().characters[0]?.session?.metaPoints
+                ?.inspiration
+        ).toBe(1);
+    });
+
+    it("does not clear inspiration when the toggle is clicked while active", async () => {
+        const user = userEvent.setup();
+        const stored = baseStored({
+            session: { metaPoints: { inspiration: 1 } },
+        });
+        renderSection(stored);
+
+        await user.click(
+            screen.getByRole("button", { name: "You have Inspiration" })
+        );
+
+        expect(
+            useCharacterStore.getState().characters[0]?.session?.metaPoints
+                ?.inspiration
+        ).toBe(1);
+    });
 });

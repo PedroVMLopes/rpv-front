@@ -92,7 +92,9 @@ describe("rollRiders", () => {
     it("picks high and low d20s for advantage modes", () => {
         expect(d20Needed("normal")).toBe(1);
         expect(d20Needed("advantage")).toBe(2);
+        expect(d20Needed("inspiration")).toBe(2);
         expect(pickD20([8, 17], "advantage")).toBe(17);
+        expect(pickD20([8, 17], "inspiration")).toBe(17);
         expect(pickD20([8, 17], "disadvantage")).toBe(8);
         expect(pickD20([8, 17], "normal")).toBe(8);
     });

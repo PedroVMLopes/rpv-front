@@ -3,6 +3,7 @@ import type {
     CharacterDeathSaves,
     CharacterSession,
 } from "./storedCharacter";
+import { mergeMetaPointPatch, sanitizeMetaPoints } from "./sessionMetaPoints";
 
 const DEATH_SAVE_MAX = 3;
 
@@ -112,8 +113,15 @@ export function sanitizeCharacterSession(
     const activeConditions = sanitizeConditionSlugs(session.activeConditions);
     const tempHp = sanitizeTempHp(session.tempHp);
     const deathSaves = sanitizeDeathSaves(session.deathSaves);
+    const metaPoints = sanitizeMetaPoints(session.metaPoints);
 
-    if (!concentratingOn && !activeConditions && !tempHp && !deathSaves) {
+    if (
+        !concentratingOn &&
+        !activeConditions &&
+        !tempHp &&
+        !deathSaves &&
+        !metaPoints
+    ) {
         return undefined;
     }
 
@@ -122,6 +130,7 @@ export function sanitizeCharacterSession(
         ...(activeConditions ? { activeConditions } : {}),
         ...(tempHp !== undefined ? { tempHp } : {}),
         ...(deathSaves ? { deathSaves } : {}),
+        ...(metaPoints ? { metaPoints } : {}),
     };
 }
 
@@ -156,6 +165,15 @@ export function mergeCharacterSession(
             delete next.deathSaves;
         } else {
             next.deathSaves = patch.deathSaves;
+        }
+    }
+
+    if ("metaPoints" in patch && patch.metaPoints) {
+        const merged = mergeMetaPointPatch(next.metaPoints, patch.metaPoints);
+        if (merged) {
+            next.metaPoints = merged;
+        } else {
+            delete next.metaPoints;
         }
     }
 

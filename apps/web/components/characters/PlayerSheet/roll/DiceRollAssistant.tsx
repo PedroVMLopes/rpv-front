@@ -8,7 +8,13 @@ import {
     resolveDamageOnlyTotal,
 } from "@/lib/roll/buildRollRequest";
 import { formatModifier } from "@/lib/character/skillModifiers";
-import { pickD20, type AdvantageMode } from "@/lib/roll/rollRiders";
+import { INSPIRATION_REF } from "@/lib/character/sessionMetaPoints";
+import { d20ModeHintKey, d20StepTitleKey } from "@/lib/roll/rollHints";
+import {
+    pickD20,
+    spendsInspiration,
+    type D20RollMode,
+} from "@/lib/roll/rollRiders";
 import { Button } from "@/components/ui/button";
 import { DiceResultStep } from "./DiceResultStep";
 import { DiceSelectStep } from "./DiceSelectStep";
@@ -29,7 +35,7 @@ type DiceRollAssistantProps = {
     onDismiss: () => void;
 };
 
-const ADVANTAGE_MODES: AdvantageMode[] = [
+const BASE_D20_ROLL_MODES: D20RollMode[] = [
     "normal",
     "advantage",
     "disadvantage",
@@ -45,15 +51,21 @@ const DEATH_SAVE_OUTCOMES: DeathSaveOutcome[] = [
 export function DiceRollAssistant({ onDismiss }: DiceRollAssistantProps) {
     const t = useTranslations("playerSheet.roll");
     const tVitality = useTranslations("playerSheet.vitality");
+    const tInspiration = useTranslations("playerSheet.inspiration");
     const applyVitalityChange = useCharacterStore(
         (state) => state.applyVitalityChange
+    );
+    const setCharacterSession = useCharacterStore(
+        (state) => state.setCharacterSession
     );
     const getResolvedStats = useCharacterStore((state) => state.getResolvedStats);
     const {
         state,
+        characterId,
+        hasInspirationAvailable,
         selectDie,
         submitRollValue,
-        setAdvantageMode,
+        setD20RollMode,
     } = useRollAssistant();
     const { mode, request, selectedDie, stepIndex, attackRoll, damageRolls } =
         state;
@@ -65,6 +77,21 @@ export function DiceRollAssistant({ onDismiss }: DiceRollAssistantProps) {
             request?.kind === "death_save") &&
         state.d20Rolls.length === 0 &&
         state.extraDieRolls.length === 0;
+
+    const rollModes = hasInspirationAvailable
+        ? [...BASE_D20_ROLL_MODES, "inspiration" as const]
+        : BASE_D20_ROLL_MODES;
+
+    const spendInspirationIfNeeded = () => {
+        if (!characterId || !spendsInspiration(state.d20RollMode)) {
+            return;
+        }
+
+        setCharacterSession(characterId, {
+            metaPoints: { [INSPIRATION_REF]: 0 },
+        });
+        toast(tInspiration("spent"));
+    };
 
     const handleDismiss = () => {
         onDismiss();
@@ -117,7 +144,17 @@ export function DiceRollAssistant({ onDismiss }: DiceRollAssistantProps) {
         }
 
         if (request.kind === "death_save") {
+            const priorPhase = phase;
             submitRollValue(value);
+            const nextPhase = getRequestPhase({
+                ...state,
+                ...appendRollValueForPhase(state, value, priorPhase),
+            });
+
+            if (nextPhase?.type === "death_save_outcome") {
+                spendInspirationIfNeeded();
+            }
+
             return;
         }
 
@@ -150,24 +187,26 @@ export function DiceRollAssistant({ onDismiss }: DiceRollAssistantProps) {
         }
 
         if (request.kind === "d20_test") {
+            const priorPhase = phase;
             const result = submitRollValue(value);
             if (result === "continue") {
                 return;
             }
 
             const d20Rolls =
-                phase?.type === "d20"
+                priorPhase?.type === "d20"
                     ? [...state.d20Rolls, value]
                     : state.d20Rolls;
             const extraDieRolls =
-                phase?.type === "extra_die"
+                priorPhase?.type === "extra_die"
                     ? [...state.extraDieRolls, value]
                     : state.extraDieRolls;
             const total = resolveD20TestTotal(
                 request,
-                pickD20(d20Rolls, state.advantageMode),
+                pickD20(d20Rolls, state.d20RollMode),
                 extraDieRolls
             );
+            spendInspirationIfNeeded();
             toast(t("contextToast", { label: request.label, total }));
             handleDismiss();
             return;
@@ -175,13 +214,24 @@ export function DiceRollAssistant({ onDismiss }: DiceRollAssistantProps) {
 
         if (request.kind === "attack_then_damage") {
             if (phase?.type === "d20" || phase?.type === "extra_die") {
+                const priorPhase = phase;
                 submitRollValue(value);
+                const nextState = {
+                    ...state,
+                    ...appendRollValueForPhase(state, value, priorPhase),
+                };
+                const nextPhase = getRequestPhase(nextState);
+
+                if (nextPhase?.type === "attack_damage") {
+                    spendInspirationIfNeeded();
+                }
+
                 return;
             }
 
             const { attackTotal, damageTotal } = resolveAttackThenDamageTotal(
                 request,
-                pickD20(state.d20Rolls, state.advantageMode) ||
+                pickD20(state.d20Rolls, state.d20RollMode) ||
                     attackRoll ||
                     value,
                 value,
@@ -235,12 +285,24 @@ export function DiceRollAssistant({ onDismiss }: DiceRollAssistantProps) {
                     request.kind === "d20_test"
                         ? formatModifier(request.modifier)
                         : formatModifier(0);
-                if (phase?.type === "d20" && phase.of > 1) {
-                    return t("d20PairTitle", {
+                if (phase?.type === "d20") {
+                    const titleKey = d20StepTitleKey(
+                        state.d20RollMode,
+                        "test",
+                        phase.of
+                    );
+                    if (phase.of > 1) {
+                        return t(titleKey, {
+                            label: request.label,
+                            modifier,
+                            index: phase.index + 1,
+                            of: phase.of,
+                        });
+                    }
+
+                    return t(titleKey, {
                         label: request.label,
                         modifier,
-                        index: phase.index + 1,
-                        of: phase.of,
                     });
                 }
 
@@ -262,8 +324,13 @@ export function DiceRollAssistant({ onDismiss }: DiceRollAssistantProps) {
             if (request.kind === "attack_then_damage") {
                 if (phase?.type === "d20") {
                     const modifier = formatModifier(request.attack.modifier);
+                    const titleKey = d20StepTitleKey(
+                        state.d20RollMode,
+                        "attack",
+                        phase.of
+                    );
                     if (phase.of > 1) {
-                        return t("attackPairTitle", {
+                        return t(titleKey, {
                             label: request.label,
                             modifier,
                             index: phase.index + 1,
@@ -271,7 +338,7 @@ export function DiceRollAssistant({ onDismiss }: DiceRollAssistantProps) {
                         });
                     }
 
-                    return t("attackStepTitle", {
+                    return t(titleKey, {
                         label: request.label,
                         modifier,
                     });
@@ -314,7 +381,7 @@ export function DiceRollAssistant({ onDismiss }: DiceRollAssistantProps) {
     const suggestedOutcome =
         request?.kind === "death_save" && phase?.type === "death_save_outcome"
             ? suggestDeathSaveOutcome(
-                  pickD20(state.d20Rolls, state.advantageMode),
+                  pickD20(state.d20Rolls, state.d20RollMode),
                   extraTotal
               )
             : null;
@@ -325,27 +392,32 @@ export function DiceRollAssistant({ onDismiss }: DiceRollAssistantProps) {
                 {panelTitle}
             </p>
             {showAdvantageToggle ? (
-                <div
-                    role="group"
-                    aria-label={t("advantageMode")}
-                    className="flex flex-wrap justify-center gap-1 sm:justify-start"
-                >
-                    {ADVANTAGE_MODES.map((entry) => (
-                        <Button
-                            key={entry}
-                            type="button"
-                            size="sm"
-                            variant={
-                                state.advantageMode === entry
-                                    ? "default"
-                                    : "outline"
-                            }
-                            aria-pressed={state.advantageMode === entry}
-                            onClick={() => setAdvantageMode(entry)}
-                        >
-                            {t(entry)}
-                        </Button>
-                    ))}
+                <div className="flex flex-col gap-1.5">
+                    <div
+                        role="group"
+                        aria-label={t("advantageMode")}
+                        className="flex flex-wrap justify-center gap-1 sm:justify-start"
+                    >
+                        {rollModes.map((entry) => (
+                            <Button
+                                key={entry}
+                                type="button"
+                                size="sm"
+                                variant={
+                                    state.d20RollMode === entry
+                                        ? "default"
+                                        : "outline"
+                                }
+                                aria-pressed={state.d20RollMode === entry}
+                                onClick={() => setD20RollMode(entry)}
+                            >
+                                {t(entry)}
+                            </Button>
+                        ))}
+                    </div>
+                    <p className="text-center text-xs text-muted-foreground sm:text-left">
+                        {t(d20ModeHintKey(state.d20RollMode))}
+                    </p>
                 </div>
             ) : null}
             {showDieSelection ? (
@@ -386,4 +458,32 @@ export function DiceRollAssistant({ onDismiss }: DiceRollAssistantProps) {
             ) : null}
         </div>
     );
+}
+
+function appendRollValueForPhase(
+    state: {
+        d20Rolls: number[];
+        extraDieRolls: number[];
+    },
+    value: number,
+    phase: ReturnType<typeof getRequestPhase>
+): Pick<typeof state, "d20Rolls" | "extraDieRolls"> {
+    if (phase?.type === "d20") {
+        return {
+            d20Rolls: [...state.d20Rolls, value],
+            extraDieRolls: state.extraDieRolls,
+        };
+    }
+
+    if (phase?.type === "extra_die") {
+        return {
+            d20Rolls: state.d20Rolls,
+            extraDieRolls: [...state.extraDieRolls, value],
+        };
+    }
+
+    return {
+        d20Rolls: state.d20Rolls,
+        extraDieRolls: state.extraDieRolls,
+    };
 }

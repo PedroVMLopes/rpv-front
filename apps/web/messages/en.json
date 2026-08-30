@@ -499,9 +499,30 @@
       "normal": "Normal",
       "advantage": "Advantage",
       "disadvantage": "Disadvantage",
+      "inspiration": "Inspiration",
       "extraDieStepTitle": "{label} — extra d{sides}",
       "d20PairTitle": "{label} — d20 {modifier} ({index}/{of})",
-      "attackPairTitle": "{label} — attack d20 {modifier} ({index}/{of})"
+      "attackPairTitle": "{label} — attack d20 {modifier} ({index}/{of})",
+      "d20PairTitleAdvantage": "{label} — d20 {modifier} — roll twice, use the higher ({index}/{of})",
+      "d20PairTitleDisadvantage": "{label} — d20 {modifier} — roll twice, use the lower ({index}/{of})",
+      "d20PairTitleInspiration": "{label} — d20 {modifier} — spend Inspiration, use the higher ({index}/{of})",
+      "attackPairTitleAdvantage": "{label} — attack d20 {modifier} — roll twice, use the higher ({index}/{of})",
+      "attackPairTitleDisadvantage": "{label} — attack d20 {modifier} — roll twice, use the lower ({index}/{of})",
+      "attackPairTitleInspiration": "{label} — attack d20 {modifier} — spend Inspiration, use the higher ({index}/{of})",
+      "modeHint": {
+        "normal": "Roll the d20 once.",
+        "advantage": "Roll twice and use the higher result.",
+        "disadvantage": "Roll twice and use the lower result.",
+        "inspiration": "Spend Inspiration: roll twice and use the higher result."
+      }
+    },
+    "inspiration": {
+      "label": "Inspiration",
+      "count": "Inspiration: {count}",
+      "toggleOn": "Mark that you have Inspiration",
+      "toggleOff": "You do not have Inspiration",
+      "hasInspiration": "You have Inspiration",
+      "spent": "Inspiration spent"
     },
     "noneYet": "None yet",
     "levelLine": "Level {level}",

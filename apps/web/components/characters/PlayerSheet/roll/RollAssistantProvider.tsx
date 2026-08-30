@@ -17,9 +17,13 @@ import {
     defaultAdvantageMode,
     extraDiceSidesFor,
     pickD20,
-    type AdvantageMode,
+    type D20RollMode,
 } from "@/lib/roll/rollRiders";
 import { collectRollEffectsFromActiveConditions } from "@/lib/character/conditionRollEffects";
+import {
+    getMetaPoint,
+    INSPIRATION_REF,
+} from "@/lib/character/sessionMetaPoints";
 import { useCharacterStore } from "@/store/useCharacterStore";
 
 export type RollAssistantMode = "manual" | "request";
@@ -40,7 +44,7 @@ export type RollAssistantState = {
     stepIndex: number;
     attackRoll: number | null;
     damageRolls: number[];
-    advantageMode: AdvantageMode;
+    d20RollMode: D20RollMode;
     d20Rolls: number[];
     extraDice: number[];
     extraDieRolls: number[];
@@ -48,10 +52,14 @@ export type RollAssistantState = {
 
 type RollAssistantContextValue = {
     state: RollAssistantState;
+    characterId?: string;
+    hasInspirationAvailable: boolean;
     openManualRoll: () => void;
     openRollRequest: (request: RollRequest) => void;
     selectDie: (sides: DieSides) => void;
-    setAdvantageMode: (mode: AdvantageMode) => void;
+    setD20RollMode: (mode: D20RollMode) => void;
+    /** @deprecated Use setD20RollMode */
+    setAdvantageMode: (mode: D20RollMode) => void;
     submitRollValue: (value: number) => "continue" | "complete";
     close: () => void;
 };
@@ -64,7 +72,7 @@ const initialState: RollAssistantState = {
     stepIndex: 0,
     attackRoll: null,
     damageRolls: [],
-    advantageMode: "normal",
+    d20RollMode: "normal",
     d20Rolls: [],
     extraDice: [],
     extraDieRolls: [],
@@ -75,11 +83,11 @@ type RollAssistantAction =
     | {
           type: "open_request";
           request: RollRequest;
-          advantageMode: AdvantageMode;
+          d20RollMode: D20RollMode;
           extraDice: number[];
       }
     | { type: "select_die"; sides: DieSides }
-    | { type: "set_advantage"; mode: AdvantageMode }
+    | { type: "set_d20_roll_mode"; mode: D20RollMode }
     | { type: "submit_value"; value: number }
     | { type: "close" };
 
@@ -93,7 +101,7 @@ export function getRequestPhase(
     state: Pick<
         RollAssistantState,
         | "request"
-        | "advantageMode"
+        | "d20RollMode"
         | "d20Rolls"
         | "extraDice"
         | "extraDieRolls"
@@ -118,7 +126,7 @@ export function getRequestPhase(
         request.kind === "attack_then_damage" ||
         request.kind === "death_save"
     ) {
-        const needed = d20Needed(state.advantageMode);
+        const needed = d20Needed(state.d20RollMode);
         if (state.d20Rolls.length < needed) {
             return {
                 type: "d20",
@@ -192,7 +200,7 @@ function reducer(
                 open: true,
                 mode: "request",
                 request: action.request,
-                advantageMode: action.advantageMode,
+                d20RollMode: action.d20RollMode,
                 extraDice: action.extraDice,
                 selectedDie:
                     action.request.kind === "d20_test" ||
@@ -207,14 +215,14 @@ function reducer(
                 ...state,
                 selectedDie: action.sides,
             };
-        case "set_advantage": {
+        case "set_d20_roll_mode": {
             if (state.d20Rolls.length > 0 || state.extraDieRolls.length > 0) {
                 return state;
             }
 
             return {
                 ...state,
-                advantageMode: action.mode,
+                d20RollMode: action.mode,
             };
         }
         case "submit_value": {
@@ -258,7 +266,7 @@ function reducer(
                             ...nextState,
                             attackRoll: pickD20(
                                 nextState.d20Rolls,
-                                state.advantageMode
+                                state.d20RollMode
                             ),
                         };
                     }
@@ -303,7 +311,10 @@ function getSubmitResult(
     }
 
     if (state.request.kind === "death_save") {
-        return "continue";
+        const next = { ...state, ...appendRollValue(state, value) };
+        return getRequestPhase(next)?.type === "death_save_outcome"
+            ? "continue"
+            : "complete";
     }
 
     if (state.request.kind === "d20_test") {
@@ -338,32 +349,41 @@ export function RollAssistantProvider({
 }: RollAssistantProviderProps) {
     const [state, dispatch] = useReducer(reducer, initialState);
 
+    const character = useCharacterStore((store) =>
+        characterId
+            ? store.characters.find((entry) => entry.id === characterId)
+            : undefined
+    );
+
+    const hasInspirationAvailable =
+        getMetaPoint(character?.session, INSPIRATION_REF) > 0;
+
     const openManualRoll = useCallback(() => {
         dispatch({ type: "open_manual" });
     }, []);
 
     const openRollRequest = useCallback(
         (request: RollRequest) => {
-            let advantageMode: AdvantageMode = "normal";
+            let d20RollMode: D20RollMode = "normal";
             let extraDice: number[] = [];
 
             if (characterId) {
-                const character = useCharacterStore
+                const currentCharacter = useCharacterStore
                     .getState()
                     .characters.find((entry) => entry.id === characterId);
                 const effects = collectRollEffectsFromActiveConditions(
-                    character?.session?.activeConditions,
-                    character?.system ?? "dnd"
+                    currentCharacter?.session?.activeConditions,
+                    currentCharacter?.system ?? "dnd"
                 );
                 const appliesTo = appliesToOf(request);
-                advantageMode = defaultAdvantageMode(effects, appliesTo);
+                d20RollMode = defaultAdvantageMode(effects, appliesTo);
                 extraDice = extraDiceSidesFor(effects, appliesTo);
             }
 
             dispatch({
                 type: "open_request",
                 request,
-                advantageMode,
+                d20RollMode,
                 extraDice,
             });
         },
@@ -374,8 +394,8 @@ export function RollAssistantProvider({
         dispatch({ type: "select_die", sides });
     }, []);
 
-    const setAdvantageMode = useCallback((mode: AdvantageMode) => {
-        dispatch({ type: "set_advantage", mode });
+    const setD20RollMode = useCallback((mode: D20RollMode) => {
+        dispatch({ type: "set_d20_roll_mode", mode });
     }, []);
 
     const submitRollValue = useCallback(
@@ -394,19 +414,24 @@ export function RollAssistantProvider({
     const value = useMemo(
         () => ({
             state,
+            characterId,
+            hasInspirationAvailable,
             openManualRoll,
             openRollRequest,
             selectDie,
-            setAdvantageMode,
+            setD20RollMode,
+            setAdvantageMode: setD20RollMode,
             submitRollValue,
             close,
         }),
         [
             state,
+            characterId,
+            hasInspirationAvailable,
             openManualRoll,
             openRollRequest,
             selectDie,
-            setAdvantageMode,
+            setD20RollMode,
             submitRollValue,
             close,
         ]

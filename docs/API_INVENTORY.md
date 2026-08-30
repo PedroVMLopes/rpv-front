@@ -25,7 +25,7 @@ Reference implementation (web):
    - **Definition** (`ItemEntry`) — global catalog per `system`
    - **State** (`CharacterInventory`) — per-character `selections.inventory`
    - **Derived** (`modifiers`, `grants`, resource **maxima**) — rebuilt on every change; never trusted from the client
-   - **Session currents** (`resources` remaining uses, plus `session` concentration / active conditions / temp HP / death saves) — preserved on rebuild. Resources are clamped to the new maxima; hit-dice remaining is preserved and credits new dice on level-up. `session` is sanitized but not derived. HP is synced to resolved max. Short rest does **not** clear `session`. Long rest clears `tempHp` and `deathSaves`.
+   - **Session currents** (`resources` remaining uses, plus `session` concentration / active conditions / temp HP / death saves / meta-points) — preserved on rebuild. Resources are clamped to the new maxima; hit-dice remaining is preserved and credits new dice on level-up. `session` is sanitized but not derived. HP is synced to resolved max. Short rest does **not** clear `session`. Long rest clears `tempHp` and `deathSaves` but **not** `metaPoints`.
 3. **`schemaVersion`** lives on the `StoredCharacter` root (currently `1`). Inventory has no separate version in v1.
 4. **Only equipped slugs** feed `collectGrantSources`. Bag-only items do not alter stats or grants.
 5. **Starting loot** is materialized at **build/PUT** time from `inventory_item` grants (background v1), not via inventory PATCH alone. Granted stacks carry optional `provenance`; manual stacks omit it. Rebuild re-materializes provenance stacks and preserves manual ones.
@@ -70,7 +70,7 @@ shape. After `normalizeStoredCharacter`, `selections.inventory` is always presen
 | `selections.currency` | `Record<string, number>` | Playable pouch (`platinum`/`gold`/`electrum`/`silver`/`copper` for D&D). Seeded once from grants + form extras; sheet edits persist here. Rebuild preserves it. |
 | `selections.grantedCurrency` | `Record<string, number>` | Currency from class/background grants (rebuilt each save; wizard preview only) |
 | `resources` | `Record<string, number>` | **Current** remaining for HP, spell slots, rage, ki, hit dice, etc. Rebuild preserves current (except HP, which is synced to resolved max). Hit-dice max comes from `vitality`, not grants. |
-| `session` | `{ concentratingOn?, activeConditions?, tempHp?, deathSaves? }` | Optional table-session currents. Rebuild preserves like `resources`. Omitted when empty. `schemaVersion` stays **1**. |
+| `session` | `{ concentratingOn?, activeConditions?, tempHp?, deathSaves?, metaPoints? }` | Optional table-session currents. `metaPoints` is `Record<string, number>` for table-awarded tokens (D&D: `inspiration` 0–1). Rebuild preserves like `resources`. Omitted when empty. `schemaVersion` stays **1**. Long rest does **not** clear `metaPoints`. |
 | `systemData` | `Record<string, unknown>` | Level, AC, free text. Do **not** store the pouch here. |
 
 ### Forbidden in `systemData`

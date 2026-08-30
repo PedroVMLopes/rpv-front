@@ -570,4 +570,145 @@ describe("DiceRollAssistant", () => {
         expect(next?.resources["hit-dice"]).toBe(2);
         expect(toastMock).toHaveBeenCalledWith("Hit dice: recover 10 HP");
     });
+
+    it("shows the advantage roll hint when advantage is selected", async () => {
+        const user = userEvent.setup();
+
+        renderAssistant(
+            <ContextRollTrigger
+                request={{
+                    kind: "d20_test",
+                    id: "skill:athletics",
+                    label: "Athletics",
+                    die: 20,
+                    modifier: 5,
+                    appliesTo: "ability_check",
+                }}
+            />
+        );
+
+        await user.click(screen.getByRole("button", { name: "Open contextual roll" }));
+        await user.click(screen.getByRole("button", { name: "Advantage" }));
+
+        expect(
+            screen.getByText("Roll twice and use the higher result.")
+        ).toBeInTheDocument();
+    });
+
+    it("shows inspiration mode only when the character has inspiration", async () => {
+        const user = userEvent.setup();
+        useCharacterStore.setState({
+            characters: [
+                {
+                    id: "inspired-roller",
+                    schemaVersion: 1,
+                    type: "player",
+                    system: "dnd",
+                    language: "en",
+                    name: "Inspired",
+                    baseStats: {
+                        strength: 10,
+                        dexterity: 10,
+                        constitution: 10,
+                        intelligence: 10,
+                        wisdom: 10,
+                        charisma: 10,
+                        armorClass: 10,
+                        hitPoints: 8,
+                    },
+                    modifiers: [],
+                    grants: [],
+                    selections: { inventory: emptyInventory(), choices: {} },
+                    resources: { hp: 8 },
+                    systemData: {},
+                    session: { metaPoints: { inspiration: 1 } },
+                },
+            ],
+        });
+
+        render(
+            <NextIntlClientProvider locale="en" messages={enMessages}>
+                <RollAssistantProvider characterId="inspired-roller">
+                    <ContextRollTrigger
+                        request={{
+                            kind: "d20_test",
+                            id: "skill:athletics",
+                            label: "Athletics",
+                            die: 20,
+                            modifier: 5,
+                            appliesTo: "ability_check",
+                        }}
+                    />
+                    <PlayerSheetActionBar />
+                </RollAssistantProvider>
+            </NextIntlClientProvider>
+        );
+
+        await user.click(screen.getByRole("button", { name: "Open contextual roll" }));
+
+        expect(
+            screen.getByRole("button", { name: "Inspiration" })
+        ).toBeInTheDocument();
+    });
+
+    it("spends inspiration after completing a roll in inspiration mode", async () => {
+        const user = userEvent.setup();
+        useCharacterStore.setState({
+            characters: [
+                {
+                    id: "inspired-roller",
+                    schemaVersion: 1,
+                    type: "player",
+                    system: "dnd",
+                    language: "en",
+                    name: "Inspired",
+                    baseStats: {
+                        strength: 10,
+                        dexterity: 10,
+                        constitution: 10,
+                        intelligence: 10,
+                        wisdom: 10,
+                        charisma: 10,
+                        armorClass: 10,
+                        hitPoints: 8,
+                    },
+                    modifiers: [],
+                    grants: [],
+                    selections: { inventory: emptyInventory(), choices: {} },
+                    resources: { hp: 8 },
+                    systemData: {},
+                    session: { metaPoints: { inspiration: 1 } },
+                },
+            ],
+        });
+
+        render(
+            <NextIntlClientProvider locale="en" messages={enMessages}>
+                <RollAssistantProvider characterId="inspired-roller">
+                    <ContextRollTrigger
+                        request={{
+                            kind: "d20_test",
+                            id: "skill:athletics",
+                            label: "Athletics",
+                            die: 20,
+                            modifier: 5,
+                            appliesTo: "ability_check",
+                        }}
+                    />
+                    <PlayerSheetActionBar />
+                </RollAssistantProvider>
+            </NextIntlClientProvider>
+        );
+
+        await user.click(screen.getByRole("button", { name: "Open contextual roll" }));
+        await user.click(screen.getByRole("button", { name: "Inspiration" }));
+        await user.click(screen.getByRole("button", { name: "14" }));
+        await user.click(screen.getByRole("button", { name: "3" }));
+
+        expect(toastMock).toHaveBeenCalledWith("Athletics: 19");
+        expect(
+            useCharacterStore.getState().characters[0]?.session?.metaPoints
+                ?.inspiration
+        ).toBeUndefined();
+    });
 });

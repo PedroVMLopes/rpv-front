@@ -5,7 +5,14 @@ import type {
 import { rollEffectsFor } from "@/lib/character/conditionRollEffects";
 import type { RollRequest } from "./rollRequest.types";
 
-export type AdvantageMode = "normal" | "advantage" | "disadvantage";
+export type D20RollMode =
+    | "normal"
+    | "advantage"
+    | "disadvantage"
+    | "inspiration";
+
+/** @deprecated Use D20RollMode */
+export type AdvantageMode = D20RollMode;
 
 export function appliesToOf(
     request: RollRequest
@@ -28,7 +35,7 @@ export function appliesToOf(
 export function defaultAdvantageMode(
     effects: ConditionRollEffect[],
     appliesTo: RollEffectAppliesTo | undefined
-): AdvantageMode {
+): D20RollMode {
     if (!appliesTo) {
         return "normal";
     }
@@ -72,22 +79,36 @@ export function extraDiceSidesFor(
         .map((effect) => effect.sides);
 }
 
-export function d20Needed(mode: AdvantageMode): 1 | 2 {
+export function d20Needed(mode: D20RollMode): 1 | 2 {
     return mode === "normal" ? 1 : 2;
 }
 
-export function pickD20(rolls: number[], mode: AdvantageMode): number {
+export function resolvePickMode(mode: D20RollMode): "normal" | "advantage" | "disadvantage" {
+    if (mode === "inspiration") {
+        return "advantage";
+    }
+
+    return mode;
+}
+
+export function pickD20(rolls: number[], mode: D20RollMode): number {
     if (rolls.length === 0) {
         return 0;
     }
 
-    if (mode === "advantage") {
+    const pickMode = resolvePickMode(mode);
+
+    if (pickMode === "advantage") {
         return Math.max(...rolls);
     }
 
-    if (mode === "disadvantage") {
+    if (pickMode === "disadvantage") {
         return Math.min(...rolls);
     }
 
     return rolls[0] ?? 0;
+}
+
+export function spendsInspiration(mode: D20RollMode): boolean {
+    return mode === "inspiration";
 }

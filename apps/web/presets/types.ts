@@ -106,6 +106,12 @@ export type VitalityRules = {
     longRestHitDiceRecover: (current: number, max: number) => number;
 };
 
+export type SessionMetaPointTracker = {
+    ref: string;
+    labelKey: string;
+    max: number;
+};
+
 export interface SystemRules {
     abilityModifier: (score: number) => number;
     proficiencyBonus: (level: number) => number;
@@ -129,6 +135,7 @@ export interface SystemDefinition {
     characters: { fields: unknown; schema: unknown };
     statConfig: PresetStatConfig;
     rules: SystemRules;
+    sessionMetaPoints?: SessionMetaPointTracker[];
 }
 
 export type PresetAttributeField = {

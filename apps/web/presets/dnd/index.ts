@@ -3,6 +3,7 @@ import { dndCharacterFields } from "./characterFields";
 import { dndCharacterSchema } from "./characterSchema";
 import { dndStatConfig } from "./characterStats";
 import { dndRules } from "./rules";
+import { dndSessionMetaPoints } from "./sessionMetaPoints";
 
 export const dndPreset = {
     id: "dnd",
@@ -13,4 +14,5 @@ export const dndPreset = {
     },
     statConfig: dndStatConfig,
     rules: dndRules,
+    sessionMetaPoints: dndSessionMetaPoints,
 } satisfies SystemDefinition;

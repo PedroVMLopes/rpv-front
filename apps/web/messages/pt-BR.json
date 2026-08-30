@@ -499,9 +499,30 @@
       "normal": "Normal",
       "advantage": "Vantagem",
       "disadvantage": "Desvantagem",
+      "inspiration": "Inspiração",
       "extraDieStepTitle": "{label} — d{sides} extra",
       "d20PairTitle": "{label} — d20 {modifier} ({index}/{of})",
-      "attackPairTitle": "{label} — ataque d20 {modifier} ({index}/{of})"
+      "attackPairTitle": "{label} — ataque d20 {modifier} ({index}/{of})",
+      "d20PairTitleAdvantage": "{label} — d20 {modifier} — rola duas vezes, usa o maior ({index}/{of})",
+      "d20PairTitleDisadvantage": "{label} — d20 {modifier} — rola duas vezes, usa o menor ({index}/{of})",
+      "d20PairTitleInspiration": "{label} — d20 {modifier} — gasta Inspiração, usa o maior ({index}/{of})",
+      "attackPairTitleAdvantage": "{label} — ataque d20 {modifier} — rola duas vezes, usa o maior ({index}/{of})",
+      "attackPairTitleDisadvantage": "{label} — ataque d20 {modifier} — rola duas vezes, usa o menor ({index}/{of})",
+      "attackPairTitleInspiration": "{label} — ataque d20 {modifier} — gasta Inspiração, usa o maior ({index}/{of})",
+      "modeHint": {
+        "normal": "Rola o d20 uma vez.",
+        "advantage": "Rola duas vezes e utiliza o maior resultado.",
+        "disadvantage": "Rola duas vezes e utiliza o menor resultado.",
+        "inspiration": "Gasta Inspiração: rola duas vezes e utiliza o maior resultado."
+      }
+    },
+    "inspiration": {
+      "label": "Inspiração",
+      "count": "Inspiração: {count}",
+      "toggleOn": "Marcar que você possui Inspiração",
+      "toggleOff": "Você não possui Inspiração",
+      "hasInspiration": "Você possui Inspiração",
+      "spent": "Inspiração gasta"
     },
     "noneYet": "Nenhum ainda",
     "levelLine": "Nível {level}",

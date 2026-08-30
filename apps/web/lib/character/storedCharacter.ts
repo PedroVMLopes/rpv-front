@@ -72,6 +72,8 @@ export type CharacterSession = {
     tempHp?: number;
     /** Death-save pips. Omitted when none are marked. Null in a patch clears. */
     deathSaves?: CharacterDeathSaves | null;
+    /** Table-awarded meta-currency (inspiration, luck, …). Refs are opaque slugs. */
+    metaPoints?: Record<string, number>;
 };
 
 export type StoredCharacter = {

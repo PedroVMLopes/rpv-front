@@ -8,7 +8,7 @@ const closed = {
     stepIndex: 0,
     attackRoll: null,
     damageRolls: [] as number[],
-    advantageMode: "normal" as const,
+    d20RollMode: "normal" as const,
     d20Rolls: [] as number[],
     extraDice: [] as number[],
     extraDieRolls: [] as number[],

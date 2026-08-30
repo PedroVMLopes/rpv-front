@@ -17,6 +17,7 @@ import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { Button } from "@/components/ui/button";
 import { AbilityStone } from "../AbilityStone";
+import { InspirationToggle } from "./InspirationToggle";
 import { OverviewPanel } from "./OverviewPanel";
 import { useRollAssistant } from "../roll/RollAssistantProvider";
 import { sheetInset } from "../playerSheetSurfaces";
@@ -111,6 +112,8 @@ export function AbilitiesSection({ stored }: AbilitiesSectionProps) {
                     );
                 })}
             </div>
+
+            <InspirationToggle stored={stored} />
 
             <div className="mt-2 flex flex-col gap-1 text-sm">
                 <div

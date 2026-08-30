@@ -54,6 +54,24 @@ describe("sanitizeCharacterSession", () => {
             })
         ).toBeUndefined();
     });
+
+    it("keeps meta points and clamps inspiration to 0..1", () => {
+        expect(
+            sanitizeCharacterSession({
+                metaPoints: { inspiration: 1.8, luck: 3 },
+            })
+        ).toEqual({
+            metaPoints: { inspiration: 1, luck: 3 },
+        });
+    });
+
+    it("drops zero meta points", () => {
+        expect(
+            sanitizeCharacterSession({
+                metaPoints: { inspiration: 0 },
+            })
+        ).toBeUndefined();
+    });
 });
 
 describe("mergeCharacterSession", () => {
@@ -102,6 +120,21 @@ describe("mergeCharacterSession", () => {
             mergeCharacterSession(current, { tempHp: 0, deathSaves: null })
         ).toEqual({
             concentratingOn: { slug: "detect-magic", slotLevel: 1 },
+        });
+    });
+
+    it("merges meta points by ref", () => {
+        expect(
+            mergeCharacterSession(
+                { metaPoints: { inspiration: 1 } },
+                { metaPoints: { inspiration: 0 } }
+            )
+        ).toBeUndefined();
+
+        expect(
+            mergeCharacterSession(undefined, { metaPoints: { inspiration: 1 } })
+        ).toEqual({
+            metaPoints: { inspiration: 1 },
         });
     });
 });
