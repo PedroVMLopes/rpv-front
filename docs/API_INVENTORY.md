@@ -4,6 +4,9 @@ This document describes the **future HTTP API** for character persistence and
 inventory. It is aligned with the web app implementation today. **No routes exist
 in this repository yet** — this is contract notes only.
 
+**Product model** (possess vs equip vs use, equip policy, UI roadmap):
+[`INVENTORY.md`](INVENTORY.md).
+
 P1 (playable table, bundled catalog, `localStorage` disk) **does not change this
 HTTP contract**. Remote character persistence remains deferred (conversation P3).
 
@@ -27,8 +30,11 @@ Reference implementation (web):
    - **Derived** (`modifiers`, `grants`, resource **maxima**) — rebuilt on every change; never trusted from the client
    - **Session currents** (`resources` remaining uses, plus `session` concentration / active conditions / temp HP / death saves / meta-points) — preserved on rebuild. Resources are clamped to the new maxima; hit-dice remaining is preserved and credits new dice on level-up. `session` is sanitized but not derived. HP is synced to resolved max. Short rest does **not** clear `session`. Long rest clears `tempHp` and `deathSaves` but **not** `metaPoints`.
 3. **`schemaVersion`** lives on the `StoredCharacter` root (currently `1`). Inventory has no separate version in v1.
-4. **Only equipped slugs** feed `collectGrantSources`. Bag-only items do not alter stats or grants.
+4. **Only equipped single slots** feed `collectGrantSources`. Bag-only items and
+   `equippedMulti` do not alter stats or grants.
 5. **Starting loot** is materialized at **build/PUT** time from `inventory_item` grants (background v1), not via inventory PATCH alone. Granted stacks carry optional `provenance`; manual stacks omit it. Rebuild re-materializes provenance stacks and preserves manual ones.
+6. **Item↔slot compatibility** is enforced via `canEquipItem(slug, slotId, system)` from
+   `@rpv/content` (`ItemEquipPolicy`). See [`docs/INVENTORY.md`](INVENTORY.md).
 
 ```mermaid
 flowchart LR
@@ -128,8 +134,12 @@ On load, `normalizeStoredCharacter` → `sanitizeInventory` inside
 | Field | Type | Description |
 |-------|------|-------------|
 | `bag` | `ItemStack[]` | Owned items: `{ slug, quantity, provenance? }` |
-| `equipped` | `Record<string, string>` | `slotId → item slug` (single occupancy; feeds grants/AC) |
-| `equippedMulti` | `Record<string, string[]>` | Multi slots (e.g. `cosmetic`); roleplay only |
+| `equipped` | `Record<string, string>` | `slotId → item slug` (single occupancy; **feeds grants/AC/combat**) |
+| `equippedMulti` | `Record<string, string[]>` | Multi slots (`cosmetic`, legacy `usable`); **roleplay only — no grants** |
+
+**Possession vs equip:** items in `bag` are carried gear (weight, visibility). Only
+`equipped` single slots apply item `grants` and weapon attacks. Full behavior model:
+[`docs/INVENTORY.md`](INVENTORY.md).
 
 Pilot D&D slot IDs (from
 [`equipmentSlots.dnd.ts`](../packages/content/src/curation/equipmentSlots.dnd.ts)):
@@ -151,7 +161,7 @@ before persisting. Behavior matches
 | `quantity < 0` | Stack removed |
 | `quantity === 0` | Kept in bag until explicitly deleted |
 | Invalid slot ID for `system` | Equipped entry discarded |
-| Item↔slot type mismatch | Not checked — any known item may occupy any valid slot |
+| Item↔slot type mismatch | Entry discarded when `!canEquipItem(slug, slotId, system)` ([`ItemEquipPolicy`](INVENTORY.md#itemequippolicy-etapa-1--content); **pilot web today:** not checked yet) |
 | Same slug in two slots | Only the first iterated slot kept |
 | Non-stackable item with `quantity > 1` in bag | Clamped to 1 |
 | Duplicate bag stacks (same slug + same provenance) | Merged |
@@ -267,6 +277,7 @@ Returns:
       "weapon": null,
       "armor": null,
       "stackable": false,
+      "equipPolicy": "wearable",
       "grants": [
         {
           "grantType": "stat_modifier",
@@ -414,6 +425,9 @@ Response: item modifiers removed; max HP back to **12**; `hp` clamped if needed.
 
 - PATCH with incremental **ops** (`addToBag`, `removeFromBag`, `equip`, `unequip`)
 - Weight, attunement, unique instances
+- **Consumable use from bag** — `ability` grants with `activation`; decrement stack on use (scrolls, potions); replaces pilot “equip scroll for spell grant” pattern
+- Manual **add item** from catalog picker (Player Sheet)
+- Inventory UI sections: active equipment / possessions / cosmetic
 - `POST /systems/:system/items` (community publish + moderation)
 - `If-Match` / ETag on character or inventory
 - Shared build package for server (`@rpv/build` or extract `inventory.ts` + `buildCharacter` from web)

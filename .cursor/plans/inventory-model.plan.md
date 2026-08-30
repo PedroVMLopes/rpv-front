@@ -31,6 +31,12 @@ isProject: false
 
 # Inventário — bag + equipado (modelo e pipeline)
 
+> **Nota (2025):** O piloto inicial (etapas 0–7 abaixo) foi implementado em parte.
+> O refactor atual — posse vs equip, `ItemEquipPolicy`, UI Posses/Equipamento,
+> consumíveis — está documentado em [`docs/INVENTORY.md`](../../docs/INVENTORY.md).
+> Use esse documento como fonte de verdade para o roadmap; este plano permanece
+> como histórico do piloto bag+equipped.
+
 ## Contexto e prioridades
 
 - **Foco:** backend / estrutura de `StoredCharacter` sólida; pipeline de grants/modifiers previsível.

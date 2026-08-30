@@ -118,6 +118,8 @@ system-specific part into content/curation, or generalize the primitive.
 - For community **item** authoring (`ItemEntry`, slots, grants, bag vs equipped),
   see the checklists in [`packages/content/AGENTS.md`](packages/content/AGENTS.md)
   and [`PROJECT_CONTEXT.md`](PROJECT_CONTEXT.md).
+- Inventory model (possess vs equip vs use, equip policy, roadmap):
+  [`docs/INVENTORY.md`](docs/INVENTORY.md).
 - API contract notes for inventory and `StoredCharacter` persistence:
   [`docs/API_INVENTORY.md`](docs/API_INVENTORY.md).
 - Tests live in `__tests__/` per package; run `npm test` in the relevant package.

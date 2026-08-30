@@ -197,10 +197,11 @@ overrides live in [`itemOverlays.dnd.ts`](src/curation/itemOverlays.dnd.ts).
 
 Whether a character **owns** or **wears** an item is runtime state in
 `selections.inventory` (bag / equipped) on the web app — see
-[`PROJECT_CONTEXT.md`](../../PROJECT_CONTEXT.md) (Inventory contract). Only
-**equipped** slugs feed `collectGrantSources` and armor AC formulas; bag-only
-items do not alter stats until equipped. The app does **not** gate which item
-may go in which slot — the player decides.
+[`PROJECT_CONTEXT.md`](../../PROJECT_CONTEXT.md) (Inventory contract) and
+[`docs/INVENTORY.md`](../../docs/INVENTORY.md) (full model). Only **equipped single**
+slugs feed `collectGrantSources` and armor AC formulas; bag-only items and
+`equippedMulti` do not alter stats. Which item may go in which slot is determined
+by **`ItemEquipPolicy`** + `canEquipItem` (Etapa 1), not ad hoc UI rules.
 
 ### Identity
 
@@ -228,12 +229,17 @@ interface ItemEntry {
   cost: string | null;
   grants: Grant[];           // usually []; overlay for magic items
   stackable: boolean;        // false when weapon/armor present
+  equipPolicy?: ItemEquipPolicy;  // optional override; see Item equip policy
 }
 ```
 
 - `weapon` / `armor` — combat and AC data from Open5e (AC uses `acBase` + Dex rules).
-- `grants` — bonuses/abilities when **equipped** (RPV overlays for magic).
-- No `allowedSlots` — any bag item may equip into any valid slot id.
+- `grants` — bonuses/abilities when **equipped** (single slots). For one-shot use
+  from the bag (scrolls, potions), prefer `ability` + `activation` (future consumable
+  flow) instead of passive `spell` grants while equipped.
+- **`ItemEquipPolicy`** — data-driven rule for which slots an item may occupy.
+  Derived from `weapon`, `armor`, `grants`, and `category.key`; overridable via
+  `equipPolicy` on the entry or in `itemEntryOverrides`.
 - **Combat attack list membership** is data-driven via `itemProvidesWeaponAttack`
   (`weapon != null`). Only hand slots (`melee-main`, `melee-off`, `ranged-main`,
   `ranged-off`) feed inventory attacks; the multi `usable` slot does **not**.
@@ -241,11 +247,41 @@ interface ItemEntry {
   - Defense / AC only → fill `armor` (shield: `armor.category: "shield"`); does
     **not** appear as an attack even in a hand slot.
   - Declared use on your turn → `ability` grant with `activation` (not inferred
-    from category or slot).
+    from category or slot). **Do not** model consumables as “equip to use”.
 
 Helpers: `getItem`, `listItems`, `getItemGrants`, `isItemStackable`,
-`itemProvidesWeaponAttack`, `mapOpen5eItem`, `mergeItemCatalog`. Exported from
+`itemProvidesWeaponAttack`, `mapOpen5eItem`, `mergeItemCatalog`,
+`resolveItemEquipPolicy`, `canEquipItem`, `getEquipableSlotIds` (Etapa 1). Exported from
 [`src/index.ts`](src/index.ts).
+
+### Item equip policy
+
+Policy enum (`ItemEquipPolicy`): `carried | cosmetic | wieldable | shield | wearable | granted`.
+
+| Policy | Meaning | Example slots |
+|--------|---------|---------------|
+| `carried` | Bag only — no equip | Waterskin, rope, tools |
+| `cosmetic` | `equippedMulti.cosmetic` — no mechanics | Clothes, robes, mundane ring |
+| `wieldable` | Hand slots single | Longsword, staff |
+| `shield` | Off-hand shield | `srd_shield` |
+| `wearable` | Wearable single slots | Breastplate, wondrous item |
+| `granted` | Wearable + hands — items with grants but no weapon/armor | Magic amulet; override per item as needed |
+
+**Derivation order** (first match wins): `weapon` → `shield` → body `armor` →
+`grants.length > 0` → clothes/robes heuristic → ring without grants → wondrous-item →
+default `carried` for adventuring gear / tools / ammunition / etc.
+
+Implementation: `src/curation/itemEquipPolicy.dnd.ts` (Etapa 1 — planned).
+Full spec: [`docs/INVENTORY.md`](../../docs/INVENTORY.md).
+
+**Overrides:** set `equipPolicy` on `ItemEntry` or in `itemEntryOverrides`. Example:
+`rpv_scroll-of-fire-bolt` → `wieldable` (pilot only; target model is use-from-bag).
+
+**Anti-patterns:**
+
+- Do not require equip for adventuring gear (`carried`).
+- Do not use passive `spell` grants on scrolls long-term — use `activation` + consume qty.
+- Do not branch on slug in web/engine — use policy + grants data.
 
 ### Authoring checklist — SRD refresh
 
@@ -267,11 +303,13 @@ Helpers: `getItem`, `listItems`, `getItemGrants`, `isItemStackable`,
 
 | Pattern | Slug | Notes |
 |---------|------|-------|
-| HP bonus | `rpv_amulet-of-vitality` | overlay `stat_modifier` + `hitPoints` |
-| Spell when equipped | `rpv_scroll-of-fire-bolt` | overlay spell grant |
+| HP bonus | `rpv_amulet-of-vitality` | overlay `stat_modifier` + `hitPoints`; equip in wearable slot |
+| Scroll (pilot) | `rpv_scroll-of-fire-bolt` | **Temporary:** passive `spell` grant while equipped; `equipPolicy: wieldable`. Target: `carried` + **Use** with `activation` |
 | Weapon | `srd_longsword` | nested `weapon` profile |
 | Armor | `srd_leather-armor` | nested `armor` → AC formula |
 | Shield | `srd_shield` | overlay fills `armor.category: "shield"`, `acBase: 2`; not an attack |
+| Carried gear | `srd_waterskin` | policy `carried`; bag only |
+| Cosmetic | `srd_clothes-travelers` | policy `cosmetic`; slot `cosmetic` multi |
 
 ### Starting equipment grants (Etapa 1 — data contract)
 
@@ -528,6 +566,7 @@ and [`deriveStartingEquipmentFromForm.ts`](../../apps/web/lib/character/deriveSt
 - **`selectionFilter` item pools** — `itemCategory` / `itemTags` (v2).
 - **Dice-roll UI for starting gold** — optional button; fixed/choice amounts work today.
 - **Weight, attunement, consumable charges**, community publish API, moderation.
+- **Consumable use from bag** — scrolls/potions via `activation`; see [`docs/INVENTORY.md`](../../docs/INVENTORY.md).
 - **HTTP API** — [`docs/API_INVENTORY.md`](../../docs/API_INVENTORY.md).
 
 Add pt-BR names under `items` in [`data/translations/pt-BR.json`](data/translations/pt-BR.json).
