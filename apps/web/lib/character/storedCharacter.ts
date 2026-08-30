@@ -16,7 +16,12 @@ export type CharacterSelections = {
     background?: string;
     inventory: CharacterInventory;
     choices: CharacterChoices;
-    /** Currency materialized from class/background grants (rebuilt each save). */
+    /**
+     * Playable coin pouch. Seeded once from starting-wealth grants + form
+     * extras; sheet edits persist here. Not rematerialized on rebuild.
+     */
+    currency?: Record<string, number>;
+    /** Currency materialized from class/background grants (wizard preview; rebuilt each save). */
     grantedCurrency?: Record<string, number>;
 };
 

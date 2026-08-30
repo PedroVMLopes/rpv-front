@@ -168,7 +168,7 @@ export function resolveCreationSteps(
     steps.push(createStep("equipment", "equipment", "finalize"));
     steps.push(
         createStep("review", "review", "finalize", {
-            fieldNames: ["gold", "silver", "bronze"],
+            fieldNames: ["platinum", "gold", "electrum", "silver", "copper"],
         })
     );
 

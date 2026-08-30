@@ -2,6 +2,7 @@ import type { Locale } from "@rpv/domain";
 import * as bundled from "../catalog/bundled";
 import * as curationReaders from "../curation/curationReaders";
 import { dndEquipmentPackBundles } from "../curation/equipmentPacks.dnd";
+import { dndCurrencies } from "../curation/currencies.dnd";
 import { dndEquipmentSlots } from "../curation/equipmentSlots.dnd";
 import { localizeNaturalWeaponEntries } from "../curation/naturalWeapons.dnd";
 import { dndRaceLevelGrants } from "../curation/raceGrants.dnd";
@@ -91,6 +92,10 @@ export class StaticContentRepository implements ContentRepository {
 
     listEquipmentSlots() {
         return dndEquipmentSlots;
+    }
+
+    listCurrencies() {
+        return dndCurrencies;
     }
 
     getNaturalWeapons(locale?: Locale) {

@@ -34,6 +34,10 @@ import {
     unequipItemFromMultiSlot as unequipItemFromMultiSlotInventory,
 } from "@/lib/character/inventory";
 import { getResourceMax } from "@/lib/character/presetStats";
+import {
+    adjustCurrencyAmount,
+    setCurrencyAmount,
+} from "@/lib/character/materializeCurrencyGrants";
 import { applyRest as applyRestResources, type RestKind } from "@/lib/character/applyRest";
 import {
     applyVitalityToCharacter,
@@ -84,6 +88,8 @@ interface CharacterStore {
         multiSlug?: string
     ) => void;
     updateResource: (id: string, resourceName: string, delta: number) => void;
+    setCurrency: (id: string, ref: string, amount: number) => void;
+    adjustCurrency: (id: string, ref: string, delta: number) => void;
     applyVitalityChange: (id: string, change: VitalityChange) => void;
     applyRest: (id: string, kind: RestKind) => void;
     addNote: (id: string, body: string) => void;
@@ -335,6 +341,44 @@ export const useCharacterStore = create<CharacterStore>()(
                             resources: {
                                 ...char.resources,
                                 [resourceName]: clamped,
+                            },
+                        };
+                    }),
+                })),
+
+            setCurrency: (id, ref, amount) =>
+                set((state) => ({
+                    characters: state.characters.map((char) => {
+                        if (char.id !== id) return char;
+
+                        return {
+                            ...char,
+                            selections: {
+                                ...char.selections,
+                                currency: setCurrencyAmount(
+                                    char.selections.currency,
+                                    ref,
+                                    amount
+                                ),
+                            },
+                        };
+                    }),
+                })),
+
+            adjustCurrency: (id, ref, delta) =>
+                set((state) => ({
+                    characters: state.characters.map((char) => {
+                        if (char.id !== id) return char;
+
+                        return {
+                            ...char,
+                            selections: {
+                                ...char.selections,
+                                currency: adjustCurrencyAmount(
+                                    char.selections.currency,
+                                    ref,
+                                    delta
+                                ),
                             },
                         };
                     }),

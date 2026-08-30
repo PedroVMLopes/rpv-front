@@ -145,8 +145,26 @@ export const dndCharacterFields = {
             inlineGroup: "line2"
         },
         {
+            name: "platinum",
+            labelKey: "fields.platinum",
+            type: "number",
+            defaultValue: 0,
+            group: "general",
+            order: 3,
+            inlineGroup: "line4"
+        },
+        {
             name: "gold",
             labelKey: "fields.gold",
+            type: "number",
+            defaultValue: 0,
+            group: "general",
+            order: 3,
+            inlineGroup: "line4"
+        },
+        {
+            name: "electrum",
+            labelKey: "fields.electrum",
             type: "number",
             defaultValue: 0,
             group: "general",
@@ -163,8 +181,8 @@ export const dndCharacterFields = {
             inlineGroup: "line4"
         },
         {
-            name: "bronze",
-            labelKey: "fields.bronze",
+            name: "copper",
+            labelKey: "fields.copper",
             type: "number",
             defaultValue: 0,
             group: "general",

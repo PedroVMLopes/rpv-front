@@ -75,6 +75,13 @@ describe("StaticContentRepository", () => {
         expect(repo.listEquipmentSlots().some((slot) => slot.id === "melee-main")).toBe(
             true
         );
+        expect(repo.listCurrencies().map((entry) => entry.ref)).toEqual([
+            "platinum",
+            "gold",
+            "electrum",
+            "silver",
+            "copper",
+        ]);
         expect(repo.getNaturalWeapons().some((weapon) => weapon.slug === "unarmed-strike")).toBe(
             true
         );

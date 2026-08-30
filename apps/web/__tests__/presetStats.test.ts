@@ -16,6 +16,9 @@ describe("getCoreFieldNames", () => {
         expect(names.has("attributes")).toBe(true);
         expect(names.has("choices")).toBe(true);
         expect(names.has("inventory")).toBe(true);
+        expect(names.has("currency")).toBe(true);
+        expect(names.has("gold")).toBe(true);
+        expect(names.has("copper")).toBe(true);
         expect(names.has("race")).toBe(true);
         expect(names.has("subrace")).toBe(true);
         expect(names.has("characterClass")).toBe(true);
@@ -51,6 +54,8 @@ describe("buildSystemDataFromForm", () => {
                     choices: {},
                     inventory: emptyInventory(),
                     level: 3,
+                    gold: 8,
+                    copper: 2,
                     goals: "Find the dragon",
                     personalityTraits: "Curious",
                 },

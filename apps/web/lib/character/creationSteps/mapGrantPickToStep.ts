@@ -136,6 +136,9 @@ export function mapFieldToStep(fieldName: string): string {
         case "gold":
         case "silver":
         case "bronze":
+        case "copper":
+        case "electrum":
+        case "platinum":
             return "review";
         default:
             return "review";

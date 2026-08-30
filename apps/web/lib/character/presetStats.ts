@@ -38,6 +38,13 @@ export function getCoreFieldNames(system: SystemKey): Set<string> {
         "attributes",
         "choices",
         "inventory",
+        "currency",
+        "gold",
+        "silver",
+        "bronze",
+        "copper",
+        "electrum",
+        "platinum",
         ...GRANT_SOURCE_FIELD_NAMES,
     ]);
 
@@ -195,6 +202,7 @@ export function flattenStoredToForm(
         subclass: selections?.subclass ?? stored.systemData.subclass,
         background: selections?.background ?? stored.systemData.background,
         inventory: selections?.inventory ?? emptyInventory(),
+        currency: selections?.currency ?? {},
         choices: selections?.choices ?? {},
         attributes: config.abilities.map((ability) => ({
             name: ability.name,

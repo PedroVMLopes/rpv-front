@@ -18,6 +18,7 @@ import type { PendingChoiceGrant } from "./grantChoices";
 import { readLevelFromForm } from "./level";
 import {
     getManualCurrency,
+    mergeCurrencyTotals,
     STARTING_EQUIPMENT_SOURCES,
 } from "./materializeCurrencyGrants";
 import { sanitizeSelectionsWithStartingMaterialization } from "./grantPickSanitize";
@@ -55,20 +56,6 @@ export type StartingEquipmentPreview = {
     grantedCurrency: Record<string, number>;
     totalCurrency: Record<string, number>;
 };
-
-function mergeCurrencyTotals(
-    manual: Record<string, number>,
-    granted: Record<string, number>
-): Record<string, number> {
-    const refs = new Set([...Object.keys(manual), ...Object.keys(granted)]);
-    const totals: Record<string, number> = {};
-
-    for (const ref of refs) {
-        totals[ref] = (manual[ref] ?? 0) + (granted[ref] ?? 0);
-    }
-
-    return totals;
-}
 
 export function inventoryChoiceToPending(
     choice: StartingEquipmentChoiceGrant,

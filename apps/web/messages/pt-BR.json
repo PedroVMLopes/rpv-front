@@ -66,7 +66,9 @@
     "level": "Nível",
     "gold": "Ouro",
     "silver": "Prata",
-    "bronze": "Bronze",
+    "copper": "Cobre",
+    "electrum": "Electrum",
+    "platinum": "Platina",
     "equippedItems": "Itens Equipados",
     "inventory": "Inventário",
     "race": "Raça",
@@ -654,7 +656,10 @@
       "summary": {
         "encumbrance": "Peso",
         "currency": "Moedas",
-        "miscItems": "Itens miscelâneos"
+        "miscItems": "Itens miscelâneos",
+        "decreaseCurrency": "Diminuir {name}",
+        "increaseCurrency": "Aumentar {name}",
+        "currencyAmount": "Quantidade de {name}"
       },
       "itemsTitle": "Mochila",
       "equippedTitle": "Equipados",

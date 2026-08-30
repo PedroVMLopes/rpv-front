@@ -176,6 +176,7 @@ describe("buildStoredCharacter", () => {
             },
         ]);
         expect(character.selections.grantedCurrency).toEqual({ gold: 15 });
+        expect(character.selections.currency).toEqual({ gold: 15 });
         expect(
             character.grants.some(
                 (grant) =>
@@ -296,6 +297,7 @@ describe("buildStoredCharacter", () => {
             },
         ]);
         expect(rebuilt.selections.grantedCurrency).toEqual({});
+        expect(rebuilt.selections.currency).toEqual({ gold: 15 });
         expect(rebuilt.selections.background).toBeUndefined();
     });
 
@@ -316,6 +318,7 @@ describe("buildStoredCharacter", () => {
 
         expect(character.selections.inventory?.bag).toEqual([]);
         expect(character.selections.grantedCurrency).toEqual({ gold: 50 });
+        expect(character.selections.currency).toEqual({ gold: 50 });
     });
 
     it("does not materialize fighter equipment when gold branch is selected", () => {
@@ -342,6 +345,7 @@ describe("buildStoredCharacter", () => {
         expect(character.selections.grantedCurrency).toEqual({
             gold: 50 + 15,
         });
+        expect(character.selections.currency).toEqual({ gold: 65 });
     });
 
     it("materializes fighter sidearm from grant picks on build", () => {
@@ -376,7 +380,7 @@ describe("buildStoredCharacter", () => {
         );
     });
 
-    it("keeps manual gold separate from granted currency on rebuild", () => {
+    it("seeds extras into the wallet once and keeps it when grants change", () => {
         const created = buildNewStoredCharacter(
             {
                 ...baseFormData,
@@ -388,8 +392,9 @@ describe("buildStoredCharacter", () => {
             "en"
         );
 
-        expect(created.systemData.gold).toBe(8);
+        expect(created.systemData.gold).toBeUndefined();
         expect(created.selections.grantedCurrency).toEqual({ gold: 15 });
+        expect(created.selections.currency).toEqual({ gold: 23 });
 
         const rebuilt = rebuildStoredCharacter(
             created,
@@ -398,12 +403,14 @@ describe("buildStoredCharacter", () => {
                 background: "",
                 gold: 8,
                 inventory: created.selections.inventory,
+                currency: created.selections.currency,
             },
             "en"
         );
 
-        expect(rebuilt.systemData.gold).toBe(8);
+        expect(rebuilt.systemData.gold).toBeUndefined();
         expect(rebuilt.selections.grantedCurrency).toEqual({});
+        expect(rebuilt.selections.currency).toEqual({ gold: 23 });
     });
 
     it("removes invalid bag slugs during build sanitize", () => {

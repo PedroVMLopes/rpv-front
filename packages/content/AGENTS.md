@@ -318,9 +318,9 @@ Resolution: [`abilityScoreGrants.ts`](src/grant/abilityScoreGrants.ts). Pick key
 `{sourceType}:{sourceId}:{levelSegment}:ability_score:{grantIndex}:{slot}`.
 
 Declares starting gear and currency from class/background grants. Materialization
-into `selections.inventory.bag` and `selections.grantedCurrency` is implemented
-in the web pipeline ([`materializeInventoryGrants.ts`](../../apps/web/lib/character/materializeInventoryGrants.ts),
-[`materializeCurrencyGrants.ts`](../../apps/web/lib/character/materializeCurrencyGrants.ts)).
+into `selections.inventory.bag` and `selections.grantedCurrency` (wizard preview)
+is implemented in the web pipeline. First create also seeds `selections.currency`
+(the playable pouch).
 
 #### `inventory_item` — fixed loot
 
@@ -428,8 +428,11 @@ With player choice (`choose > 0`):
 }
 ```
 
-`ref` is a generic currency unit (`gold`, `silver`, `bronze`). No D&D logic in
-`@rpv/domain`.
+`ref` is a generic currency unit. D&D 5e denominations live in
+[`currencies.dnd.ts`](src/curation/currencies.dnd.ts): `platinum`, `gold`,
+`electrum`, `silver`, `copper` (legacy `bronze` migrates to `copper`). Starting
+wealth grants typically use `gold`. No D&D logic in `@rpv/domain`. The playable
+wallet is `selections.currency` (web); `grantedCurrency` is wizard preview only.
 
 #### Exclusive starting wealth groups (`exclusiveGroup` / `exclusiveBranch`)
 
@@ -559,7 +562,7 @@ the default D&D repository. **Grant resolution** (`grants.ts`,
 `getClassGrantSourcesForLevel`, …) reads entries via `getContentRepository(system)`,
 not by importing `*.dnd.ts` maps. Race ASI/language overlays live on
 `RaceCatalogEntry.levelGrants` from `getRace`. Other lookups the sheet needs
-(`listEquipmentSlots`, `getNaturalWeapons`, `getSystemCombatGrants`,
+(`listEquipmentSlots`, `listCurrencies`, `getNaturalWeapons`, `getSystemCombatGrants`,
 `getEquipmentPack`, `listFeats`, `listConditions` / `getCondition`) are
 repository methods. The interface stays **synchronous** (`@future async` is a
 comment only).

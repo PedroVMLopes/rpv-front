@@ -43,8 +43,8 @@ Starting loot from class/background grants is materialized on every build via `m
 | `level` | `systemData.level` | Not in `CharacterSelections`; always read via `readLevelFromForm` |
 | Inventário (possuídos) | `selections.inventory.bag` | `{ slug, quantity }[]`; sanitizado no load/build |
 | Equipamento | `selections.inventory.equipped` | `slotId → slug`; só equipado gera grants/modifiers |
-| Moeda concedida | `selections.grantedCurrency` | `Record<ref, amount>`; materializada de grants class/background |
-| Moeda manual | `systemData.gold` / `silver` / `bronze` | Valores do jogador; não inclui `grantedCurrency` |
+| Moeda (bolsa) | `selections.currency` | `Record<ref, amount>`; semeada uma vez na criação; a ficha edita aqui |
+| Moeda concedida (preview) | `selections.grantedCurrency` | Starting wealth dos grants; rematerializada no wizard; **não** é o saldo da ficha |
 | Race, class, subclass, background | `selections` | Slugs; normalized on load |
 | Grant pick answers | `selections.choices.grantPicks` | Keys include feature level segment (see below) |
 | Resolved abilities, spells, proficiencies | `grants[]` | Traceable via `source` |
@@ -157,7 +157,7 @@ Class and background grants can declare starting gear and currency via `inventor
 |------------|------|
 | `inventory_item` | Fixed or chosen items → `selections.inventory.bag` |
 | `inventory_bundle` | Labeled multi-item option within a choice grant |
-| `currency` | Starting wealth → `selections.grantedCurrency` |
+| `currency` | Starting wealth → `grantedCurrency` (preview) and, on first create, seed of `selections.currency` |
 | `exclusiveGroup` / `exclusiveBranch` | Mutually exclusive branches (e.g. equipment vs gold) |
 
 Grants in an `exclusiveGroup` materialize only when the player picks a branch. Background grants without `exclusiveGroup` always apply.

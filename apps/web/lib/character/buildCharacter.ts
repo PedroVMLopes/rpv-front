@@ -10,6 +10,9 @@ import { deriveCharacterGrants } from "./characterGrants";
 import { deriveModifiersForCharacter } from "./deriveModifiers";
 import { applyDerivedCombatStats } from "./applyDerivedCombatStats";
 import { sanitizeSelectionsWithStartingMaterialization } from "./grantPickSanitize";
+import {
+    resolveCurrencyWallet,
+} from "./materializeCurrencyGrants";
 import { deriveMaxHpFromForm } from "./hp";
 import { syncResourceHpToResolvedMax } from "./hpSync";
 import { readLevelFromForm } from "./level";
@@ -92,6 +95,10 @@ export function buildStoredCharacter(input: BuildCharacterInput): StoredCharacte
         system,
         characterLevel
     );
+    selections = {
+        ...selections,
+        currency: resolveCurrencyWallet(selections, formData),
+    };
     const modifiers = deriveModifiersForCharacter(selections, locale, {
         preserve: existing?.modifiers,
         characterLevel,

@@ -142,9 +142,9 @@ describe("StartingEquipmentField", () => {
         );
 
         expect(screen.getAllByText(/Scroll of Fire Bolt/).length).toBeGreaterThan(0);
-        expect(screen.getByText(/Manual currency: 8 gold/)).toBeInTheDocument();
-        expect(screen.getByText(/Granted currency: 15 gold/)).toBeInTheDocument();
-        expect(screen.getByText(/Total currency: 23 gold/)).toBeInTheDocument();
+        expect(screen.getByText(/Manual currency: 8 gp/)).toBeInTheDocument();
+        expect(screen.getByText(/Granted currency: 15 gp/)).toBeInTheDocument();
+        expect(screen.getByText(/Total currency: 23 gp/)).toBeInTheDocument();
     });
 
     it("renders nothing when class and background are empty", () => {

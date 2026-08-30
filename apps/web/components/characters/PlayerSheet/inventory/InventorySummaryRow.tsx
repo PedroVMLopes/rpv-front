@@ -10,29 +10,19 @@ import {
     formatCarriedWeight,
     sumInventoryWeight,
 } from "@/lib/character/inventoryWeight";
-import { getTotalCurrency } from "@/lib/character/materializeCurrencyGrants";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { cn } from "@/lib/utils";
 import { OverviewPanel } from "../overview/OverviewPanel";
 import { sheetInset } from "../playerSheetSurfaces";
+import { CurrencyPouch } from "./CurrencyPouch";
 
 type InventorySummaryRowProps = {
     stored: StoredCharacter;
 };
 
-const CURRENCY_REFS = ["gold", "silver", "bronze"] as const;
-
-function formatCurrencyParts(currency: Record<string, number>): string[] {
-    return CURRENCY_REFS.filter((ref) => (currency[ref] ?? 0) > 0).map(
-        (ref) => `${currency[ref]} ${ref}`
-    );
-}
-
 export function InventorySummaryRow({ stored }: InventorySummaryRowProps) {
     const t = useTranslations("playerSheet.inventory");
 
-    const currency = useMemo(() => getTotalCurrency(stored), [stored]);
-    const currencyParts = formatCurrencyParts(currency);
     const miscCount = countMiscItems(
         stored.selections.inventory?.bag ?? [],
         stored.system
@@ -98,15 +88,7 @@ export function InventorySummaryRow({ stored }: InventorySummaryRowProps) {
                     />
                 }
             >
-                {currencyParts.length > 0 ? (
-                    <ul className="flex flex-col gap-1 text-sm font-semibold">
-                        {currencyParts.map((part) => (
-                            <li key={part}>{part}</li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p className="text-sm text-muted-foreground">—</p>
-                )}
+                <CurrencyPouch stored={stored} />
             </OverviewPanel>
 
             <OverviewPanel

@@ -18,7 +18,10 @@ import { findInvalidGrantPicks } from "@/lib/character/choiceValidation";
 import { readGrantPicks, setGrantPick } from "@/lib/character/grantPickForm";
 import { bagStackReactKey } from "@/lib/character/inventory";
 import { readLevelFromForm } from "@/lib/character/level";
-import { STARTING_EQUIPMENT_SOURCES } from "@/lib/character/materializeCurrencyGrants";
+import {
+    formatCurrencyPreviewParts,
+    STARTING_EQUIPMENT_SOURCES,
+} from "@/lib/character/materializeCurrencyGrants";
 import { ExclusiveBranchChoice } from "@/components/characters/creation/items/ExclusiveBranchChoice";
 import { ItemChoiceGrid } from "@/components/characters/creation/items/ItemChoiceGrid";
 import { cn } from "@/lib/utils";
@@ -47,11 +50,10 @@ function formatSourceLabel(
 
 function formatCurrencyLine(
     currency: Record<string, number>,
-    label: string
+    label: string,
+    denoms: Array<{ ref: string; abbreviation: string }>
 ): string | null {
-    const parts = (["gold", "silver", "bronze"] as const)
-        .filter((ref) => (currency[ref] ?? 0) > 0)
-        .map((ref) => `${currency[ref]} ${ref}`);
+    const parts = formatCurrencyPreviewParts(currency, denoms);
 
     if (parts.length === 0) {
         return null;
@@ -68,6 +70,7 @@ export function StartingEquipmentField({
 }: StartingEquipmentFieldProps) {
     const t = useTranslations("startingEquipment");
     const tItems = useTranslations("items");
+    const denoms = contentRepo(system).listCurrencies();
     const watchedValues = form.watch();
 
     const formSnapshot = useMemo(
@@ -79,6 +82,9 @@ export function StartingEquipmentField({
             inventory: watchedValues.inventory,
             gold: watchedValues.gold,
             silver: watchedValues.silver,
+            copper: watchedValues.copper,
+            electrum: watchedValues.electrum,
+            platinum: watchedValues.platinum,
             bronze: watchedValues.bronze,
         }),
         [
@@ -89,6 +95,9 @@ export function StartingEquipmentField({
             watchedValues.inventory,
             watchedValues.gold,
             watchedValues.silver,
+            watchedValues.copper,
+            watchedValues.electrum,
+            watchedValues.platinum,
             watchedValues.bronze,
         ]
     );
@@ -193,15 +202,18 @@ export function StartingEquipmentField({
 
     const manualCurrencyLine = formatCurrencyLine(
         preview.manualCurrency,
-        t("currencyManual")
+        t("currencyManual"),
+        denoms
     );
     const grantedCurrencyLine = formatCurrencyLine(
         preview.grantedCurrency,
-        t("currencyGranted")
+        t("currencyGranted"),
+        denoms
     );
     const totalCurrencyLine = formatCurrencyLine(
         preview.totalCurrency,
-        t("currencyTotal")
+        t("currencyTotal"),
+        denoms
     );
 
     return (

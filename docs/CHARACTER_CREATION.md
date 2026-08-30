@@ -241,7 +241,7 @@ Perícias **não** usam UI rica de cards na v1; podem permanecer como lista edit
 
 ### 7.2 Revisão (`review`) — última etapa de create/edit
 
-- Moeda manual (`gold`, `silver`, `bronze`) se o preset expuser
+- Extras de moeda (`platinum`, `gold`, `electrum`, `silver`, `copper`) se o preset expuser. Somam-se aos grants **só na criação** (seed de `selections.currency`).
 - Prévia de combate (HP / CA / recursos de classe)
 - Save com nome padrão se nome vazio (comportamento atual)
 

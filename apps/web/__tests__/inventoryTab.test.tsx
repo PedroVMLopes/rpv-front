@@ -40,6 +40,7 @@ const storedCharacter: StoredCharacter = {
         characterClass: "fighter",
         choices: {},
         grantedCurrency: { gold: 400 },
+        currency: { gold: 452, silver: 12 },
         inventory: {
             bag: [
                 { slug: "srd_arrow-bow", quantity: 10 },
@@ -100,10 +101,38 @@ describe("InventoryTab", () => {
         expect(screen.getByText("Encumbrance")).toBeInTheDocument();
         expect(screen.getByText("2.5 / 210")).toBeInTheDocument();
         expect(screen.getByText("Currency")).toBeInTheDocument();
-        expect(screen.getByText("452 gold")).toBeInTheDocument();
-        expect(screen.getByText("12 silver")).toBeInTheDocument();
+        expect(screen.getByText("gp")).toBeInTheDocument();
+        expect(screen.getByText("sp")).toBeInTheDocument();
+        expect(
+            screen.getByLabelText("Gold (gp) amount")
+        ).toHaveValue(452);
+        expect(
+            screen.getByLabelText("Silver (sp) amount")
+        ).toHaveValue(12);
+        expect(
+            screen.getByLabelText("Copper (cp) amount")
+        ).toHaveValue(0);
         expect(screen.getByText("Misc items")).toBeInTheDocument();
         expect(screen.getByText("1")).toBeInTheDocument();
+    });
+
+    it("adjusts a denomination from the currency pouch", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(<InventoryTab stored={storedCharacter} />);
+
+        await user.click(
+            screen.getByRole("button", { name: "Increase Gold (gp)" })
+        );
+
+        expect(
+            screen.getByLabelText("Gold (gp) amount")
+        ).toHaveValue(453);
+        expect(
+            useCharacterStore
+                .getState()
+                .characters.find((entry) => entry.id === storedCharacter.id)
+                ?.selections.currency?.gold
+        ).toBe(453);
     });
 
     it("places Equipped between summary and Bag", () => {

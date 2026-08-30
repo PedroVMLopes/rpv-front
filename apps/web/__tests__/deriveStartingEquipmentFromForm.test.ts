@@ -122,9 +122,9 @@ describe("deriveStartingEquipmentFromForm", () => {
             "dnd"
         );
 
-        expect(preview.manualCurrency).toEqual({ gold: 8, silver: 0, bronze: 0 });
+        expect(preview.manualCurrency).toEqual({ gold: 8 });
         expect(preview.grantedCurrency).toEqual({ gold: 15 });
-        expect(preview.totalCurrency).toEqual({ gold: 23, silver: 0, bronze: 0 });
+        expect(preview.totalCurrency).toEqual({ gold: 23 });
         expect(getTotalCurrencyFromForm(
             {
                 ...baseFormData,
@@ -133,7 +133,7 @@ describe("deriveStartingEquipmentFromForm", () => {
             },
             "en",
             "dnd"
-        )).toEqual({ gold: 23, silver: 0, bronze: 0 });
+        )).toEqual({ gold: 23 });
     });
 
     it("shows exclusive group for fighter even before branch is selected", () => {

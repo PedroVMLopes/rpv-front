@@ -67,10 +67,11 @@ shape. After `normalizeStoredCharacter`, `selections.inventory` is always presen
 | `selections` | `CharacterSelections` | Authoritative slugs + inventory state |
 | `selections.inventory` | `CharacterInventory` | **Required** after normalize |
 | `selections.choices` | `{ grantPicks?: Record<string, string> }` | Grant pick answers |
-| `selections.grantedCurrency` | `Record<string, number>` | Currency from class/background grants (rebuilt each save) |
+| `selections.currency` | `Record<string, number>` | Playable pouch (`platinum`/`gold`/`electrum`/`silver`/`copper` for D&D). Seeded once from grants + form extras; sheet edits persist here. Rebuild preserves it. |
+| `selections.grantedCurrency` | `Record<string, number>` | Currency from class/background grants (rebuilt each save; wizard preview only) |
 | `resources` | `Record<string, number>` | **Current** remaining for HP, spell slots, rage, ki, hit dice, etc. Rebuild preserves current (except HP, which is synced to resolved max). Hit-dice max comes from `vitality`, not grants. |
 | `session` | `{ concentratingOn?, activeConditions?, tempHp?, deathSaves? }` | Optional table-session currents. Rebuild preserves like `resources`. Omitted when empty. `schemaVersion` stays **1**. |
-| `systemData` | `Record<string, unknown>` | Level, AC, manual `gold`/`silver`/`bronze`, free text |
+| `systemData` | `Record<string, unknown>` | Level, AC, free text. Do **not** store the pouch here. |
 
 ### Forbidden in `systemData`
 
@@ -81,6 +82,7 @@ Do **not** persist inventory in `systemData`. These legacy keys are stripped on
 - `items` (array)
 - `equippedItems`
 - `inventory` (numeric)
+- `gold`, `silver`, `bronze`, `copper`, `electrum`, `platinum` (legacy pouch fields; migrated into `selections.currency`)
 
 Use `selections.inventory` only.
 
@@ -417,5 +419,6 @@ Response: item modifiers removed; max HP back to **12**; `hp` clamped if needed.
 - Shared build package for server (`@rpv/build` or extract `inventory.ts` + `buildCharacter` from web)
 
 **Already implemented in web (pilot):** class/background `inventory_item` (fixed
-and `choose > 0`), `currency` grants, `grantedCurrency`, and create/edit UI via
+and `choose > 0`), `currency` grants, `grantedCurrency` (wizard preview),
+playable `selections.currency` pouch on the sheet, and create/edit UI via
 `StartingEquipmentField`.

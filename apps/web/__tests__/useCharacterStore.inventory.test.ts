@@ -322,3 +322,57 @@ describe("useCharacterStore inventory", () => {
         });
     });
 });
+
+describe("useCharacterStore currency", () => {
+    beforeEach(() => {
+        act(() => {
+            useCharacterStore.setState({ characters: [] });
+            useContentLocale.setState({ contentLocale: "en" });
+        });
+    });
+
+    it("clamps spend at zero", () => {
+        act(() => {
+            useCharacterStore.getState().addCharacter(
+                { ...baseFormData, background: "sage" },
+                "player",
+                "dnd"
+            );
+        });
+        const character = useCharacterStore.getState().characters[0];
+        expect(character.selections.currency).toEqual({ gold: 15 });
+
+        act(() => {
+            useCharacterStore.getState().adjustCurrency(character.id, "gold", -20);
+        });
+
+        expect(
+            useCharacterStore.getState().characters[0].selections.currency
+        ).toEqual({ gold: 0 });
+    });
+
+    it("keeps the wallet when equipping an item rebuilds the character", () => {
+        act(() => {
+            useCharacterStore.getState().addCharacter(
+                { ...baseFormData, background: "sage" },
+                "player",
+                "dnd"
+            );
+        });
+        const character = useCharacterStore.getState().characters[0];
+
+        act(() => {
+            useCharacterStore.getState().adjustCurrency(character.id, "gold", -3);
+            useCharacterStore
+                .getState()
+                .addToBag(character.id, "rpv_amulet-of-vitality");
+            useCharacterStore
+                .getState()
+                .equipItem(character.id, "amulet", "rpv_amulet-of-vitality");
+        });
+
+        const updated = useCharacterStore.getState().characters[0];
+        expect(updated.selections.currency).toEqual({ gold: 12 });
+        expect(updated.selections.grantedCurrency).toEqual({ gold: 15 });
+    });
+});

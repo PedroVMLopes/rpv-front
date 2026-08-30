@@ -285,6 +285,7 @@ describe("characterAdapter system-agnostic mapping", () => {
             background: undefined,
             inventory: emptyInventory(),
             choices: {},
+            currency: {},
             grantedCurrency: {},
         });
     });
@@ -310,6 +311,7 @@ describe("characterAdapter system-agnostic mapping", () => {
             background: undefined,
             inventory: emptyInventory(),
             choices: {},
+            currency: {},
             grantedCurrency: {},
         });
     });
@@ -429,11 +431,73 @@ describe("characterAdapter system-agnostic mapping", () => {
         });
 
         expect(normalized.selections.grantedCurrency).toEqual({ gold: 15 });
+        expect(normalized.selections.currency).toEqual({ gold: 15 });
         expect(
             normalized.selections.inventory?.bag.some(
                 (stack) => stack.slug === "rpv_scroll-of-fire-bolt"
             )
         ).toBe(true);
+    });
+
+    it("migrates legacy systemData coins into the wallet and maps bronze", () => {
+        const normalized = normalizeStoredCharacter({
+            id: "legacy-coins",
+            schemaVersion: 1,
+            type: "player",
+            system: "dnd",
+            language: "en",
+            name: "Hero",
+            baseStats: {},
+            modifiers: [],
+            grants: [],
+            resources: { hp: 5 },
+            systemData: { level: 1, gold: 5, bronze: 8 },
+            selections: {
+                race: undefined,
+                subrace: undefined,
+                characterClass: "fighter",
+                subclass: undefined,
+                background: "sage",
+                inventory: emptyInventory(),
+                choices: {},
+                grantedCurrency: { gold: 15 },
+            },
+        });
+
+        expect(normalized.selections.currency).toEqual({ gold: 20, copper: 8 });
+        expect(normalized.systemData.gold).toBeUndefined();
+        expect(normalized.systemData.bronze).toBeUndefined();
+        expect(normalized.systemData.level).toBe(1);
+    });
+
+    it("does not re-seed a persisted wallet on normalize", () => {
+        const normalized = normalizeStoredCharacter({
+            id: "kept-wallet",
+            schemaVersion: 1,
+            type: "player",
+            system: "dnd",
+            language: "en",
+            name: "Hero",
+            baseStats: {},
+            modifiers: [],
+            grants: [],
+            resources: { hp: 5 },
+            systemData: { level: 1, gold: 99 },
+            selections: {
+                race: undefined,
+                subrace: undefined,
+                characterClass: "fighter",
+                subclass: undefined,
+                background: "sage",
+                inventory: emptyInventory(),
+                choices: {},
+                currency: { gold: 3 },
+                grantedCurrency: { gold: 15 },
+            },
+        });
+
+        expect(normalized.selections.currency).toEqual({ gold: 3 });
+        expect(normalized.systemData.gold).toBeUndefined();
     });
 
     it("backfills schemaVersion and inventory on normalize", () => {

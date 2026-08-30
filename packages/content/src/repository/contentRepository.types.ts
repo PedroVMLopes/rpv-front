@@ -2,6 +2,7 @@ import type { Locale } from "@rpv/domain";
 import type { BackgroundEntry } from "../curation/backgroundGrants.dnd";
 import type { ClassEntry } from "../curation/classGrants.dnd";
 import type { EquipmentPackBundle } from "../curation/equipmentPacks.dnd";
+import type { CurrencyDenomination } from "../curation/currencies.dnd";
 import type { EquipmentSlot } from "../curation/equipmentSlots.dnd";
 import type { ItemEntry } from "../curation/itemGrants.dnd";
 import type { NaturalWeaponEntry } from "../curation/naturalWeapons.dnd";
@@ -43,6 +44,7 @@ export interface ContentRepository {
     getSubclass(slug: string, locale?: Locale): SubclassEntry | undefined;
 
     listEquipmentSlots(): EquipmentSlot[];
+    listCurrencies(): CurrencyDenomination[];
     getNaturalWeapons(locale?: Locale): NaturalWeaponEntry[];
     getSystemCombatGrants(): Grant[];
     getEquipmentPack(key: string): EquipmentPackBundle | undefined;

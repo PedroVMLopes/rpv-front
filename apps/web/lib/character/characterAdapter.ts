@@ -25,6 +25,12 @@ import { deriveResourceTotals } from "./deriveResourceTotals";
 import { isCharacterInventory, sanitizeInventory } from "./inventory";
 import { readLevelFromForm } from "./level";
 import { sanitizeStartingMaterialization } from "./sanitizeStartingMaterialization";
+import {
+    isCurrencyWalletRecord,
+    resolveCurrencyWallet,
+    sanitizeCurrency,
+    stripLegacyCurrencySystemData,
+} from "./materializeCurrencyGrants";
 import { resolveArmorClassWithEquipment } from "./ac";
 import type { StoredCharacter, CharacterSelections, CharacterChoices } from "./storedCharacter";
 import { STORED_CHARACTER_SCHEMA_VERSION } from "./storedCharacter";
@@ -110,7 +116,7 @@ function buildInventoryFromForm(
 function stripLegacyInventoryFormKeys(
     systemData: Record<string, unknown>
 ): Record<string, unknown> {
-    const next = { ...systemData };
+    const next = stripLegacyCurrencySystemData({ ...systemData });
     delete next.startingItem;
     delete next.items;
     delete next.equippedItems;
@@ -167,8 +173,25 @@ export function normalizeCharacterSelections(
             selections?.background ?? coerceCatalogSlug(systemData.background),
         inventory,
         choices: selections?.choices ?? {},
+        currency:
+            selections?.currency !== undefined
+                ? sanitizeCurrency(selections.currency)
+                : undefined,
         grantedCurrency: selections?.grantedCurrency,
     };
+}
+
+function readCurrencyFromForm(
+    formData: Record<string, unknown>,
+    existing?: CharacterSelections
+): Record<string, number> | undefined {
+    if (isCurrencyWalletRecord(formData.currency)) {
+        return sanitizeCurrency(formData.currency);
+    }
+    if (existing?.currency !== undefined) {
+        return sanitizeCurrency(existing.currency);
+    }
+    return undefined;
 }
 
 export function buildSelectionsFromForm(
@@ -183,6 +206,7 @@ export function buildSelectionsFromForm(
         background: coerceCatalogSlug(formData.background),
         inventory: buildInventoryFromForm(formData, existing),
         choices: coerceChoices(formData.choices, existing?.choices),
+        currency: readCurrencyFromForm(formData, existing),
     };
 }
 
@@ -372,8 +396,21 @@ export function normalizeStoredCharacter(char: unknown): StoredCharacter {
         stored.system,
         characterLevel
     );
+    const currency = resolveCurrencyWallet(
+        materializedSelections,
+        stored.systemData ?? {}
+    );
 
-    return finalizeStoredCharacter(stored, materializedSelections);
+    return finalizeStoredCharacter(
+        {
+            ...stored,
+            systemData: stored.systemData ?? {},
+        },
+        {
+            ...materializedSelections,
+            currency,
+        }
+    );
 }
 
 export { flattenStoredToForm };
