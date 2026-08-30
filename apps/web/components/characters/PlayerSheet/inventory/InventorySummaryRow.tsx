@@ -24,7 +24,7 @@ export function InventorySummaryRow({ stored }: InventorySummaryRowProps) {
     const t = useTranslations("playerSheet.inventory");
 
     const miscCount = countMiscItems(
-        stored.selections.inventory?.bag ?? [],
+        stored.selections.inventory ?? { bag: [], equipped: {}, equippedMulti: {} },
         stored.system
     );
     const carried = useMemo(

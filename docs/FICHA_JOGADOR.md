@@ -110,7 +110,7 @@ Recursos de classe reutilizam a lógica de [`DerivedResourcesDisplay`](../apps/w
 |-----|------|-------------------|-------------------------------------|
 | **Visão geral** | Gameplay — o que o personagem sabe e pode (fora da economia de ataque) | Retrato, atributos + testes, passivas, perícias (proficientes por padrão), fatos mecânicos (antecedente, tamanho, sentidos, dado de vida), proficiências (armas, armaduras, ferramentas, idiomas), características | [`OverviewTab`](../apps/web/components/characters/PlayerSheet/tabs/OverviewTab.tsx), [`AbilitiesSection`](../apps/web/components/characters/PlayerSheet/overview/AbilitiesSection.tsx), [`SkillsCard`](../apps/web/components/characters/PlayerSheet/overview/SkillsCard.tsx) |
 | **Combate** | Economia de ação | Ataques, ações/bônus/reações, magias, CD/ataque de magia, recursos de classe, defesa e resistências — agrupados por **tipo de ação**, não por origem (classe vs item) | [`CombatTab`](../apps/web/components/characters/PlayerSheet/tabs/CombatTab.tsx), [`CastingStatsPanel`](../apps/web/components/characters/PlayerSheet/combat/CastingStatsPanel.tsx), [`ClassResourcesPanel`](../apps/web/components/characters/PlayerSheet/combat/ClassResourcesPanel.tsx), [`DefenseSavesPanel`](../apps/web/components/characters/PlayerSheet/combat/DefenseSavesPanel.tsx) |
-| **Mochila** | Posse e equipamento | Equipamento ativo + posses + cosmético + moeda; ver [`docs/INVENTORY.md`](INVENTORY.md) | [`InventoryTab`](../apps/web/components/characters/PlayerSheet/tabs/InventoryTab.tsx) (ficha); [`CharacterCardInventory`](../apps/web/components/characters/CharacterCard/CharacterCardInventory.tsx) (carousel legado) |
+| **Mochila** | Posse e equipamento | Equipamento ativo + posses + cosmético + moeda; grid Bag lista posses e equipáveis guardados **sem** repetir itens já no painel Equipped — ver [`docs/INVENTORY.md`](INVENTORY.md) | [`InventoryTab`](../apps/web/components/characters/PlayerSheet/tabs/InventoryTab.tsx) (ficha); [`CharacterCardInventory`](../apps/web/components/characters/CharacterCard/CharacterCardInventory.tsx) (carousel legado) |
 | **Anotações** | Persona (roleplay) + recados de sessão | Presença, disposição, personalidade D&D; notas do personagem (`StoredCharacter.notes`, mais recente primeiro). Card com expandir → modal para ler, editar (cor chart + compositor da action bar) e excluir | [`NotesTab`](../apps/web/components/characters/PlayerSheet/tabs/NotesTab.tsx), [`PersonaSection`](../apps/web/components/characters/PlayerSheet/notes/PersonaSection.tsx), [`CharacterNotesList`](../apps/web/components/characters/PlayerSheet/notes/CharacterNotesList.tsx), [`NoteDetailModal`](../apps/web/components/characters/PlayerSheet/notes/NoteDetailModal.tsx) |
 
 #### Decisões de UX
@@ -273,7 +273,7 @@ stateDiagram-v2
 | Atributos, AC, HP | `getResolvedStats`, `stored.resources` | — |
 | Proficiências | `grants` com `kind: "proficiency"` | UI de agrupamento por tipo (arma, ferramenta, skill, save) |
 | Features e magias | `CharacterCardAbilities` / `stored.grants` | `activation` nas abilities de combate; spell attack/DC |
-| Armas equipadas | `selections.inventory.equipped` + `getItem` | Policy de slots (`canEquipItem`); botão Equipar só para itens equipáveis; separar posses de equipamento |
+| Armas equipadas | `selections.inventory.equipped` + `getItem` | Layout 3 painéis (Etapa 5); picker catálogo; consumíveis **Usar** |
 | Recursos de classe | `stored.resources` + `parseDerivedResources` | UI `+`/`-` na ficha |
 | Objetivos | `systemData.goals` | — |
 | Anotações | `StoredCharacter.notes` (`CharacterNote[]`, `color?`) | Share, pin, arquivo
@@ -316,7 +316,7 @@ Helpers relevantes:
 - Temp HP, death saves, dados de vida (tracker) — Feito
 - Condições temporárias no header (Bless, etc.) — extensão futura
 - **Level-up:** CTA na overview (`AbilitiesSection`) abre `/edit/{id}?mode=level-up&from={N}` — wizard delta (`resolveLevelUpSteps`) com progressão do nível N+1, subclass se desbloquear, e passo Confirmar (HP + recursos).
-- **Inventário (refactor):** posse vs equip vs usar; `ItemEquipPolicy`; aba com Posses / Equipamento / Cosmético; adicionar item do catálogo; consumíveis com **Usar** da bag — ver [`docs/INVENTORY.md`](INVENTORY.md).
+- **Inventário (refactor):** Etapas 1–4 feitas (`ItemEquipPolicy`, sanitize, UI Equip, display bag vs equipado). Próximo: layout Posses / Equipamento / Cosmético (Etapa 5), picker catálogo, consumíveis com **Usar** — ver [`docs/INVENTORY.md`](INVENTORY.md).
 
 ---
 

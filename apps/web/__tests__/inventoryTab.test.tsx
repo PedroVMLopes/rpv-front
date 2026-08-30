@@ -59,8 +59,19 @@ const storedCharacter: StoredCharacter = {
     },
 };
 
-function renderWithProviders(ui: ReactElement) {
-    useCharacterStore.setState({ characters: [storedCharacter] });
+function cloneStoredCharacter(
+    character: StoredCharacter = storedCharacter
+): StoredCharacter {
+    return JSON.parse(JSON.stringify(character)) as StoredCharacter;
+}
+
+function renderWithProviders(
+    ui: ReactElement,
+    character: StoredCharacter = storedCharacter
+) {
+    useCharacterStore.setState({
+        characters: [cloneStoredCharacter(character)],
+    });
 
     return render(
         <NextIntlClientProvider locale="en" messages={enMessages}>
@@ -228,31 +239,26 @@ describe("InventoryTab", () => {
         ).toHaveAttribute("aria-disabled", "true");
     });
 
-    it("lists bag and equipped items with equipped badge in Bag", () => {
+    it("lists bag possessions without duplicating equipped items", () => {
         renderWithProviders(<InventoryTab stored={storedCharacter} />);
 
         const bag = bagPanel();
         expect(within(bag).getByText("Arrow (bow) (10)")).toBeInTheDocument();
         expect(within(bag).getByText("Pilot Test Pack A")).toBeInTheDocument();
-        expect(within(bag).getByText("Longbow")).toBeInTheDocument();
+        expect(within(bag).getByText("Amulet of Vitality")).toBeInTheDocument();
+        expect(within(bag).queryByText("Longbow")).not.toBeInTheDocument();
         expect(
-            within(bag).getAllByRole("button", { name: "Equipped" }).length
-        ).toBeGreaterThan(0);
-
-        const longbowCard = cardForName("Longbow", bag);
-        expect(
-            within(longbowCard).queryByText(/^Equipped ·|· Equipped/)
+            within(bag).queryByRole("button", { name: "Equipped" })
         ).not.toBeInTheDocument();
     });
 
-    it("keeps equipped items visible in both Equipped panel and Bag", () => {
+    it("shows equipped items only in the Equipped panel", () => {
         const overlapping: StoredCharacter = {
             ...storedCharacter,
             id: "char-inventory-overlap",
             selections: {
                 ...storedCharacter.selections,
                 inventory: {
-                    // Store inventory is post-reconcile (no bag copies of equipped slugs).
                     bag: [],
                     equipped: {
                         "melee-main": "srd_longsword",
@@ -264,14 +270,14 @@ describe("InventoryTab", () => {
 
         renderWithProviders(<InventoryTab stored={overlapping} />);
 
-        // Equipped panel + bag grid each show the equipped row
-        expect(screen.getAllByText("Longsword")).toHaveLength(2);
-        expect(screen.getAllByText("Leather Armor")).toHaveLength(2);
+        expect(screen.getAllByText("Longsword")).toHaveLength(1);
+        expect(screen.getAllByText("Leather Armor")).toHaveLength(1);
 
         const wearable = screen.getByTestId("inventory-equipped-wearable");
         const usable = screen.getByTestId("inventory-equipped-usable");
         expect(within(wearable).getByText("Leather Armor")).toBeInTheDocument();
         expect(within(usable).getByText("Longsword")).toBeInTheDocument();
+        expect(within(bagPanel()).queryByText("Longsword")).not.toBeInTheDocument();
     });
 
     it("filters Bag items by category tab without hiding Equipped panel", async () => {
@@ -297,9 +303,9 @@ describe("InventoryTab", () => {
         await user.click(
             within(tablist).getByRole("tab", { name: "Misc / Other" })
         );
-        expect(within(bag).getByText("Longbow")).toBeInTheDocument();
         expect(within(bag).getByText("Pilot Test Pack A")).toBeInTheDocument();
         expect(within(bag).queryByText("Arrow (bow) (10)")).not.toBeInTheDocument();
+        expect(within(usable).getByText("Longbow")).toBeInTheDocument();
     });
 });
 
@@ -395,11 +401,8 @@ describe("InventoryTab equip actions", () => {
             within(wearable).getByText("Amulet of Vitality")
         ).toBeInTheDocument();
         expect(
-            within(cardForName("Amulet of Vitality", bagPanel())).getByRole(
-                "button",
-                { name: "Equipped" }
-            )
-        ).toBeInTheDocument();
+            within(bagPanel()).queryByText("Amulet of Vitality")
+        ).not.toBeInTheDocument();
     });
 
     it("unequips an equipped item from the card menu", async () => {

@@ -9,6 +9,7 @@ Referência de implementação hoje:
 
 - Estado: [`packages/domain/src/inventory/inventory.types.ts`](../packages/domain/src/inventory/inventory.types.ts)
 - Ops + sanitize: [`apps/web/lib/character/inventory.ts`](../apps/web/lib/character/inventory.ts)
+- Display (bag vs equipado): [`apps/web/lib/character/inventoryDisplay.ts`](../apps/web/lib/character/inventoryDisplay.ts)
 - Grants de item: [`apps/web/lib/character/characterGrants.ts`](../apps/web/lib/character/characterGrants.ts) (`equippedItemSlugs`)
 - Definições: [`packages/content/src/item/item.types.ts`](../packages/content/src/item/item.types.ts), overlays em [`itemOverlays.dnd.ts`](../packages/content/src/curation/itemOverlays.dnd.ts)
 - Slots D&D: [`equipmentSlots.dnd.ts`](../packages/content/src/curation/equipmentSlots.dnd.ts)
@@ -172,6 +173,36 @@ Até lá, o scroll piloto continua exigindo equip para o spell grant aparecer.
 
 ---
 
+## Display na ficha (Etapa 4 — implementado)
+
+Helpers policy-aware em [`inventoryDisplay.ts`](../apps/web/lib/character/inventoryDisplay.ts)
+separam **o que aparece no grid Bag** do **painel Equipped**:
+
+| Helper | Conteúdo |
+|--------|----------|
+| `listCarriedRows` | Stacks na bag com policy `carried` (posses passivas) |
+| `listStowedEquippableRows` | Stacks equipáveis na bag que não ocupam slot |
+| `listBagDisplayRows` | União carried + stowed — **grid Bag** (`InventoryTab`) |
+| `listEquippedRowsByGroup` | Slots preenchidos por grupo (`wearable`, `usable`, `cosmetic`) |
+| `listMechanicalEquippedRows` | Wearable + usable single (prepara layout Etapa 5) |
+| `listCosmeticEquippedRows` | Alias de `listEquippedRowsByGroup(..., "cosmetic")` |
+
+**Nomenclatura:** `listCarriedRows` (display) ≠ `listCarriedQuantities` (peso em
+[`inventoryWeight.ts`](../apps/web/lib/character/inventoryWeight.ts)) — o helper de
+peso inclui bag **e** equipado; o de display lista só policy `carried` na bag.
+
+Comportamento Etapa 4:
+
+- Grid **Bag** = posses + equipáveis guardados; **sem** duplicar linhas já no painel Equipped.
+- Dedup: se o slug está em `equipped` ou `equippedMulti`, o remainder não aparece na bag.
+- Legacy `equippedMulti.usable` omitido do grupo `usable` no display mecânico.
+- `listInventoryRows` deprecado — alias de `listBagDisplayRows`.
+- `countMiscItems` conta só posses (`listCarriedRows`) na categoria misc.
+
+Layout em três painéis titulados (Posses / Equipamento / Cosmético) fica para **Etapa 5**.
+
+---
+
 ## Estado atual vs alvo (implementação)
 
 | Aspecto | Hoje (piloto) | Alvo (roadmap) |
@@ -181,7 +212,7 @@ Até lá, o scroll piloto continua exigindo equip para o spell grant aparecer.
 | Roupas | Só slot `cosmetic` no menu | `cosmetic` |
 | Scroll | Equip + spell grant passivo | Usar da bag + consumir (futuro) |
 | Adicionar item manual | Stub na Player Sheet | Picker do catálogo → `addToBag` |
-| Layout da aba | Equipados + grid único | Equipamento ativo / Posses / Cosmético |
+| Layout da aba | Equipados + grid Bag (posses + stowed; equipado só no painel Equipped) | Equipamento ativo / Posses / Cosmético (3 painéis) |
 | Homebrew publicado | Fora de escopo | Mesmo `ItemEntry` via repositório |
 
 ---
@@ -195,7 +226,7 @@ Cada etapa fecha com testes antes da próxima.
 | **1** | `ItemEquipPolicy` + `canEquipItem` ✅ | `packages/content` — `itemEquipPolicy.dnd.ts` |
 | **2** | `sanitizeInventory` + `equipItem` respeitam policy ✅ | `apps/web/lib/character/inventory.ts` |
 | **3** | UI: esconder Equipar para `carried`; filtrar slots ✅ | `InventoryEquipMenu`, `InventoryItemContentCard` |
-| **4** | Display: `listCarriedRows` vs equipados vs cosmético | `inventoryDisplay.ts` |
+| **4** | Display: `listCarriedRows` vs equipados vs cosmético ✅ | `inventoryDisplay.ts`, `InventoryTab` |
 | **5** | Layout aba Inventário (Posses / Equipamento / Cosmético) | `InventoryTab`, painéis |
 | **6** | Adicionar item do catálogo | `InventoryToolbar` + modal picker |
 | **7** | Polish: swap de slot ocupado; consumíveis com **Usar** | grants + `activation`, qty |

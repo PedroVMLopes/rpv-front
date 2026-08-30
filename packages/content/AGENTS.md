@@ -313,6 +313,8 @@ Full spec: [`docs/INVENTORY.md`](../../docs/INVENTORY.md).
 | Carried gear | `srd_waterskin` | policy `carried`; bag only |
 | Cosmetic | `srd_clothes-travelers` | policy `cosmetic`; slot `cosmetic` multi |
 
+Player Sheet display helpers (Etapa 4): [`inventoryDisplay.ts`](../../apps/web/lib/character/inventoryDisplay.ts) — `listBagDisplayRows`, `listCarriedRows`, etc.
+
 ### Starting equipment grants (Etapa 1 — data contract)
 
 #### `ability_score` — fixed racial ASI

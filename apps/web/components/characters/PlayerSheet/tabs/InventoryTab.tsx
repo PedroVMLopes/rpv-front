@@ -7,7 +7,8 @@ import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { sanitizeInventory } from "@/lib/character/inventory";
 import {
     filterInventoryRows,
-    listInventoryRows,
+    listBagDisplayRows,
+    listEquippedRowsByGroup,
     type InventoryFilterId,
 } from "@/lib/character/inventoryDisplay";
 import { InventoryEquippedPanel } from "../inventory/InventoryEquippedPanel";
@@ -34,17 +35,27 @@ export function InventoryTab({ stored }: InventoryTabProps) {
         [stored.selections.inventory, stored.system]
     );
 
-    const allRows = useMemo(
-        () => listInventoryRows(inventory, stored.system),
+    const bagRows = useMemo(
+        () => listBagDisplayRows(inventory, stored.system),
         [inventory, stored.system]
     );
 
+    const equippedRowCount = useMemo(() => {
+        const groups = ["wearable", "usable", "cosmetic"] as const;
+        return groups.reduce(
+            (total, group) =>
+                total +
+                listEquippedRowsByGroup(inventory, stored.system, group).length,
+            0
+        );
+    }, [inventory, stored.system]);
+
     const filteredRows = useMemo(
-        () => filterInventoryRows(allRows, activeFilter, stored.system),
-        [allRows, activeFilter, stored.system]
+        () => filterInventoryRows(bagRows, activeFilter, stored.system),
+        [bagRows, activeFilter, stored.system]
     );
 
-    const hasAnyItems = allRows.length > 0;
+    const hasAnyItems = bagRows.length > 0 || equippedRowCount > 0;
 
     return (
         <div className="flex flex-col gap-4">

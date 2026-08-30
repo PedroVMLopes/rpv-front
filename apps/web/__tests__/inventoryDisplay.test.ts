@@ -4,8 +4,13 @@ import {
     countMiscItems,
     filterInventoryRows,
     formatInventoryItemTitle,
+    listBagDisplayRows,
+    listCarriedRows,
+    listCosmeticEquippedRows,
     listEquippedRowsByGroup,
     listInventoryRows,
+    listMechanicalEquippedRows,
+    listStowedEquippableRows,
     resolveItemFilterCategory,
 } from "../lib/character/inventoryDisplay";
 
@@ -28,46 +33,56 @@ function stubItem(
     };
 }
 
-describe("listInventoryRows", () => {
-    it("maps bag stacks and equipped slots", () => {
-        const rows = listInventoryRows(
-            {
-                bag: [
-                    { slug: "srd_arrow-bow", quantity: 5 },
-                    { slug: "rpv_pilot-test-pack-a", quantity: 1 },
-                ],
-                equipped: { "ranged-main": "srd_longbow" },
-                equippedMulti: {},
-            },
-            "dnd"
-        );
+const bagAndEquippedInventory = {
+    bag: [
+        { slug: "srd_arrow-bow", quantity: 5 },
+        { slug: "rpv_pilot-test-pack-a", quantity: 1 },
+        { slug: "rpv_amulet-of-vitality", quantity: 1 },
+    ],
+    equipped: { "ranged-main": "srd_longbow" },
+    equippedMulti: {},
+};
 
-        expect(rows).toHaveLength(3);
-        expect(rows[0]).toMatchObject({
-            slug: "srd_arrow-bow",
-            quantity: 5,
-            equipped: false,
-        });
-        expect(rows[1]).toMatchObject({
-            slug: "rpv_pilot-test-pack-a",
-            quantity: 1,
-            equipped: false,
-        });
-        expect(rows[2]).toMatchObject({
-            key: "equipped:ranged-main",
-            slug: "srd_longbow",
-            quantity: 1,
-            equipped: true,
-            slotId: "ranged-main",
-        });
+describe("listCarriedRows", () => {
+    it("lists only carried-policy bag stacks", () => {
+        const rows = listCarriedRows(bagAndEquippedInventory, "dnd");
+
+        expect(rows.map((row) => row.slug).sort()).toEqual(
+            ["rpv_pilot-test-pack-a", "srd_arrow-bow"].sort()
+        );
+        expect(rows.every((row) => row.displayKind === "carried")).toBe(true);
     });
 
-    it("returns empty list for empty inventory", () => {
-        expect(listInventoryRows(emptyInventory(), "dnd")).toEqual([]);
+    it("returns empty for empty inventory", () => {
+        expect(listCarriedRows(emptyInventory(), "dnd")).toEqual([]);
+    });
+});
+
+describe("listStowedEquippableRows", () => {
+    it("lists equippable bag stacks not occupying a slot", () => {
+        const rows = listStowedEquippableRows(bagAndEquippedInventory, "dnd");
+
+        expect(rows).toEqual([
+            expect.objectContaining({
+                slug: "rpv_amulet-of-vitality",
+                quantity: 1,
+                displayKind: "stowed",
+            }),
+        ]);
+    });
+});
+
+describe("listBagDisplayRows", () => {
+    it("merges carried and stowed without equipped rows", () => {
+        const rows = listBagDisplayRows(bagAndEquippedInventory, "dnd");
+
+        expect(rows).toHaveLength(3);
+        expect(rows.some((row) => row.slug === "srd_longbow")).toBe(false);
+        expect(rows.some((row) => row.equipped)).toBe(false);
     });
 
     it("omits bag remainder when the same slug is equipped", () => {
-        const rows = listInventoryRows(
+        const rows = listBagDisplayRows(
             {
                 bag: [
                     { slug: "srd_torch", quantity: 9 },
@@ -79,24 +94,23 @@ describe("listInventoryRows", () => {
             "dnd"
         );
 
-        expect(rows.filter((row) => row.slug === "srd_torch")).toEqual([
-            {
-                key: "equipped-multi:usable:0:srd_torch",
-                slug: "srd_torch",
-                quantity: 1,
-                equipped: true,
-                slotId: "usable",
-                multiEquipped: true,
-            },
-        ]);
+        expect(rows.filter((row) => row.slug === "srd_torch")).toEqual([]);
         expect(rows).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
                     slug: "srd_arrow-bow",
                     quantity: 20,
-                    equipped: false,
+                    displayKind: "carried",
                 }),
             ])
+        );
+    });
+});
+
+describe("listInventoryRows", () => {
+    it("is an alias of listBagDisplayRows", () => {
+        expect(listInventoryRows(bagAndEquippedInventory, "dnd")).toEqual(
+            listBagDisplayRows(bagAndEquippedInventory, "dnd")
         );
     });
 });
@@ -124,6 +138,7 @@ describe("listEquippedRowsByGroup", () => {
                 quantity: 1,
                 equipped: true,
                 slotId: "breast",
+                displayKind: "equipped",
             },
             {
                 key: "equipped:amulet",
@@ -131,11 +146,12 @@ describe("listEquippedRowsByGroup", () => {
                 quantity: 1,
                 equipped: true,
                 slotId: "amulet",
+                displayKind: "equipped",
             },
         ]);
     });
 
-    it("returns filled usable slots in slot-list order", () => {
+    it("returns hand slots only in usable group (skips legacy multi usable)", () => {
         expect(listEquippedRowsByGroup(inventory, "dnd", "usable")).toEqual([
             {
                 key: "equipped:ranged-main",
@@ -143,14 +159,7 @@ describe("listEquippedRowsByGroup", () => {
                 quantity: 1,
                 equipped: true,
                 slotId: "ranged-main",
-            },
-            {
-                key: "equipped-multi:usable:0:rpv_scroll-of-fire-bolt",
-                slug: "rpv_scroll-of-fire-bolt",
-                quantity: 1,
-                equipped: true,
-                slotId: "usable",
-                multiEquipped: true,
+                displayKind: "equipped",
             },
         ]);
     });
@@ -164,6 +173,7 @@ describe("listEquippedRowsByGroup", () => {
                 equipped: true,
                 slotId: "cosmetic",
                 multiEquipped: true,
+                displayKind: "cosmetic",
             },
         ]);
     });
@@ -175,23 +185,54 @@ describe("listEquippedRowsByGroup", () => {
     });
 });
 
+describe("listMechanicalEquippedRows", () => {
+    it("combines wearable and usable hand slots without legacy multi usable", () => {
+        const rows = listMechanicalEquippedRows(
+            {
+                bag: [],
+                equipped: {
+                    breast: "srd_leather-armor",
+                    "ranged-main": "srd_longbow",
+                },
+                equippedMulti: { usable: ["rpv_scroll-of-fire-bolt"] },
+            },
+            "dnd"
+        );
+
+        expect(rows.map((row) => row.slug)).toEqual([
+            "srd_leather-armor",
+            "srd_longbow",
+        ]);
+    });
+});
+
+describe("listCosmeticEquippedRows", () => {
+    it("delegates to the cosmetic equipped group", () => {
+        const inventory = {
+            bag: [],
+            equipped: {},
+            equippedMulti: { cosmetic: ["srd_clothes-travelers"] },
+        };
+
+        expect(listCosmeticEquippedRows(inventory, "dnd")).toEqual(
+            listEquippedRowsByGroup(inventory, "dnd", "cosmetic")
+        );
+    });
+});
+
 describe("countMiscItems", () => {
-    it("sums bag quantities for equipment packs and adventuring gear", () => {
-        expect(
-            countMiscItems(
-                [
-                    { slug: "srd_arrow-bow", quantity: 5 },
-                    { slug: "rpv_pilot-test-pack-a", quantity: 2 },
-                ],
-                "dnd"
-            )
-        ).toBe(2);
+    it("sums carried possession rows in the misc filter category", () => {
+        expect(countMiscItems(bagAndEquippedInventory, "dnd")).toBe(1);
     });
 
     it("counts unknown slugs as zero", () => {
         expect(
             countMiscItems(
-                [{ slug: "pilot-test-misc-gem", quantity: 3 }],
+                {
+                    bag: [{ slug: "pilot-test-misc-gem", quantity: 3 }],
+                    equipped: {},
+                    equippedMulti: {},
+                },
                 "dnd"
             )
         ).toBe(0);
@@ -235,17 +276,7 @@ describe("resolveItemFilterCategory", () => {
 });
 
 describe("filterInventoryRows", () => {
-    const rows = listInventoryRows(
-        {
-            bag: [
-                { slug: "srd_arrow-bow", quantity: 10 },
-                { slug: "rpv_pilot-test-pack-a", quantity: 1 },
-            ],
-            equipped: { "ranged-main": "srd_longbow" },
-            equippedMulti: {},
-        },
-        "dnd"
-    );
+    const rows = listBagDisplayRows(bagAndEquippedInventory, "dnd");
 
     it("returns all rows for all filter", () => {
         expect(filterInventoryRows(rows, "all", "dnd")).toHaveLength(3);
@@ -257,10 +288,10 @@ describe("filterInventoryRows", () => {
         expect(filtered[0]?.slug).toBe("srd_arrow-bow");
     });
 
-    it("filters misc for packs, weapons, and unknown slugs", () => {
+    it("filters misc for bag rows without equipped weapons", () => {
         const filtered = filterInventoryRows(rows, "misc", "dnd");
         expect(filtered.map((row) => row.slug).sort()).toEqual(
-            ["rpv_pilot-test-pack-a", "srd_longbow"].sort()
+            ["rpv_amulet-of-vitality", "rpv_pilot-test-pack-a"].sort()
         );
     });
 
