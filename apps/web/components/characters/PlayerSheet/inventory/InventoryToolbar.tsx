@@ -17,7 +17,6 @@ const ACTIVE_FILTERS: InventoryFilterId[] = [
     "all",
     "consumables",
     "tools",
-    "quest",
     "misc",
 ];
 
@@ -25,8 +24,8 @@ const FILTER_I18N_KEYS: Record<InventoryFilterId, string> = {
     all: "filters.all",
     consumables: "filters.consumables",
     tools: "filters.tools",
-    quest: "filters.quest",
     misc: "filters.misc",
+    quest: "filters.quest",
 };
 
 export function InventoryToolbar({

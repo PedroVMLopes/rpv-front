@@ -186,6 +186,36 @@ describe("buildStoredCharacter", () => {
         ).toBe(false);
     });
 
+    it("creates new character with starting loot in bag, empty equipped, and no item grants", () => {
+        const character = buildNewStoredCharacter(
+            {
+                ...baseFormData,
+                background: "sage",
+                choices: {
+                    grantPicks: {
+                        ...fighterStartingWealthPick,
+                        "class:fighter:base:inventory_item:8:0": "0",
+                    },
+                },
+            },
+            "player",
+            "dnd",
+            "en"
+        );
+
+        expect(character.selections.inventory?.equipped).toEqual({});
+        expect(character.selections.inventory?.bag).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ slug: "srd_longsword" }),
+                expect.objectContaining({ slug: "srd_crossbow-light" }),
+                expect.objectContaining({ slug: "rpv_scroll-of-fire-bolt" }),
+            ])
+        );
+        expect(
+            character.grants.filter((grant) => grant.source.type === "item")
+        ).toHaveLength(0);
+    });
+
     it("preserves manual bag stacks alongside re-materialized background loot", () => {
         const created = buildNewStoredCharacter(
             {

@@ -215,6 +215,44 @@ Regras:
 
 ---
 
+## Pré-Etapa 6 — auditoria (concluída)
+
+Limpeza antes do picker de catálogo (Etapa 6):
+
+| Item | Ação |
+|------|------|
+| `listInventoryRows` | Removido (alias deprecated de `listBagDisplayRows`) |
+| `listBagDisplayRows` | Mantido — conveniência para testes e callers futuros (Etapa 6 add-to-bag) |
+| i18n `itemsTitle` / `equippedTitle` | Removidos — UI usa `equipmentTitle`, `possessionsTitle`, `cosmeticTitle` |
+| Tab **Quest items** | Removida da toolbar — `resolveItemFilterCategory` nunca retorna `"quest"`; reintroduzir com categoria de catálogo |
+
+### Criação de personagem
+
+Loot inicial (classe, background, starting equipment) materializa **somente na bag**
+(`provenance` em stacks concedidos). `equipped` fica vazio; **grants de item** só
+após equipar na ficha. O wizard usa `useGrantPickSanitizer` para rematerializar bag
+e moeda quando picks de starting equipment mudam.
+
+### Camadas de teste (inventário / criação)
+
+| Camada | Arquivo(s) | Foco |
+|--------|------------|------|
+| Domain | `packages/domain` — `emptyInventory` | Primitivos de estado |
+| Content | `packages/content` — `inventoryGrants` | Materialização de grants |
+| Mutations | `inventory.test.ts` | equip, sanitize, bag ops |
+| Display | `inventoryDisplay.test.ts` | row helpers, filtros em Posses |
+| Build | `buildCharacter.test.ts`, `materializeInventoryGrants.test.ts` | pipeline create → stored |
+| Sanitize | `sanitizeStartingMaterialization.test.ts`, `useGrantPickSanitizer.test.ts` | branch equipment ↔ gold |
+| UI ficha | `inventoryTab.test.tsx` | três painéis, equip actions |
+| UI legado | `characterCardInventory.test.tsx` | carousel (fora do refactor Etapa 5) |
+
+Overlap entre camadas é intencional; duplicatas idênticas foram podadas (provenance
+dedup mantido em `buildCharacter.test.ts`).
+
+**Próximo passo:** Etapa 6 — picker de catálogo + Add item funcional.
+
+---
+
 ## Estado atual vs alvo (implementação)
 
 | Aspecto | Hoje (piloto) | Alvo (roadmap) |

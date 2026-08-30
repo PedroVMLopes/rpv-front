@@ -10,7 +10,6 @@ import {
     listCosmeticPanelRows,
     listEquippedRowsByGroup,
     listEquipmentColumnRows,
-    listInventoryRows,
     listMechanicalEquippedRows,
     listStowedCosmeticRows,
     listStowedEquippableRows,
@@ -108,14 +107,6 @@ describe("listBagDisplayRows", () => {
                     displayKind: "carried",
                 }),
             ])
-        );
-    });
-});
-
-describe("listInventoryRows", () => {
-    it("is an alias of listBagDisplayRows", () => {
-        expect(listInventoryRows(bagAndEquippedInventory, "dnd")).toEqual(
-            listBagDisplayRows(bagAndEquippedInventory, "dnd")
         );
     });
 });
@@ -368,10 +359,10 @@ describe("resolveItemFilterCategory", () => {
 });
 
 describe("filterInventoryRows", () => {
-    const rows = listBagDisplayRows(bagAndEquippedInventory, "dnd");
+    const rows = listCarriedRows(bagAndEquippedInventory, "dnd");
 
     it("returns all rows for all filter", () => {
-        expect(filterInventoryRows(rows, "all", "dnd")).toHaveLength(3);
+        expect(filterInventoryRows(rows, "all", "dnd")).toHaveLength(2);
     });
 
     it("filters consumables only", () => {
@@ -380,11 +371,9 @@ describe("filterInventoryRows", () => {
         expect(filtered[0]?.slug).toBe("srd_arrow-bow");
     });
 
-    it("filters misc for bag rows without equipped weapons", () => {
+    it("filters misc for carried possessions only", () => {
         const filtered = filterInventoryRows(rows, "misc", "dnd");
-        expect(filtered.map((row) => row.slug).sort()).toEqual(
-            ["rpv_amulet-of-vitality", "rpv_pilot-test-pack-a"].sort()
-        );
+        expect(filtered.map((row) => row.slug)).toEqual(["rpv_pilot-test-pack-a"]);
     });
 
     it("returns empty when no rows match", () => {

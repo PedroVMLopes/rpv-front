@@ -121,7 +121,7 @@ export function listStowedEquippableRows(
     );
 }
 
-/** Bag grid rows: possessions + stowed equippable (no equipped duplicates). */
+/** Bag grid rows: possessions + stowed equippable (convenience for tests / future callers). */
 export function listBagDisplayRows(
     inventory: CharacterInventory,
     system: SystemKey
@@ -130,17 +130,6 @@ export function listBagDisplayRows(
         ...listCarriedRows(inventory, system),
         ...listStowedEquippableRows(inventory, system),
     ];
-}
-
-/**
- * @deprecated Use {@link listBagDisplayRows} for the bag grid. Equipped rows
- * belong in {@link listEquippedRowsByGroup} / {@link listMechanicalEquippedRows}.
- */
-export function listInventoryRows(
-    inventory: CharacterInventory,
-    system: SystemKey
-): InventoryDisplayRow[] {
-    return listBagDisplayRows(inventory, system);
 }
 
 /** Filled equipped slots only, ordered by the system's slot list for the group. */

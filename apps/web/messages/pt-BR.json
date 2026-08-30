@@ -682,11 +682,9 @@
         "increaseCurrency": "Aumentar {name}",
         "currencyAmount": "Quantidade de {name}"
       },
-      "itemsTitle": "Mochila",
       "equipmentTitle": "Equipamento",
       "possessionsTitle": "Posses",
       "cosmeticTitle": "Cosmético",
-      "equippedTitle": "Equipados",
       "equippedWearableHeading": "Equipamento",
       "equippedUsableHeading": "Utilizáveis",
       "equippedCosmeticHeading": "Cosméticos",

@@ -268,7 +268,7 @@ describe("InventoryTab", () => {
         ).not.toBeInTheDocument();
     });
 
-    it("shows equipped items only in the Equipped panel", () => {
+    it("shows equipped items only in the Equipment panel", () => {
         const overlapping: StoredCharacter = {
             ...storedCharacter,
             id: "char-inventory-overlap",
@@ -340,7 +340,7 @@ describe("InventoryTab equip actions", () => {
         return <InventoryTab stored={stored} />;
     }
 
-    it("does not duplicate stackable carried items in Bag after policy sanitize", () => {
+    it("does not duplicate stackable carried items in Possessions after policy sanitize", () => {
         const partial: StoredCharacter = {
             ...storedCharacter,
             id: "char-torch-partial",
