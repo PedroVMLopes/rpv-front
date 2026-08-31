@@ -55,6 +55,35 @@ describe("sanitizeCharacterSession", () => {
         ).toBeUndefined();
     });
 
+    it("clamps death-save pips to 0..3 and drops out-of-range slot levels", () => {
+        expect(
+            sanitizeCharacterSession({
+                concentratingOn: { slug: "bless", slotLevel: 10 },
+                deathSaves: { successes: 9, failures: -1 },
+            })
+        ).toEqual({
+            concentratingOn: { slug: "bless" },
+            deathSaves: { successes: 3, failures: 0 },
+        });
+        expect(
+            sanitizeCharacterSession({
+                concentratingOn: { slug: "bless", slotLevel: 0 },
+            })
+        ).toEqual({
+            concentratingOn: { slug: "bless" },
+        });
+    });
+
+    it("drops non-string condition entries", () => {
+        expect(
+            sanitizeCharacterSession({
+                activeConditions: ["poisoned", 1, null, "  "] as unknown as string[],
+            })
+        ).toEqual({
+            activeConditions: ["poisoned"],
+        });
+    });
+
     it("keeps meta points and clamps inspiration to 0..1", () => {
         expect(
             sanitizeCharacterSession({

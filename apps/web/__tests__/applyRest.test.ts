@@ -123,4 +123,55 @@ describe("applyRest", () => {
             "action-surge-uses": 0,
         });
     });
+
+    it("does not restore HP without maxHp or hit dice when max is 0", () => {
+        const resources = {
+            hp: 4,
+            "hit-dice": 1,
+            "pact-slots": 0,
+        };
+
+        expect(applyRest(resources, grants, "long_rest")).toEqual({
+            hp: 4,
+            "hit-dice": 1,
+            "pact-slots": 2,
+            "rage-uses": 2,
+            "spell-slots-1": 4,
+        });
+        expect(
+            applyRest(resources, grants, "long_rest", {
+                hitDice: {
+                    ref: "hit-dice",
+                    max: 0,
+                    recover: () => 99,
+                },
+            })
+        ).toEqual({
+            hp: 4,
+            "hit-dice": 1,
+            "pact-slots": 2,
+            "rage-uses": 2,
+            "spell-slots-1": 4,
+        });
+    });
+
+    it("recovers hit dice from 0 when the current ref is missing", () => {
+        expect(
+            applyRest({ hp: 4 }, grants, "long_rest", {
+                maxHp: 12,
+                hitDice: {
+                    ref: "hit-dice",
+                    max: 4,
+                    recover: (current, max) =>
+                        Math.min(max, current + Math.max(1, Math.floor(max / 2))),
+                },
+            })
+        ).toEqual({
+            hp: 12,
+            "pact-slots": 2,
+            "rage-uses": 2,
+            "spell-slots-1": 4,
+            "hit-dice": 2,
+        });
+    });
 });
