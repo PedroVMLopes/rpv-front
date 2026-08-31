@@ -4,7 +4,10 @@ import {
     removeGrantsBySource,
     getLanguages,
     getAbilities,
+    getProficiencies,
     getResources,
+    getSavingThrows,
+    getSpells,
     aggregateResourceGrants,
 } from "../src";
 
@@ -70,6 +73,35 @@ describe("grant selectors", () => {
         expect(getAbilities(grants)).toHaveLength(1);
         expect(getAbilities(grants)[0].ref).toBe("fey-ancestry");
     });
+
+    it("getSpells returns only spell grants", () => {
+        expect(getSpells(grants)).toHaveLength(1);
+        expect(getSpells(grants)[0].ref).toBe("fire-bolt");
+    });
+});
+
+describe("proficiency and saving throw selectors", () => {
+    const grants: CharacterGrant[] = [
+        createGrant({ id: "prof-1", kind: "proficiency", ref: "athletics" }),
+        createGrant({
+            id: "save-1",
+            kind: "saving_throw",
+            ref: "strength",
+        }),
+        createGrant({ id: "spell-1", kind: "spell", ref: "fire-bolt" }),
+    ];
+
+    it("getProficiencies returns only proficiency grants", () => {
+        expect(getProficiencies(grants)).toEqual([
+            expect.objectContaining({ id: "prof-1", ref: "athletics" }),
+        ]);
+    });
+
+    it("getSavingThrows returns only saving_throw grants", () => {
+        expect(getSavingThrows(grants)).toEqual([
+            expect.objectContaining({ id: "save-1", ref: "strength" }),
+        ]);
+    });
 });
 
 describe("resource grants", () => {
@@ -117,6 +149,12 @@ describe("Character grants", () => {
         modifiers: [],
         grants: [
             createGrant({ id: "lang-1", kind: "language", ref: "elvish" }),
+            createGrant({ id: "spell-1", kind: "spell", ref: "fire-bolt" }),
+            createGrant({
+                id: "prof-1",
+                kind: "proficiency",
+                ref: "perception",
+            }),
         ],
     };
 
@@ -124,7 +162,7 @@ describe("Character grants", () => {
         const character = Character.create(defaultProps);
         const grants = character.getGrants();
         grants.push(createGrant({ id: "x", kind: "language", ref: "common" }));
-        expect(character.getGrants()).toHaveLength(1);
+        expect(character.getGrants()).toHaveLength(3);
     });
 
     it("getLanguages delegates to selector", () => {
@@ -133,25 +171,36 @@ describe("Character grants", () => {
         expect(character.getLanguages()[0].ref).toBe("elvish");
     });
 
+    it("getSpells and getProficiencies delegate to selectors", () => {
+        const character = Character.create(defaultProps);
+        expect(character.getSpells().map((grant) => grant.ref)).toEqual([
+            "fire-bolt",
+        ]);
+        expect(character.getProficiencies().map((grant) => grant.ref)).toEqual([
+            "perception",
+        ]);
+    });
+
     it("addGrant returns a new instance with the grant", () => {
         const character = Character.create(defaultProps);
         const newGrant = createGrant({ id: "lang-2", kind: "language", ref: "common" });
         const updated = character.addGrant(newGrant);
 
-        expect(character.getGrants()).toHaveLength(1);
-        expect(updated.getGrants()).toHaveLength(2);
+        expect(character.getGrants()).toHaveLength(3);
+        expect(updated.getGrants()).toHaveLength(4);
     });
 
     it("removeGrant returns a new instance without the grant", () => {
         const character = Character.create(defaultProps);
         const updated = character.removeGrant("lang-1");
 
-        expect(character.getGrants()).toHaveLength(1);
-        expect(updated.getGrants()).toHaveLength(0);
+        expect(character.getGrants()).toHaveLength(3);
+        expect(updated.getGrants()).toHaveLength(2);
+        expect(updated.getLanguages()).toEqual([]);
     });
 
     it("toProps includes grants", () => {
         const character = Character.create(defaultProps);
-        expect(character.toProps().grants).toHaveLength(1);
+        expect(character.toProps().grants).toHaveLength(3);
     });
 });

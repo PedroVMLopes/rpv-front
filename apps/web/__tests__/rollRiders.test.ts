@@ -5,6 +5,8 @@ import {
     defaultAdvantageMode,
     extraDiceSidesFor,
     pickD20,
+    resolvePickMode,
+    spendsInspiration,
 } from "../lib/roll/rollRiders";
 
 const blessed: ConditionRollEffect = {
@@ -97,5 +99,28 @@ describe("rollRiders", () => {
         expect(pickD20([8, 17], "inspiration")).toBe(17);
         expect(pickD20([8, 17], "disadvantage")).toBe(8);
         expect(pickD20([8, 17], "normal")).toBe(8);
+        expect(pickD20([], "advantage")).toBe(0);
+    });
+
+    it("treats inspiration as advantage for picking and as a spend", () => {
+        expect(resolvePickMode("inspiration")).toBe("advantage");
+        expect(resolvePickMode("disadvantage")).toBe("disadvantage");
+        expect(spendsInspiration("inspiration")).toBe(true);
+        expect(spendsInspiration("advantage")).toBe(false);
+        expect(spendsInspiration("normal")).toBe(false);
+    });
+
+    it("ignores extra dice with missing or non-positive sides", () => {
+        expect(
+            extraDiceSidesFor(
+                [
+                    blessed,
+                    { kind: "extra_die", appliesTo: ["attack"] },
+                    { kind: "extra_die", sides: 0, appliesTo: ["attack"] },
+                ],
+                "attack"
+            )
+        ).toEqual([4]);
+        expect(extraDiceSidesFor([blessed], undefined)).toEqual([]);
     });
 });
