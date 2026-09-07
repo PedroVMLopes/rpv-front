@@ -1,6 +1,9 @@
 import { readFileSync, readdirSync } from "fs";
 import { join } from "path";
-import type { Open5eV2Item } from "../src/open5e/open5e.types";
+import type {
+    Open5eV2Item,
+    Open5eV2Weapon,
+} from "../src/open5e/open5e.types";
 import { mapOpen5eItem } from "../src/item/item.mapper";
 
 const FIXTURES = join(__dirname, "fixtures", "items");
@@ -84,5 +87,109 @@ describe("mapOpen5eItem", () => {
         const dagger = byKey.srd_dagger;
         expect(dagger.weapon?.range).toBe(20);
         expect(dagger.weapon?.longRange).toBe(60);
+    });
+});
+
+function mapWeaponItem(weapon: Partial<Open5eV2Weapon> = {}): ReturnType<
+    typeof mapOpen5eItem
+> {
+    const raw: Open5eV2Item = {
+        key: "test_weapon",
+        name: "Test Weapon",
+        desc: "",
+        category: { name: "Weapon", key: "weapon" },
+        weapon: {
+            name: "Test Weapon",
+            key: "test_weapon",
+            damage_type: { name: "Piercing", key: "piercing" },
+            damage_dice: "1d6",
+            properties: [],
+            is_simple: true,
+            is_martial: false,
+            is_improvised: false,
+            ...weapon,
+        },
+        armor: null,
+        weight: null,
+        weight_unit: null,
+        cost: null,
+        document: { name: "SRD", key: "srd" },
+    };
+
+    return mapOpen5eItem(raw);
+}
+
+describe("mapOpen5eItem range fallbacks", () => {
+    it("prefers Open5e range fields over ammunition detail", () => {
+        const mapped = mapWeaponItem({
+            range: 30,
+            long_range: 120,
+            properties: [
+                {
+                    property: {
+                        name: "Ammunition",
+                        type: null,
+                        desc: "",
+                    },
+                    detail: "range 150/600",
+                },
+            ],
+        });
+
+        expect(mapped.weapon?.range).toBe(30);
+        expect(mapped.weapon?.longRange).toBe(120);
+    });
+
+    it("parses a single-number ammunition detail as range only", () => {
+        const mapped = mapWeaponItem({
+            properties: [
+                {
+                    property: {
+                        name: "Ammunition",
+                        type: null,
+                        desc: "",
+                    },
+                    detail: "range 80",
+                },
+            ],
+        });
+
+        expect(mapped.weapon?.range).toBe(80);
+        expect(mapped.weapon?.longRange).toBeNull();
+    });
+
+    it("skips blank ammunition detail and ignores non-range properties", () => {
+        const mapped = mapWeaponItem({
+            properties: [
+                {
+                    property: {
+                        name: "Ammunition",
+                        type: null,
+                        desc: "",
+                    },
+                    detail: null,
+                },
+                {
+                    property: {
+                        name: "Versatile",
+                        type: null,
+                        desc: "",
+                    },
+                    detail: "1d10",
+                },
+                {
+                    property: {
+                        name: "Thrown",
+                        type: null,
+                        desc: "",
+                    },
+                    detail: "20/60",
+                },
+            ],
+        });
+
+        expect(mapped.weapon?.range).toBe(20);
+        expect(mapped.weapon?.longRange).toBe(60);
+        expect(mapped.stackable).toBe(false);
     });
 });

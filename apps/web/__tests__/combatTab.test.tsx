@@ -594,6 +594,49 @@ describe("CombatTab", () => {
             ]
         ).toBeUndefined();
     });
+
+    it("spends one class resource use when the store key is missing", async () => {
+        const user = userEvent.setup();
+        const missingKey: StoredCharacter = {
+            ...storedCharacter,
+            id: "char-combat-rage-missing",
+            grants: [
+                ...storedCharacter.grants,
+                {
+                    id: "class-barbarian-resource-rage-uses",
+                    kind: "resource",
+                    ref: "rage-uses",
+                    amount: 2,
+                    source: { type: "class", id: "barbarian" },
+                },
+            ],
+            resources: { hp: 18, "spell-slots-1": 2 },
+        };
+
+        useCharacterStore.setState({
+            characters: [{ ...missingKey, resources: { ...missingKey.resources } }],
+        });
+
+        render(
+            <NextIntlClientProvider locale="en" messages={enMessages}>
+                <RollAssistantProvider>
+                    <CombatTabConnected characterId={missingKey.id} />
+                </RollAssistantProvider>
+            </NextIntlClientProvider>
+        );
+
+        expect(screen.getByText("2 / 2")).toBeInTheDocument();
+        expect(
+            useCharacterStore.getState().characters[0]?.resources["rage-uses"]
+        ).toBeUndefined();
+
+        await user.click(screen.getByRole("button", { name: "Rage Uses −" }));
+
+        expect(
+            useCharacterStore.getState().characters[0]?.resources["rage-uses"]
+        ).toBe(1);
+        expect(screen.getByText("1 / 2")).toBeInTheDocument();
+    });
 });
 
 describe("PlayerSheet combat tab", () => {

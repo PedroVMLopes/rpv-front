@@ -101,4 +101,57 @@ describe("aggregateResourcePreviewContexts", () => {
             amount: 10,
         });
     });
+
+    it("trims refs, rewrites choose to 0, drops zero-sum pools, and sorts slots first", () => {
+        const aggregated = aggregateResourcePreviewContexts([
+            {
+                grant: {
+                    grantType: "resource",
+                    choose: 1,
+                    ref: "  ki-points  ",
+                    amount: 2,
+                },
+                source: { type: "class", id: "monk" },
+                featureLevel: 2,
+            },
+            {
+                grant: {
+                    grantType: "resource",
+                    choose: 0,
+                    ref: "spell-slots-2",
+                    amount: 1,
+                },
+                source: { type: "class", id: "wizard" },
+            },
+            {
+                grant: {
+                    grantType: "resource",
+                    choose: 0,
+                    ref: "ki-points",
+                    amount: -2,
+                },
+                source: { type: "class", id: "monk" },
+            },
+            {
+                grant: {
+                    grantType: "resource",
+                    choose: 0,
+                    ref: "spell-slots-1",
+                    amount: 4,
+                },
+                source: { type: "class", id: "wizard" },
+            },
+        ]);
+
+        expect(
+            aggregated.map((ctx) => ({
+                ref: ctx.grant.ref,
+                amount: ctx.grant.amount,
+                choose: ctx.grant.choose,
+            }))
+        ).toEqual([
+            { ref: "spell-slots-1", amount: 4, choose: 0 },
+            { ref: "spell-slots-2", amount: 1, choose: 0 },
+        ]);
+    });
 });

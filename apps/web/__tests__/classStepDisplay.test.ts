@@ -128,6 +128,22 @@ describe("formatClassStepGrantLabel", () => {
         ).toBe("Rage: 2");
         expect(
             formatClassStepGrantLabel(
+                grant({ kind: "resource", ref: "rage-uses" }),
+                "en",
+                translateAbility,
+                translateResource
+            )
+        ).toBe("Rage");
+        expect(
+            formatClassStepGrantLabel(
+                grant({ kind: "resource", ref: "spell-slots-1" }),
+                "en",
+                translateAbility,
+                translateResource
+            )
+        ).toBe("L1 spell slots");
+        expect(
+            formatClassStepGrantLabel(
                 grant({ kind: "proficiency", ref: "martial-weapons" }),
                 "en",
                 translateAbility,

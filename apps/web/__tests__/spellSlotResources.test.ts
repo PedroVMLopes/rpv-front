@@ -39,6 +39,12 @@ describe("parseSpellSlotLevel", () => {
         expect(parseSpellSlotLevel("spell-slots-3")).toBe(3);
         expect(parseSpellSlotLevel("rage-uses")).toBeUndefined();
     });
+
+    it("rejects a non-numeric suffix and keeps parseInt prefix behavior", () => {
+        expect(parseSpellSlotLevel("spell-slots-")).toBeUndefined();
+        expect(parseSpellSlotLevel("spell-slots-x")).toBeUndefined();
+        expect(parseSpellSlotLevel("spell-slots-2-extra")).toBe(2);
+    });
 });
 
 describe("formatSpellSlotResourceLabel", () => {
