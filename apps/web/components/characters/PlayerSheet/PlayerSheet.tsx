@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
+import { characterHasMagic } from "@/lib/character/characterHasMagic";
 import { cn } from "@/lib/utils";
 import { PlayerSheetHeader } from "./PlayerSheetHeader";
 import type { PlayerSheetTabId } from "./PlayerSheetTabBar";
@@ -20,6 +21,13 @@ type PlayerSheetProps = {
 
 export function PlayerSheet({ stored }: PlayerSheetProps) {
     const [activeTab, setActiveTab] = useState<PlayerSheetTabId>("overview");
+    const showMagic = characterHasMagic(stored);
+
+    useEffect(() => {
+        if (!showMagic && activeTab === "magic") {
+            setActiveTab("overview");
+        }
+    }, [showMagic, activeTab]);
 
     return (
         <RollAssistantProvider characterId={stored.id}>
@@ -28,6 +36,7 @@ export function PlayerSheet({ stored }: PlayerSheetProps) {
                     stored={stored}
                     activeTab={activeTab}
                     onTabChange={setActiveTab}
+                    showMagic={showMagic}
                 />
                 <main
                     className={cn(
@@ -45,7 +54,9 @@ export function PlayerSheet({ stored }: PlayerSheetProps) {
                     {activeTab === "inventory" ? (
                         <InventoryTab stored={stored} />
                     ) : null}
-                    {activeTab === "magic" ? <MagicTab /> : null}
+                    {activeTab === "magic" && showMagic ? (
+                        <MagicTab stored={stored} />
+                    ) : null}
                     {activeTab === "notes" ? <NotesTab stored={stored} /> : null}
                 </main>
                 <PlayerSheetActionBar stored={stored} />

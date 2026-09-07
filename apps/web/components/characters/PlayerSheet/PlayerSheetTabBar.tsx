@@ -41,20 +41,26 @@ const TAB_ICONS: Record<
 type PlayerSheetTabBarProps = {
     activeTab: PlayerSheetTabId;
     onTabChange: (tab: PlayerSheetTabId) => void;
+    /** When false, the Magic tab is omitted (non-casters). Defaults to true. */
+    showMagic?: boolean;
 };
 
 export function PlayerSheetTabBar({
     activeTab,
     onTabChange,
+    showMagic = true,
 }: PlayerSheetTabBarProps) {
     const t = useTranslations("playerSheet.tabs");
+    const visibleTabs = showMagic
+        ? TABS
+        : TABS.filter((tab) => tab !== "magic");
 
     return (
         <nav
             className="-mx-1 flex gap-1 overflow-x-auto px-1"
             aria-label={t("navLabel")}
         >
-            {TABS.map((tab) => {
+            {visibleTabs.map((tab) => {
                 const isActive = tab === activeTab;
                 const Icon = TAB_ICONS[tab];
                 const label = t(tab);

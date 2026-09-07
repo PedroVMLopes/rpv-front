@@ -1,30 +1,29 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { contentRepo } from "@/lib/content/contentRepository";
 import {
-    listEquippedWeaponActions,
-    listSpellActions,
-} from "@/lib/character/combatActions";
-import { parseDerivedResources } from "@/lib/character/deriveResourcesFromForm";
+    canAdjustCombatResource,
+    listCombatResources,
+    type CombatResourceEntry,
+} from "@/lib/character/combatResources";
+import { listSpellActions } from "@/lib/character/combatActions";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { SpellActionCard } from "@/components/content/spells/SpellActionCard";
-import { WeaponActionCard } from "@/components/content/weapons/WeaponActionCard";
 import { useContentLocale } from "@/store/useContentLocale";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { useRollAssistant } from "../roll/RollAssistantProvider";
-import { ActionsCollapsible } from "./ActionsCollapsible";
-import { OverviewPanel } from "./OverviewPanel";
-import { SheetDerivedResourcesPanel } from "./SheetDerivedResourcesPanel";
+import { ActionsCollapsible } from "../overview/ActionsCollapsible";
+import { OverviewPanel } from "../overview/OverviewPanel";
 import {
+    isSlotUsed,
     ResourceSquareRow,
-    updateUsedCountByKey,
-    type UsedCountByKey,
-} from "./sheetResourceSquares";
+} from "../overview/sheetResourceSquares";
 
-type ActionsSectionProps = {
+type MagicSpellbookPanelProps = {
     stored: StoredCharacter;
+    emptyAction?: ReactNode;
 };
 
 function groupSpellsByLevel(
@@ -48,20 +47,17 @@ function groupSpellsByLevel(
     return byLevel;
 }
 
-export function ActionsSection({ stored }: ActionsSectionProps) {
+export function MagicSpellbookPanel({
+    stored,
+    emptyAction,
+}: MagicSpellbookPanelProps) {
     const t = useTranslations("playerSheet");
+    const tMagic = useTranslations("playerSheet.magic");
     const contentLocale = useContentLocale((state) => state.contentLocale);
     const getResolvedStats = useCharacterStore((state) => state.getResolvedStats);
+    const updateResource = useCharacterStore((state) => state.updateResource);
     const { openRollRequest } = useRollAssistant();
     const resolved = getResolvedStats(stored.id);
-
-    const weapons = useMemo(() => {
-        if (!resolved) {
-            return [];
-        }
-
-        return listEquippedWeaponActions(stored, resolved, contentLocale);
-    }, [contentLocale, resolved, stored]);
 
     const { cantrips, spells } = useMemo(() => {
         if (!resolved) {
@@ -71,12 +67,26 @@ export function ActionsSection({ stored }: ActionsSectionProps) {
         return listSpellActions(stored, resolved, contentLocale);
     }, [contentLocale, resolved, stored]);
 
-    const spellSlots = useMemo(
-        () => parseDerivedResources(stored.resources).spellSlots,
-        [stored.resources]
-    );
-
     const spellsByLevel = useMemo(() => groupSpellsByLevel(spells), [spells]);
+
+    const slotEntries = useMemo(() => {
+        return listCombatResources(stored.grants ?? [], stored.resources)
+            .filter((entry) => entry.ref.startsWith("spell-slots-"))
+            .sort((a, b) => (a.spellLevel ?? 0) - (b.spellLevel ?? 0));
+    }, [stored.grants, stored.resources]);
+
+    const levelsToShow = useMemo(() => {
+        const levels = new Set<number>();
+        for (const entry of slotEntries) {
+            if (entry.spellLevel !== undefined) {
+                levels.add(entry.spellLevel);
+            }
+        }
+        for (const level of spellsByLevel.keys()) {
+            levels.add(level);
+        }
+        return [...levels].sort((a, b) => a - b);
+    }, [slotEntries, spellsByLevel]);
 
     const classEntry = stored.selections.characterClass
         ? contentRepo(stored.system).getClass(
@@ -86,60 +96,44 @@ export function ActionsSection({ stored }: ActionsSectionProps) {
         : undefined;
     const spellcastingAbility = classEntry?.spellcastingAbility ?? null;
 
-    const resourceSignature = useMemo(
-        () =>
-            JSON.stringify({
-                id: stored.id,
-                spellSlots,
-            }),
-        [spellSlots, stored.id]
-    );
-
-    const [usedCountByKey, setUsedCountByKey] = useState<UsedCountByKey>({});
-
-    useEffect(() => {
-        setUsedCountByKey({});
-    }, [resourceSignature]);
+    const adjust = (entry: CombatResourceEntry, delta: number) => {
+        if (!canAdjustCombatResource(entry, delta)) {
+            return;
+        }
+        const storeCurrent = stored.resources[entry.ref] ?? 0;
+        const next = entry.current + delta;
+        const actualDelta = next - storeCurrent;
+        if (actualDelta !== 0) {
+            updateResource(stored.id, entry.ref, actualDelta);
+        }
+    };
 
     const slotAria = (index: number, total: number, isUsed: boolean) =>
         isUsed
             ? t("resourceSlotUsed", { index, total })
             : t("resourceSlotAvailable", { index, total });
 
-    const handleSlotToggle = (rowKey: string, index: number, total: number) => {
-        setUsedCountByKey((current) =>
-            updateUsedCountByKey(current, rowKey, index, total)
+    const isEmpty = cantrips.length === 0 && spells.length === 0;
+
+    if (isEmpty) {
+        return (
+            <OverviewPanel title={tMagic("spellbookTitle")}>
+                <div className="flex flex-col items-start gap-3">
+                    <p className="text-sm text-muted-foreground">
+                        {tMagic("emptySpellbook")}
+                    </p>
+                    {emptyAction}
+                </div>
+            </OverviewPanel>
         );
-    };
+    }
 
     return (
-        <OverviewPanel title={t("actions")}>
+        <OverviewPanel title={tMagic("spellbookTitle")}>
             <div className="flex flex-col gap-4">
-                <SheetDerivedResourcesPanel stored={stored} hideSpellSlots />
-
-                <div className="flex flex-col gap-2">
-                    {weapons.length === 0 ? (
-                        <p className="text-sm text-muted-foreground">
-                            {t("noWeapons")}
-                        </p>
-                    ) : (
-                        <ul className="flex flex-col gap-2">
-                            {weapons.map((weapon) => (
-                                <li key={weapon.id} className="min-w-0">
-                                    <WeaponActionCard
-                                        stored={stored}
-                                        weapon={weapon}
-                                        openRollRequest={openRollRequest}
-                                    />
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </div>
-
                 {cantrips.length > 0 ? (
-                    <ActionsCollapsible title={t("cantrips")}>
-                        <ul className="grid grid-cols-2 gap-2">
+                    <ActionsCollapsible title={t("cantrips")} defaultOpen>
+                        <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                             {cantrips.map((spell) => (
                                 <li key={spell.id} className="min-w-0">
                                     <SpellActionCard
@@ -154,37 +148,43 @@ export function ActionsSection({ stored }: ActionsSectionProps) {
                     </ActionsCollapsible>
                 ) : null}
 
-                {spellSlots.map((slot) => {
-                    const levelSpells = spellsByLevel.get(slot.level) ?? [];
+                {levelsToShow.map((level) => {
+                    const entry = slotEntries.find(
+                        (slot) => slot.spellLevel === level
+                    );
+                    const levelSpells = spellsByLevel.get(level) ?? [];
+                    const usedCount = entry ? entry.max - entry.current : 0;
 
                     return (
                         <ActionsCollapsible
-                            key={slot.ref}
-                            title={t("spellSlotLevelLabel", {
-                                level: slot.level,
-                            })}
+                            key={`level-${level}`}
+                            title={t("spellSlotLevelLabel", { level })}
+                            defaultOpen={levelSpells.length > 0}
                             headerExtra={
-                                <ResourceSquareRow
-                                    rowKey={slot.ref}
-                                    count={slot.count}
-                                    usedCount={usedCountByKey[slot.ref] ?? 0}
-                                    onToggle={(index) =>
-                                        handleSlotToggle(
-                                            slot.ref,
-                                            index,
-                                            slot.count
-                                        )
-                                    }
-                                    slotAriaLabel={slotAria}
-                                />
+                                entry ? (
+                                    <ResourceSquareRow
+                                        rowKey={entry.ref}
+                                        count={entry.max}
+                                        usedCount={usedCount}
+                                        onToggle={(index) => {
+                                            const used = isSlotUsed(
+                                                index,
+                                                entry.max,
+                                                usedCount
+                                            );
+                                            adjust(entry, used ? 1 : -1);
+                                        }}
+                                        slotAriaLabel={slotAria}
+                                    />
+                                ) : null
                             }
                         >
                             {levelSpells.length === 0 ? (
                                 <p className="text-sm text-muted-foreground">
-                                    {t("noSpellsAtLevel", { level: slot.level })}
+                                    {t("noSpellsAtLevel", { level })}
                                 </p>
                             ) : (
-                                <ul className="grid grid-cols-2 gap-2">
+                                <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                                     {levelSpells.map((spell) => (
                                         <li key={spell.id} className="min-w-0">
                                             <SpellActionCard

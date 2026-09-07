@@ -2,8 +2,6 @@
 
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { FaMinus, FaPlus } from "react-icons/fa6";
-import { Button } from "@/components/ui/button";
 import {
     canAdjustCombatResource,
     isSlotDisplay,
@@ -14,16 +12,22 @@ import { formatResourceRefLabel } from "@/lib/character/resourceLabels";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { OverviewPanel } from "../overview/OverviewPanel";
-import { isSlotUsed } from "../overview/sheetResourceSquares";
-import { SpellSlotLevelBlock } from "./SpellSlotLevelBlock";
 import { sheetInset } from "../playerSheetSurfaces";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { FaMinus, FaPlus } from "react-icons/fa6";
+import { SpellSlotsPanel } from "../magic/SpellSlotsPanel";
 
 type ClassResourcesPanelProps = {
     stored: StoredCharacter;
+    /** When true, only spell/pact slot blocks are shown (no rage/ki/etc.). */
+    slotsOnly?: boolean;
 };
 
-export function ClassResourcesPanel({ stored }: ClassResourcesPanelProps) {
+export function ClassResourcesPanel({
+    stored,
+    slotsOnly = false,
+}: ClassResourcesPanelProps) {
     const t = useTranslations("playerSheet");
     const tResources = useTranslations("classResources");
     const updateResource = useCharacterStore((state) => state.updateResource);
@@ -33,21 +37,6 @@ export function ClassResourcesPanel({ stored }: ClassResourcesPanelProps) {
         [stored.grants, stored.resources]
     );
 
-    const wizardSlots = useMemo(
-        () =>
-            entries
-                .filter((entry) => entry.ref.startsWith("spell-slots-"))
-                .sort((a, b) => (a.spellLevel ?? 0) - (b.spellLevel ?? 0)),
-        [entries]
-    );
-    const pactSlots = useMemo(
-        () =>
-            entries.filter(
-                (entry) =>
-                    isSlotDisplay(entry) && !entry.ref.startsWith("spell-slots-")
-            ),
-        [entries]
-    );
     const other = useMemo(
         () =>
             entries.filter(
@@ -57,15 +46,14 @@ export function ClassResourcesPanel({ stored }: ClassResourcesPanelProps) {
         [entries]
     );
 
-    if (other.length === 0 && wizardSlots.length === 0 && pactSlots.length === 0) {
-        return null;
+    if (slotsOnly) {
+        return <SpellSlotsPanel stored={stored} />;
     }
 
     const adjust = (entry: CombatResourceEntry, delta: number) => {
         if (!canAdjustCombatResource(entry, delta)) {
             return;
         }
-        // Store treats missing keys as 0; panel treats missing as max.
         const storeCurrent = stored.resources[entry.ref] ?? 0;
         const next = entry.current + delta;
         const actualDelta = next - storeCurrent;
@@ -74,10 +62,14 @@ export function ClassResourcesPanel({ stored }: ClassResourcesPanelProps) {
         }
     };
 
-    const slotAria = (index: number, total: number, isUsed: boolean) =>
-        isUsed
-            ? t("resourceSlotUsed", { index, total })
-            : t("resourceSlotAvailable", { index, total });
+    const hasSlots = entries.some(
+        (entry) =>
+            isSlotDisplay(entry) || entry.ref.startsWith("spell-slots-")
+    );
+
+    if (other.length === 0 && !hasSlots) {
+        return null;
+    }
 
     return (
         <>
@@ -147,83 +139,7 @@ export function ClassResourcesPanel({ stored }: ClassResourcesPanelProps) {
                 </OverviewPanel>
             ) : null}
 
-            {pactSlots.length > 0 ? (
-                <OverviewPanel
-                    title={formatResourceRefLabel(
-                        pactSlots[0]?.ref ?? "pact-slots",
-                        (key) => tResources(key)
-                    )}
-                >
-                    <div className="flex min-w-0 flex-wrap items-start gap-2">
-                        {pactSlots.map((entry) => {
-                            const usedCount = entry.max - entry.current;
-                            const displayLabel = formatResourceRefLabel(
-                                entry.ref,
-                                (key) => tResources(key)
-                            );
-
-                            return (
-                                <SpellSlotLevelBlock
-                                    key={entry.ref}
-                                    rowKey={entry.ref}
-                                    label={
-                                        entry.spellLevel !== undefined
-                                            ? `${displayLabel} (${entry.spellLevel})`
-                                            : displayLabel
-                                    }
-                                    count={entry.max}
-                                    usedCount={usedCount}
-                                    onToggle={(index) => {
-                                        const used = isSlotUsed(
-                                            index,
-                                            entry.max,
-                                            usedCount
-                                        );
-                                        adjust(entry, used ? 1 : -1);
-                                    }}
-                                    slotAriaLabel={slotAria}
-                                />
-                            );
-                        })}
-                    </div>
-                </OverviewPanel>
-            ) : null}
-
-            {wizardSlots.length > 0 ? (
-                <OverviewPanel title={t("combat.spellSlots")}>
-                    <div className="flex min-w-0 flex-wrap items-start gap-2">
-                        {wizardSlots.map((entry) => {
-                            const spellLevel = entry.spellLevel;
-                            if (spellLevel === undefined) {
-                                return null;
-                            }
-
-                            const usedCount = entry.max - entry.current;
-
-                            return (
-                                <SpellSlotLevelBlock
-                                    key={entry.ref}
-                                    rowKey={entry.ref}
-                                    label={t("spellSlotLevelLabel", {
-                                        level: spellLevel,
-                                    })}
-                                    count={entry.max}
-                                    usedCount={usedCount}
-                                    onToggle={(index) => {
-                                        const used = isSlotUsed(
-                                            index,
-                                            entry.max,
-                                            usedCount
-                                        );
-                                        adjust(entry, used ? 1 : -1);
-                                    }}
-                                    slotAriaLabel={slotAria}
-                                />
-                            );
-                        })}
-                    </div>
-                </OverviewPanel>
-            ) : null}
+            <SpellSlotsPanel stored={stored} />
         </>
     );
 }

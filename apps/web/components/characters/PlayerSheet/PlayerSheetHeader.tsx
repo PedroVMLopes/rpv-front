@@ -123,6 +123,7 @@ type PlayerSheetHeaderProps = {
     stored: StoredCharacter;
     activeTab: PlayerSheetTabId;
     onTabChange: (tab: PlayerSheetTabId) => void;
+    showMagic?: boolean;
 };
 
 const EMPTY_CONDITIONS: string[] = [];
@@ -131,6 +132,7 @@ export function PlayerSheetHeader({
     stored,
     activeTab,
     onTabChange,
+    showMagic = true,
 }: PlayerSheetHeaderProps) {
     const t = useTranslations("playerSheet");
     const tCharacter = useTranslations("character");
@@ -383,6 +385,7 @@ export function PlayerSheetHeader({
                 <PlayerSheetTabBar
                     activeTab={activeTab}
                     onTabChange={onTabChange}
+                    showMagic={showMagic}
                 />
             </div>
         </header>

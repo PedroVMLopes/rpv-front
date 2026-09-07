@@ -31,20 +31,32 @@ export function togglePreparedSpell(
 ) {
     const current =
         (form.getValues("choices") as CharacterChoices | undefined) ?? {};
-    const prepared = current.preparedSpells ?? [];
+    const next = nextPreparedSpellsAfterToggle(
+        current.preparedSpells ?? [],
+        slug,
+        options
+    );
+    setPreparedSpells(form, next);
+}
+
+/**
+ * Pure toggle for prepared spell lists (creation form or sheet store).
+ * Locked / always-prepared slugs are ignored by the caller.
+ */
+export function nextPreparedSpellsAfterToggle(
+    prepared: readonly string[],
+    slug: string,
+    options?: { quota?: number }
+): string[] {
     const isSelected = prepared.includes(slug);
 
     if (!isSelected) {
         const quota = options?.quota;
         if (quota !== undefined && prepared.length >= quota) {
-            return;
+            return [...prepared];
         }
-        setPreparedSpells(form, [...prepared, slug]);
-        return;
+        return [...prepared, slug];
     }
 
-    setPreparedSpells(
-        form,
-        prepared.filter((entry) => entry !== slug)
-    );
+    return prepared.filter((entry) => entry !== slug);
 }
