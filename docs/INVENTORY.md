@@ -70,6 +70,11 @@ type ItemStack = {
 };
 ```
 
+Posse agrega por `slug` (+ `provenance`). Não há teto de quantidade na bag:
+`ItemEntry.stackable` é metadado legado do catálogo e **não** limita qty em
+sanitize, `setBagQuantity` ou na UI. Qty `0` permanece até **Delete**.
+Equipar ainda consome 1 unidade; o mesmo slug ocupa no máximo um slot single.
+
 ### O que alimenta mecânica hoje
 
 | Origem | Alimenta grants / modifiers / AC? | Alimenta ataques de inventário? |

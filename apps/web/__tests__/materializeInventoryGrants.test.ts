@@ -285,4 +285,27 @@ describe("mergeStartingGrants", () => {
             ])
         );
     });
+
+    it("preserves manual bag remainder when the same slug is equipped", () => {
+        const merged = mergeStartingGrants(
+            {
+                ...emptyCharacterSelections(),
+                characterClass: "fighter",
+                inventory: {
+                    bag: [{ slug: "srd_longbow", quantity: 1 }],
+                    equipped: { "ranged-main": "srd_longbow" },
+                },
+            },
+            "en",
+            "dnd",
+            1
+        );
+
+        expect(merged.inventory?.equipped).toEqual({
+            "ranged-main": "srd_longbow",
+        });
+        expect(
+            merged.inventory?.bag.find((stack) => stack.slug === "srd_longbow")
+        ).toEqual({ slug: "srd_longbow", quantity: 1 });
+    });
 });

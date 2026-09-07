@@ -163,7 +163,7 @@ before persisting. Behavior matches
 | Invalid slot ID for `system` | Equipped entry discarded |
 | Item↔slot type mismatch | Entry discarded when `!canEquipItem(slug, slotId, system)` ([`ItemEquipPolicy`](INVENTORY.md#itemequippolicy-etapa-1--implementado)) |
 | Same slug in two slots | Only the first iterated slot kept |
-| Non-stackable item with `quantity > 1` in bag | Clamped to 1 |
+| Bag quantity upper bound | None — `ItemEntry.stackable` is legacy metadata and does not clamp bag qty |
 | Duplicate bag stacks (same slug + same provenance) | Merged |
 | Duplicate bag stacks (same slug, different provenance) | Kept separate (manual vs granted) |
 | Bag ↔ equipped reconciliation | Each equipped slug consumes 1 unit from bag (`reconcileEquippedWithBag`) |

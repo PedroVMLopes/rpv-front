@@ -616,7 +616,7 @@ describe("InventoryTab equip actions", () => {
         const dialog = screen.getByRole("dialog");
         expect(
             within(dialog).getByRole("button", { name: "Increase quantity" })
-        ).toBeDisabled();
+        ).toBeEnabled();
 
         await user.click(
             within(dialog).getByRole("button", { name: "Decrease quantity" })
@@ -634,6 +634,39 @@ describe("InventoryTab equip actions", () => {
             ])
         );
         expect(screen.getByText("Longbow (0)")).toBeInTheDocument();
+    });
+
+    it("increases owned quantity for an equipped weapon into the bag", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(
+            <InventoryTabLive characterId={storedCharacter.id} />
+        );
+
+        const usable = screen.getByTestId("inventory-equipment-usable");
+        const longbowCard = cardForName("Longbow", usable);
+        await user.click(
+            within(longbowCard).getByRole("button", {
+                name: "Expand Longbow",
+            })
+        );
+
+        await user.click(
+            within(screen.getByRole("dialog")).getByRole("button", {
+                name: "Increase quantity",
+            })
+        );
+
+        const inventory =
+            useCharacterStore.getState().characters[0]?.selections.inventory;
+        expect(inventory?.equipped["ranged-main"]).toBe("srd_longbow");
+        expect(inventory?.bag).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    slug: "srd_longbow",
+                    quantity: 1,
+                }),
+            ])
+        );
     });
 
     it("adjusts bag quantity from the modal without equipping", async () => {

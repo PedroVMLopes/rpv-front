@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { getEquipmentSlots, getItem, isItemStackable, isItemEquippable } from "@rpv/content";
+import { getEquipmentSlots, getItem, isItemEquippable } from "@rpv/content";
 import type { CharacterInventory } from "@rpv/domain";
 import {
     buildWeaponActionForEquippedSlot,
@@ -78,7 +78,6 @@ export function InventoryItemContentCard({
     const displayQuantity = row.equipped
         ? bagQuantity + equippedCount
         : row.quantity;
-    const stackable = itemEntry ? isItemStackable(itemEntry) : true;
     const showEquipMenu =
         row.equipped ||
         (itemEntry
@@ -254,9 +253,6 @@ export function InventoryItemContentCard({
 
     const handleAdjustQuantity = (delta: -1 | 1) => {
         const nextOwned = Math.max(0, displayQuantity + delta);
-        if (!stackable && nextOwned > 1) {
-            return;
-        }
 
         if (row.equipped && row.slotId && nextOwned < equippedCount) {
             unequipItemToBag(
@@ -317,7 +313,7 @@ export function InventoryItemContentCard({
             quantityHandlers={{
                 onAdjustQuantity: handleAdjustQuantity,
                 canDecrementQuantity: displayQuantity > 0,
-                canIncrementQuantity: stackable || displayQuantity < 1,
+                canIncrementQuantity: true,
                 decreaseLabel: t("decreaseQuantity"),
                 increaseLabel: t("increaseQuantity"),
             }}

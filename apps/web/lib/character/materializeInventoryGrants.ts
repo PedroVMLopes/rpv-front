@@ -190,6 +190,26 @@ function withPreservedGrantedQuantities(
     });
 }
 
+/** Same owned-total restore for manual stacks before sanitize reconciles again. */
+function withPreservedManualQuantities(
+    manualBag: CharacterInventory["bag"],
+    equipped: CharacterInventory["equipped"],
+    equippedMulti: CharacterInventory["equippedMulti"] | undefined
+): CharacterInventory["bag"] {
+    const equippedCounts = countEquippedBySlug(equipped, equippedMulti);
+
+    return manualBag.map((stack) => {
+        const equippedCount = equippedCounts.get(stack.slug) ?? 0;
+        if (equippedCount === 0) {
+            return stack;
+        }
+        return {
+            ...stack,
+            quantity: stack.quantity + equippedCount,
+        };
+    });
+}
+
 export function mergeStartingGrants(
     selections: CharacterSelections,
     locale: Locale,
@@ -205,7 +225,11 @@ export function mergeStartingGrants(
         system,
         characterLevel
     );
-    const manualBag = splitManualBagStacks(previousBag, grantedBag);
+    const manualBag = withPreservedManualQuantities(
+        splitManualBagStacks(previousBag, grantedBag),
+        previousEquipped,
+        previousEquippedMulti
+    );
     const grantedCurrency = materializeCurrencyGrants(
         selections,
         locale,

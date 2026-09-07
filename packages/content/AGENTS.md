@@ -228,7 +228,7 @@ interface ItemEntry {
   weightUnit: string | null;
   cost: string | null;
   grants: Grant[];           // usually []; overlay for magic items
-  stackable: boolean;        // false when weapon/armor present
+  stackable: boolean;        // legacy catalog flag (weapon/armor often false); bag qty is not clamped by this
   equipPolicy?: ItemEquipPolicy;  // optional override; see Item equip policy
 }
 ```
@@ -249,7 +249,8 @@ interface ItemEntry {
   - Declared use on your turn → `ability` grant with `activation` (not inferred
     from category or slot). **Do not** model consumables as “equip to use”.
 
-Helpers: `getItem`, `listItems`, `getItemGrants`, `isItemStackable`,
+Helpers: `getItem`, `listItems`, `getItemGrants`, `isItemStackable`
+(legacy; bag qty is not clamped by this flag),
 `itemProvidesWeaponAttack`, `mapOpen5eItem`, `mergeItemCatalog`,
 `resolveItemEquipPolicy`, `canEquipItem`, `getEquipableSlotIds`. Exported from
 [`src/index.ts`](src/index.ts).

@@ -275,7 +275,7 @@ describe("sanitizeInventory", () => {
         expect(result.equipped).toEqual({ amulet: "rpv_ring-of-hardiness" });
     });
 
-    it("clamps non-stackable bag quantities to 1", () => {
+    it("preserves bag quantities above 1 for formerly non-stackable items", () => {
         const result = sanitizeInventory(
             {
                 bag: [{ slug: "rpv_amulet-of-vitality", quantity: 3 }],
@@ -285,10 +285,10 @@ describe("sanitizeInventory", () => {
             "dnd"
         );
 
-        expect(result.bag).toEqual([{ slug: "rpv_amulet-of-vitality", quantity: 1 }]);
+        expect(result.bag).toEqual([{ slug: "rpv_amulet-of-vitality", quantity: 3 }]);
     });
 
-    it("does not stack duplicate longswords or shields", () => {
+    it("preserves duplicate longsword and shield quantities", () => {
         const swords = sanitizeInventory(
             {
                 bag: [{ slug: "srd_longsword", quantity: 2 }],
@@ -306,8 +306,8 @@ describe("sanitizeInventory", () => {
             "dnd"
         );
 
-        expect(swords.bag).toEqual([{ slug: "srd_longsword", quantity: 1 }]);
-        expect(shields.bag).toEqual([{ slug: "srd_shield", quantity: 1 }]);
+        expect(swords.bag).toEqual([{ slug: "srd_longsword", quantity: 2 }]);
+        expect(shields.bag).toEqual([{ slug: "srd_shield", quantity: 2 }]);
     });
 
     it("does not re-subtract equipped units when reconcileEquipped is false", () => {
@@ -616,16 +616,30 @@ describe("setBagQuantity", () => {
         });
     });
 
-    it("clamps non-stackable items to 1", () => {
+    it("sets absolute quantity without clamping formerly non-stackable items", () => {
         const inventory = addToBag(emptyInventory(), "rpv_amulet-of-vitality", 1);
 
         expect(
             setBagQuantity(inventory, "rpv_amulet-of-vitality", 3, "dnd")
         ).toEqual({
-            bag: [{ slug: "rpv_amulet-of-vitality", quantity: 1 }],
+            bag: [{ slug: "rpv_amulet-of-vitality", quantity: 3 }],
             equipped: {},
             equippedMulti: {},
         });
+    });
+
+    it("keeps addToBag increments after sanitize for weapons and magic items", () => {
+        let inventory = addToBag(emptyInventory(), "srd_longsword", 1);
+        inventory = addToBag(inventory, "srd_longsword", 1);
+        inventory = addToBag(inventory, "rpv_amulet-of-vitality", 1);
+        inventory = addToBag(inventory, "rpv_amulet-of-vitality", 1);
+
+        expect(sanitizeInventory(inventory, "dnd").bag).toEqual(
+            expect.arrayContaining([
+                { slug: "srd_longsword", quantity: 2 },
+                { slug: "rpv_amulet-of-vitality", quantity: 2 },
+            ])
+        );
     });
 });
 

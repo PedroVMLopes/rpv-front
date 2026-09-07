@@ -2,7 +2,6 @@ import type { CharacterInventory } from "@rpv/domain";
 import {
     canEquipItem,
     getItem,
-    isItemStackable,
     isMultiEquipmentSlot,
     isRangedWeaponItem,
     isValidEquipmentSlot,
@@ -65,16 +64,10 @@ function sanitizeBag(
             return [];
         }
 
-        const entry = getItem(slug, system);
-        const quantity =
-            entry && !isItemStackable(entry)
-                ? Math.min(stack.quantity, 1)
-                : stack.quantity;
-
         return [
             {
                 slug,
-                quantity,
+                quantity: stack.quantity,
                 ...(stack.provenance ? { provenance: stack.provenance } : {}),
             },
         ];
@@ -449,17 +442,13 @@ export function setBagQuantity(
         return inventory;
     }
 
-    const entry = getItem(normalizedSlug, system);
-    const nextQuantity =
-        entry && !isItemStackable(entry) ? Math.min(quantity, 1) : quantity;
-
     const stackIndex = findRemovableBagStackIndex(inventory.bag, normalizedSlug);
     if (stackIndex < 0) {
         return {
             ...inventory,
             bag: [
                 ...inventory.bag,
-                { slug: normalizedSlug, quantity: nextQuantity },
+                { slug: normalizedSlug, quantity },
             ],
         };
     }
@@ -468,7 +457,7 @@ export function setBagQuantity(
         ...inventory,
         bag: inventory.bag.map((stack, index) =>
             index === stackIndex
-                ? { ...stack, quantity: nextQuantity }
+                ? { ...stack, quantity }
                 : stack
         ),
     };
