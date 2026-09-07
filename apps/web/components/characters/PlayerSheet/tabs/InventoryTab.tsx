@@ -1,17 +1,17 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useTranslations } from "next-intl";
 import { emptyInventory } from "@rpv/domain";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { sanitizeInventory } from "@/lib/character/inventory";
 import {
     filterInventoryRows,
+    filterInventoryRowsByQuery,
     listCarriedRows,
-    listCosmeticPanelRows,
-    listEquipmentColumnRows,
     type InventoryFilterId,
 } from "@/lib/character/inventoryDisplay";
+import { useContentLocale } from "@/store/useContentLocale";
+import { InventoryAddItemModal } from "../inventory/InventoryAddItemModal";
 import { InventoryCosmeticPanel } from "../inventory/InventoryCosmeticPanel";
 import { InventoryEquipmentPanel } from "../inventory/InventoryEquipmentPanel";
 import { InventoryPossessionsPanel } from "../inventory/InventoryPossessionsPanel";
@@ -23,6 +23,9 @@ type InventoryTabProps = {
 
 export function InventoryTab({ stored }: InventoryTabProps) {
     const [activeFilter, setActiveFilter] = useState<InventoryFilterId>("all");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [addItemOpen, setAddItemOpen] = useState(false);
+    const contentLocale = useContentLocale((state) => state.contentLocale);
 
     const inventory = useMemo(
         () =>
@@ -39,21 +42,18 @@ export function InventoryTab({ stored }: InventoryTabProps) {
         [inventory, stored.system]
     );
 
-    const filteredCarriedRows = useMemo(
-        () => filterInventoryRows(carriedRows, activeFilter, stored.system),
-        [carriedRows, activeFilter, stored.system]
-    );
-
-    const hasAnyItems = useMemo(() => {
-        const system = stored.system;
-        return (
-            carriedRows.length +
-                listEquipmentColumnRows(inventory, system, "wearable").length +
-                listEquipmentColumnRows(inventory, system, "usable").length +
-                listCosmeticPanelRows(inventory, system).length >
-            0
+    const filteredCarriedRows = useMemo(() => {
+        const byCategory = filterInventoryRows(
+            carriedRows,
+            activeFilter,
+            stored.system
         );
-    }, [carriedRows.length, inventory, stored.system]);
+        return filterInventoryRowsByQuery(
+            byCategory,
+            searchQuery,
+            stored.system
+        );
+    }, [carriedRows, activeFilter, searchQuery, stored.system]);
 
     return (
         <div className="flex flex-col gap-4">
@@ -68,14 +68,23 @@ export function InventoryTab({ stored }: InventoryTabProps) {
                 carriedRowCount={carriedRows.length}
                 activeFilter={activeFilter}
                 onFilterChange={setActiveFilter}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                onAddItem={() => setAddItemOpen(true)}
                 stored={stored}
                 inventory={inventory}
-                hasAnyItems={hasAnyItems}
             />
             <InventoryCosmeticPanel
                 inventory={inventory}
                 system={stored.system}
                 stored={stored}
+            />
+            <InventoryAddItemModal
+                open={addItemOpen}
+                onOpenChange={setAddItemOpen}
+                system={stored.system}
+                characterId={stored.id}
+                locale={contentLocale}
             />
         </div>
     );

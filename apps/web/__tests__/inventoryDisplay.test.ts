@@ -3,6 +3,7 @@ import { getItem, type ItemEntry } from "@rpv/content";
 import {
     countMiscItems,
     filterInventoryRows,
+    filterInventoryRowsByQuery,
     formatInventoryItemTitle,
     listBagDisplayRows,
     listCarriedRows,
@@ -379,6 +380,29 @@ describe("filterInventoryRows", () => {
     it("returns empty when no rows match", () => {
         expect(filterInventoryRows(rows, "tools", "dnd")).toEqual([]);
         expect(filterInventoryRows(rows, "quest", "dnd")).toEqual([]);
+    });
+});
+
+describe("filterInventoryRowsByQuery", () => {
+    const rows = listCarriedRows(bagAndEquippedInventory, "dnd");
+
+    it("returns all rows for empty or whitespace query", () => {
+        expect(filterInventoryRowsByQuery(rows, "", "dnd")).toEqual(rows);
+        expect(filterInventoryRowsByQuery(rows, "   ", "dnd")).toEqual(rows);
+    });
+
+    it("matches display name case-insensitively", () => {
+        const filtered = filterInventoryRowsByQuery(rows, "ARROW", "dnd");
+        expect(filtered.map((row) => row.slug)).toEqual(["srd_arrow-bow"]);
+    });
+
+    it("matches slug substring", () => {
+        const filtered = filterInventoryRowsByQuery(rows, "pilot-test", "dnd");
+        expect(filtered.map((row) => row.slug)).toEqual(["rpv_pilot-test-pack-a"]);
+    });
+
+    it("returns empty when nothing matches", () => {
+        expect(filterInventoryRowsByQuery(rows, "longbow", "dnd")).toEqual([]);
     });
 });
 

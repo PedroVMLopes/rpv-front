@@ -16,6 +16,9 @@ type InventoryPossessionsPanelProps = {
     carriedRowCount: number;
     activeFilter: InventoryFilterId;
     onFilterChange: (filter: InventoryFilterId) => void;
+    searchQuery: string;
+    onSearchChange: (query: string) => void;
+    onAddItem: () => void;
     stored: StoredCharacter;
     inventory: CharacterInventory;
 };
@@ -25,6 +28,9 @@ export function InventoryPossessionsPanel({
     carriedRowCount,
     activeFilter,
     onFilterChange,
+    searchQuery,
+    onSearchChange,
+    onAddItem,
     stored,
     inventory,
 }: InventoryPossessionsPanelProps) {
@@ -36,6 +42,9 @@ export function InventoryPossessionsPanel({
                 <InventoryToolbar
                     activeFilter={activeFilter}
                     onFilterChange={onFilterChange}
+                    searchQuery={searchQuery}
+                    onSearchChange={onSearchChange}
+                    onAddItem={onAddItem}
                 />
                 <InventoryItemGrid
                     rows={rows}

@@ -335,3 +335,24 @@ export function filterInventoryRows(
         return resolveItemFilterCategory(entry) === filter;
     });
 }
+
+/** Case-insensitive match on item display name or slug. Empty query returns rows unchanged. */
+export function filterInventoryRowsByQuery(
+    rows: InventoryDisplayRow[],
+    query: string,
+    system: SystemKey
+): InventoryDisplayRow[] {
+    const normalized = query.trim().toLowerCase();
+    if (!normalized) {
+        return rows;
+    }
+
+    return rows.filter((row) => {
+        if (row.slug.toLowerCase().includes(normalized)) {
+            return true;
+        }
+        const entry = getItem(row.slug, system);
+        const name = entry?.name?.toLowerCase() ?? "";
+        return name.includes(normalized);
+    });
+}

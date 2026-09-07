@@ -273,7 +273,7 @@ stateDiagram-v2
 | Atributos, AC, HP | `getResolvedStats`, `stored.resources` | — |
 | Proficiências | `grants` com `kind: "proficiency"` | UI de agrupamento por tipo (arma, ferramenta, skill, save) |
 | Features e magias | `CharacterCardAbilities` / `stored.grants` | `activation` nas abilities de combate; spell attack/DC |
-| Armas equipadas | `selections.inventory.equipped` + `getItem` | Picker catálogo (Etapa 6); consumíveis **Usar** |
+| Armas equipadas | `selections.inventory.equipped` + `getItem` | Consumíveis **Usar** (Etapa 7) |
 | Recursos de classe | `stored.resources` + `parseDerivedResources` | UI `+`/`-` na ficha |
 | Objetivos | `systemData.goals` | — |
 | Anotações | `StoredCharacter.notes` (`CharacterNote[]`, `color?`) | Share, pin, arquivo
@@ -316,7 +316,7 @@ Helpers relevantes:
 - Temp HP, death saves, dados de vida (tracker) — Feito
 - Condições temporárias no header (Bless, etc.) — extensão futura
 - **Level-up:** CTA na overview (`AbilitiesSection`) abre `/edit/{id}?mode=level-up&from={N}` — wizard delta (`resolveLevelUpSteps`) com progressão do nível N+1, subclass se desbloquear, e passo Confirmar (HP + recursos).
-- **Inventário (refactor):** Etapas 1–5 feitas (policy, sanitize, UI Equip, display, layout 3 painéis). Pré-Etapa 6 (auditoria, testes, docs) concluída. Próximo: picker catálogo (Etapa 6), consumíveis **Usar** (Etapa 7) — ver [`docs/INVENTORY.md`](INVENTORY.md).
+- **Inventário (refactor):** Etapas 1–6 feitas (policy, sanitize, UI Equip, display, layout 3 painéis, picker de catálogo + busca nas Posses). Próximo: consumíveis **Usar** (Etapa 7) — ver [`docs/INVENTORY.md`](INVENTORY.md).
 
 ---
 

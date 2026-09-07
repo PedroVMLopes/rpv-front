@@ -237,15 +237,37 @@ describe("InventoryTab", () => {
         ).not.toBeInTheDocument();
     });
 
-    it("renders cosmetic search and add item controls", () => {
+    it("renders searchable possessions input and enabled add item control", () => {
         renderWithProviders(<InventoryTab stored={storedCharacter} />);
 
         expect(
             screen.getByRole("searchbox", { name: "Search items…" })
-        ).toHaveAttribute("readonly");
+        ).not.toHaveAttribute("readonly");
         expect(
             screen.getByRole("button", { name: "Add item" })
-        ).toHaveAttribute("aria-disabled", "true");
+        ).toBeEnabled();
+    });
+
+    it("filters Possessions by search query without hiding Equipment panel", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(<InventoryTab stored={storedCharacter} />);
+
+        const possessions = possessionsPanel();
+        const equipment = equipmentPanel();
+
+        await user.type(
+            screen.getByRole("searchbox", { name: "Search items…" }),
+            "arrow"
+        );
+
+        expect(within(possessions).getByText("Arrow (bow) (10)")).toBeInTheDocument();
+        expect(
+            within(possessions).queryByText("Pilot Test Pack A")
+        ).not.toBeInTheDocument();
+        expect(within(equipment).getByText("Longbow")).toBeInTheDocument();
+        expect(
+            within(equipment).getByText("Amulet of Vitality")
+        ).toBeInTheDocument();
     });
 
     it("lists carried possessions and stowed equipment in separate panels", () => {
@@ -339,6 +361,54 @@ describe("InventoryTab equip actions", () => {
         }
         return <InventoryTab stored={stored} />;
     }
+
+    it("adds a catalog item to the bag from the add-item modal", async () => {
+        const user = userEvent.setup();
+        const emptyBag: StoredCharacter = {
+            ...storedCharacter,
+            id: "char-add-item",
+            selections: {
+                ...storedCharacter.selections,
+                inventory: {
+                    bag: [],
+                    equipped: {},
+                    equippedMulti: {},
+                },
+            },
+        };
+
+        renderWithProviders(
+            <InventoryTabLive characterId={emptyBag.id} />,
+            emptyBag
+        );
+
+        await user.click(screen.getByRole("button", { name: "Add item" }));
+
+        const dialog = screen.getByRole("dialog");
+        await user.type(
+            within(dialog).getByRole("searchbox", {
+                name: "Search catalog…",
+            }),
+            "waterskin"
+        );
+
+        await user.click(
+            within(dialog).getByRole("option", { name: /Waterskin/i })
+        );
+        await user.click(
+            within(dialog).getByRole("button", { name: "Add to bag" })
+        );
+
+        expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+        expect(
+            within(possessionsPanel()).getByText("Waterskin")
+        ).toBeInTheDocument();
+
+        const bag =
+            useCharacterStore.getState().characters[0]?.selections.inventory
+                .bag ?? [];
+        expect(bag.some((stack) => stack.slug === "srd_waterskin")).toBe(true);
+    });
 
     it("does not duplicate stackable carried items in Possessions after policy sanitize", () => {
         const partial: StoredCharacter = {

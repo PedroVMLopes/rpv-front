@@ -11,6 +11,9 @@ import { sheetInset } from "../playerSheetSurfaces";
 type InventoryToolbarProps = {
     activeFilter: InventoryFilterId;
     onFilterChange: (filter: InventoryFilterId) => void;
+    searchQuery: string;
+    onSearchChange: (query: string) => void;
+    onAddItem: () => void;
 };
 
 const ACTIVE_FILTERS: InventoryFilterId[] = [
@@ -31,6 +34,9 @@ const FILTER_I18N_KEYS: Record<InventoryFilterId, string> = {
 export function InventoryToolbar({
     activeFilter,
     onFilterChange,
+    searchQuery,
+    onSearchChange,
+    onAddItem,
 }: InventoryToolbarProps) {
     const t = useTranslations("playerSheet.inventory");
 
@@ -69,7 +75,8 @@ export function InventoryToolbar({
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                 <Input
                     type="search"
-                    readOnly
+                    value={searchQuery}
+                    onChange={(event) => onSearchChange(event.target.value)}
                     placeholder={t("searchPlaceholder")}
                     aria-label={t("searchPlaceholder")}
                     className="sm:flex-1"
@@ -78,7 +85,7 @@ export function InventoryToolbar({
                     type="button"
                     variant="default"
                     className="shrink-0 gap-2"
-                    aria-disabled
+                    onClick={onAddItem}
                 >
                     <FaPlus className="size-3.5" aria-hidden />
                     {t("addItem")}

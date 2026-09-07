@@ -426,7 +426,7 @@ Response: item modifiers removed; max HP back to **12**; `hp` clamped if needed.
 - PATCH with incremental **ops** (`addToBag`, `removeFromBag`, `equip`, `unequip`)
 - Weight, attunement, unique instances
 - **Consumable use from bag** — `ability` grants with `activation`; decrement stack on use (scrolls, potions); replaces pilot “equip scroll for spell grant” pattern
-- Manual **add item** from catalog picker (Player Sheet)
+- Manual **add item** from catalog picker — **done in web pilot** (`InventoryAddItemModal` → `addToBag`); HTTP still deferred
 - Inventory UI sections: active equipment / possessions / cosmetic
 - `POST /systems/:system/items` (community publish + moderation)
 - `If-Match` / ETag on character or inventory

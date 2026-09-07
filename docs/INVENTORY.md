@@ -222,7 +222,7 @@ Limpeza antes do picker de catálogo (Etapa 6):
 | Item | Ação |
 |------|------|
 | `listInventoryRows` | Removido (alias deprecated de `listBagDisplayRows`) |
-| `listBagDisplayRows` | Mantido — conveniência para testes e callers futuros (Etapa 6 add-to-bag) |
+| `listBagDisplayRows` | Mantido — conveniência para testes e callers |
 | i18n `itemsTitle` / `equippedTitle` | Removidos — UI usa `equipmentTitle`, `possessionsTitle`, `cosmeticTitle` |
 | Tab **Quest items** | Removida da toolbar — `resolveItemFilterCategory` nunca retorna `"quest"`; reintroduzir com categoria de catálogo |
 
@@ -243,13 +243,13 @@ e moeda quando picks de starting equipment mudam.
 | Display | `inventoryDisplay.test.ts` | row helpers, filtros em Posses |
 | Build | `buildCharacter.test.ts`, `materializeInventoryGrants.test.ts` | pipeline create → stored |
 | Sanitize | `sanitizeStartingMaterialization.test.ts`, `useGrantPickSanitizer.test.ts` | branch equipment ↔ gold |
-| UI ficha | `inventoryTab.test.tsx` | três painéis, equip actions |
+| UI ficha | `inventoryTab.test.tsx` | três painéis, equip actions, busca, add-item modal |
 | UI legado | `characterCardInventory.test.tsx` | carousel (fora do refactor Etapa 5) |
 
 Overlap entre camadas é intencional; duplicatas idênticas foram podadas (provenance
 dedup mantido em `buildCharacter.test.ts`).
 
-**Próximo passo:** Etapa 6 — picker de catálogo + Add item funcional.
+**Próximo passo:** Etapa 7 — polish (swap de slot ocupado; consumíveis com **Usar**).
 
 ---
 
@@ -261,7 +261,8 @@ dedup mantido em `buildCharacter.test.ts`).
 | Waterskin equipável | Não — sem botão Equip (policy `carried`) | `carried` — só Posses |
 | Roupas | Só slot `cosmetic` no menu | `cosmetic` |
 | Scroll | Equip + spell grant passivo | Usar da bag + consumir (futuro) |
-| Adicionar item manual | Stub na Player Sheet | Picker do catálogo → `addToBag` |
+| Adicionar item manual | Picker do catálogo → `addToBag` (qty 1) ✅ | — |
+| Busca nas Posses | Texto + filtros de categoria ✅ | — |
 | Layout da aba | Três painéis: Equipamento / Posses / Cosmético | — |
 | Homebrew publicado | Fora de escopo | Mesmo `ItemEntry` via repositório |
 
@@ -278,7 +279,7 @@ Cada etapa fecha com testes antes da próxima.
 | **3** | UI: esconder Equipar para `carried`; filtrar slots ✅ | `InventoryEquipMenu`, `InventoryItemContentCard` |
 | **4** | Display: `listCarriedRows` vs equipados vs cosmético ✅ | `inventoryDisplay.ts`, `InventoryTab` |
 | **5** | Layout aba Inventário (Equipamento / Posses / Cosmético) ✅ | `InventoryTab`, painéis |
-| **6** | Adicionar item do catálogo | `InventoryToolbar` + modal picker |
+| **6** | Adicionar item do catálogo + busca Posses ✅ | `InventoryToolbar`, `InventoryAddItemModal` |
 | **7** | Polish: swap de slot ocupado; consumíveis com **Usar** | grants + `activation`, qty |
 
 Homebrew compartilhável fica **fora** deste roadmap — mesmo `ItemEntry` quando existir.
