@@ -86,20 +86,12 @@ export function toggleActionFilterCategory(
     state: ActionFilterState,
     category: ActionFilterCategory
 ): ActionFilterState {
-    if (isActionFilterShowAll(state)) {
-        return {
-            weapons: category === "weapons",
-            spells: category === "spells",
-            abilities: category === "abilities",
-            basics: category === "basics",
-        };
-    }
-
     const next: ActionFilterState = {
         ...state,
         [category]: !state[category],
     };
 
+    // Avoid an empty filter: turning the last category off restores "all".
     if (
         !next.weapons &&
         !next.spells &&

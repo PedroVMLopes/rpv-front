@@ -5,6 +5,7 @@ import {
     DEFAULT_ACTION_FILTER_STATE,
     filterDisplayActions,
     groupDisplayActions,
+    isActionFilterShowAll,
     listCombatReminders,
     toggleActionFilterCategory,
 } from "../lib/character/actionDisplay";
@@ -617,55 +618,41 @@ describe("actionDisplay", () => {
         );
     });
 
-    it("from show-all, category click selects that category exclusively then adds", () => {
-        const onlySpells = toggleActionFilterCategory(
+    it("from show-all, category click excludes that category; click again restores it", () => {
+        const withoutSpells = toggleActionFilterCategory(
             DEFAULT_ACTION_FILTER_STATE,
             "spells"
         );
-        expect(onlySpells).toEqual({
-            weapons: false,
-            spells: true,
-            abilities: false,
-            basics: false,
-        });
-
-        const spellsAndWeapons = toggleActionFilterCategory(
-            onlySpells,
-            "weapons"
-        );
-        expect(spellsAndWeapons).toEqual({
-            weapons: true,
-            spells: true,
-            abilities: false,
-            basics: false,
-        });
-
-        expect(
-            toggleActionFilterCategory(spellsAndWeapons, "spells")
-        ).toEqual({
+        expect(withoutSpells).toEqual({
             weapons: true,
             spells: false,
-            abilities: false,
-            basics: false,
-        });
-
-        const onlyBasics = toggleActionFilterCategory(
-            DEFAULT_ACTION_FILTER_STATE,
-            "basics"
-        );
-        expect(onlyBasics).toEqual({
-            weapons: false,
-            spells: false,
-            abilities: false,
+            abilities: true,
             basics: true,
         });
+        expect(isActionFilterShowAll(withoutSpells)).toBe(false);
+
         expect(
-            toggleActionFilterCategory(onlyBasics, "abilities")
-        ).toEqual({
+            toggleActionFilterCategory(withoutSpells, "spells")
+        ).toEqual(DEFAULT_ACTION_FILTER_STATE);
+
+        const withoutWeaponsAndBasics = toggleActionFilterCategory(
+            withoutSpells,
+            "weapons"
+        );
+        expect(withoutWeaponsAndBasics).toEqual({
             weapons: false,
             spells: false,
             abilities: true,
             basics: true,
+        });
+
+        expect(
+            toggleActionFilterCategory(withoutWeaponsAndBasics, "basics")
+        ).toEqual({
+            weapons: false,
+            spells: false,
+            abilities: true,
+            basics: false,
         });
     });
 });
