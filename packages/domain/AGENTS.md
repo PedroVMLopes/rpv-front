@@ -35,7 +35,8 @@ design smell — generalize the primitive or move the specifics into content.
   `spell-slots-1`) with no D&D meaning in this package. Optional `activation`
   (`{ cost: string, resourceRef?: string }`) marks a grant as belonging in the
   action catalog; omitted means trait-only. `cost` is an opaque slug — the
-  engine does not interpret it.
+  engine does not interpret it. Optional `consumeQuantity` is similarly opaque
+  (consumers decrement inventory when using bag items).
 - `character/` — the `Character` aggregate and its types.
 - `i18n/locale.ts` — locale primitives.
 

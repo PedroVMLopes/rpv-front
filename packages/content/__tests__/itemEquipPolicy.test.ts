@@ -57,9 +57,9 @@ describe("resolveItemEquipPolicy", () => {
         expect(resolveItemEquipPolicy(item)).toBe("carried");
     });
 
-    it("resolves scroll pilot override as wieldable", () => {
+    it("resolves scroll as carried (use-from-bag consumable)", () => {
         expect(resolveItemEquipPolicy(getItem("rpv_scroll-of-fire-bolt", "dnd")!)).toBe(
-            "wieldable"
+            "carried"
         );
     });
 });
@@ -75,13 +75,10 @@ describe("getEquipableSlotIds", () => {
         ]);
     });
 
-    it("returns hand slots for wieldable override scroll", () => {
-        expect(getEquipableSlotIds(getItem("rpv_scroll-of-fire-bolt", "dnd")!)).toEqual([
-            "melee-main",
-            "melee-off",
-            "ranged-main",
-            "ranged-off",
-        ]);
+    it("returns empty slots for carried scroll consumable", () => {
+        expect(getEquipableSlotIds(getItem("rpv_scroll-of-fire-bolt", "dnd")!)).toEqual(
+            []
+        );
     });
 
     it("returns wearable and hand slots for granted amulet", () => {
@@ -109,7 +106,7 @@ describe("canEquipItem", () => {
         ["srd_longsword", "breast", false],
         ["srd_clothes-travelers", "cosmetic", true],
         ["srd_clothes-travelers", "melee-main", false],
-        ["rpv_scroll-of-fire-bolt", "melee-main", true],
+        ["rpv_scroll-of-fire-bolt", "melee-main", false],
         ["rpv_scroll-of-fire-bolt", "amulet", false],
         ["rpv_amulet-of-vitality", "amulet", true],
         ["srd_shield", "melee-off", true],

@@ -1,3 +1,4 @@
+import type { Grant } from "../grant/grant.types";
 import type { ItemEntry } from "./item.types";
 
 export function isRangedWeapon(item: ItemEntry): boolean {
@@ -31,6 +32,19 @@ export function isRangedWeaponItem(item: ItemEntry | undefined): boolean {
 
 export function hasGrants(item: ItemEntry): boolean {
     return (item.grants?.length ?? 0) > 0;
+}
+
+/**
+ * Ability grants that only declare a use-from-bag effect do not imply the item
+ * should be equippable (`granted` policy). Passive grants still do.
+ */
+function isUseOnlyAbilityGrant(grant: Grant): boolean {
+    return grant.grantType === "ability" && grant.useEffect != null;
+}
+
+/** True when the item has grants that apply while equipped. */
+export function hasEquippableGrants(item: ItemEntry): boolean {
+    return (item.grants ?? []).some((grant) => !isUseOnlyAbilityGrant(grant));
 }
 
 export function isClothingItem(item: ItemEntry): boolean {

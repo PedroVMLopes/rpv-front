@@ -8,10 +8,13 @@ import {
     buildWeaponActionForEquippedSlot,
     isWeaponSlotId,
 } from "@/lib/character/combatActions";
+import { findConsumableAction } from "@/lib/character/consumableActions";
 import {
     formatInventoryItemTitle,
     type InventoryDisplayRow,
 } from "@/lib/character/inventoryDisplay";
+import type { StoredCharacter } from "@/lib/character/storedCharacter";
+import { performConsumableUse } from "@/lib/character/useConsumable";
 import {
     buildItemContentModel,
     type ItemContentFormatters,
@@ -21,6 +24,7 @@ import {
     type WeaponContentFormatters,
 } from "@/lib/content/buildWeaponContentModel";
 import type { ContentUseActionSpec } from "@/lib/content/contentDetail.types";
+import { contentRepo } from "@/lib/content/contentRepository";
 import { itemLacksArmorProficiency } from "@/lib/character/armorProficiencyWarning";
 import { isInventorySlugEquippable } from "@/lib/character/inventoryEquipActions";
 import {
@@ -49,14 +53,22 @@ export function InventoryItemContentCard({
     const tCombat = useTranslations("playerSheet.combat");
     const tContentDetail = useTranslations("contentDetail");
     const tItems = useTranslations("items");
+    const tSpells = useTranslations("spells");
+    const tAbilities = useTranslations("abilities");
     const tSlots = useTranslations("equipmentSlots");
     const contentLocale = useContentLocale((state) => state.contentLocale);
     const setBagQuantity = useCharacterStore((state) => state.setBagQuantity);
+    const useInventoryItem = useCharacterStore(
+        (state) => state.useInventoryItem
+    );
     const deleteInventoryItem = useCharacterStore(
         (state) => state.deleteInventoryItem
     );
     const unequipItemToBag = useCharacterStore(
         (state) => state.unequipItemToBag
+    );
+    const setCharacterSession = useCharacterStore(
+        (state) => state.setCharacterSession
     );
     const getResolvedStats = useCharacterStore((state) => state.getResolvedStats);
     const { openRollRequest } = useRollAssistant();
@@ -84,9 +96,32 @@ export function InventoryItemContentCard({
             ? isItemEquippable(itemEntry)
             : isInventorySlugEquippable(row.slug, stored.system));
 
+    const consumableAction = useMemo(() => {
+        if (!resolved || row.equipped) {
+            return undefined;
+        }
+        return findConsumableAction(
+            stored,
+            resolved,
+            row.slug,
+            0,
+            contentLocale
+        );
+    }, [contentLocale, resolved, row.equipped, row.slug, stored]);
+
     const itemFormatters = useMemo<ItemContentFormatters>(
-        () => ({ missingValue: "—" }),
-        []
+        () => ({
+            missingValue: "—",
+            spell: {
+                tSpells: (key, values) => tSpells(key, values),
+                tAbilities: (key) => tAbilities(key),
+                tContentDetail: (key) => tContentDetail(key),
+                tUse: () => tCombat("use"),
+                tRitual: () => tCombat("castAsRitual"),
+                missingValue: "—",
+            },
+        }),
+        [tAbilities, tCombat, tContentDetail, tSpells]
     );
     const weaponFormatters = useMemo<WeaponContentFormatters>(
         () => ({
@@ -203,6 +238,14 @@ export function InventoryItemContentCard({
             badges.push({ label: tCombat("armorNotProficient") });
         }
 
+        const catalogEntry =
+            consumableAction?.spell != null
+                ? contentRepo(stored.system).getSpell(
+                      consumableAction.spell.slug,
+                      contentLocale
+                  )
+                : undefined;
+
         const models = buildItemContentModel(
             {
                 id: row.key,
@@ -210,6 +253,14 @@ export function InventoryItemContentCard({
                 fallbackTitle: row.slug,
                 badges,
                 quantity: displayQuantity,
+                consumableSpell:
+                    consumableAction?.spell != null
+                        ? {
+                              spell: consumableAction.spell,
+                              catalogEntry,
+                              depleted: consumableAction.depleted,
+                          }
+                        : undefined,
             },
             itemFormatters
         );
@@ -219,12 +270,15 @@ export function InventoryItemContentCard({
             detail: { ...models.detail, title },
         };
     }, [
+        consumableAction,
+        contentLocale,
         displayQuantity,
         itemEntry,
         itemFormatters,
         row.key,
         row.slug,
         slotLabel,
+        stored.system,
         tSlots,
         weaponAction,
         weaponFormatters,
@@ -233,22 +287,46 @@ export function InventoryItemContentCard({
     ]);
 
     const handleUse = (useAction: ContentUseActionSpec) => {
-        if (useAction.kind !== "roll" || !weaponAction) {
-            return;
-        }
+        if (weaponAction && useAction.kind === "roll") {
+            if (useAction.role === "damage") {
+                const request = buildWeaponDamageRollRequest(weaponAction);
+                if (request) {
+                    openRollRequest(request);
+                }
+                return;
+            }
 
-        if (useAction.role === "damage") {
-            const request = buildWeaponDamageRollRequest(weaponAction);
+            const request = buildWeaponAttackOnlyRollRequest(weaponAction);
             if (request) {
                 openRollRequest(request);
             }
             return;
         }
 
-        const request = buildWeaponAttackOnlyRollRequest(weaponAction);
-        if (request) {
-            openRollRequest(request);
+        if (!consumableAction) {
+            return;
         }
+
+        const allUseActions =
+            summary.useActions ??
+            (summary.useAction ? [summary.useAction] : []);
+
+        performConsumableUse({
+            action: consumableAction,
+            useAction,
+            allUseActions,
+            system: stored.system,
+            locale: contentLocale,
+            openRollRequest,
+            consume: (slug, quantity) =>
+                useInventoryItem(stored.id, slug, quantity),
+            setConcentration: (payload) =>
+                setCharacterSession(stored.id, {
+                    concentratingOn: payload,
+                }),
+            castLabel:
+                useAction.role === "ritual" ? tCombat("castAsRitual") : undefined,
+        });
     };
 
     const handleAdjustQuantity = (delta: -1 | 1) => {

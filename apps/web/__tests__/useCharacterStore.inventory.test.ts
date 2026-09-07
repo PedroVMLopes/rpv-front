@@ -181,34 +181,31 @@ describe("useCharacterStore inventory", () => {
         const character = addBaseCharacter();
 
         act(() => {
-            useCharacterStore.getState().addToBag(character.id, "rpv_scroll-of-fire-bolt");
             useCharacterStore.getState().addToBag(character.id, "rpv_amulet-of-vitality");
+            useCharacterStore.getState().addToBag(character.id, "rpv_ring-of-hardiness");
             useCharacterStore
                 .getState()
-                .equipItem(character.id, "melee-main", "rpv_scroll-of-fire-bolt");
+                .equipItem(character.id, "amulet", "rpv_amulet-of-vitality");
         });
 
         let updated = useCharacterStore
             .getState()
             .characters.find((entry) => entry.id === character.id)!;
 
-        expect(updated.grants).toEqual(
-            expect.arrayContaining([
-                expect.objectContaining({
-                    kind: "spell",
-                    ref: "fire-bolt",
-                    source: { type: "item", id: "rpv_scroll-of-fire-bolt" },
-                }),
-            ])
-        );
+        expect(
+            updated.modifiers.some(
+                (modifier) =>
+                    modifier.source.type === "item" &&
+                    modifier.source.id === "rpv_amulet-of-vitality" &&
+                    modifier.stat === "hitPoints"
+            )
+        ).toBe(true);
 
         act(() => {
+            useCharacterStore.getState().unequipItem(character.id, "amulet");
             useCharacterStore
                 .getState()
-                .unequipItem(character.id, "melee-main");
-            useCharacterStore
-                .getState()
-                .equipItem(character.id, "amulet", "rpv_amulet-of-vitality");
+                .equipItem(character.id, "ring", "rpv_ring-of-hardiness");
         });
 
         updated = useCharacterStore
@@ -216,16 +213,17 @@ describe("useCharacterStore inventory", () => {
             .characters.find((entry) => entry.id === character.id)!;
 
         expect(
-            updated.grants.some(
-                (grant) =>
-                    grant.source.type === "item" &&
-                    grant.source.id === "rpv_scroll-of-fire-bolt"
+            updated.modifiers.some(
+                (modifier) =>
+                    modifier.source.type === "item" &&
+                    modifier.source.id === "rpv_amulet-of-vitality"
             )
         ).toBe(false);
         expect(
             updated.modifiers.some(
                 (modifier) =>
                     modifier.source.type === "item" &&
+                    modifier.source.id === "rpv_ring-of-hardiness" &&
                     modifier.stat === "hitPoints"
             )
         ).toBe(true);
@@ -251,7 +249,7 @@ describe("useCharacterStore inventory", () => {
         });
     });
 
-    it("does not duplicate sage granted scroll after equip and unequip", () => {
+    it("consumes sage granted scroll from the bag", () => {
         act(() => {
             useCharacterStore.getState().addCharacter(
                 {
@@ -271,30 +269,31 @@ describe("useCharacterStore inventory", () => {
         });
 
         const character = useCharacterStore.getState().characters[0];
+        expect(
+            character.selections.inventory.bag.some(
+                (stack) => stack.slug === "rpv_scroll-of-fire-bolt"
+            )
+        ).toBe(true);
 
         act(() => {
             useCharacterStore
                 .getState()
-                .equipItem(character.id, "melee-main", "rpv_scroll-of-fire-bolt");
-            useCharacterStore
-                .getState()
-                .unequipItem(character.id, "melee-main");
+                .useInventoryItem(character.id, "rpv_scroll-of-fire-bolt", 1);
         });
 
         const updated = useCharacterStore
             .getState()
             .characters.find((entry) => entry.id === character.id)!;
 
-        expect(updated.selections.inventory.bag).toEqual([
+        expect(
+            updated.selections.inventory.bag.filter(
+                (stack) => stack.slug === "rpv_scroll-of-fire-bolt"
+            )
+        ).toEqual([
             {
                 slug: "rpv_scroll-of-fire-bolt",
-                quantity: 1,
+                quantity: 0,
                 provenance: "grant:background:sage:2",
-            },
-            {
-                slug: "srd_longsword",
-                quantity: 1,
-                provenance: "grant:class:fighter:4",
             },
         ]);
     });
@@ -303,13 +302,13 @@ describe("useCharacterStore inventory", () => {
         const character = addBaseCharacter();
 
         act(() => {
-            useCharacterStore.getState().addToBag(character.id, "rpv_scroll-of-fire-bolt", 2);
+            useCharacterStore.getState().addToBag(character.id, "srd_longsword", 2);
             useCharacterStore
                 .getState()
-                .equipItem(character.id, "melee-main", "rpv_scroll-of-fire-bolt");
+                .equipItem(character.id, "melee-main", "srd_longsword");
             useCharacterStore
                 .getState()
-                .removeFromBag(character.id, "rpv_scroll-of-fire-bolt", 1);
+                .removeFromBag(character.id, "srd_longsword", 1);
         });
 
         const updated = useCharacterStore
@@ -318,8 +317,35 @@ describe("useCharacterStore inventory", () => {
 
         expect(updated.selections.inventory.bag).toEqual([]);
         expect(updated.selections.inventory.equipped).toEqual({
-            "melee-main": "rpv_scroll-of-fire-bolt",
+            "melee-main": "srd_longsword",
         });
+    });
+
+    it("useInventoryItem consumes a scroll from the bag", () => {
+        const character = addBaseCharacter();
+
+        act(() => {
+            useCharacterStore
+                .getState()
+                .addToBag(character.id, "rpv_scroll-of-fire-bolt", 2);
+            useCharacterStore
+                .getState()
+                .useInventoryItem(character.id, "rpv_scroll-of-fire-bolt", 1);
+        });
+
+        const updated = useCharacterStore
+            .getState()
+            .characters.find((entry) => entry.id === character.id)!;
+
+        expect(updated.selections.inventory.bag).toEqual([
+            { slug: "rpv_scroll-of-fire-bolt", quantity: 1 },
+        ]);
+        expect(
+            updated.grants.some(
+                (grant) =>
+                    grant.kind === "spell" && grant.ref === "fire-bolt"
+            )
+        ).toBe(false);
     });
 });
 

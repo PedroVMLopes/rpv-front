@@ -107,7 +107,7 @@ describe("deriveCharacterGrants", () => {
                 background: "sage",
                 inventory: {
                     bag: [],
-                    equipped: { "melee-main": "rpv_scroll-of-fire-bolt" },
+                    equipped: { amulet: "rpv_amulet-of-vitality" },
                 },
             },
             "en", 1, "dnd"
@@ -120,13 +120,15 @@ describe("deriveCharacterGrants", () => {
                     ref: "arcana",
                     source: { type: "background", id: "sage" },
                 }),
-                expect.objectContaining({
-                    kind: "spell",
-                    ref: "fire-bolt",
-                    source: { type: "item", id: "rpv_scroll-of-fire-bolt" },
-                }),
             ])
         );
+        expect(
+            grants.some(
+                (grant) =>
+                    grant.source.type === "item" &&
+                    grant.source.id === "rpv_scroll-of-fire-bolt"
+            )
+        ).toBe(false);
     });
 
     it("derives fixed class proficiencies from characterClass selection", () => {

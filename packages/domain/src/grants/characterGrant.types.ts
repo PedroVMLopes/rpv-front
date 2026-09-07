@@ -17,6 +17,8 @@ export type CharacterGrantKind =
 export type GrantActivation = {
     cost: string;
     resourceRef?: string;
+    /** Units to remove from inventory on use; omit = no inventory consume. */
+    consumeQuantity?: number;
 };
 
 export type ResourceRecoverOn = "short_rest" | "long_rest";

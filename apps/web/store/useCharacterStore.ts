@@ -32,6 +32,7 @@ import {
     setBagQuantity as setBagQuantityInventory,
     unequipItem as unequipItemInventory,
     unequipItemFromMultiSlot as unequipItemFromMultiSlotInventory,
+    useInventoryItem as useInventoryItemInventory,
 } from "@/lib/character/inventory";
 import { getResourceMax } from "@/lib/character/presetStats";
 import {
@@ -79,6 +80,7 @@ interface CharacterStore {
     ) => void;
     addToBag: (id: string, slug: string, quantity?: number) => void;
     removeFromBag: (id: string, slug: string, quantity?: number) => void;
+    useInventoryItem: (id: string, slug: string, quantity?: number) => void;
     setBagQuantity: (id: string, slug: string, quantity: number) => void;
     deleteInventoryItem: (id: string, input: DeleteInventoryItemInput) => void;
     unequipItemToBag: (
@@ -260,6 +262,11 @@ export const useCharacterStore = create<CharacterStore>()(
             removeFromBag: (id, slug, quantity = 1) =>
                 updateCharacterInventory(set, get, id, (inventory) =>
                     removeFromBagInventory(inventory, slug, quantity)
+                ),
+
+            useInventoryItem: (id, slug, quantity = 1) =>
+                updateCharacterInventory(set, get, id, (inventory) =>
+                    useInventoryItemInventory(inventory, slug, quantity)
                 ),
 
             setBagQuantity: (id, slug, quantity) =>

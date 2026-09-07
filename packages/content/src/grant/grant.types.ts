@@ -73,6 +73,13 @@ export type GrantOption =
     | CurrencyGrantOption;
 
 /**
+ * Declared one-shot (or activatable) effect when the grant is used.
+ * Read from item definitions by consumers; not copied onto CharacterGrant in MVP.
+ * Extend with heal / apply_condition kinds as needed.
+ */
+export type GrantUseEffect = { kind: "cast_spell"; spellRef: string };
+
+/**
  * A single thing a trait gives a character.
  * - `choose === 0` -> fixed: every option (or the ability_score target) applies.
  * - `choose > 0`   -> the player picks `choose` entries from `options` or from
@@ -97,6 +104,12 @@ export interface Grant {
      * action catalog. Omitted abilities are traits only (overview / features).
      */
     activation?: GrantActivation;
+    /**
+     * Effect applied when this grant is used (e.g. cast a spell from a scroll).
+     * Consumers read this from the content definition; bag consumables do not
+     * become permanent CharacterGrants via collectGrantSources.
+     */
+    useEffect?: GrantUseEffect;
     /** Resource pool metadata when grantType is "resource". */
     recoverOn?: "short_rest" | "long_rest";
     display?: "slots" | "counter";

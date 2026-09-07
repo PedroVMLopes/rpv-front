@@ -26,6 +26,10 @@ import {
     type WeaponAction,
 } from "@/lib/character/combatActions";
 import {
+    listConsumableActions,
+    type ConsumableAction,
+} from "@/lib/character/consumableActions";
+import {
     buildSpellAttackRollRequest,
     buildSpellDamageRollRequest,
     buildWeaponAttackRollRequest,
@@ -130,6 +134,8 @@ export type DisplayAction = {
     weapon?: WeaponAction;
     spell?: SpellAction;
     featureSource?: ModifierSourceType;
+    /** Present when this action comes from a bag consumable. */
+    consumable?: ConsumableAction;
 };
 
 export type ActionsStatusSummary = {
@@ -396,6 +402,65 @@ function buildFeatureActions(
     );
 }
 
+function buildConsumableDisplayActions(
+    stored: StoredCharacter,
+    resolved: Stats,
+    locale: Locale | undefined
+): DisplayAction[] {
+    return listConsumableActions(stored, resolved, locale).map((consumable) => {
+        const actionCost = displayActionCost(consumable.activation.cost);
+        const spell = consumable.spell;
+        const entry = spell
+            ? contentRepo(stored.system).getSpell(spell.slug, locale)
+            : undefined;
+
+        return {
+            id: consumable.id,
+            title: consumable.title,
+            sourceType: "item" as const,
+            actionCost,
+            availability: consumable.depleted
+                ? ("depleted" as const)
+                : ("available" as const),
+            badges: [
+                consumable.itemName,
+                entry?.levelInt === 0
+                    ? "Cantrip"
+                    : entry?.levelInt != null
+                      ? `Lv${entry.levelInt}`
+                      : null,
+            ].filter(Boolean) as string[],
+            summary: [
+                spell?.attackBonus,
+                spell?.saveDc,
+                `${consumable.quantity} left`,
+            ].filter(Boolean) as string[],
+            description: consumable.description,
+            rollRequest: spell
+                ? buildSpellAttackRollRequest(spell) ??
+                  buildSpellDamageRollRequest(spell) ??
+                  undefined
+                : undefined,
+            actionLabel: spell
+                ? buildSpellAttackRollRequest(spell) ||
+                  buildSpellDamageRollRequest(spell)
+                    ? ("roll" as const)
+                    : ("use" as const)
+                : ("use" as const),
+            resource: {
+                ref: consumable.itemSlug,
+                label: consumable.itemName,
+                current: consumable.quantity,
+                max: consumable.quantity,
+            },
+            tags: ["consumable", "item"],
+            spell,
+            featureSource: "item",
+            consumable,
+        };
+    });
+}
+
 export function listCombatReminders(
     stored: StoredCharacter,
     locale: Locale | undefined
@@ -435,6 +500,7 @@ export function buildDisplayActions(
                     : action.resource,
         })),
         ...buildFeatureActions(stored, locale),
+        ...buildConsumableDisplayActions(stored, resolved, locale),
     ];
 }
 

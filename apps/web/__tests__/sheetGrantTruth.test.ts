@@ -119,7 +119,7 @@ describe("sheet grant truth after rebuild", () => {
         ).toBe(true);
     });
 
-    it("does not grant bag item spells or HP; equipped items do", () => {
+    it("does not grant bag item spells or HP; equipped passive items do", () => {
         const bagOnly = buildNewStoredCharacter(
             {
                 ...fighterForm,
@@ -155,9 +155,8 @@ describe("sheet grant truth after rebuild", () => {
                 ...fighterForm,
                 level: 1,
                 inventory: {
-                    bag: [],
+                    bag: [{ slug: "rpv_scroll-of-fire-bolt", quantity: 1 }],
                     equipped: {
-                        "melee-main": "rpv_scroll-of-fire-bolt",
                         amulet: "rpv_amulet-of-vitality",
                     },
                     equippedMulti: {},
@@ -168,15 +167,14 @@ describe("sheet grant truth after rebuild", () => {
             "en"
         );
 
-        expect(equipped.grants).toEqual(
-            expect.arrayContaining([
-                expect.objectContaining({
-                    kind: "spell",
-                    ref: "fire-bolt",
-                    source: { type: "item", id: "rpv_scroll-of-fire-bolt" },
-                }),
-            ])
-        );
+        expect(
+            equipped.grants.some(
+                (grant) =>
+                    grant.kind === "spell" &&
+                    grant.ref === "fire-bolt" &&
+                    grant.source.id === "rpv_scroll-of-fire-bolt"
+            )
+        ).toBe(false);
         expect(equipped.modifiers).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
@@ -189,7 +187,7 @@ describe("sheet grant truth after rebuild", () => {
         const resolved = resolveStats(equipped.baseStats, equipped.modifiers);
         const { cantrips } = listSpellActions(equipped, resolved, "en");
         expect(cantrips.some((action) => action.slug === "fire-bolt")).toBe(
-            true
+            false
         );
     });
 });

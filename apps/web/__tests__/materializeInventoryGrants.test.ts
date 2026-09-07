@@ -248,7 +248,7 @@ describe("mergeStartingGrants", () => {
         ]);
     });
 
-    it("removes equipped slug from bag after materializing granted stacks", () => {
+    it("keeps granted bag scroll when previously marked equipped", () => {
         const merged = mergeStartingGrants(
             {
                 ...emptyCharacterSelections(),
@@ -267,14 +267,18 @@ describe("mergeStartingGrants", () => {
             1
         );
 
-        expect(merged.inventory?.equipped).toEqual({
-            "melee-main": "rpv_scroll-of-fire-bolt",
-        });
+        expect(merged.inventory?.equipped).toEqual({});
         expect(
             merged.inventory?.bag.filter(
                 (stack) => stack.slug === "rpv_scroll-of-fire-bolt"
             )
-        ).toEqual([]);
+        ).toEqual([
+            {
+                slug: "rpv_scroll-of-fire-bolt",
+                quantity: 1,
+                provenance: "grant:background:sage:2",
+            },
+        ]);
         expect(merged.inventory?.bag).toEqual(
             expect.arrayContaining([
                 {

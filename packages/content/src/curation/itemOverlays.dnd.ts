@@ -12,7 +12,7 @@ export const rpvExtraItems: ItemEntry[] = [
         system: "dnd",
         name: "Scroll of Fire Bolt",
         description:
-            "A scroll containing the Fire Bolt cantrip. Reading it teaches you the spell.",
+            "A scroll containing the Fire Bolt cantrip. Reading it casts the spell once and consumes the scroll.",
         category: { name: "Scroll", key: "scroll" },
         weapon: null,
         armor: null,
@@ -20,12 +20,13 @@ export const rpvExtraItems: ItemEntry[] = [
         weightUnit: null,
         cost: null,
         stackable: true,
-        equipPolicy: "wieldable",
         grants: [
             {
-                grantType: "spell",
+                grantType: "ability",
                 choose: 0,
-                options: [{ optionType: "spell", ref: "fire-bolt" }],
+                description: "Cast Fire Bolt",
+                activation: { cost: "action", consumeQuantity: 1 },
+                useEffect: { kind: "cast_spell", spellRef: "fire-bolt" },
             },
         ],
     },

@@ -24,10 +24,10 @@ Referência de implementação hoje:
 | **Possuir** | `bag` | Peso, visibilidade na ficha | Waterskin, corda, rations |
 | **Equipar** | `equipped` (single) | Grants, AC, ataques de arma | Armadura, espada, anel mágico |
 | **Marcar cosmético** | `equippedMulti.cosmetic` | Só display / roleplay | Roupas, robes |
-| **Usar** (futuro) | `bag` → consome qty | Ação na mesa, efeito pontual | Scroll, poção, holy water |
+| **Usar** | `bag` → consome qty | Ação na mesa, efeito pontual | Scroll, poção, holy water |
 
 Na mesa de D&D, scrolls **não são equipados** — são lidos da mochila e consumidos.
-A aplicação ainda não modela esse fluxo; ver [Limitação do piloto — scroll](#limitação-do-piloto--scroll).
+Ver [Consumíveis — Use from bag](#consumíveis--use-from-bag-etapa-7-parcial--implementado).
 
 ---
 
@@ -96,15 +96,16 @@ será restrito ou deprecado no refactor de UI.
 | Posse passiva | Waterskin, rope, tools, munição | Não | `carried` |
 | Cosmético / no corpo | Clothes, robes, anel mundano (signet) | Slot `cosmetic` only | `cosmetic` |
 | Empunhar / vestir com efeito | Arma, armadura, escudo, anel mágico | Slots mecânicos | `wieldable`, `shield`, `wearable`, `granted` |
-| Uso ativo consumível | Scroll, poção, antitoxin | Não — **Usar** da bag (futuro) | `carried` + `activation` |
+| Uso ativo consumível | Scroll, poção, antitoxin | Não — **Usar** da bag | `carried` + `activation` + `useEffect` |
 
 ### Grants em itens
 
 - **Passivo enquanto equipado** — `stat_modifier`, spell grant permanente, etc. Ex.: amuleto +HP.
   Resolvido via `equipped` single → `getItemGrants`.
-- **Uso declarado no turno** — `ability` grant com `activation` (`action`, `bonus`, …).
-  Não deve depender de slot de mão; aparece no catálogo de ações/combate.
-  **Canal correto para consumíveis** (scrolls, poções).
+- **Uso declarado no turno** — `ability` grant com `activation` + `useEffect`
+  (ex. `cast_spell`). Não depende de slot; aparece no inventário e no Combat via
+  `listConsumableActions` (derivado da bag, **não** de `collectGrantSources`).
+  **Canal para consumíveis** (scrolls, poções).
 
 Ver [`packages/content/AGENTS.md`](../packages/content/AGENTS.md) — seção Item equip policy.
 
@@ -156,25 +157,30 @@ Ordem de avaliação — primeira match vence:
 | `wearable` | `helmet`, `cloak`, `breast`, `gloves`, `boots`, `amulet`, `ring`, `ring-2` |
 | `granted` | união de wearable + wieldable single |
 
-Override exemplo: `rpv_scroll-of-fire-bolt` → `equipPolicy: "wieldable"` (piloto;
-ver limitação abaixo).
+Override exemplo: itens com grants passivos sem weapon/armor → `granted`.
+Ability grants **só** com `useEffect` (consumíveis) **não** implicam `granted`
+(`hasEquippableGrants`); category `scroll` deriva `carried`.
 
 ---
 
-## Limitação do piloto — scroll
+## Consumíveis — Use from bag (Etapa 7 parcial — implementado)
 
-`rpv_scroll-of-fire-bolt` usa `grantType: "spell"` **sem** `activation`. Enquanto
-está em um slot `equipped` single, o personagem ganha o spell grant (aparece na aba
-Combate). Isso é um **atalho de teste**, não a regra de mesa.
+`rpv_scroll-of-fire-bolt` é o piloto:
 
-Comportamento alvo (etapa futura — consumíveis):
+1. Policy `carried` — só bag; sem Equipar.
+2. Grant `ability` + `activation: { cost: "action", consumeQuantity: 1 }` +
+   `useEffect: { kind: "cast_spell", spellRef: "fire-bolt" }`.
+3. **Usar** no inventário ou Combat → rolagem da magia + `useInventoryItem` (qty−1).
+4. Não entra em `stored.grants` como spell permanente.
+5. Sanitize restaura scrolls legado equipados de volta à bag.
+6. Stacks com provenance consumidos ficam em qty `0` (ocultos no display) para o
+   rematerialize não restaurar o loot inicial.
 
-1. Policy `carried` — scroll fica só na bag.
-2. Grant `ability` + `activation: { cost: "action" }` (ou metadado de spell + consumo).
-3. Botão **Usar** no card do inventário → rolagem + `removeFromBag(slug, 1)`.
-4. Sem equipar.
+Poções (`useEffect` heal), charges/wands e swap de slot ocupado permanecem pendentes.
 
-Até lá, o scroll piloto continua exigindo equip para o spell grant aparecer.
+Helpers: [`consumableActions.ts`](../apps/web/lib/character/consumableActions.ts),
+[`useConsumable.ts`](../apps/web/lib/character/useConsumable.ts),
+[`itemUse.ts`](../packages/content/src/item/itemUse.ts).
 
 ---
 
@@ -254,7 +260,7 @@ e moeda quando picks de starting equipment mudam.
 Overlap entre camadas é intencional; duplicatas idênticas foram podadas (provenance
 dedup mantido em `buildCharacter.test.ts`).
 
-**Próximo passo:** Etapa 7 — polish (swap de slot ocupado; consumíveis com **Usar**).
+**Próximo passo:** Etapa 7 restante — polish (swap de slot ocupado); poções / charges.
 
 ---
 
@@ -265,7 +271,7 @@ dedup mantido em `buildCharacter.test.ts`).
 | Qualquer item em qualquer slot | Não — `sanitizeInventory` + `equipItem` usam `canEquipItem` | Policy + sanitize rejeita mismatch |
 | Waterskin equipável | Não — sem botão Equip (policy `carried`) | `carried` — só Posses |
 | Roupas | Só slot `cosmetic` no menu | `cosmetic` |
-| Scroll | Equip + spell grant passivo | Usar da bag + consumir (futuro) |
+| Scroll | Usar da bag + consumir qty ✅ | — |
 | Adicionar item manual | Picker do catálogo → `addToBag` (qty 1) ✅ | — |
 | Busca nas Posses | Texto + filtros de categoria ✅ | — |
 | Layout da aba | Três painéis: Equipamento / Posses / Cosmético | — |
@@ -285,7 +291,7 @@ Cada etapa fecha com testes antes da próxima.
 | **4** | Display: `listCarriedRows` vs equipados vs cosmético ✅ | `inventoryDisplay.ts`, `InventoryTab` |
 | **5** | Layout aba Inventário (Equipamento / Posses / Cosmético) ✅ | `InventoryTab`, painéis |
 | **6** | Adicionar item do catálogo + busca Posses ✅ | `InventoryToolbar`, `InventoryAddItemModal` |
-| **7** | Polish: swap de slot ocupado; consumíveis com **Usar** | grants + `activation`, qty |
+| **7** | Consumíveis **Usar** (scroll) ✅; polish: swap de slot ocupado; poções | grants + `useEffect`, qty |
 
 Homebrew compartilhável fica **fora** deste roadmap — mesmo `ItemEntry` quando existir.
 

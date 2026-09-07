@@ -146,21 +146,33 @@ export function migrateSingleToMultiSlots(
 function sanitizeEquipped(
     equipped: CharacterInventory["equipped"],
     system: SystemKey
-): CharacterInventory["equipped"] {
+): {
+    equipped: CharacterInventory["equipped"];
+    restoredToBag: CharacterInventory["bag"];
+} {
     const migrated = migrateLegacyEquippedSlots(equipped, system);
     const next: CharacterInventory["equipped"] = {};
     const seenSlugs = new Set<string>();
+    const restoredToBag: CharacterInventory["bag"] = [];
 
     for (const [slotId, rawSlug] of Object.entries(migrated)) {
         const slug = coerceSlug(rawSlug);
+        if (!slug || !isValidItemSlug(slug, system)) {
+            continue;
+        }
+
+        if (seenSlugs.has(slug)) {
+            continue;
+        }
+
         if (
-            !slug ||
             !isValidEquipmentSlot(slotId, system) ||
             isMultiEquipmentSlot(slotId, system) ||
-            !isValidItemSlug(slug, system) ||
-            !canEquipItem(slug, slotId, system) ||
-            seenSlugs.has(slug)
+            !canEquipItem(slug, slotId, system)
         ) {
+            // Policy/slot mismatch (e.g. former equipable scroll → carried):
+            // restore the unit to the bag instead of deleting it.
+            restoredToBag.push({ slug, quantity: 1 });
             continue;
         }
 
@@ -168,7 +180,7 @@ function sanitizeEquipped(
         seenSlugs.add(slug);
     }
 
-    return next;
+    return { equipped: next, restoredToBag };
 }
 
 function sanitizeEquippedMulti(
@@ -352,7 +364,7 @@ export function sanitizeInventory(
     system: SystemKey,
     options?: { reconcileEquipped?: boolean }
 ): CharacterInventory {
-    const bag = sanitizeBag(inventory.bag ?? [], system);
+    const bagIn = sanitizeBag(inventory.bag ?? [], system);
     const legacyMigrated = migrateLegacyEquippedSlots(
         inventory.equipped ?? {},
         system
@@ -363,9 +375,16 @@ export function sanitizeInventory(
             inventory.equippedMulti,
             system
         );
-    const equipped = sanitizeEquipped(singleEquipped, system);
+    const { equipped, restoredToBag } = sanitizeEquipped(singleEquipped, system);
     const reserved = new Set(Object.values(equipped));
     const equippedMulti = sanitizeEquippedMulti(mergedMulti, system, reserved);
+
+    // Only restore dropped equipped units that would otherwise vanish (no bag
+    // remainder for that slug). Avoids doubling inconsistent bag+equipped data.
+    const restoredMissing = restoredToBag.filter(
+        (stack) => getBagQuantity(bagIn, stack.slug) === 0
+    );
+    const bag = sanitizeBag([...bagIn, ...restoredMissing], system);
     const validated = { bag, equipped, equippedMulti };
 
     // Bag stacks are stored as post-reconcile remainders. Re-running reconcile
@@ -552,6 +571,19 @@ export function removeFromBag(
 
     const nextQuantity = existing.quantity - quantity;
     if (nextQuantity === 0) {
+        // Keep granted (provenance) stacks at qty 0 so rematerialize can
+        // preserve consumed starting loot instead of restoring full amount.
+        if (existing.provenance) {
+            return {
+                ...inventory,
+                bag: inventory.bag.map((stack, index) =>
+                    index === stackIndex
+                        ? { ...stack, quantity: 0 }
+                        : stack
+                ),
+            };
+        }
+
         return {
             ...inventory,
             bag: inventory.bag.filter((_, index) => index !== stackIndex),
@@ -566,6 +598,30 @@ export function removeFromBag(
                 : stack
         ),
     };
+}
+
+/**
+ * Consume units from the bag when using a consumable item.
+ * No-op when quantity is insufficient (same as removeFromBag).
+ */
+export function useInventoryItem(
+    inventory: CharacterInventory,
+    slug: string,
+    quantity = 1
+): CharacterInventory {
+    return removeFromBag(inventory, slug, quantity);
+}
+
+/** Total quantity of a slug across all bag stacks. */
+export function getTotalBagQuantity(
+    inventory: CharacterInventory,
+    slug: string
+): number {
+    const normalizedSlug = coerceSlug(slug);
+    if (!normalizedSlug) {
+        return 0;
+    }
+    return getBagQuantity(inventory.bag, normalizedSlug);
 }
 
 // TODO(inventory-ui): when the slot is occupied, future UI should ask whether to

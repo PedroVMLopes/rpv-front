@@ -178,12 +178,13 @@ describe("InventoryTab", () => {
             selections: {
                 ...storedCharacter.selections,
                 inventory: {
-                    bag: [],
+                    bag: [
+                        { slug: "rpv_scroll-of-fire-bolt", quantity: 1 },
+                    ],
                     equipped: {
                         armor: "srd_leather-armor",
                         amulet: "rpv_amulet-of-vitality",
                         "ranged-main": "srd_longbow",
-                        "melee-main": "rpv_scroll-of-fire-bolt",
                     },
                 },
             },
@@ -202,7 +203,10 @@ describe("InventoryTab", () => {
 
         expect(within(usable).getByText("Longbow")).toBeInTheDocument();
         expect(
-            within(usable).getByText("Scroll of Fire Bolt")
+            within(usable).queryByText("Scroll of Fire Bolt")
+        ).not.toBeInTheDocument();
+        expect(
+            screen.getByText("Scroll of Fire Bolt")
         ).toBeInTheDocument();
         expect(
             within(usable).queryByText("Leather Armor")

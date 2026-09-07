@@ -25,6 +25,7 @@ export * from "./item/item.types";
 export * from "./item/itemEquipPolicy.types";
 export * from "./item/itemProfile";
 export * from "./item/item.mapper";
+export * from "./item/itemUse";
 export * from "./item/weaponProficiency";
 export * from "./item/armorProficiency";
 

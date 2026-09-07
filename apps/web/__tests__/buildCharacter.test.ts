@@ -43,7 +43,7 @@ describe("buildStoredCharacter", () => {
                 background: "sage",
                 inventory: {
                     bag: [],
-                    equipped: { "melee-main": "rpv_scroll-of-fire-bolt" },
+                    equipped: { amulet: "rpv_amulet-of-vitality" },
                 },
             },
             "player",
@@ -56,23 +56,23 @@ describe("buildStoredCharacter", () => {
             characterClass: "fighter",
             background: "sage",
             inventory: {
-                bag: [
+                bag: expect.arrayContaining([
                     {
                         slug: "srd_longsword",
                         quantity: 1,
                         provenance: "grant:class:fighter:4",
                     },
-                ],
-                equipped: { "melee-main": "rpv_scroll-of-fire-bolt" },
+                    {
+                        slug: "rpv_scroll-of-fire-bolt",
+                        quantity: 1,
+                        provenance: "grant:background:sage:2",
+                    },
+                ]),
+                equipped: { amulet: "rpv_amulet-of-vitality" },
             },
         });
         expect(character.grants).toEqual(
             expect.arrayContaining([
-                expect.objectContaining({
-                    kind: "spell",
-                    ref: "fire-bolt",
-                    source: { type: "item", id: "rpv_scroll-of-fire-bolt" },
-                }),
                 expect.objectContaining({
                     kind: "proficiency",
                     ref: "arcana",
@@ -81,8 +81,19 @@ describe("buildStoredCharacter", () => {
             ])
         );
         expect(
-            character.modifiers.some((modifier) => modifier.source.type === "item")
+            character.grants.some(
+                (grant) =>
+                    grant.source.type === "item" &&
+                    grant.source.id === "rpv_scroll-of-fire-bolt"
+            )
         ).toBe(false);
+        expect(
+            character.modifiers.some(
+                (modifier) =>
+                    modifier.source.type === "item" &&
+                    modifier.source.id === "rpv_amulet-of-vitality"
+            )
+        ).toBe(true);
     });
 
     it("includes Action Surge when fighter is built at level 2", () => {
@@ -591,31 +602,39 @@ describe("buildStoredCharacter", () => {
                     bag: [
                         { slug: "rpv_scroll-of-fire-bolt", quantity: 1 },
                         { slug: "rpv_amulet-of-vitality", quantity: 1 },
+                        { slug: "rpv_ring-of-hardiness", quantity: 1 },
                     ],
                     equipped: {
-                        "melee-main": "rpv_scroll-of-fire-bolt",
                         amulet: "rpv_amulet-of-vitality",
+                        ring: "rpv_ring-of-hardiness",
                     },
                 },
             },
         });
 
         expect(character.selections.inventory.equipped).toEqual({
-            "melee-main": "rpv_scroll-of-fire-bolt",
             amulet: "rpv_amulet-of-vitality",
+            ring: "rpv_ring-of-hardiness",
         });
-        expect(character.grants).toEqual(
-            expect.arrayContaining([
-                expect.objectContaining({
-                    kind: "spell",
-                    ref: "fire-bolt",
-                }),
-            ])
-        );
+        expect(
+            character.grants.some(
+                (grant) =>
+                    grant.kind === "spell" &&
+                    grant.ref === "fire-bolt" &&
+                    grant.source.id === "rpv_scroll-of-fire-bolt"
+            )
+        ).toBe(false);
         expect(
             character.modifiers.some(
                 (modifier) =>
                     modifier.source.id === "rpv_amulet-of-vitality" &&
+                    modifier.stat === "hitPoints"
+            )
+        ).toBe(true);
+        expect(
+            character.modifiers.some(
+                (modifier) =>
+                    modifier.source.id === "rpv_ring-of-hardiness" &&
                     modifier.stat === "hitPoints"
             )
         ).toBe(true);

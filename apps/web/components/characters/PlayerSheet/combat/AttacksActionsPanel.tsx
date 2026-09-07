@@ -17,6 +17,7 @@ import { contentRepo } from "@/lib/content/contentRepository";
 import { FeatureActionCard } from "@/components/content/features/FeatureActionCard";
 import { SpellActionCard } from "@/components/content/spells/SpellActionCard";
 import { WeaponActionCard } from "@/components/content/weapons/WeaponActionCard";
+import { ConsumableActionCard } from "@/components/content/consumables/ConsumableActionCard";
 import { useContentLocale } from "@/store/useContentLocale";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { CombatActionFilter } from "./CombatActionFilter";
@@ -89,6 +90,18 @@ function CombatActionEntry({
             <WeaponActionCard
                 stored={stored}
                 weapon={action.weapon}
+                openRollRequest={openRollRequest}
+                hideShortDescription
+            />
+        );
+    }
+
+    if (action.consumable) {
+        return (
+            <ConsumableActionCard
+                stored={stored}
+                action={action}
+                spellcastingAbility={spellcastingAbility}
                 openRollRequest={openRollRequest}
                 hideShortDescription
             />

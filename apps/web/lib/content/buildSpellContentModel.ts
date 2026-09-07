@@ -244,6 +244,18 @@ function resolveUseActions(
     );
 }
 
+/** Public helper for consumable items that cast a spell on use. */
+export function resolveSpellUseActions(
+    spell: SpellAction,
+    catalogEntry: SpellCatalogEntry | undefined,
+    formatters: SpellContentFormatters
+): {
+    useAction?: ContentUseActionSpec;
+    useActions?: ContentUseActionSpec[];
+} {
+    return resolveUseActions(spell, catalogEntry, formatters);
+}
+
 export function buildSpellContentModel(
     input: BuildSpellContentModelInput,
     formatters: SpellContentFormatters

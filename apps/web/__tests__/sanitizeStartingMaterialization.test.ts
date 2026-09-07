@@ -80,7 +80,9 @@ describe("sanitizeStartingMaterialization", () => {
             1
         );
 
-        expect(result.inventory.bag).toEqual([]);
+        expect(result.inventory.bag).toEqual([
+            { slug: "srd_longsword", quantity: 1 },
+        ]);
         expect(result.inventory.equipped).toEqual({ "melee-main": "srd_longsword" });
     });
 

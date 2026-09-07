@@ -66,9 +66,9 @@ Summary:
   `equippedMulti` (e.g. `cosmetic`) is roleplay-only and does not alter stats.
 - **Carried gear** (adventuring gear, tools, waterskin, …) stays in the bag — not
   equippable. **Cosmetic** items (clothes, robes) may use `equippedMulti.cosmetic`
-  without mechanical effect. **Consumables** (scrolls, potions) should be **used from
-  the bag** via `activation` grants (future); the pilot scroll uses a temporary
-  equip + passive spell grant — see INVENTORY.md.
+  without mechanical effect. **Consumables** (scrolls, potions) are **used from
+  the bag** via `activation` + `useEffect` (scroll MVP implemented; potions later)
+  — see INVENTORY.md.
 - **Equip rules** are moving to data-driven `ItemEquipPolicy` + `canEquipItem` in
   `@rpv/content` (replacing the permissive pilot rule “any item in any slot”).
 - `schemaVersion` on the `StoredCharacter` root enables future migrations.
@@ -254,8 +254,9 @@ Web tests are the primary integration coverage for the character pipeline.
 
 ## Next steps
 
-- **Inventory refactor** — equip policy, sanitize, UI (Posses / Equipamento / Cosmético),
-  add-item picker, then consumable **Use** from bag. Roadmap: [docs/INVENTORY.md](docs/INVENTORY.md).
+- **Inventory** — equip policy, Posses / Equipamento / Cosmético, add-item picker,
+  and consumable **Use** from bag (scroll) are in place. Remaining: slot swap,
+  potions/charges. Roadmap: [docs/INVENTORY.md](docs/INVENTORY.md).
 - Extend spell catalog beyond wizard L1 toward full SRD coverage.
 - Extend class progression beyond L5 toward L20.
 - Player sheet polish (Fase 4) — see [docs/FICHA_JOGADOR.md](docs/FICHA_JOGADOR.md).

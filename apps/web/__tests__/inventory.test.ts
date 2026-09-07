@@ -250,6 +250,9 @@ describe("sanitizeInventory", () => {
         );
 
         expect(result.equipped).toEqual({});
+        expect(result.bag).toEqual([
+            { slug: "rpv_scroll-of-fire-bolt", quantity: 1 },
+        ]);
     });
 
     it("removes policy-invalid equipped entries", () => {
@@ -499,21 +502,32 @@ describe("equipItem", () => {
         );
     });
 
-    it("equips wieldable scroll override in hand slots only", () => {
+    it("rejects equipping carried scroll consumable", () => {
         const inventory = addToBag(emptyInventory(), "rpv_scroll-of-fire-bolt", 1);
 
         expect(
             equipItem(inventory, "melee-main", "rpv_scroll-of-fire-bolt", "dnd")
-        ).toEqual({
-            bag: [],
-            equipped: { "melee-main": "rpv_scroll-of-fire-bolt" },
-            equippedMulti: {},
-        });
+        ).toBe(inventory);
 
-        const withScroll = addToBag(emptyInventory(), "rpv_scroll-of-fire-bolt", 1);
         expect(
-            equipItem(withScroll, "amulet", "rpv_scroll-of-fire-bolt", "dnd")
-        ).toBe(withScroll);
+            equipItem(inventory, "amulet", "rpv_scroll-of-fire-bolt", "dnd")
+        ).toBe(inventory);
+    });
+
+    it("restores formerly equipped scroll to bag on sanitize", () => {
+        const result = sanitizeInventory(
+            {
+                bag: [],
+                equipped: { "melee-main": "rpv_scroll-of-fire-bolt" },
+                equippedMulti: {},
+            },
+            "dnd"
+        );
+
+        expect(result.equipped).toEqual({});
+        expect(result.bag).toEqual([
+            { slug: "rpv_scroll-of-fire-bolt", quantity: 1 },
+        ]);
     });
 
     it("equips cosmetic items into cosmetic multi slot", () => {
@@ -566,21 +580,21 @@ describe("unequipItem", () => {
     it("restores provenance when unequipping a background-granted item", () => {
         const inventory = {
             bag: [],
-            equipped: { "melee-main": "rpv_scroll-of-fire-bolt" },
+            equipped: { amulet: "rpv_amulet-of-vitality" },
             equippedMulti: {},
         };
 
         expect(
             unequipItem(
                 inventory,
-                "melee-main",
+                "amulet",
                 "dnd",
                 "grant:background:sage:2"
             )
         ).toEqual({
             bag: [
                 {
-                    slug: "rpv_scroll-of-fire-bolt",
+                    slug: "rpv_amulet-of-vitality",
                     quantity: 1,
                     provenance: "grant:background:sage:2",
                 },

@@ -92,9 +92,11 @@ describe("item catalog + overlays", () => {
         ]);
         expect(getItemGrants("rpv_scroll-of-fire-bolt")).toEqual([
             {
-                grantType: "spell",
+                grantType: "ability",
                 choose: 0,
-                options: [{ optionType: "spell", ref: "fire-bolt" }],
+                description: "Cast Fire Bolt",
+                activation: { cost: "action", consumeQuantity: 1 },
+                useEffect: { kind: "cast_spell", spellRef: "fire-bolt" },
             },
         ]);
     });

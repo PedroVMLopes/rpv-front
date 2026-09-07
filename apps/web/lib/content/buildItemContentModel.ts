@@ -1,12 +1,22 @@
 import type { Grant, ItemEntry } from "@rpv/content";
+import { listItemUseGrants } from "@rpv/content";
+import type { SpellAction } from "@/lib/character/combatActions";
+import type { SpellCatalogEntry } from "@rpv/content";
+import {
+    resolveSpellUseActions,
+    type SpellContentFormatters,
+} from "./buildSpellContentModel";
 import type {
     ContentDetailRow,
     ContentSummaryModel,
+    ContentUseActionSpec,
     ItemContentModels,
 } from "./contentDetail.types";
 
 export type ItemContentFormatters = {
     missingValue: string;
+    /** Required to emit cast_spell useActions on consumables. */
+    spell?: SpellContentFormatters;
 };
 
 export type BuildItemContentModelInput = {
@@ -17,6 +27,15 @@ export type BuildItemContentModelInput = {
     badges?: ContentSummaryModel["badges"];
     quantity?: number;
     shortDescription?: string;
+    /**
+     * When the item is a cast_spell consumable, pass the derived SpellAction
+     * (and optional catalog entry) so useActions match known spells.
+     */
+    consumableSpell?: {
+        spell: SpellAction;
+        catalogEntry?: SpellCatalogEntry;
+        depleted?: boolean;
+    };
 };
 
 function formatWeight(item: ItemEntry | undefined | null): string | undefined {
@@ -60,11 +79,63 @@ function formatGrantLine(grant: Grant): string {
         }
     }
 
+    if (grant.useEffect?.kind === "cast_spell") {
+        return grant.useEffect.spellRef;
+    }
+
     if (grant.ref && signed) {
         return `${grant.ref} ${signed}`;
     }
 
     return grant.grantType.replace(/_/g, " ");
+}
+
+function resolveConsumableUseActions(
+    input: BuildItemContentModelInput,
+    formatters: ItemContentFormatters
+): {
+    useAction?: ContentUseActionSpec;
+    useActions?: ContentUseActionSpec[];
+} {
+    const item = input.itemEntry;
+    if (!item || !formatters.spell) {
+        return {};
+    }
+
+    const useGrants = listItemUseGrants(item);
+    if (useGrants.length === 0 || !input.consumableSpell) {
+        return {};
+    }
+
+    const { useAction, useActions } = resolveSpellUseActions(
+        input.consumableSpell.spell,
+        input.consumableSpell.catalogEntry,
+        formatters.spell
+    );
+
+    const depleted = Boolean(input.consumableSpell.depleted);
+    const markDisabled = (
+        actions: ContentUseActionSpec[] | undefined
+    ): ContentUseActionSpec[] | undefined => {
+        if (!actions) {
+            return undefined;
+        }
+        return actions.map((action) =>
+            depleted ? { ...action, disabled: true } : action
+        );
+    };
+
+    const nextActions = markDisabled(useActions);
+    const nextAction = useAction
+        ? depleted
+            ? { ...useAction, disabled: true }
+            : useAction
+        : undefined;
+
+    return {
+        useAction: nextAction,
+        useActions: nextActions,
+    };
 }
 
 export function buildItemContentModel(
@@ -114,6 +185,11 @@ export function buildItemContentModel(
               ? [{ label: itemEntry.category.name, variant: "muted" as const }]
               : [];
 
+    const { useAction, useActions } = resolveConsumableUseActions(
+        input,
+        formatters
+    );
+
     return {
         summary: {
             id,
@@ -121,6 +197,8 @@ export function buildItemContentModel(
             title,
             badges: summaryBadges,
             shortDescription: input.shortDescription,
+            useAction,
+            useActions,
         },
         detail: {
             id,
@@ -129,6 +207,8 @@ export function buildItemContentModel(
             sections: [{ rows }],
             description,
             catalogGrants: grants.length > 0 ? grants : undefined,
+            useAction,
+            useActions,
         },
     };
 }

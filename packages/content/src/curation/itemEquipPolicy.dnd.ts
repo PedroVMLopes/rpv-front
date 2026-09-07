@@ -1,7 +1,7 @@
 import type { ItemEquipPolicy } from "../item/itemEquipPolicy.types";
 import type { ItemEntry, ItemSystem } from "../item/item.types";
 import {
-    hasGrants,
+    hasEquippableGrants,
     isBodyArmor,
     isClothingItem,
     isShield,
@@ -48,7 +48,7 @@ export function deriveItemEquipPolicy(item: ItemEntry): ItemEquipPolicy {
         return "wearable";
     }
 
-    if (hasGrants(item)) {
+    if (hasEquippableGrants(item)) {
         return "granted";
     }
 

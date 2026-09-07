@@ -277,13 +277,14 @@ Enforcement in web ops/sanitize: `apps/web/lib/character/inventory.ts`.
 Player Sheet equip UI: `isItemEquippable` + filtered slots via `inventoryEquipActions.ts`.
 Full spec: [`docs/INVENTORY.md`](../../docs/INVENTORY.md).
 
-**Overrides:** set `equipPolicy` on `ItemEntry` or in `itemEntryOverrides`. Example:
-`rpv_scroll-of-fire-bolt` → `wieldable` (pilot only; target model is use-from-bag).
+**Overrides:** set `equipPolicy` on `ItemEntry` or in `itemEntryOverrides`. Ability
+grants that only declare `useEffect` do **not** force `granted` policy
+(`hasEquippableGrants`).
 
 **Anti-patterns:**
 
 - Do not require equip for adventuring gear (`carried`).
-- Do not use passive `spell` grants on scrolls long-term — use `activation` + consume qty.
+- Do not use passive `spell` grants on scrolls — use `activation` + `useEffect` + consume qty.
 - Do not branch on slug in web/engine — use policy + grants data.
 
 ### Authoring checklist — SRD refresh
@@ -307,7 +308,7 @@ Full spec: [`docs/INVENTORY.md`](../../docs/INVENTORY.md).
 | Pattern | Slug | Notes |
 |---------|------|-------|
 | HP bonus | `rpv_amulet-of-vitality` | overlay `stat_modifier` + `hitPoints`; equip in wearable slot |
-| Scroll (pilot) | `rpv_scroll-of-fire-bolt` | **Temporary:** passive `spell` grant while equipped; `equipPolicy: wieldable`. Target: `carried` + **Use** with `activation` |
+| Scroll (consumable) | `rpv_scroll-of-fire-bolt` | `carried` + `ability`/`activation`/`useEffect` cast_spell; **Use** from bag + Combat |
 | Weapon | `srd_longsword` | nested `weapon` profile |
 | Armor | `srd_leather-armor` | nested `armor` → AC formula |
 | Shield | `srd_shield` | overlay fills `armor.category: "shield"`, `acBase: 2`; not an attack |
@@ -571,7 +572,7 @@ and [`deriveStartingEquipmentFromForm.ts`](../../apps/web/lib/character/deriveSt
 - **`selectionFilter` item pools** — `itemCategory` / `itemTags` (v2).
 - **Dice-roll UI for starting gold** — optional button; fixed/choice amounts work today.
 - **Weight, attunement, consumable charges**, community publish API, moderation.
-- **Consumable use from bag** — scrolls/potions via `activation`; see [`docs/INVENTORY.md`](../../docs/INVENTORY.md).
+- **Potion / heal `useEffect`**, wand charges — extend `GrantUseEffect`; scroll Use-from-bag is implemented (see [`docs/INVENTORY.md`](../../docs/INVENTORY.md)).
 - **HTTP API** — [`docs/API_INVENTORY.md`](../../docs/API_INVENTORY.md).
 
 Add pt-BR names under `items` in [`data/translations/pt-BR.json`](data/translations/pt-BR.json).
