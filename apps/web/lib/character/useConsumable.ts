@@ -2,19 +2,22 @@ import { toast } from "sonner";
 import type { ContentUseActionSpec } from "@/lib/content/contentDetail.types";
 import type { ConsumableAction } from "@/lib/character/consumableActions";
 import {
+    buildHealRollRequest,
     buildSpellAttackOnlyRollRequest,
     buildSpellDamageRollRequest,
 } from "@/lib/roll/buildRollRequest";
 import type { RollRequest } from "@/lib/roll/rollRequest.types";
 import { contentRepo } from "@/lib/content/contentRepository";
 import type { Locale } from "@rpv/domain";
+import type { SystemKey } from "@/presets";
 
 export type PerformConsumableUseParams = {
     action: ConsumableAction;
     useAction: ContentUseActionSpec;
     allUseActions?: ContentUseActionSpec[];
-    system: string;
+    system: SystemKey | string;
     locale?: Locale;
+    characterId: string;
     openRollRequest: (request: RollRequest) => void;
     /** Called when inventory should be decremented. */
     consume: (itemSlug: string, quantity: number) => void;
@@ -24,6 +27,8 @@ export type PerformConsumableUseParams = {
         slotLevel?: number;
     }) => void;
     castLabel?: string;
+    /** Toast for stubbed use effects (apply_condition / deal_damage). */
+    manualEffectToast?: (label: string) => void;
 };
 
 /**
@@ -45,8 +50,22 @@ export function shouldConsumeOnUseAction(
     return true;
 }
 
+function maybeConsume(
+    action: ConsumableAction,
+    useAction: ContentUseActionSpec,
+    allUseActions: ContentUseActionSpec[],
+    consume: PerformConsumableUseParams["consume"]
+): void {
+    if (
+        action.consumeQuantity > 0 &&
+        shouldConsumeOnUseAction(useAction, allUseActions)
+    ) {
+        consume(action.itemSlug, action.consumeQuantity);
+    }
+}
+
 /**
- * Apply a consumable use effect (cast_spell MVP) and optionally consume bag qty.
+ * Apply a consumable use effect and optionally consume bag qty.
  * Returns true when an effect was started successfully.
  */
 export function performConsumableUse(
@@ -58,17 +77,45 @@ export function performConsumableUse(
         allUseActions = [],
         system,
         locale,
+        characterId,
         openRollRequest,
         consume,
         setConcentration,
         castLabel,
+        manualEffectToast,
     } = params;
 
     if (action.depleted) {
         return false;
     }
 
-    if (action.useEffect.kind !== "cast_spell" || !action.spell) {
+    const effect = action.useEffect;
+
+    if (effect.kind === "heal") {
+        try {
+            const request = buildHealRollRequest({
+                characterId,
+                id: action.id,
+                label: action.title,
+                dice: effect.dice,
+                flat: effect.flat,
+                healingKind: effect.healingKind,
+            });
+            openRollRequest(request);
+            maybeConsume(action, useAction, allUseActions, consume);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    if (effect.kind === "apply_condition" || effect.kind === "deal_damage") {
+        manualEffectToast?.(action.title);
+        maybeConsume(action, useAction, allUseActions, consume);
+        return true;
+    }
+
+    if (effect.kind !== "cast_spell" || !action.spell) {
         return false;
     }
 
@@ -77,7 +124,10 @@ export function performConsumableUse(
 
     if (useAction.kind === "cast") {
         toast(castLabel ? `${spell.name} (${castLabel})` : spell.name);
-        const catalogEntry = contentRepo(system).getSpell(spell.slug, locale);
+        const catalogEntry = contentRepo(system as SystemKey).getSpell(
+            spell.slug,
+            locale
+        );
         if (catalogEntry?.requiresConcentration && setConcentration) {
             setConcentration({ slug: spell.slug });
         }
@@ -98,12 +148,8 @@ export function performConsumableUse(
         }
     }
 
-    if (
-        started &&
-        action.consumeQuantity > 0 &&
-        shouldConsumeOnUseAction(useAction, allUseActions)
-    ) {
-        consume(action.itemSlug, action.consumeQuantity);
+    if (started) {
+        maybeConsume(action, useAction, allUseActions, consume);
     }
 
     return started;

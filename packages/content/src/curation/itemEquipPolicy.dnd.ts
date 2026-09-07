@@ -13,6 +13,7 @@ const CARRIED_CATEGORY_KEYS = new Set([
     "adventuring-gear",
     "ammunition",
     "poison",
+    "potion",
     "tools",
     "trade-good",
     "land-vehicle",

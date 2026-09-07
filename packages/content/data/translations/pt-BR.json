@@ -375,6 +375,27 @@
     "srd_shield": {
       "name": "Escudo"
     },
+    "srd_potion-of-healing": {
+      "name": "Poção de Cura"
+    },
+    "srd_potion-of-greater-healing": {
+      "name": "Poção de Cura Superior"
+    },
+    "srd_potion-of-superior-healing": {
+      "name": "Poção de Cura Elevada"
+    },
+    "srd_potion-of-supreme-healing": {
+      "name": "Poção de Cura Suprema"
+    },
+    "srd_antitoxin-vial": {
+      "name": "Antitoxina (Frasco)"
+    },
+    "srd_holy-water-flask": {
+      "name": "Água Benta (Frasco)"
+    },
+    "srd_alchemists-fire-flask": {
+      "name": "Fogo Alquímico (Frasco)"
+    },
     "srd_chain-mail": {
       "name": "Cota de Malha"
     },
@@ -562,6 +583,10 @@
     "poisoned": {
       "name": "Envenenado",
       "description": "Desvantagem em testes de ataque e testes de habilidade."
+    },
+    "antitoxin": {
+      "name": "Antitoxina",
+      "description": "Vantagem em testes de resistência contra veneno por 1 hora. Não beneficia mortos-vivos nem constructos."
     }
   }
 }

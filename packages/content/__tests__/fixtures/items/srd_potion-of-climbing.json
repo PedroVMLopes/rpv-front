@@ -1,0 +1,43 @@
+{
+  "key": "srd_potion-of-climbing",
+  "name": "Potion of Climbing",
+  "desc": "When you drink this potion, you gain a climbing speed equal to your walking speed for 1 hour. During this time, you have advantage on Strength (Athletics) checks you make to climb. The potion is separated into brown, silver, and gray layers resembling bands of stone. Shaking the bottle fails to mix the colors.",
+  "category": {
+    "name": "Potion",
+    "key": "potion"
+  },
+  "rarity": {
+    "name": "Common",
+    "key": "common",
+    "rank": 1
+  },
+  "weapon": null,
+  "armor": null,
+  "size": {
+    "name": "Tiny",
+    "key": "tiny"
+  },
+  "weight": "0.000",
+  "weight_unit": "lb",
+  "cost": null,
+  "requires_attunement": false,
+  "attunement_detail": null,
+  "document": {
+    "name": "System Reference Document 5.1",
+    "key": "srd-2014",
+    "type": "SOURCE",
+    "display_name": "5e 2014 Rules",
+    "publisher": {
+      "name": "Wizards of the Coast",
+      "key": "wizards-of-the-coast"
+    },
+    "gamesystem": {
+      "name": "5th Edition 2014",
+      "key": "5e-2014"
+    },
+    "permalink": "https://dnd.wizards.com/resources/systems-reference-document"
+  },
+  "crossreferences": {
+    "to": []
+  }
+}

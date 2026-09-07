@@ -126,6 +126,15 @@ function consumableFromGrant(params: {
         action.description = action.spell.description ?? itemDescription;
     }
 
+    if (grant.useEffect.kind === "heal") {
+        const flat =
+            grant.useEffect.flat != null ? ` + ${grant.useEffect.flat}` : "";
+        action.title = itemName;
+        action.description =
+            itemDescription ??
+            `${grant.useEffect.dice}${flat} hit points`;
+    }
+
     return action;
 }
 

@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import type { StatKey } from "@rpv/domain";
 import type { DisplayAction } from "@/lib/character/actionDisplay";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
@@ -36,6 +37,7 @@ export function ConsumableActionCard({
     const tSpells = useTranslations("spells");
     const tAbilities = useTranslations("abilities");
     const tCombat = useTranslations("playerSheet.combat");
+    const tVitality = useTranslations("playerSheet.vitality");
     const contentLocale = useContentLocale((state) => state.contentLocale);
     const useInventoryItem = useCharacterStore(
         (state) => state.useInventoryItem
@@ -65,6 +67,12 @@ export function ConsumableActionCard({
 
     const { summary, detail } = useMemo(() => {
         if (!spell) {
+            const depleted = action.availability === "depleted";
+            const useAction = {
+                kind: "cast" as const,
+                label: tCombat("use"),
+                disabled: depleted || undefined,
+            };
             return {
                 summary: {
                     id: action.id,
@@ -74,17 +82,8 @@ export function ConsumableActionCard({
                         label,
                         variant: "muted" as const,
                     })),
-                    useAction:
-                        action.availability === "depleted"
-                            ? {
-                                  kind: "cast" as const,
-                                  label: tCombat("use"),
-                                  disabled: true,
-                              }
-                            : {
-                                  kind: "cast" as const,
-                                  label: tCombat("use"),
-                              },
+                    useAction,
+                    useActions: [useAction],
                 },
                 detail: {
                     id: action.id,
@@ -92,6 +91,8 @@ export function ConsumableActionCard({
                     title: action.title,
                     sections: [],
                     description: action.description,
+                    useAction,
+                    useActions: [useAction],
                 },
             };
         }
@@ -168,6 +169,7 @@ export function ConsumableActionCard({
             allUseActions,
             system: stored.system,
             locale: contentLocale,
+            characterId: stored.id,
             openRollRequest,
             consume: (slug, quantity) =>
                 useInventoryItem(stored.id, slug, quantity),
@@ -177,6 +179,8 @@ export function ConsumableActionCard({
                 }),
             castLabel:
                 useAction.role === "ritual" ? tCombat("castAsRitual") : undefined,
+            manualEffectToast: (label) =>
+                toast(tVitality("consumableManualToast", { label })),
         });
     };
 

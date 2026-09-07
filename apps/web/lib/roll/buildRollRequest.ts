@@ -10,6 +10,7 @@ import type {
     DamageStep,
     D20TestRequest,
     DeathSaveRequest,
+    HealRequest,
     HitDieRequest,
 } from "./rollRequest.types";
 
@@ -375,4 +376,36 @@ export function buildHitDieRollRequest(
         characterId,
         die,
     };
+}
+
+export function buildHealRollRequest(params: {
+    characterId: string;
+    label: string;
+    id: string;
+    dice: string;
+    flat?: number;
+    healingKind?: "hp" | "temp_hp";
+}): HealRequest {
+    const parsed = parseDiceNotation(params.dice);
+    return {
+        kind: "heal",
+        id: params.id,
+        label: params.label,
+        characterId: params.characterId,
+        diceCount: parsed.count,
+        die: parsed.sides as DieSides,
+        flat: params.flat,
+        healingKind: params.healingKind ?? "hp",
+    };
+}
+
+export function resolveHealTotal(
+    request: Pick<HealRequest, "diceCount" | "flat">,
+    rolls: number[]
+): number {
+    if (rolls.length !== request.diceCount) {
+        throw new Error("Heal roll count does not match dice count");
+    }
+    const diceSum = rolls.reduce((total, value) => total + value, 0);
+    return diceSum + (request.flat ?? 0);
 }

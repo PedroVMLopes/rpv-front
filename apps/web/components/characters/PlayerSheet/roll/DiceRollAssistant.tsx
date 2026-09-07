@@ -6,6 +6,7 @@ import {
     resolveAttackThenDamageTotal,
     resolveD20TestTotal,
     resolveDamageOnlyTotal,
+    resolveHealTotal,
 } from "@/lib/roll/buildRollRequest";
 import { formatModifier } from "@/lib/character/skillModifiers";
 import { INSPIRATION_REF } from "@/lib/character/sessionMetaPoints";
@@ -186,6 +187,37 @@ export function DiceRollAssistant({ onDismiss }: DiceRollAssistantProps) {
             return;
         }
 
+        if (request.kind === "heal") {
+            const nextRolls = [...damageRolls, value];
+
+            if (stepIndex + 1 < request.diceCount) {
+                submitRollValue(value);
+                return;
+            }
+
+            const total = resolveHealTotal(request, nextRolls);
+            if (request.healingKind === "temp_hp") {
+                applyVitalityChange(request.characterId, {
+                    type: "setTempHp",
+                    value: total,
+                });
+            } else {
+                applyVitalityChange(request.characterId, {
+                    type: "heal",
+                    amount: total,
+                });
+            }
+            toast(
+                tVitality("healToast", {
+                    label: request.label,
+                    total,
+                })
+            );
+            submitRollValue(value);
+            handleDismiss();
+            return;
+        }
+
         if (request.kind === "d20_test") {
             const priorPhase = phase;
             const result = submitRollValue(value);
@@ -317,6 +349,15 @@ export function DiceRollAssistant({ onDismiss }: DiceRollAssistantProps) {
                     label: request.label,
                     index: 1,
                     total: 1,
+                    sides: request.die,
+                });
+            }
+
+            if (request.kind === "heal" && phase?.type === "heal") {
+                return t("damageOnlyStepTitle", {
+                    label: request.label,
+                    index: phase.index + 1,
+                    total: phase.of,
                     sides: request.die,
                 });
             }

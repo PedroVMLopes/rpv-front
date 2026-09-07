@@ -1,0 +1,43 @@
+{
+  "key": "srd_potion-of-invisibility",
+  "name": "Potion of Invisibility",
+  "desc": "This potion's container looks empty but feels as though it holds liquid. When you drink it, you become invisible for 1 hour. Anything you wear or carry is invisible with you. The effect ends early if you attack or cast a spell.",
+  "category": {
+    "name": "Potion",
+    "key": "potion"
+  },
+  "rarity": {
+    "name": "Very Rare",
+    "key": "very-rare",
+    "rank": 4
+  },
+  "weapon": null,
+  "armor": null,
+  "size": {
+    "name": "Tiny",
+    "key": "tiny"
+  },
+  "weight": "0.000",
+  "weight_unit": "lb",
+  "cost": null,
+  "requires_attunement": false,
+  "attunement_detail": null,
+  "document": {
+    "name": "System Reference Document 5.1",
+    "key": "srd-2014",
+    "type": "SOURCE",
+    "display_name": "5e 2014 Rules",
+    "publisher": {
+      "name": "Wizards of the Coast",
+      "key": "wizards-of-the-coast"
+    },
+    "gamesystem": {
+      "name": "5th Edition 2014",
+      "key": "5e-2014"
+    },
+    "permalink": "https://dnd.wizards.com/resources/systems-reference-document"
+  },
+  "crossreferences": {
+    "to": []
+  }
+}

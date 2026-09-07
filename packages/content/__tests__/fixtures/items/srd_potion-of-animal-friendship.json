@@ -1,0 +1,43 @@
+{
+  "key": "srd_potion-of-animal-friendship",
+  "name": "Potion of Animal Friendship",
+  "desc": "When you drink this potion, you can cast the _animal friendship_ spell (save DC 13) for 1 hour at will. Agitating this muddy liquid brings little bits into view: a fish scale, a hummingbird tongue, a cat claw, or a squirrel hair.",
+  "category": {
+    "name": "Potion",
+    "key": "potion"
+  },
+  "rarity": {
+    "name": "Uncommon",
+    "key": "uncommon",
+    "rank": 2
+  },
+  "weapon": null,
+  "armor": null,
+  "size": {
+    "name": "Tiny",
+    "key": "tiny"
+  },
+  "weight": "0.000",
+  "weight_unit": "lb",
+  "cost": null,
+  "requires_attunement": false,
+  "attunement_detail": null,
+  "document": {
+    "name": "System Reference Document 5.1",
+    "key": "srd-2014",
+    "type": "SOURCE",
+    "display_name": "5e 2014 Rules",
+    "publisher": {
+      "name": "Wizards of the Coast",
+      "key": "wizards-of-the-coast"
+    },
+    "gamesystem": {
+      "name": "5th Edition 2014",
+      "key": "5e-2014"
+    },
+    "permalink": "https://dnd.wizards.com/resources/systems-reference-document"
+  },
+  "crossreferences": {
+    "to": []
+  }
+}

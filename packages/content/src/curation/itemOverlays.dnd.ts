@@ -152,7 +152,25 @@ export const rpvExtraItems: ItemEntry[] = [
 /**
  * SRD 2014 shield item has category shield but null nested armor in Open5e.
  * Overlay supplies the +2 AC profile so resolution stays data-driven.
+ *
+ * Consumable grants (potions, antitoxin, thrown flasks) are authored here —
+ * Open5e identity fields stay on the catalog entry; only activation/useEffect
+ * come from overrides.
  */
+function potionHealGrant(
+    description: string,
+    dice: string,
+    flat: number
+): Grant {
+    return {
+        grantType: "ability",
+        choose: 0,
+        description,
+        activation: { cost: "action", consumeQuantity: 1 },
+        useEffect: { kind: "heal", dice, flat, healingKind: "hp" },
+    };
+}
+
 export const itemEntryOverrides: Record<string, Partial<ItemEntry>> = {
     srd_shield: {
         stackable: false,
@@ -167,6 +185,64 @@ export const itemEntryOverrides: Record<string, Partial<ItemEntry>> = {
             grantsStealthDisadvantage: false,
             strengthScoreRequired: null,
         },
+    },
+    "srd_potion-of-healing": {
+        grants: [potionHealGrant("Drink", "2d4", 2)],
+    },
+    "srd_potion-of-greater-healing": {
+        grants: [potionHealGrant("Drink", "4d4", 4)],
+    },
+    "srd_potion-of-superior-healing": {
+        grants: [potionHealGrant("Drink", "8d4", 8)],
+    },
+    "srd_potion-of-supreme-healing": {
+        grants: [potionHealGrant("Drink", "10d4", 20)],
+    },
+    "srd_antitoxin-vial": {
+        grants: [
+            {
+                grantType: "ability",
+                choose: 0,
+                description: "Drink Antitoxin",
+                activation: { cost: "action", consumeQuantity: 1 },
+                useEffect: {
+                    kind: "apply_condition",
+                    conditionRef: "antitoxin",
+                },
+            },
+        ],
+    },
+    "srd_holy-water-flask": {
+        grants: [
+            {
+                grantType: "ability",
+                choose: 0,
+                description: "Splash or Throw",
+                activation: { cost: "action", consumeQuantity: 1 },
+                useEffect: {
+                    kind: "deal_damage",
+                    dice: "2d6",
+                    damageType: "radiant",
+                    attack: "ranged_improvised",
+                },
+            },
+        ],
+    },
+    "srd_alchemists-fire-flask": {
+        grants: [
+            {
+                grantType: "ability",
+                choose: 0,
+                description: "Throw",
+                activation: { cost: "action", consumeQuantity: 1 },
+                useEffect: {
+                    kind: "deal_damage",
+                    dice: "1d4",
+                    damageType: "fire",
+                    attack: "ranged_improvised",
+                },
+            },
+        ],
     },
 };
 

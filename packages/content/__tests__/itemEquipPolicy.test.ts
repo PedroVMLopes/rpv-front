@@ -15,6 +15,7 @@ describe("deriveItemEquipPolicy", () => {
         ["srd_leather-armor", "wearable"],
         ["srd_shield", "shield"],
         ["srd_arrow-bow", "carried"],
+        ["srd_potion-of-healing", "carried"],
         ["srd_clothes-travelers", "cosmetic"],
         ["srd_robes", "cosmetic"],
         ["srd_signet-ring", "cosmetic"],

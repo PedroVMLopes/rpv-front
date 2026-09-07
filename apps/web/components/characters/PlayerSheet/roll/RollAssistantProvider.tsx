@@ -34,6 +34,7 @@ export type RequestPhase =
     | { type: "attack_damage" }
     | { type: "damage_only"; index: number }
     | { type: "hit_die" }
+    | { type: "heal"; index: number; of: number }
     | { type: "death_save_outcome" };
 
 export type RollAssistantState = {
@@ -119,6 +120,17 @@ export function getRequestPhase(
 
     if (request.kind === "hit_die") {
         return { type: "hit_die" };
+    }
+
+    if (request.kind === "heal") {
+        if (state.stepIndex < request.diceCount) {
+            return {
+                type: "heal",
+                index: state.stepIndex,
+                of: request.diceCount,
+            };
+        }
+        return null;
     }
 
     if (
@@ -208,7 +220,9 @@ function reducer(
                         ? action.request.die
                         : action.request.kind === "hit_die"
                           ? action.request.die
-                          : null,
+                          : action.request.kind === "heal"
+                            ? action.request.die
+                            : null,
             };
         case "select_die":
             return {
@@ -235,6 +249,21 @@ function reducer(
                 const nextStepIndex = state.stepIndex + 1;
 
                 if (nextStepIndex < state.request.steps.length) {
+                    return {
+                        ...state,
+                        stepIndex: nextStepIndex,
+                        damageRolls,
+                    };
+                }
+
+                return initialState;
+            }
+
+            if (state.request.kind === "heal") {
+                const damageRolls = [...state.damageRolls, action.value];
+                const nextStepIndex = state.stepIndex + 1;
+
+                if (nextStepIndex < state.request.diceCount) {
                     return {
                         ...state,
                         stepIndex: nextStepIndex,
@@ -302,6 +331,12 @@ function getSubmitResult(
 
     if (state.request.kind === "damage_only") {
         return state.stepIndex + 1 < state.request.steps.length
+            ? "continue"
+            : "complete";
+    }
+
+    if (state.request.kind === "heal") {
+        return state.stepIndex + 1 < state.request.diceCount
             ? "continue"
             : "complete";
     }
@@ -496,6 +531,10 @@ export function getActiveRollSides(
     }
 
     if (state.request.kind === "hit_die") {
+        return state.request.die;
+    }
+
+    if (state.request.kind === "heal") {
         return state.request.die;
     }
 

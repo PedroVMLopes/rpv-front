@@ -619,7 +619,9 @@
       "failure": "Failure",
       "criticalFailure": "Natural 1 — 2 failures",
       "criticalSuccess": "Natural 20 — 1 HP",
-      "hitDieToast": "{label}: recover {total} HP"
+      "hitDieToast": "{label}: recover {total} HP",
+      "healToast": "{label}: recover {total} HP",
+      "consumableManualToast": "{label}: used (resolve effect at the table)"
     },
     "speed": "Speed",
     "speedValue": "{speed} ft",

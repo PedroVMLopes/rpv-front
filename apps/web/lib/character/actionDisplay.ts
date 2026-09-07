@@ -405,6 +405,11 @@ function buildConsumableDisplayActions(
         const entry = spell
             ? contentRepo(stored.system).getSpell(spell.slug, locale)
             : undefined;
+        const effect = consumable.useEffect;
+        const healSummary =
+            effect.kind === "heal"
+                ? `${effect.dice}${effect.flat != null ? ` + ${effect.flat}` : ""}`
+                : null;
 
         return {
             id: consumable.id,
@@ -425,6 +430,7 @@ function buildConsumableDisplayActions(
             summary: [
                 spell?.attackBonus,
                 spell?.saveDc,
+                healSummary,
                 `${consumable.quantity} left`,
             ].filter(Boolean) as string[],
             description: consumable.description,
@@ -438,7 +444,9 @@ function buildConsumableDisplayActions(
                   buildSpellDamageRollRequest(spell)
                     ? ("roll" as const)
                     : ("use" as const)
-                : ("use" as const),
+                : effect.kind === "heal"
+                  ? ("roll" as const)
+                  : ("use" as const),
             resource: {
                 ref: consumable.itemSlug,
                 label: consumable.itemName,

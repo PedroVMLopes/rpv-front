@@ -128,3 +128,14 @@ export interface Open5eV2Item {
     cost: string | null;
     document: Open5eV2DocumentRef;
 }
+
+/**
+ * Open5e API v2 `/magicitems/` entry.
+ * Shares the item identity fields used by `mapOpen5eItem`; rarity/attunement
+ * are preserved on the fixture for future overlays but ignored by the mapper.
+ */
+export interface Open5eV2MagicItem extends Open5eV2Item {
+    rarity?: Open5eV2NamedKey & { rank?: number };
+    requires_attunement?: boolean;
+    attunement_detail?: string | null;
+}

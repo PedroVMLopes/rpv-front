@@ -17,6 +17,8 @@ export type ItemContentFormatters = {
     missingValue: string;
     /** Required to emit cast_spell useActions on consumables. */
     spell?: SpellContentFormatters;
+    /** Label for drink/use on heal and stub consumables. */
+    useLabel?: string;
 };
 
 export type BuildItemContentModelInput = {
@@ -35,6 +37,11 @@ export type BuildItemContentModelInput = {
         spell: SpellAction;
         catalogEntry?: SpellCatalogEntry;
         depleted?: boolean;
+    };
+    /** Non-spell consumable (heal / apply_condition / deal_damage). */
+    consumableUse?: {
+        depleted?: boolean;
+        label?: string;
     };
 };
 
@@ -83,11 +90,37 @@ function formatGrantLine(grant: Grant): string {
         return grant.useEffect.spellRef;
     }
 
+    if (grant.useEffect?.kind === "heal") {
+        const flat =
+            grant.useEffect.flat != null ? ` + ${grant.useEffect.flat}` : "";
+        return `${grant.useEffect.dice}${flat}`;
+    }
+
+    if (grant.useEffect?.kind === "apply_condition") {
+        return grant.useEffect.conditionRef;
+    }
+
+    if (grant.useEffect?.kind === "deal_damage") {
+        return `${grant.useEffect.dice} ${grant.useEffect.damageType}`;
+    }
+
     if (grant.ref && signed) {
         return `${grant.ref} ${signed}`;
     }
 
     return grant.grantType.replace(/_/g, " ");
+}
+
+function markDepleted(
+    actions: ContentUseActionSpec[] | undefined,
+    depleted: boolean
+): ContentUseActionSpec[] | undefined {
+    if (!actions) {
+        return undefined;
+    }
+    return actions.map((action) =>
+        depleted ? { ...action, disabled: true } : action
+    );
 }
 
 function resolveConsumableUseActions(
@@ -98,44 +131,49 @@ function resolveConsumableUseActions(
     useActions?: ContentUseActionSpec[];
 } {
     const item = input.itemEntry;
-    if (!item || !formatters.spell) {
+    if (!item) {
         return {};
     }
 
     const useGrants = listItemUseGrants(item);
-    if (useGrants.length === 0 || !input.consumableSpell) {
+    if (useGrants.length === 0) {
         return {};
     }
 
-    const { useAction, useActions } = resolveSpellUseActions(
-        input.consumableSpell.spell,
-        input.consumableSpell.catalogEntry,
-        formatters.spell
-    );
-
-    const depleted = Boolean(input.consumableSpell.depleted);
-    const markDisabled = (
-        actions: ContentUseActionSpec[] | undefined
-    ): ContentUseActionSpec[] | undefined => {
-        if (!actions) {
-            return undefined;
-        }
-        return actions.map((action) =>
-            depleted ? { ...action, disabled: true } : action
+    if (input.consumableSpell && formatters.spell) {
+        const { useAction, useActions } = resolveSpellUseActions(
+            input.consumableSpell.spell,
+            input.consumableSpell.catalogEntry,
+            formatters.spell
         );
-    };
 
-    const nextActions = markDisabled(useActions);
-    const nextAction = useAction
-        ? depleted
-            ? { ...useAction, disabled: true }
-            : useAction
-        : undefined;
+        const depleted = Boolean(input.consumableSpell.depleted);
+        const nextActions = markDepleted(useActions, depleted);
+        const nextAction = useAction
+            ? depleted
+                ? { ...useAction, disabled: true }
+                : useAction
+            : undefined;
 
-    return {
-        useAction: nextAction,
-        useActions: nextActions,
-    };
+        return {
+            useAction: nextAction,
+            useActions: nextActions,
+        };
+    }
+
+    if (input.consumableUse) {
+        const depleted = Boolean(input.consumableUse.depleted);
+        const label =
+            input.consumableUse.label ?? formatters.useLabel ?? "Use";
+        const useAction: ContentUseActionSpec = {
+            kind: "cast",
+            label,
+            disabled: depleted || undefined,
+        };
+        return { useAction, useActions: [useAction] };
+    }
+
+    return {};
 }
 
 export function buildItemContentModel(

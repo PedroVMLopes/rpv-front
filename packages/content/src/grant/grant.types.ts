@@ -75,9 +75,23 @@ export type GrantOption =
 /**
  * Declared one-shot (or activatable) effect when the grant is used.
  * Read from item definitions by consumers; not copied onto CharacterGrant in MVP.
- * Extend with heal / apply_condition kinds as needed.
  */
-export type GrantUseEffect = { kind: "cast_spell"; spellRef: string };
+export type GrantUseEffect =
+    | { kind: "cast_spell"; spellRef: string }
+    | {
+          kind: "heal";
+          /** Dice notation without flat bonus, e.g. `"2d4"`. */
+          dice: string;
+          flat?: number;
+          healingKind?: "hp" | "temp_hp";
+      }
+    | { kind: "apply_condition"; conditionRef: string }
+    | {
+          kind: "deal_damage";
+          dice: string;
+          damageType: string;
+          attack?: "ranged_improvised";
+      };
 
 /**
  * A single thing a trait gives a character.

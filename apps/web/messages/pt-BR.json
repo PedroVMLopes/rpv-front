@@ -619,7 +619,9 @@
       "failure": "Falha",
       "criticalFailure": "Natural 1 — 2 falhas",
       "criticalSuccess": "Natural 20 — 1 PV",
-      "hitDieToast": "{label}: recupera {total} PV"
+      "hitDieToast": "{label}: recupera {total} PV",
+      "healToast": "{label}: recupera {total} PV",
+      "consumableManualToast": "{label}: usado (resolva o efeito na mesa)"
     },
     "speed": "Deslocamento",
     "speedValue": "{speed} pés",

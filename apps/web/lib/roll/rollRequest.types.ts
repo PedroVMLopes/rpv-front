@@ -48,6 +48,18 @@ export type HitDieRequest = {
     die: DieSides;
 };
 
+export type HealRequest = {
+    kind: "heal";
+    id: string;
+    label: string;
+    characterId: string;
+    /** Number of dice to roll (e.g. 2 for 2d4). */
+    diceCount: number;
+    die: DieSides;
+    flat?: number;
+    healingKind?: "hp" | "temp_hp";
+};
+
 export type DeathSaveRequest = {
     kind: "death_save";
     id: string;
@@ -61,4 +73,5 @@ export type RollRequest =
     | AttackThenDamageRequest
     | DamageOnlyRequest
     | HitDieRequest
+    | HealRequest
     | DeathSaveRequest;

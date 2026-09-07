@@ -15,6 +15,8 @@ describe("item catalog + overlays", () => {
             "srd_longsword",
             "srd_leather-armor",
             "srd_shield",
+            "srd_potion-of-healing",
+            "srd_potion-of-greater-healing",
             "rpv_scroll-of-fire-bolt",
             "rpv_amulet-of-vitality",
             "rpv_ring-of-hardiness",
@@ -98,6 +100,17 @@ describe("item catalog + overlays", () => {
                 activation: { cost: "action", consumeQuantity: 1 },
                 useEffect: { kind: "cast_spell", spellRef: "fire-bolt" },
             },
+        ]);
+        expect(getItemGrants("srd_potion-of-healing")).toEqual([
+            expect.objectContaining({
+                grantType: "ability",
+                useEffect: {
+                    kind: "heal",
+                    dice: "2d4",
+                    flat: 2,
+                    healingKind: "hp",
+                },
+            }),
         ]);
     });
 

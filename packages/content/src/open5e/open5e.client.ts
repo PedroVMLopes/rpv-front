@@ -3,6 +3,7 @@ import type {
     Open5eRace,
     Open5eSpell,
     Open5eV2Item,
+    Open5eV2MagicItem,
 } from "./open5e.types";
 
 const OPEN5E_BASE_URL = "https://api.open5e.com/v1";
@@ -53,5 +54,17 @@ export function fetchAllItems(
     }
     return fetchAllPages<Open5eV2Item>(
         `${OPEN5E_V2_BASE_URL}/items/?${params.toString()}`
+    );
+}
+
+export function fetchAllMagicItems(
+    options: { documentKey?: string } = {}
+): Promise<Open5eV2MagicItem[]> {
+    const params = new URLSearchParams({ limit: "100" });
+    if (options.documentKey) {
+        params.set("document__key__iexact", options.documentKey);
+    }
+    return fetchAllPages<Open5eV2MagicItem>(
+        `${OPEN5E_V2_BASE_URL}/magicitems/?${params.toString()}`
     );
 }

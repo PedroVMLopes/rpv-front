@@ -190,10 +190,15 @@ Add pt-BR names in [`data/translations/pt-BR.json`](data/translations/pt-BR.json
 
 ## Item authoring
 
-SRD item **definitions** are imported from Open5e v2 (`/v2/items/`, document
-`srd-2014`) into `catalog.json` via fixtures + [`scripts/buildCatalog.ts`](scripts/buildCatalog.ts).
-Refresh fixtures with `npm run refresh:items -w @rpv/content`. RPV-only items and
-overrides live in [`itemOverlays.dnd.ts`](src/curation/itemOverlays.dnd.ts).
+SRD item **definitions** are imported from Open5e v2 into `catalog.json` via
+fixtures + [`scripts/buildCatalog.ts`](scripts/buildCatalog.ts):
+
+- Gear / weapons / armor: `/v2/items/`, document `srd-2014`
+  (`npm run refresh:items -w @rpv/content`).
+- Magic potions: `/v2/magicitems/`, document `srd-2014`, filtered to
+  `category.key === "potion"` (`npm run refresh:magic-items -w @rpv/content`).
+
+RPV-only items and grant overlays live in [`itemOverlays.dnd.ts`](src/curation/itemOverlays.dnd.ts).
 
 Whether a character **owns** or **wears** an item is runtime state in
 `selections.inventory` (bag / equipped) on the web app — see
@@ -235,8 +240,9 @@ interface ItemEntry {
 
 - `weapon` / `armor` — combat and AC data from Open5e (AC uses `acBase` + Dex rules).
 - `grants` — bonuses/abilities when **equipped** (single slots). For one-shot use
-  from the bag (scrolls, potions), prefer `ability` + `activation` (future consumable
-  flow) instead of passive `spell` grants while equipped.
+  from the bag (scrolls, potions), use `ability` + `activation` + `useEffect`
+  instead of passive `spell` grants while equipped. `GrantUseEffect` kinds:
+  `cast_spell` | `heal` | `apply_condition` | `deal_damage`.
 - **`ItemEquipPolicy`** — data-driven rule for which slots an item may occupy.
   Derived from `weapon`, `armor`, `grants`, and `category.key`; overridable via
   `equipPolicy` on the entry or in `itemEntryOverrides`.
@@ -289,11 +295,14 @@ grants that only declare `useEffect` do **not** force `granted` policy
 
 ### Authoring checklist — SRD refresh
 
-1. Run `npm run refresh:items -w @rpv/content` then `npm run build:catalog -w @rpv/content`.
-2. Confirm new keys appear in `data/catalog.json` `items[]`.
-3. Update starting-equipment grant `ref`s to the Open5e keys if needed.
-4. Add pt-BR overlays under `items.{slug}` when translating.
-5. Run `npm run test:packages` and `npm test -w rpv-front`.
+1. Run `npm run refresh:items -w @rpv/content` (and `refresh:magic-items` for potions).
+2. Run `npm run build:catalog -w @rpv/content`.
+3. Confirm new keys appear in `data/catalog.json` `items[]`.
+4. Add mechanical overlays in `itemEntryOverrides` when Open5e leaves `grants: []`
+   (potions: `heal`; scrolls: `cast_spell`; etc.).
+5. Update starting-equipment grant `ref`s to the Open5e keys if needed.
+6. Add pt-BR overlays under `items.{slug}` when translating.
+7. Run `npm run test:packages` and `npm test -w rpv-front`.
 
 ### Authoring checklist — RPV / magic overlay
 
@@ -309,6 +318,9 @@ grants that only declare `useEffect` do **not** force `granted` policy
 |---------|------|-------|
 | HP bonus | `rpv_amulet-of-vitality` | overlay `stat_modifier` + `hitPoints`; equip in wearable slot |
 | Scroll (consumable) | `rpv_scroll-of-fire-bolt` | `carried` + `ability`/`activation`/`useEffect` cast_spell; **Use** from bag + Combat |
+| Potion of Healing | `srd_potion-of-healing` (+ greater/superior/supreme) | Open5e magicitems + overlay `heal` (`2d4+2` …); **Use** → heal roll → HP |
+| Antitoxin | `srd_antitoxin-vial` | overlay `apply_condition` → `antitoxin`; Use consumes + toast (automation later) |
+| Holy Water / Alchemist's Fire | `srd_holy-water-flask` / `srd_alchemists-fire-flask` | overlay `deal_damage`; Use consumes + toast |
 | Weapon | `srd_longsword` | nested `weapon` profile |
 | Armor | `srd_leather-armor` | nested `armor` → AC formula |
 | Shield | `srd_shield` | overlay fills `armor.category: "shield"`, `acBase: 2`; not an attack |
@@ -572,7 +584,8 @@ and [`deriveStartingEquipmentFromForm.ts`](../../apps/web/lib/character/deriveSt
 - **`selectionFilter` item pools** — `itemCategory` / `itemTags` (v2).
 - **Dice-roll UI for starting gold** — optional button; fixed/choice amounts work today.
 - **Weight, attunement, consumable charges**, community publish API, moderation.
-- **Potion / heal `useEffect`**, wand charges — extend `GrantUseEffect`; scroll Use-from-bag is implemented (see [`docs/INVENTORY.md`](../../docs/INVENTORY.md)).
+- **Full runtime for `apply_condition` / `deal_damage`** — kinds + overlays exist; automation later.
+- **Wand / staff charges** — instance state, not bag qty.
 - **HTTP API** — [`docs/API_INVENTORY.md`](../../docs/API_INVENTORY.md).
 
 Add pt-BR names under `items` in [`data/translations/pt-BR.json`](data/translations/pt-BR.json).

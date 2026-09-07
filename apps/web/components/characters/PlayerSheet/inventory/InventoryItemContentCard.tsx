@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { getEquipmentSlots, getItem, isItemEquippable } from "@rpv/content";
 import type { CharacterInventory } from "@rpv/domain";
 import {
@@ -51,6 +52,7 @@ export function InventoryItemContentCard({
     const t = useTranslations("playerSheet.inventory");
     const tRoot = useTranslations();
     const tCombat = useTranslations("playerSheet.combat");
+    const tVitality = useTranslations("playerSheet.vitality");
     const tContentDetail = useTranslations("contentDetail");
     const tItems = useTranslations("items");
     const tSpells = useTranslations("spells");
@@ -112,6 +114,7 @@ export function InventoryItemContentCard({
     const itemFormatters = useMemo<ItemContentFormatters>(
         () => ({
             missingValue: "—",
+            useLabel: tCombat("use"),
             spell: {
                 tSpells: (key, values) => tSpells(key, values),
                 tAbilities: (key) => tAbilities(key),
@@ -261,6 +264,11 @@ export function InventoryItemContentCard({
                               depleted: consumableAction.depleted,
                           }
                         : undefined,
+                consumableUse:
+                    consumableAction != null &&
+                    consumableAction.useEffect.kind !== "cast_spell"
+                        ? { depleted: consumableAction.depleted }
+                        : undefined,
             },
             itemFormatters
         );
@@ -317,6 +325,7 @@ export function InventoryItemContentCard({
             allUseActions,
             system: stored.system,
             locale: contentLocale,
+            characterId: stored.id,
             openRollRequest,
             consume: (slug, quantity) =>
                 useInventoryItem(stored.id, slug, quantity),
@@ -326,6 +335,10 @@ export function InventoryItemContentCard({
                 }),
             castLabel:
                 useAction.role === "ritual" ? tCombat("castAsRitual") : undefined,
+            manualEffectToast: (label) =>
+                toast(
+                    tVitality("consumableManualToast", { label })
+                ),
         });
     };
 

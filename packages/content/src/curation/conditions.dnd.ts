@@ -20,4 +20,16 @@ export const dndConditions: ConditionEntry[] = [
             },
         ],
     },
+    {
+        slug: "antitoxin",
+        name: "Antitoxin",
+        description:
+            "Advantage on saving throws against poison for 1 hour. Confers no benefit to undead or constructs.",
+        rollEffects: [
+            {
+                kind: "advantage",
+                appliesTo: ["save"],
+            },
+        ],
+    },
 ];

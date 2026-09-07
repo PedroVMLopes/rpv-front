@@ -96,6 +96,7 @@ describe("StaticContentRepository", () => {
         expect(repo.listConditions().map((entry) => entry.slug)).toEqual([
             "blessed",
             "poisoned",
+            "antitoxin",
         ]);
         expect(repo.getCondition("blessed")?.rollEffects?.[0]?.kind).toBe(
             "extra_die"
