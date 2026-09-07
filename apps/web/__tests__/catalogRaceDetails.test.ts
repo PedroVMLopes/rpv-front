@@ -104,4 +104,75 @@ describe("race catalog details", () => {
             },
         ]);
     });
+
+    it("includes class hit die and subclass level, skipping blank metadata", () => {
+        const model = buildCatalogDetailModel(
+            {
+                slug: "fighter",
+                title: "Fighter",
+                summary: "A warrior.",
+                detailDescription: "Martial training.",
+                grants: [],
+                metadata: {
+                    hitDie: 10,
+                    subclassLevel: 3,
+                    size: "",
+                    speedWalk: 0,
+                    asiDesc: "   ",
+                },
+            },
+            "class"
+        );
+
+        expect(model.sections[0]?.rows).toEqual([
+            { labelKey: "hitDie", value: "d10" },
+            { labelKey: "subclassLevel", value: "3" },
+        ]);
+    });
+
+    it("does not put race-only age rows on a class card", () => {
+        const model = buildCatalogDetailModel(
+            {
+                slug: "fighter",
+                title: "Fighter",
+                summary: "A warrior.",
+                detailDescription: "Martial training.",
+                grants: [],
+                metadata: {
+                    hitDie: 10,
+                    ageDesc: "Fighters age like humans.",
+                    alignmentDesc: "Any alignment.",
+                    size: "Medium",
+                    speedWalk: 30,
+                },
+            },
+            "class"
+        );
+
+        const labelKeys = model.sections[0]?.rows.map((row) => row.labelKey);
+        expect(labelKeys).toEqual(["hitDie", "size", "speed"]);
+        expect(labelKeys).not.toContain("age");
+        expect(labelKeys).not.toContain("alignment");
+    });
+
+    it("omits the metadata section when every field is blank", () => {
+        const model = buildCatalogDetailModel(
+            {
+                slug: "sage",
+                title: "Sage",
+                summary: "A scholar.",
+                detailDescription: "You spent years in study.",
+                grants: [],
+                metadata: {
+                    asiDesc: "",
+                    ageDesc: "",
+                    alignmentDesc: "",
+                },
+            },
+            "background"
+        );
+
+        expect(model.sections).toEqual([]);
+        expect(model.description).toBe("You spent years in study.");
+    });
 });

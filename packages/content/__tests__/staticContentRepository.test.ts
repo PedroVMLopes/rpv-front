@@ -59,6 +59,13 @@ describe("StaticContentRepository", () => {
 
     it("returns the same instance from getContentRepository", () => {
         expect(getContentRepository("dnd")).toBe(getContentRepository("dnd"));
+        expect(getContentRepository()).toBe(getContentRepository("dnd"));
+    });
+
+    it("throws for an unknown content system", () => {
+        expect(() => getContentRepository("pf2e")).toThrow(
+            "Unknown content system: pf2e"
+        );
     });
 
     it("attaches race levelGrants on getRace and listRaces", () => {

@@ -1,6 +1,7 @@
 import {
     buildHpDerivationContextFromForm,
     deriveMaxHpFromForm,
+    isMaxHpEmpty,
     resolveMaxHpFromForm,
 } from "../lib/character/hp";
 
@@ -13,6 +14,43 @@ describe("hp derivation helpers", () => {
         { name: "wisdom", value: 10 },
         { name: "charisma", value: 10 },
     ];
+
+    it("treats missing, null, and blank max HP as empty but keeps 0", () => {
+        expect(isMaxHpEmpty(undefined)).toBe(true);
+        expect(isMaxHpEmpty(null)).toBe(true);
+        expect(isMaxHpEmpty("")).toBe(true);
+        expect(isMaxHpEmpty(0)).toBe(false);
+        expect(isMaxHpEmpty(12)).toBe(false);
+    });
+
+    it("returns no derivation context without a known class slug", () => {
+        const attributes = baseAttributes;
+
+        expect(
+            buildHpDerivationContextFromForm({ attributes, level: 3 }, "dnd", "en")
+        ).toBeUndefined();
+        expect(
+            buildHpDerivationContextFromForm(
+                { attributes, level: 3, characterClass: "   " },
+                "dnd",
+                "en"
+            )
+        ).toBeUndefined();
+        expect(
+            buildHpDerivationContextFromForm(
+                { attributes, level: 3, characterClass: "unknown-class" },
+                "dnd",
+                "en"
+            )
+        ).toBeUndefined();
+        expect(
+            deriveMaxHpFromForm(
+                { attributes, level: 1, characterClass: "unknown-class" },
+                "dnd",
+                "en"
+            )
+        ).toBeUndefined();
+    });
 
     it("builds derivation context from form data", () => {
         expect(

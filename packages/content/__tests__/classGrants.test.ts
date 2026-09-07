@@ -79,6 +79,7 @@ describe("classGrants.dnd", () => {
         expect(getClassPreparedQuotaKind("wizard")).toBe("level-plus-mod");
         expect(getClassPreparedQuotaKind("cleric")).toBe("level-plus-mod");
         expect(getClassPreparedQuotaKind("fighter")).toBeUndefined();
+        expect(getClassPreparedQuotaKind("unknown-class")).toBeUndefined();
     });
 
     it("returns cleric spellcasting metadata and L1 slots", () => {
