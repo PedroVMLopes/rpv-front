@@ -18,7 +18,11 @@ import {
     buildSpellContentModel,
     type SpellContentFormatters,
 } from "@/lib/content/buildSpellContentModel";
-import type { ContentUseActionSpec } from "@/lib/content/contentDetail.types";
+import type {
+    ContentDetailModel,
+    ContentSummaryModel,
+    ContentUseActionSpec,
+} from "@/lib/content/contentDetail.types";
 import { ContentActionCard } from "../ContentActionCard";
 import { Button } from "@/components/ui/button";
 
@@ -28,6 +32,8 @@ type SpellActionCardProps = {
     spellcastingAbility?: StatKey | null;
     openRollRequest: (request: RollRequest) => void;
     hideShortDescription?: boolean;
+    /** When false, card is read-only (known but unprepared). Defaults to true. */
+    castable?: boolean;
 };
 
 function spellBaseLevel(
@@ -50,17 +56,49 @@ function catalogEntryLevel(level: number | undefined): number | undefined {
     return level;
 }
 
+function withDisabledUseActions(
+    model: ContentSummaryModel
+): ContentSummaryModel {
+    return {
+        ...model,
+        useAction: model.useAction
+            ? { ...model.useAction, disabled: true }
+            : undefined,
+        useActions: model.useActions?.map((action) => ({
+            ...action,
+            disabled: true,
+        })),
+    };
+}
+
+function withDisabledDetailUse(
+    model: ContentDetailModel
+): ContentDetailModel {
+    return {
+        ...model,
+        useAction: model.useAction
+            ? { ...model.useAction, disabled: true }
+            : undefined,
+        useActions: model.useActions?.map((action) => ({
+            ...action,
+            disabled: true,
+        })),
+    };
+}
+
 export function SpellActionCard({
     stored,
     spell,
     spellcastingAbility,
     openRollRequest,
     hideShortDescription,
+    castable = true,
 }: SpellActionCardProps) {
     const tContentDetail = useTranslations("contentDetail");
     const tSpells = useTranslations("spells");
     const tAbilities = useTranslations("abilities");
     const tCombat = useTranslations("playerSheet.combat");
+    const tMagic = useTranslations("playerSheet.magic");
     const contentLocale = useContentLocale((state) => state.contentLocale);
     const setCharacterSession = useCharacterStore(
         (state) => state.setCharacterSession
@@ -99,19 +137,42 @@ export function SpellActionCard({
         [tAbilities, tCombat, tContentDetail, tSpells]
     );
 
-    const { summary, detail } = useMemo(
-        () =>
-            buildSpellContentModel(
-                {
-                    spell,
-                    catalogEntry,
-                    spellcastingAbility,
-                    concentrating,
-                },
-                formatters
-            ),
-        [catalogEntry, concentrating, formatters, spell, spellcastingAbility]
-    );
+    const { summary, detail } = useMemo(() => {
+        const models = buildSpellContentModel(
+            {
+                spell,
+                catalogEntry,
+                spellcastingAbility,
+                concentrating,
+            },
+            formatters
+        );
+
+        if (castable) {
+            return models;
+        }
+
+        const unpreparedBadge = {
+            label: tMagic("unpreparedBadge"),
+            variant: "muted" as const,
+        };
+
+        return {
+            summary: withDisabledUseActions({
+                ...models.summary,
+                badges: [...models.summary.badges, unpreparedBadge],
+            }),
+            detail: withDisabledDetailUse(models.detail),
+        };
+    }, [
+        castable,
+        catalogEntry,
+        concentrating,
+        formatters,
+        spell,
+        spellcastingAbility,
+        tMagic,
+    ]);
 
     const setConcentration = (nextSlot: number | undefined) => {
         setCharacterSession(stored.id, {
@@ -127,6 +188,10 @@ export function SpellActionCard({
     };
 
     const handleUse = (useAction: ContentUseActionSpec) => {
+        if (!castable || useAction.disabled) {
+            return;
+        }
+
         if (useAction.kind === "cast") {
             const ritualLabel =
                 useAction.role === "ritual" ? tCombat("castAsRitual") : null;
@@ -164,7 +229,7 @@ export function SpellActionCard({
     };
 
     const afterContent =
-        catalogEntry?.requiresConcentration || canUpcast ? (
+        castable && (catalogEntry?.requiresConcentration || canUpcast) ? (
             <div className="flex flex-col gap-2">
                 {canUpcast ? (
                     <label className="flex items-center justify-between gap-2 text-sm">
@@ -218,6 +283,7 @@ export function SpellActionCard({
             onUse={canUse ? handleUse : undefined}
             hideShortDescription={hideShortDescription}
             afterContent={afterContent}
+            className={castable ? undefined : "opacity-60"}
         />
     );
 }

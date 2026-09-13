@@ -248,6 +248,73 @@ export function listNaturalWeaponActions(
     });
 }
 
+type BuildSpellActionsContext = {
+    grants: CharacterGrant[];
+    system: SystemKey;
+    locale?: Locale;
+    resolved?: Stats;
+    spellcastingSystemData?: Record<string, unknown>;
+};
+
+/**
+ * Builds cantrip/leveled spell action rows from spell grants (no castability filter).
+ */
+export function buildSpellActionsFromGrants(
+    input: BuildSpellActionsContext
+): { cantrips: SpellAction[]; spells: SpellAction[] } {
+    const cantrips: SpellAction[] = [];
+    const spells: SpellAction[] = [];
+    const spellcastingSystemData = input.spellcastingSystemData ?? {};
+
+    for (const grant of input.grants) {
+        if (grant.kind !== "spell") {
+            continue;
+        }
+
+        const spell = contentRepo(input.system).getSpell(
+            grant.ref,
+            input.locale
+        );
+        const rollProfile = getSpellRollProfile(grant.ref, spell);
+        const combatPreview = input.resolved
+            ? computeSpellCombatPreview(
+                  rollProfile,
+                  input.resolved,
+                  input.system,
+                  spellcastingSystemData
+              )
+            : {
+                  attackBonus: undefined,
+                  attackModifier: null,
+                  saveDc: undefined,
+                  saveDcValue: null,
+                  rollProfile,
+              };
+
+        const entry: SpellAction = {
+            id: grant.id,
+            slug: grant.ref,
+            name: grant.name ?? spell?.name ?? grant.ref,
+            levelInt: spell?.levelInt ?? null,
+            description: spell?.description,
+            attackBonus: combatPreview.attackBonus,
+            saveDc: combatPreview.saveDc,
+            attackModifier: combatPreview.attackModifier,
+            saveDcValue: combatPreview.saveDcValue,
+            rollProfile: combatPreview.rollProfile,
+            source: grant.source,
+        };
+
+        if (entry.levelInt === 0) {
+            cantrips.push(entry);
+        } else {
+            spells.push(entry);
+        }
+    }
+
+    return { cantrips, spells };
+}
+
 export function listSpellActions(
     stored: StoredCharacter,
     resolved: Stats,
@@ -289,54 +356,13 @@ export function listSpellActions(
           })
         : rawGrants;
 
-    const cantrips: SpellAction[] = [];
-    const spells: SpellAction[] = [];
-
-    for (const grant of grants) {
-        if (grant.kind !== "spell") {
-            continue;
-        }
-
-        const spell = contentRepo(system).getSpell(grant.ref, contentLocale);
-        const rollProfile = getSpellRollProfile(grant.ref, spell);
-        const combatPreview =
-            resolved && isStored
-                ? computeSpellCombatPreview(
-                      rollProfile,
-                      resolved,
-                      system,
-                      spellcastingSystemData
-                  )
-                : {
-                      attackBonus: undefined,
-                      attackModifier: null,
-                      saveDc: undefined,
-                      saveDcValue: null,
-                      rollProfile,
-                  };
-
-        const entry: SpellAction = {
-            id: grant.id,
-            slug: grant.ref,
-            name: grant.name ?? spell?.name ?? grant.ref,
-            levelInt: spell?.levelInt ?? null,
-            description: spell?.description,
-            attackBonus: combatPreview.attackBonus,
-            saveDc: combatPreview.saveDc,
-            attackModifier: combatPreview.attackModifier,
-            saveDcValue: combatPreview.saveDcValue,
-            rollProfile: combatPreview.rollProfile,
-            source: grant.source,
-        };
-
-        if (entry.levelInt === 0) {
-            cantrips.push(entry);
-        } else {
-            spells.push(entry);
-        }
-    }
-
-    return { cantrips, spells };
+    return buildSpellActionsFromGrants({
+        grants,
+        system,
+        locale: contentLocale,
+        resolved,
+        spellcastingSystemData,
+    });
 }
 
 export function listFeatureActions(

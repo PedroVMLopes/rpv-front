@@ -456,7 +456,8 @@
     "rollComingSoon": "Auxiliar de rolagens em breve",
     "magic": {
       "spellbookTitle": "Grimório",
-      "emptySpellbook": "Nenhuma magia preparada ou conhecida ainda.",
+      "emptySpellbook": "Nenhuma magia no grimório ainda.",
+      "unpreparedBadge": "Não preparada",
       "preparePanelTitle": "Preparar magias",
       "prepareTitle": "Preparar magias",
       "prepareHelp": "Selecione quais magias de nível estão preparadas (até nível + modificador de conjuração, mínimo 1). Truques ficam sempre disponíveis.",

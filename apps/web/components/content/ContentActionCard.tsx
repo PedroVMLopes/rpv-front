@@ -6,6 +6,7 @@ import type {
     ContentSummaryModel,
     ContentUseActionSpec,
 } from "@/lib/content/contentDetail.types";
+import { cn } from "@/lib/utils";
 import { ContentDetailModal } from "./ContentDetailModal";
 import type { ContentDetailQuantityHandlers } from "./ContentDetailPanel";
 import { ContentSummaryCard } from "./ContentSummaryCard";
@@ -25,6 +26,7 @@ export type ContentActionCardProps = {
     "data-testid"?: string;
     /** When true, omit shortDescription from the list card (detail modal still has it). */
     hideShortDescription?: boolean;
+    className?: string;
 };
 
 function hasUseActions(model: {
@@ -49,6 +51,7 @@ export function ContentActionCard({
     afterContent,
     "data-testid": testId,
     hideShortDescription,
+    className,
 }: ContentActionCardProps) {
     const [detailOpen, setDetailOpen] = useState(false);
     const handleUse = onUse;
@@ -61,7 +64,7 @@ export function ContentActionCard({
         : undefined;
 
     return (
-        <div data-testid={testId} className="min-w-0 h-fit">
+        <div data-testid={testId} className={cn("min-w-0 h-fit", className)}>
             <ContentSummaryCard
                 model={summary}
                 expandLabel={expandLabel}

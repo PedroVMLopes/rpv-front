@@ -456,7 +456,8 @@
     "rollComingSoon": "Roll assistant coming soon",
     "magic": {
       "spellbookTitle": "Spellbook",
-      "emptySpellbook": "No spells prepared or known yet.",
+      "emptySpellbook": "No spells in the spellbook yet.",
+      "unpreparedBadge": "Unprepared",
       "preparePanelTitle": "Prepare spells",
       "prepareTitle": "Prepare spells",
       "prepareHelp": "Choose which leveled spells are prepared for the day (up to level + spellcasting modifier, minimum 1). Cantrips stay available.",

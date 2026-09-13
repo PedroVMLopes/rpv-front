@@ -8,7 +8,7 @@ import {
     listCombatResources,
     type CombatResourceEntry,
 } from "@/lib/character/combatResources";
-import { listSpellActions } from "@/lib/character/combatActions";
+import { listMagicSpellbookEntries } from "@/lib/character/spellbookDisplay";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { SpellActionCard } from "@/components/content/spells/SpellActionCard";
 import { useContentLocale } from "@/store/useContentLocale";
@@ -27,21 +27,25 @@ type MagicSpellbookPanelProps = {
 };
 
 function groupSpellsByLevel(
-    spells: ReturnType<typeof listSpellActions>["spells"]
-): Map<number, ReturnType<typeof listSpellActions>["spells"][number][]> {
+    entries: ReturnType<typeof listMagicSpellbookEntries>["spells"]
+): Map<
+    number,
+    ReturnType<typeof listMagicSpellbookEntries>["spells"]
+> {
     const byLevel = new Map<
         number,
-        ReturnType<typeof listSpellActions>["spells"][number][]
+        ReturnType<typeof listMagicSpellbookEntries>["spells"]
     >();
 
-    for (const spell of spells) {
-        if (spell.levelInt === null || spell.levelInt <= 0) {
+    for (const entry of entries) {
+        const levelInt = entry.spell.levelInt;
+        if (levelInt === null || levelInt <= 0) {
             continue;
         }
 
-        const levelSpells = byLevel.get(spell.levelInt) ?? [];
-        levelSpells.push(spell);
-        byLevel.set(spell.levelInt, levelSpells);
+        const levelSpells = byLevel.get(levelInt) ?? [];
+        levelSpells.push(entry);
+        byLevel.set(levelInt, levelSpells);
     }
 
     return byLevel;
@@ -64,7 +68,7 @@ export function MagicSpellbookPanel({
             return { cantrips: [], spells: [] };
         }
 
-        return listSpellActions(stored, resolved, contentLocale);
+        return listMagicSpellbookEntries(stored, resolved, contentLocale);
     }, [contentLocale, resolved, stored]);
 
     const spellsByLevel = useMemo(() => groupSpellsByLevel(spells), [spells]);
@@ -134,13 +138,14 @@ export function MagicSpellbookPanel({
                 {cantrips.length > 0 ? (
                     <ActionsCollapsible title={t("cantrips")} defaultOpen>
                         <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                            {cantrips.map((spell) => (
-                                <li key={spell.id} className="min-w-0">
+                            {cantrips.map((entry) => (
+                                <li key={entry.spell.id} className="min-w-0">
                                     <SpellActionCard
                                         stored={stored}
-                                        spell={spell}
+                                        spell={entry.spell}
                                         spellcastingAbility={spellcastingAbility}
                                         openRollRequest={openRollRequest}
+                                        castable={entry.castable}
                                     />
                                 </li>
                             ))}
@@ -185,15 +190,19 @@ export function MagicSpellbookPanel({
                                 </p>
                             ) : (
                                 <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                                    {levelSpells.map((spell) => (
-                                        <li key={spell.id} className="min-w-0">
+                                    {levelSpells.map((levelEntry) => (
+                                        <li
+                                            key={levelEntry.spell.id}
+                                            className="min-w-0"
+                                        >
                                             <SpellActionCard
                                                 stored={stored}
-                                                spell={spell}
+                                                spell={levelEntry.spell}
                                                 spellcastingAbility={
                                                     spellcastingAbility
                                                 }
                                                 openRollRequest={openRollRequest}
+                                                castable={levelEntry.castable}
                                             />
                                         </li>
                                     ))}

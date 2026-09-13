@@ -93,6 +93,13 @@ const wizardStored: StoredCharacter = {
             name: "Mage Hand",
         },
         {
+            id: "class-wizard-spell-magic-missile",
+            kind: "spell",
+            ref: "magic-missile",
+            source: { type: "class", id: "wizard" },
+            name: "Magic Missile",
+        },
+        {
             id: "class-wizard-resource-spell-slots-1",
             kind: "resource",
             ref: "spell-slots-1",
@@ -202,6 +209,30 @@ describe("MagicSpellbookPanel", () => {
 
         expect(screen.getByText("Burning Hands")).toBeInTheDocument();
         expect(screen.getByText("Detect Magic")).toBeInTheDocument();
+    });
+
+    it("shows known unprepared spells as muted read-only cards", async () => {
+        const user = userEvent.setup();
+        renderSpellbook(wizardStored);
+
+        expect(screen.getByText("Magic Missile")).toBeInTheDocument();
+        expect(screen.getByText(/Unprepared/)).toBeInTheDocument();
+
+        const missileCard = screen
+            .getByRole("heading", { name: "Magic Missile" })
+            .closest("div.min-w-0.h-fit");
+        expect(missileCard).not.toBeNull();
+        expect(missileCard).toHaveClass("opacity-60");
+        expect(
+            within(missileCard!).getByRole("button", { name: "3d4+1" })
+        ).toBeDisabled();
+
+        await user.click(
+            within(missileCard!).getByRole("button", {
+                name: "Expand Magic Missile",
+            })
+        );
+        expect(screen.getByRole("dialog")).toBeInTheDocument();
     });
 
     it("consumes spell slots via the store from the level header", async () => {
