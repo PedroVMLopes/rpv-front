@@ -235,7 +235,7 @@ export function SpellActionCard({
                     <label className="flex items-center justify-between gap-2 text-sm">
                         <span>{tCombat("upcastSlot")}</span>
                         <select
-                            className="rounded-md border bg-background px-2 py-1 text-sm"
+                            className="rounded-md border bg-muted text-muted-foreground px-2 py-1 text-sm"
                             value={slotLevel}
                             onChange={(event) =>
                                 handleSlotChange(Number(event.target.value))
