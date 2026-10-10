@@ -147,6 +147,63 @@ export const rpvExtraItems: ItemEntry[] = [
         stackable: true,
         grants: [],
     },
+    {
+        slug: "rpv_wand-of-magic-missiles",
+        system: "dnd",
+        name: "Wand of Magic Missiles",
+        description:
+            "This wand has 7 charges. While holding it, you can use an action to expend 1 or more of its charges to cast Magic Missile from it. The wand regains all expended charges daily at dawn (long rest).",
+        category: { name: "Wand", key: "wand" },
+        weapon: null,
+        armor: null,
+        weight: "1.000",
+        weightUnit: "lb",
+        cost: null,
+        stackable: false,
+        /** Stay in bag so charge instance state is preserved (pilot). */
+        equipPolicy: "carried",
+        chargeProfile: { max: 7, recharge: "long_rest" },
+        grants: [
+            {
+                grantType: "ability",
+                choose: 0,
+                description: "Cast Magic Missile",
+                activation: { cost: "action", consumeQuantity: 0 },
+                useEffect: {
+                    kind: "cast_spell",
+                    spellRef: "magic-missile",
+                },
+            },
+        ],
+    },
+    {
+        slug: "rpv_staff-of-healing",
+        system: "dnd",
+        name: "Staff of Healing",
+        description:
+            "This staff has 10 charges. While holding it, you can use an action to expend 1 charge to cast Cure Wounds from it. The staff regains all expended charges daily at dawn (long rest).",
+        category: { name: "Staff", key: "staff" },
+        weapon: null,
+        armor: null,
+        weight: "4.000",
+        weightUnit: "lb",
+        cost: null,
+        stackable: false,
+        equipPolicy: "carried",
+        chargeProfile: { max: 10, recharge: "long_rest" },
+        grants: [
+            {
+                grantType: "ability",
+                choose: 0,
+                description: "Cast Cure Wounds",
+                activation: { cost: "action", consumeQuantity: 0 },
+                useEffect: {
+                    kind: "cast_spell",
+                    spellRef: "cure-wounds",
+                },
+            },
+        ],
+    },
 ];
 
 /**

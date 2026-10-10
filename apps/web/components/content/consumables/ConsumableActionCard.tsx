@@ -42,6 +42,9 @@ export function ConsumableActionCard({
     const useInventoryItem = useCharacterStore(
         (state) => state.useInventoryItem
     );
+    const spendItemCharges = useCharacterStore(
+        (state) => state.spendItemCharges
+    );
     const setCharacterSession = useCharacterStore(
         (state) => state.setCharacterSession
     );
@@ -173,13 +176,28 @@ export function ConsumableActionCard({
             openRollRequest,
             consume: (slug, quantity) =>
                 useInventoryItem(stored.id, slug, quantity),
+            spendCharges: (instanceId, amount) =>
+                spendItemCharges(stored.id, instanceId, amount),
+            applyCondition: (conditionRef) => {
+                const current =
+                    useCharacterStore
+                        .getState()
+                        .characters.find((c) => c.id === stored.id)?.session
+                        ?.activeConditions ?? [];
+                if (current.includes(conditionRef)) {
+                    return;
+                }
+                setCharacterSession(stored.id, {
+                    activeConditions: [...current, conditionRef],
+                });
+            },
             setConcentration: (payload) =>
                 setCharacterSession(stored.id, {
                     concentratingOn: payload,
                 }),
             castLabel:
                 useAction.role === "ritual" ? tCombat("castAsRitual") : undefined,
-            manualEffectToast: (label) =>
+            conditionAppliedToast: (label) =>
                 toast(tVitality("consumableManualToast", { label })),
         });
     };

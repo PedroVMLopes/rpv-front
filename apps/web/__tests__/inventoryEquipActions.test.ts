@@ -18,14 +18,14 @@ describe("canEquipSlugToSlot", () => {
         ).toBe(true);
     });
 
-    it("rejects occupied slots", () => {
+    it("allows occupied slots for swap (same slot)", () => {
         expect(
             canEquipSlugToSlot(
-                { "melee-main": "srd_longbow" },
+                { "melee-main": "srd_rapier" },
                 "melee-main",
                 "srd_longsword"
             )
-        ).toBe(false);
+        ).toBe(true);
     });
 
     it("rejects when slug is already equipped elsewhere", () => {

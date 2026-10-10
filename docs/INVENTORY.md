@@ -173,9 +173,10 @@ Poções (Open5e `/v2/magicitems/`, document `srd-2014`) + gear SRD:
 2. Grant `ability` + `activation: { cost: "action", consumeQuantity: 1 }` +
    `useEffect` tipado (`cast_spell` | `heal` | `apply_condition` | `deal_damage`).
 3. **Usar** no inventário ou Combat:
-   - `cast_spell` → rolagem da magia + `useInventoryItem` (qty−1)
+   - `cast_spell` → rolagem da magia + `useInventoryItem` (qty−1) ou spend charges
    - `heal` → `RollRequest` heal (N dados + flat) → `applyVitalityChange` self + consume
-   - `apply_condition` / `deal_damage` → consume + toast (automação completa futura)
+   - `apply_condition` → append em `session.activeConditions` + consume
+   - `deal_damage` → `RollRequest` (ataque improvisado + dano ou só dano) + consume
 4. Não entra em `stored.grants` como spell/feature permanente.
 5. Stacks com provenance consumidos ficam em qty `0` (ocultos no display) para o
    rematerialize não restaurar o loot inicial.
@@ -187,7 +188,12 @@ Helpers: [`consumableActions.ts`](../apps/web/lib/character/consumableActions.ts
 [`useConsumable.ts`](../apps/web/lib/character/useConsumable.ts),
 [`itemUse.ts`](../packages/content/src/item/itemUse.ts).
 
-Charges/wands e swap de slot ocupado permanecem pendentes.
+**Swap de slot:** `equipItem` devolve o item ocupante à bag e equipa o novo;
+UI confirma com dialog (`confirmReplace`).
+
+**Charges (piloto):** `ItemStack.instanceId` + `charges`; `ItemEntry.chargeProfile`.
+Itens `rpv_wand-of-magic-missiles` (7) e `rpv_staff-of-healing` (10), policy
+`carried`, recharge em long rest.
 ---
 
 ## Display na ficha (Etapas 4–5 — implementado)
@@ -266,7 +272,7 @@ e moeda quando picks de starting equipment mudam.
 Overlap entre camadas é intencional; duplicatas idênticas foram podadas (provenance
 dedup mantido em `buildCharacter.test.ts`).
 
-**Próximo passo:** polish Etapa 7 (swap de slot ocupado); charges/wands; automação `apply_condition` / `deal_damage`.
+**Próximo passo:** attunement; charges em mais itens do catálogo; efeitos mecânicos de exhaustion.
 
 ---
 
@@ -279,7 +285,9 @@ dedup mantido em `buildCharacter.test.ts`).
 | Roupas | Só slot `cosmetic` no menu | `cosmetic` |
 | Scroll | Usar da bag + consumir qty ✅ | — |
 | Poção de cura | Usar da bag + heal roll → HP ✅ | — |
-| Antitoxin / holy water / alchemist's fire | Usar + consume + toast (efeito na mesa) ✅ | Automação completa depois |
+| Antitoxin / holy water / alchemist's fire | Usar → condição / roll de dano + consume ✅ | — |
+| Swap de slot ocupado | Confirm + unequip-to-bag + equip ✅ | — |
+| Charges (wand/staff piloto) | `instanceId` + long rest recharge ✅ | Mais itens do catálogo |
 | Adicionar item manual | Picker do catálogo → `addToBag` (qty 1) ✅ | — |
 | Busca nas Posses | Texto + filtros de categoria ✅ | — |
 | Layout da aba | Três painéis: Equipamento / Posses / Cosmético | — |
@@ -299,7 +307,7 @@ Cada etapa fecha com testes antes da próxima.
 | **4** | Display: `listCarriedRows` vs equipados vs cosmético ✅ | `inventoryDisplay.ts`, `InventoryTab` |
 | **5** | Layout aba Inventário (Equipamento / Posses / Cosmético) ✅ | `InventoryTab`, painéis |
 | **6** | Adicionar item do catálogo + busca Posses ✅ | `InventoryToolbar`, `InventoryAddItemModal` |
-| **7** | Consumíveis **Usar** (scroll + potions heal + stubs gear) ✅; polish: swap de slot ocupado | grants + `useEffect`, qty |
+| **7** | Consumíveis **Usar** ✅; swap de slot ✅; charges piloto ✅ | grants + `useEffect`, qty / instance |
 
 Homebrew compartilhável fica **fora** deste roadmap — mesmo `ItemEntry` quando existir.
 

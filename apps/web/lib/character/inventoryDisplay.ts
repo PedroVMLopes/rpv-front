@@ -31,12 +31,17 @@ export type InventoryDisplayRow = {
     multiEquipped?: boolean;
     /** Bag vs equipped panel semantics (Etapa 4+). */
     displayKind?: InventoryDisplayKind;
+    charges?: { current: number; max: number };
 };
 
 export function formatInventoryItemTitle(
     name: string,
-    quantity: number
+    quantity: number,
+    charges?: { current: number; max: number }
 ): string {
+    if (charges) {
+        return `${name} (${charges.current}/${charges.max})`;
+    }
     if (quantity === 1) {
         return name;
     }
@@ -86,6 +91,7 @@ function bagStacksToRows(
                 quantity: stack.quantity,
                 equipped: false,
                 displayKind,
+                ...(stack.charges ? { charges: stack.charges } : {}),
             },
         ];
     });

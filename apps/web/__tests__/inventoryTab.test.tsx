@@ -520,31 +520,49 @@ describe("InventoryTab equip actions", () => {
         ).toBe(true);
     });
 
-    it("does not equip into an occupied slot", async () => {
+    it("swaps into an occupied slot after confirm", async () => {
         const user = userEvent.setup();
-        renderWithProviders(
-            <InventoryTabLive characterId={storedCharacter.id} />
-        );
+        const confirmSpy = jest
+            .spyOn(window, "confirm")
+            .mockReturnValue(true);
 
-        const amuletCard = cardForName("Amulet of Vitality", equipmentPanel());
-        await user.click(
-            within(amuletCard).getByRole("button", { name: "Equip" })
-        );
-
-        const rangedMain = screen.getByRole("menuitem", {
-            name: "Equip to Ranged main",
+        const withSwap = cloneStoredCharacter({
+            ...storedCharacter,
+            selections: {
+                ...storedCharacter.selections,
+                inventory: {
+                    bag: [
+                        { slug: "srd_shortbow", quantity: 1 },
+                        { slug: "rpv_amulet-of-vitality", quantity: 1 },
+                    ],
+                    equipped: { "ranged-main": "srd_longbow" },
+                    equippedMulti: {},
+                },
+            },
         });
-        expect(rangedMain).toHaveAttribute("data-disabled");
-        await user.click(rangedMain);
 
+        renderWithProviders(
+            <InventoryTabLive characterId={withSwap.id} />,
+            withSwap
+        );
+
+        const shortbowCard = cardForName("Shortbow", equipmentPanel());
+        await user.click(
+            within(shortbowCard).getByRole("button", { name: "Equip" })
+        );
+        await user.click(
+            screen.getByRole("menuitem", { name: "Replace in Ranged main" })
+        );
+
+        expect(confirmSpy).toHaveBeenCalled();
+        const inventory =
+            useCharacterStore.getState().characters[0]?.selections.inventory;
+        expect(inventory?.equipped["ranged-main"]).toBe("srd_shortbow");
         expect(
-            useCharacterStore.getState().characters[0]?.selections.inventory
-                ?.equipped["ranged-main"]
-        ).toBe("srd_longbow");
-        expect(
-            useCharacterStore.getState().characters[0]?.selections.inventory
-                ?.equipped.amulet
-        ).toBeUndefined();
+            inventory?.bag.some((stack) => stack.slug === "srd_longbow")
+        ).toBe(true);
+
+        confirmSpy.mockRestore();
     });
 
     it("shows quantity suffix and adjusts bag quantity from the detail modal", async () => {

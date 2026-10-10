@@ -72,6 +72,18 @@ describe("sanitizeCharacterSession", () => {
             })
         ).toBeUndefined();
     });
+
+    it("keeps exhaustion levels 1–6 and drops 0", () => {
+        expect(
+            sanitizeCharacterSession({ exhaustion: 3.7 })
+        ).toEqual({ exhaustion: 3 });
+        expect(
+            sanitizeCharacterSession({ exhaustion: 9 })
+        ).toEqual({ exhaustion: 6 });
+        expect(
+            sanitizeCharacterSession({ exhaustion: 0 })
+        ).toBeUndefined();
+    });
 });
 
 describe("mergeCharacterSession", () => {
@@ -136,5 +148,14 @@ describe("mergeCharacterSession", () => {
         ).toEqual({
             metaPoints: { inspiration: 1 },
         });
+    });
+
+    it("updates and clears exhaustion", () => {
+        expect(
+            mergeCharacterSession({ exhaustion: 2 }, { exhaustion: 4 })
+        ).toEqual({ exhaustion: 4 });
+        expect(
+            mergeCharacterSession({ exhaustion: 2 }, { exhaustion: 0 })
+        ).toBeUndefined();
     });
 });

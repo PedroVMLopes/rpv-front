@@ -21,17 +21,52 @@ function isValidItemSlug(slug: string, system: SystemKey): boolean {
     return getItem(slug, system) !== undefined;
 }
 
-function stackMergeKey(stack: { slug: string; provenance?: string }): string {
+function stackMergeKey(stack: {
+    slug: string;
+    provenance?: string;
+    instanceId?: string;
+}): string {
+    if (stack.instanceId) {
+        return `instance\0${stack.instanceId}`;
+    }
     return `${stack.slug}\0${stack.provenance ?? ""}`;
 }
 
 export function bagStackReactKey(stack: {
     slug: string;
     provenance?: string;
+    instanceId?: string;
 }): string {
+    if (stack.instanceId) {
+        return `${stack.slug}:instance:${stack.instanceId}`;
+    }
     return stack.provenance
         ? `${stack.slug}:${stack.provenance}`
         : `${stack.slug}:manual`;
+}
+
+function newInstanceId(): string {
+    if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+        return crypto.randomUUID();
+    }
+    return `inst-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function sanitizeCharges(
+    charges: CharacterInventory["bag"][number]["charges"]
+): CharacterInventory["bag"][number]["charges"] | undefined {
+    if (!charges || typeof charges.max !== "number" || !Number.isFinite(charges.max)) {
+        return undefined;
+    }
+    const max = Math.max(1, Math.floor(charges.max));
+    const currentRaw =
+        typeof charges.current === "number" && Number.isFinite(charges.current)
+            ? Math.floor(charges.current)
+            : max;
+    return {
+        max,
+        current: Math.max(0, Math.min(max, currentRaw)),
+    };
 }
 
 function mergeBagStacks(stacks: CharacterInventory["bag"]): CharacterInventory["bag"] {
@@ -40,7 +75,7 @@ function mergeBagStacks(stacks: CharacterInventory["bag"]): CharacterInventory["
     for (const stack of stacks) {
         const key = stackMergeKey(stack);
         const existing = merged.get(key);
-        if (existing) {
+        if (existing && !stack.instanceId) {
             merged.set(key, {
                 ...existing,
                 quantity: existing.quantity + stack.quantity,
@@ -64,11 +99,21 @@ function sanitizeBag(
             return [];
         }
 
+        const charges = sanitizeCharges(stack.charges);
+        const instanceId =
+            typeof stack.instanceId === "string" && stack.instanceId.trim()
+                ? stack.instanceId.trim()
+                : charges
+                  ? newInstanceId()
+                  : undefined;
+
         return [
             {
                 slug,
                 quantity: stack.quantity,
                 ...(stack.provenance ? { provenance: stack.provenance } : {}),
+                ...(instanceId ? { instanceId } : {}),
+                ...(charges ? { charges } : {}),
             },
         ];
     });
@@ -410,11 +455,35 @@ export function addToBag(
     inventory: CharacterInventory,
     slug: string,
     quantity = 1,
-    provenance?: string
+    provenance?: string,
+    system: SystemKey = "dnd"
 ): CharacterInventory {
     const normalizedSlug = coerceSlug(slug);
     if (!normalizedSlug || quantity < 0) {
         return inventory;
+    }
+
+    const item = getItem(normalizedSlug, system);
+    if (item?.chargeProfile) {
+        const max = Math.max(1, Math.floor(item.chargeProfile.max));
+        const instances = Math.max(1, Math.floor(quantity) || 1);
+        let next = inventory;
+        for (let i = 0; i < instances; i += 1) {
+            next = {
+                ...next,
+                bag: [
+                    ...next.bag,
+                    {
+                        slug: normalizedSlug,
+                        quantity: 1,
+                        instanceId: newInstanceId(),
+                        charges: { current: max, max },
+                        ...(provenance ? { provenance } : {}),
+                    },
+                ],
+            };
+        }
+        return next;
     }
 
     const existingIndex = findBagStackIndex(
@@ -447,6 +516,76 @@ export function addToBag(
             },
         ],
     };
+}
+
+/** Spend charges on a bag instance. No-op when insufficient. */
+export function spendItemCharges(
+    inventory: CharacterInventory,
+    instanceId: string,
+    amount = 1
+): CharacterInventory {
+    if (!instanceId || amount < 1) {
+        return inventory;
+    }
+
+    const index = inventory.bag.findIndex(
+        (stack) => stack.instanceId === instanceId
+    );
+    if (index < 0) {
+        return inventory;
+    }
+
+    const stack = inventory.bag[index];
+    const charges = stack.charges;
+    if (!charges || charges.current < amount) {
+        return inventory;
+    }
+
+    return {
+        ...inventory,
+        bag: inventory.bag.map((entry, i) =>
+            i === index
+                ? {
+                      ...entry,
+                      charges: {
+                          ...charges,
+                          current: charges.current - amount,
+                      },
+                  }
+                : entry
+        ),
+    };
+}
+
+/** Restore charges for items with long_rest recharge profiles. */
+export function rechargeLongRestItemCharges(
+    inventory: CharacterInventory,
+    system: SystemKey = "dnd"
+): CharacterInventory {
+    let changed = false;
+    const bag = inventory.bag.map((stack) => {
+        const item = getItem(stack.slug, system);
+        if (
+            !item?.chargeProfile ||
+            item.chargeProfile.recharge !== "long_rest" ||
+            !stack.charges
+        ) {
+            return stack;
+        }
+        if (stack.charges.current === stack.charges.max) {
+            return stack;
+        }
+        changed = true;
+        return {
+            ...stack,
+            charges: {
+                ...stack.charges,
+                current: stack.charges.max,
+            },
+        };
+    });
+
+    return changed ? { ...inventory, bag } : inventory;
 }
 
 /** Set absolute bag quantity for a slug. Keeps the stack when quantity is 0. */
@@ -624,9 +763,10 @@ export function getTotalBagQuantity(
     return getBagQuantity(inventory.bag, normalizedSlug);
 }
 
-// TODO(inventory-ui): when the slot is occupied, future UI should ask whether to
-// send the new item to the bag or equip it by moving the current item back to
-// the bag. For now equipItem fails (no-op).
+/**
+ * Equip a bag item into a single slot. When the slot is occupied, the current
+ * item is returned to the bag (swap) and the new item is equipped.
+ */
 export function equipItem(
     inventory: CharacterInventory,
     slotId: string,
@@ -648,7 +788,6 @@ export function equipItem(
         !isValidEquipmentSlot(slotId, system) ||
         !isValidItemSlug(normalizedSlug, system) ||
         !canEquipItem(normalizedSlug, slotId, system) ||
-        withMulti.equipped[slotId] ||
         isSlugEquippedAnywhere(withMulti, normalizedSlug, {
             kind: "single",
             slotId,
@@ -658,13 +797,19 @@ export function equipItem(
         return inventory;
     }
 
+    const occupiedBy = withMulti.equipped[slotId];
+    let working: CharacterInventory = withMulti;
+    if (occupiedBy) {
+        working = unequipItem(working, slotId, system);
+    }
+
     return {
-        bag: decrementBag(withMulti.bag, normalizedSlug, 1),
+        bag: decrementBag(working.bag, normalizedSlug, 1),
         equipped: {
-            ...withMulti.equipped,
+            ...working.equipped,
             [slotId]: normalizedSlug,
         },
-        equippedMulti: withMulti.equippedMulti,
+        equippedMulti: working.equippedMulti ?? {},
     };
 }
 

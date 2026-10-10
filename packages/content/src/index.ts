@@ -49,6 +49,7 @@ export * from "./curation/subclassGrants.dnd";
 export * from "./curation/systemGrants.dnd";
 export * from "./curation/naturalWeapons.dnd";
 export * from "./curation/conditions.dnd";
+export * from "./curation/damageAffinity.dnd";
 export * from "./curation/featureDescriptions.dnd";
 export * from "./curation/spellCombat.dnd";
 export * from "./curation/spellDisplay.dnd";

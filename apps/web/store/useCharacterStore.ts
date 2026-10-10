@@ -33,6 +33,8 @@ import {
     unequipItem as unequipItemInventory,
     unequipItemFromMultiSlot as unequipItemFromMultiSlotInventory,
     useInventoryItem as useInventoryItemInventory,
+    spendItemCharges as spendItemChargesInventory,
+    rechargeLongRestItemCharges,
 } from "@/lib/character/inventory";
 import { getResourceMax } from "@/lib/character/presetStats";
 import {
@@ -81,6 +83,11 @@ interface CharacterStore {
     addToBag: (id: string, slug: string, quantity?: number) => void;
     removeFromBag: (id: string, slug: string, quantity?: number) => void;
     useInventoryItem: (id: string, slug: string, quantity?: number) => void;
+    spendItemCharges: (
+        id: string,
+        instanceId: string,
+        amount?: number
+    ) => void;
     setBagQuantity: (id: string, slug: string, quantity: number) => void;
     deleteInventoryItem: (id: string, input: DeleteInventoryItemInput) => void;
     unequipItemToBag: (
@@ -255,8 +262,8 @@ export const useCharacterStore = create<CharacterStore>()(
                 })),
 
             addToBag: (id, slug, quantity = 1) =>
-                updateCharacterInventory(set, get, id, (inventory) =>
-                    addToBagInventory(inventory, slug, quantity)
+                updateCharacterInventory(set, get, id, (inventory, system) =>
+                    addToBagInventory(inventory, slug, quantity, undefined, system)
                 ),
 
             removeFromBag: (id, slug, quantity = 1) =>
@@ -267,6 +274,11 @@ export const useCharacterStore = create<CharacterStore>()(
             useInventoryItem: (id, slug, quantity = 1) =>
                 updateCharacterInventory(set, get, id, (inventory) =>
                     useInventoryItemInventory(inventory, slug, quantity)
+                ),
+
+            spendItemCharges: (id, instanceId, amount = 1) =>
+                updateCharacterInventory(set, get, id, (inventory) =>
+                    spendItemChargesInventory(inventory, instanceId, amount)
                 ),
 
             setBagQuantity: (id, slug, quantity) =>
@@ -454,6 +466,26 @@ export const useCharacterStore = create<CharacterStore>()(
                                       deathSaves: null,
                                   })
                                 : char.session;
+
+                        const inventory =
+                            kind === "long_rest"
+                                ? rechargeLongRestItemCharges(
+                                      char.selections.inventory,
+                                      char.system
+                                  )
+                                : char.selections.inventory;
+
+                        if (inventory !== char.selections.inventory) {
+                            return {
+                                ...rebuildCharacterWithInventory(
+                                    char,
+                                    inventory,
+                                    useContentLocale.getState().contentLocale
+                                ),
+                                resources,
+                                session,
+                            };
+                        }
 
                         return {
                             ...char,

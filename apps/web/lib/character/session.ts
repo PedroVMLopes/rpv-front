@@ -102,6 +102,21 @@ function sanitizeTempHp(value: unknown): number | undefined {
     return tempHp;
 }
 
+const EXHAUSTION_MAX = 6;
+
+export function sanitizeExhaustion(value: unknown): number | undefined {
+    if (typeof value !== "number" || !Number.isFinite(value)) {
+        return undefined;
+    }
+
+    const level = Math.floor(value);
+    if (level <= 0) {
+        return undefined;
+    }
+
+    return Math.min(EXHAUSTION_MAX, level);
+}
+
 export function sanitizeCharacterSession(
     session: CharacterSession | undefined
 ): CharacterSession | undefined {
@@ -111,6 +126,7 @@ export function sanitizeCharacterSession(
 
     const concentratingOn = sanitizeConcentration(session.concentratingOn);
     const activeConditions = sanitizeConditionSlugs(session.activeConditions);
+    const exhaustion = sanitizeExhaustion(session.exhaustion);
     const tempHp = sanitizeTempHp(session.tempHp);
     const deathSaves = sanitizeDeathSaves(session.deathSaves);
     const metaPoints = sanitizeMetaPoints(session.metaPoints);
@@ -118,6 +134,7 @@ export function sanitizeCharacterSession(
     if (
         !concentratingOn &&
         !activeConditions &&
+        exhaustion === undefined &&
         !tempHp &&
         !deathSaves &&
         !metaPoints
@@ -128,6 +145,7 @@ export function sanitizeCharacterSession(
     return {
         ...(concentratingOn ? { concentratingOn } : {}),
         ...(activeConditions ? { activeConditions } : {}),
+        ...(exhaustion !== undefined ? { exhaustion } : {}),
         ...(tempHp !== undefined ? { tempHp } : {}),
         ...(deathSaves ? { deathSaves } : {}),
         ...(metaPoints ? { metaPoints } : {}),
@@ -150,6 +168,14 @@ export function mergeCharacterSession(
 
     if ("activeConditions" in patch) {
         next.activeConditions = patch.activeConditions;
+    }
+
+    if ("exhaustion" in patch) {
+        if (patch.exhaustion === undefined || patch.exhaustion === 0) {
+            delete next.exhaustion;
+        } else {
+            next.exhaustion = patch.exhaustion;
+        }
     }
 
     if ("tempHp" in patch) {

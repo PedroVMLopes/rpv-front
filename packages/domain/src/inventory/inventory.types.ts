@@ -1,8 +1,20 @@
+export type ItemStackCharges = {
+    current: number;
+    max: number;
+};
+
 export type ItemStack = {
     slug: string;
     quantity: number;
     /** Set when stack comes from build-time grant materialization. */
     provenance?: string;
+    /**
+     * Unique id for non-merging stacks (charged magic items).
+     * When set, the stack never merges with another bag row.
+     */
+    instanceId?: string;
+    /** Remaining uses for charged items. */
+    charges?: ItemStackCharges;
 };
 
 export type CharacterInventory = {

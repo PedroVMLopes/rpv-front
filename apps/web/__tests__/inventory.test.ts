@@ -5,9 +5,11 @@ import {
     deleteInventoryItem,
     equipItem,
     equippedItemSlugs,
+    rechargeLongRestItemCharges,
     removeFromBag,
     sanitizeInventory,
     setBagQuantity,
+    spendItemCharges,
     unequipItem,
 } from "../lib/character/inventory";
 
@@ -172,6 +174,46 @@ describe("sanitizeInventory", () => {
             "dnd"
         );
         expect(inventory).toBe(before);
+    });
+
+    it("swaps when equipping into an occupied single slot", () => {
+        let inventory = addToBag(emptyInventory(), "srd_longsword", 1);
+        inventory = addToBag(inventory, "srd_rapier", 1);
+        inventory = equipItem(inventory, "melee-main", "srd_longsword", "dnd");
+        inventory = equipItem(inventory, "melee-main", "srd_rapier", "dnd");
+
+        expect(inventory.equipped["melee-main"]).toBe("srd_rapier");
+        expect(
+            inventory.bag.find((stack) => stack.slug === "srd_longsword")
+                ?.quantity
+        ).toBe(1);
+        expect(
+            inventory.bag.find((stack) => stack.slug === "srd_rapier")
+        ).toBeUndefined();
+    });
+
+    it("creates charged instances that do not merge and can spend/recharge", () => {
+        let inventory = addToBag(
+            emptyInventory(),
+            "rpv_wand-of-magic-missiles",
+            2,
+            undefined,
+            "dnd"
+        );
+        expect(inventory.bag).toHaveLength(2);
+        expect(inventory.bag[0]?.instanceId).toBeTruthy();
+        expect(inventory.bag[0]?.charges).toEqual({ current: 7, max: 7 });
+        expect(inventory.bag[0]?.instanceId).not.toBe(
+            inventory.bag[1]?.instanceId
+        );
+
+        const instanceId = inventory.bag[0]!.instanceId!;
+        inventory = spendItemCharges(inventory, instanceId, 2);
+        expect(inventory.bag[0]?.charges?.current).toBe(5);
+
+        inventory = rechargeLongRestItemCharges(inventory, "dnd");
+        expect(inventory.bag[0]?.charges?.current).toBe(7);
+        expect(inventory.bag[1]?.charges?.current).toBe(7);
     });
 
     it("equips multiple cosmetics without feeding equippedItemSlugs", () => {
@@ -466,16 +508,6 @@ describe("equipItem", () => {
         const inventory = emptyInventory();
 
         expect(equipItem(inventory, "amulet", "rpv_amulet-of-vitality", "dnd")).toBe(inventory);
-    });
-
-    it("returns inventory unchanged when the slot is occupied", () => {
-        const inventory = {
-            bag: [{ slug: "rpv_ring-of-hardiness", quantity: 1 }],
-            equipped: { amulet: "rpv_amulet-of-vitality" },
-            equippedMulti: {},
-        };
-
-        expect(equipItem(inventory, "amulet", "rpv_ring-of-hardiness", "dnd")).toBe(inventory);
     });
 
     it("returns inventory unchanged when the slug is already equipped elsewhere", () => {

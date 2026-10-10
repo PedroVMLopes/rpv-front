@@ -25,8 +25,9 @@ function isSlugInMulti(
 }
 
 /**
- * Whether a bag slug can be equipped into a slot under current inventory rules:
- * single slots must be empty; slug must not already be equipped (single or multi).
+ * Whether a bag slug can be equipped into a slot under current inventory rules.
+ * Occupied single slots are allowed (caller should confirm swap). The slug must
+ * not already be equipped elsewhere (single or multi).
  */
 export function canEquipSlugToSlot(
     equipped: CharacterInventory["equipped"],
@@ -52,10 +53,6 @@ export function canEquipSlugToSlot(
         return !Object.values(equipped).some(
             (equippedSlug) => normalizeSlug(equippedSlug) === normalizedSlug
         );
-    }
-
-    if (equipped[slotId]) {
-        return false;
     }
 
     return !Object.entries(equipped).some(

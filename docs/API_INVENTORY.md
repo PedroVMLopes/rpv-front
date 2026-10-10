@@ -76,7 +76,7 @@ shape. After `normalizeStoredCharacter`, `selections.inventory` is always presen
 | `selections.currency` | `Record<string, number>` | Playable pouch (`platinum`/`gold`/`electrum`/`silver`/`copper` for D&D). Seeded once from grants + form extras; sheet edits persist here. Rebuild preserves it. |
 | `selections.grantedCurrency` | `Record<string, number>` | Currency from class/background grants (rebuilt each save; wizard preview only) |
 | `resources` | `Record<string, number>` | **Current** remaining for HP, spell slots, rage, ki, hit dice, etc. Rebuild preserves current (except HP, which is synced to resolved max). Hit-dice max comes from `vitality`, not grants. |
-| `session` | `{ concentratingOn?, activeConditions?, tempHp?, deathSaves?, metaPoints? }` | Optional table-session currents. `metaPoints` is `Record<string, number>` for table-awarded tokens (D&D: `inspiration` 0–1). Rebuild preserves like `resources`. Omitted when empty. `schemaVersion` stays **1**. Long rest does **not** clear `metaPoints`. |
+| `session` | `{ concentratingOn?, activeConditions?, exhaustion?, tempHp?, deathSaves?, metaPoints? }` | Optional table-session currents. `exhaustion` is 1–6 (tracker-only). `metaPoints` is `Record<string, number>` for table-awarded tokens (D&D: `inspiration` 0–1). Rebuild preserves like `resources`. Omitted when empty. `schemaVersion` stays **1**. Long rest does **not** clear `metaPoints` or `exhaustion`. |
 | `systemData` | `Record<string, unknown>` | Level, AC, free text. Do **not** store the pouch here. |
 
 ### Forbidden in `systemData`
@@ -133,7 +133,7 @@ On load, `normalizeStoredCharacter` → `sanitizeInventory` inside
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `bag` | `ItemStack[]` | Owned items: `{ slug, quantity, provenance? }` |
+| `bag` | `ItemStack[]` | Owned items: `{ slug, quantity, provenance?, instanceId?, charges? }`. Charged magic items use `instanceId` + `charges: { current, max }` and never merge. |
 | `equipped` | `Record<string, string>` | `slotId → item slug` (single occupancy; **feeds grants/AC/combat**) |
 | `equippedMulti` | `Record<string, string[]>` | Multi slots (`cosmetic`, legacy `usable`); **roleplay only — no grants** |
 
@@ -426,7 +426,8 @@ Response: item modifiers removed; max HP back to **12**; `hp` clamped if needed.
 - PATCH with incremental **ops** (`addToBag`, `removeFromBag`, `useInventoryItem`, `equip`, `unequip`)
 - Weight, attunement, unique instances
 - **Consumable use from bag** — **done in web pilot** for scrolls (`useEffect: cast_spell`,
-  `useInventoryItem`, Combat + inventory Use). Potions / charges still future.
+  `useInventoryItem` / `spendItemCharges`, Combat + inventory Use). Charged pilots +
+  consumable `apply_condition` / `deal_damage` automation are in place.
 - Manual **add item** from catalog picker — **done in web pilot** (`InventoryAddItemModal` → `addToBag`); HTTP still deferred
 - Inventory UI sections: active equipment / possessions / cosmetic
 - `POST /systems/:system/items` (community publish + moderation)

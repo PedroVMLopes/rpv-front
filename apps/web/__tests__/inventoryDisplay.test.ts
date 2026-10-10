@@ -415,4 +415,13 @@ describe("formatInventoryItemTitle", () => {
         expect(formatInventoryItemTitle("Piton", 10)).toBe("Piton (10)");
         expect(formatInventoryItemTitle("Torch", 0)).toBe("Torch (0)");
     });
+
+    it("prefers charge current/max over quantity", () => {
+        expect(
+            formatInventoryItemTitle("Wand of Magic Missiles", 1, {
+                current: 5,
+                max: 7,
+            })
+        ).toBe("Wand of Magic Missiles (5/7)");
+    });
 });

@@ -2,6 +2,7 @@ import { toast } from "sonner";
 import type { ContentUseActionSpec } from "@/lib/content/contentDetail.types";
 import type { ConsumableAction } from "@/lib/character/consumableActions";
 import {
+    buildConsumableDamageRollRequest,
     buildHealRollRequest,
     buildSpellAttackOnlyRollRequest,
     buildSpellDamageRollRequest,
@@ -21,14 +22,18 @@ export type PerformConsumableUseParams = {
     openRollRequest: (request: RollRequest) => void;
     /** Called when inventory should be decremented. */
     consume: (itemSlug: string, quantity: number) => void;
+    /** Called when a charged instance should spend charges. */
+    spendCharges?: (instanceId: string, amount: number) => void;
+    /** Append a condition slug to session.activeConditions. */
+    applyCondition?: (conditionRef: string) => void;
     /** Optional concentration setter for concentration spells. */
     setConcentration?: (payload: {
         slug: string;
         slotLevel?: number;
     }) => void;
     castLabel?: string;
-    /** Toast for stubbed use effects (apply_condition / deal_damage). */
-    manualEffectToast?: (label: string) => void;
+    /** Optional confirmation toast after apply_condition. */
+    conditionAppliedToast?: (label: string) => void;
 };
 
 /**
@@ -54,12 +59,24 @@ function maybeConsume(
     action: ConsumableAction,
     useAction: ContentUseActionSpec,
     allUseActions: ContentUseActionSpec[],
-    consume: PerformConsumableUseParams["consume"]
+    consume: PerformConsumableUseParams["consume"],
+    spendCharges?: PerformConsumableUseParams["spendCharges"]
 ): void {
+    if (!shouldConsumeOnUseAction(useAction, allUseActions)) {
+        return;
+    }
+
     if (
-        action.consumeQuantity > 0 &&
-        shouldConsumeOnUseAction(useAction, allUseActions)
+        action.instanceId &&
+        action.chargeSpend &&
+        action.chargeSpend > 0 &&
+        spendCharges
     ) {
+        spendCharges(action.instanceId, action.chargeSpend);
+        return;
+    }
+
+    if (action.consumeQuantity > 0) {
         consume(action.itemSlug, action.consumeQuantity);
     }
 }
@@ -80,9 +97,11 @@ export function performConsumableUse(
         characterId,
         openRollRequest,
         consume,
+        spendCharges,
+        applyCondition,
         setConcentration,
         castLabel,
-        manualEffectToast,
+        conditionAppliedToast,
     } = params;
 
     if (action.depleted) {
@@ -102,17 +121,53 @@ export function performConsumableUse(
                 healingKind: effect.healingKind,
             });
             openRollRequest(request);
-            maybeConsume(action, useAction, allUseActions, consume);
+            maybeConsume(
+                action,
+                useAction,
+                allUseActions,
+                consume,
+                spendCharges
+            );
             return true;
         } catch {
             return false;
         }
     }
 
-    if (effect.kind === "apply_condition" || effect.kind === "deal_damage") {
-        manualEffectToast?.(action.title);
-        maybeConsume(action, useAction, allUseActions, consume);
+    if (effect.kind === "apply_condition") {
+        applyCondition?.(effect.conditionRef);
+        maybeConsume(
+            action,
+            useAction,
+            allUseActions,
+            consume,
+            spendCharges
+        );
+        conditionAppliedToast?.(action.title);
         return true;
+    }
+
+    if (effect.kind === "deal_damage") {
+        try {
+            const request = buildConsumableDamageRollRequest({
+                id: action.id,
+                label: action.title,
+                dice: effect.dice,
+                damageType: effect.damageType,
+                attack: effect.attack,
+            });
+            openRollRequest(request);
+            maybeConsume(
+                action,
+                useAction,
+                allUseActions,
+                consume,
+                spendCharges
+            );
+            return true;
+        } catch {
+            return false;
+        }
     }
 
     if (effect.kind !== "cast_spell" || !action.spell) {
@@ -149,7 +204,13 @@ export function performConsumableUse(
     }
 
     if (started) {
-        maybeConsume(action, useAction, allUseActions, consume);
+        maybeConsume(
+            action,
+            useAction,
+            allUseActions,
+            consume,
+            spendCharges
+        );
     }
 
     return started;

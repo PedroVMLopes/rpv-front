@@ -68,6 +68,8 @@ export type CharacterDeathSaves = {
 export type CharacterSession = {
     concentratingOn?: CharacterConcentration | null;
     activeConditions?: string[];
+    /** Exhaustion level 0–6. Omitted / 0 means none. Tracker-only (no auto rules). */
+    exhaustion?: number;
     /** Temporary hit points. 0 / omitted means none. */
     tempHp?: number;
     /** Death-save pips. Omitted when none are marked. Null in a patch clears. */

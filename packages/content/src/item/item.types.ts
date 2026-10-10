@@ -45,6 +45,11 @@ export type ItemArmor = {
  * Catalog item aligned with Open5e v2 `/items/` shape (camelCase).
  * `slug` is the Open5e `key` (e.g. `srd_longsword`) or an RPV overlay id (`rpv_*`).
  */
+export type ItemChargeProfile = {
+    max: number;
+    recharge: "long_rest";
+};
+
 export interface ItemEntry {
     slug: string;
     system: ItemSystem;
@@ -60,6 +65,8 @@ export interface ItemEntry {
     stackable: boolean;
     /** When set, skips auto-derivation in resolveItemEquipPolicy. */
     equipPolicy?: ItemEquipPolicy;
+    /** Magic-item charges; bag stacks get instanceId + charges when added. */
+    chargeProfile?: ItemChargeProfile;
 }
 
 export function isItemStackable(entry: ItemEntry): boolean {

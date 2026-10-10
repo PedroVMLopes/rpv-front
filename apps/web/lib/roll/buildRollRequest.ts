@@ -399,6 +399,39 @@ export function buildHealRollRequest(params: {
     };
 }
 
+/** Damage (and optional improvised attack) for consumable useEffects. */
+export function buildConsumableDamageRollRequest(params: {
+    id: string;
+    label: string;
+    dice: string;
+    damageType: string;
+    attack?: "ranged_improvised";
+    attackModifier?: number;
+}): AttackThenDamageRequest | DamageOnlyRequest {
+    const steps = expandDamageSteps(params.dice, params.damageType);
+    const damage = steps[0] ?? { damageType: params.damageType };
+
+    if (params.attack === "ranged_improvised") {
+        return {
+            kind: "attack_then_damage",
+            id: params.id,
+            label: params.label,
+            attack: {
+                die: 20,
+                modifier: params.attackModifier ?? 0,
+            },
+            damage,
+        };
+    }
+
+    return {
+        kind: "damage_only",
+        id: params.id,
+        label: params.label,
+        steps,
+    };
+}
+
 export function resolveHealTotal(
     request: Pick<HealRequest, "diceCount" | "flat">,
     rolls: number[]

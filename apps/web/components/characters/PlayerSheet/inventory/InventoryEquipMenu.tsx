@@ -151,19 +151,42 @@ export function InventoryEquipMenu({
                                             stored.system
                                         );
                                     const label = tRoot(slot.labelKey);
+                                    const occupiedSlug = equipped[slot.id];
                                     return (
                                         <DropdownMenuItem
                                             key={slot.id}
                                             disabled={!canEquip}
-                                            onSelect={() =>
+                                            onSelect={() => {
+                                                if (
+                                                    occupiedSlug &&
+                                                    !window.confirm(
+                                                        t("confirmReplace", {
+                                                            item:
+                                                                getItem(
+                                                                    occupiedSlug,
+                                                                    stored.system,
+                                                                    contentLocale
+                                                                )?.name ??
+                                                                occupiedSlug,
+                                                        })
+                                                    )
+                                                ) {
+                                                    return;
+                                                }
                                                 equipItem(
                                                     stored.id,
                                                     slot.id,
                                                     row.slug
-                                                )
-                                            }
+                                                );
+                                            }}
                                         >
-                                            {t("equipToSlot", { slot: label })}
+                                            {occupiedSlug
+                                                ? t("replaceInSlot", {
+                                                      slot: label,
+                                                  })
+                                                : t("equipToSlot", {
+                                                      slot: label,
+                                                  })}
                                         </DropdownMenuItem>
                                     );
                                 })}
@@ -187,15 +210,37 @@ export function InventoryEquipMenu({
                                     stored.system
                                 );
                             const label = tRoot(slot.labelKey);
+                            const occupiedSlug = equipped[slot.id];
                             return (
                                 <DropdownMenuItem
                                     key={slot.id}
                                     disabled={!canEquip}
-                                    onSelect={() =>
-                                        equipItem(stored.id, slot.id, row.slug)
-                                    }
+                                    onSelect={() => {
+                                        if (
+                                            occupiedSlug &&
+                                            !window.confirm(
+                                                t("confirmReplace", {
+                                                    item:
+                                                        getItem(
+                                                            occupiedSlug,
+                                                            stored.system,
+                                                            contentLocale
+                                                        )?.name ?? occupiedSlug,
+                                                })
+                                            )
+                                        ) {
+                                            return;
+                                        }
+                                        equipItem(
+                                            stored.id,
+                                            slot.id,
+                                            row.slug
+                                        );
+                                    }}
                                 >
-                                    {t("equipToSlot", { slot: label })}
+                                    {occupiedSlug
+                                        ? t("replaceInSlot", { slot: label })
+                                        : t("equipToSlot", { slot: label })}
                                 </DropdownMenuItem>
                             );
                         })}

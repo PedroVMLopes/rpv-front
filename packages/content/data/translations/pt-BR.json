@@ -612,13 +612,65 @@
     }
   },
   "conditions": {
-    "blessed": {
-      "name": "Abençoado",
-      "description": "Testes de ataque e salvaguardas ganham um d4 extra."
+    "blinded": {
+      "name": "Cego",
+      "description": "Não pode ver; falha automaticamente em testes que dependem da visão. Ataques contra a criatura têm vantagem; os ataques dela têm desvantagem."
+    },
+    "charmed": {
+      "name": "Enfeitiçado",
+      "description": "Não pode atacar o enfeitiçador nem mirá-lo com efeitos nocivos. O enfeitiçador tem vantagem em testes sociais para interagir com a criatura."
+    },
+    "deafened": {
+      "name": "Surdo",
+      "description": "Não pode ouvir e falha automaticamente em testes que dependem da audição."
+    },
+    "frightened": {
+      "name": "Amedrontado",
+      "description": "Desvantagem em testes de habilidade e de ataque enquanto a fonte do medo estiver na linha de visão. Não pode se aproximar voluntariamente da fonte."
+    },
+    "grappled": {
+      "name": "Agarrado",
+      "description": "Deslocamento se torna 0 e não se beneficia de bônus de deslocamento. Termina se o agarrador ficar incapacitado ou se um efeito tirar a criatura do alcance."
+    },
+    "incapacitated": {
+      "name": "Incapacitado",
+      "description": "Não pode realizar ações nem reações."
+    },
+    "invisible": {
+      "name": "Invisível",
+      "description": "Impossível de ver sem magia ou sentido especial. Ataques contra a criatura têm desvantagem; os ataques dela têm vantagem."
+    },
+    "paralyzed": {
+      "name": "Paralisado",
+      "description": "Incapacitado e não pode se mover nem falar. Falha automaticamente em salvaguardas de Força e Destreza. Ataques contra a criatura têm vantagem; acertos a até 1,5 m são críticos."
+    },
+    "petrified": {
+      "name": "Petrificado",
+      "description": "Transformado em substância inanimada sólida. Incapacitado, não se move nem fala. Ataques contra a criatura têm vantagem. Falha automaticamente em salvaguardas de Força e Destreza. Resistência a todo dano. Imunidade a veneno e doença."
     },
     "poisoned": {
       "name": "Envenenado",
       "description": "Desvantagem em testes de ataque e testes de habilidade."
+    },
+    "prone": {
+      "name": "Caído",
+      "description": "Só pode rastejar ou se levantar. Desvantagem em testes de ataque. Ataques corpo a corpo contra a criatura têm vantagem; ataques à distância têm desvantagem."
+    },
+    "restrained": {
+      "name": "Contido",
+      "description": "Deslocamento 0. Ataques contra a criatura têm vantagem; os ataques dela têm desvantagem. Desvantagem em salvaguardas de Destreza."
+    },
+    "stunned": {
+      "name": "Atordoado",
+      "description": "Incapacitado, não pode se mover e fala apenas de forma balbuciante. Falha automaticamente em salvaguardas de Força e Destreza. Ataques contra a criatura têm vantagem."
+    },
+    "unconscious": {
+      "name": "Inconsciente",
+      "description": "Incapacitado, não se move nem fala, inconsciente do entorno. Solta o que segura e fica caído. Falha automaticamente em salvaguardas de Força e Destreza. Ataques contra a criatura têm vantagem; acertos a até 1,5 m são críticos."
+    },
+    "blessed": {
+      "name": "Abençoado",
+      "description": "Testes de ataque e salvaguardas ganham um d4 extra."
     },
     "antitoxin": {
       "name": "Antitoxina",

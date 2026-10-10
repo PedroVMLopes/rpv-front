@@ -311,14 +311,15 @@ Helpers relevantes:
 - Fluxos ataque→dano e dano direto
 - Aba de ações / magias na ficha
 
-### Fase 4 — Polish — Residual
+### Fase 4 — Polish / sessão — Parcial
 
-- Header colapsável em mobile
+- Header: overflow/espaçamento mobile mínimo — Feito; colapso amplo ainda residual
 - Aba Anotações: criar na action bar + lista com modal de ler/editar/excluir — Feito
 - Temp HP, death saves, dados de vida (tracker) — Feito
-- Condições temporárias no header (Bless, etc.) — extensão futura
+- Condições SRD + tracker de exhaustion (`session.exhaustion`, só UI) + chips no header — Feito
+- Resistências / imunidades (display-only) — Feito
 - **Level-up:** CTA na overview (`AbilitiesSection`) abre `/edit/{id}?mode=level-up&from={N}` — wizard delta (`resolveLevelUpSteps`) com progressão do nível N+1, subclass se desbloquear, e passo Confirmar (HP + recursos).
-- **Inventário (refactor):** Etapas 1–6 feitas (policy, sanitize, UI Equip, display, layout 3 painéis, picker de catálogo + busca nas Posses). Próximo: consumíveis **Usar** (Etapa 7) — ver [`docs/INVENTORY.md`](INVENTORY.md).
+- **Inventário:** Etapas 1–7 + swap de slot + charges piloto — ver [`docs/INVENTORY.md`](INVENTORY.md).
 
 ---
 

@@ -94,8 +94,21 @@ describe("StaticContentRepository", () => {
         expect(repo.listFeats()).toEqual([]);
         expect(repo.getFeat("lucky")).toBeUndefined();
         expect(repo.listConditions().map((entry) => entry.slug)).toEqual([
-            "blessed",
+            "blinded",
+            "charmed",
+            "deafened",
+            "frightened",
+            "grappled",
+            "incapacitated",
+            "invisible",
+            "paralyzed",
+            "petrified",
             "poisoned",
+            "prone",
+            "restrained",
+            "stunned",
+            "unconscious",
+            "blessed",
             "antitoxin",
         ]);
         expect(repo.getCondition("blessed")?.rollEffects?.[0]?.kind).toBe(

@@ -250,7 +250,7 @@ describe("performConsumableUse", () => {
         expect(resolveHealTotal({ diceCount: 2, flat: 2 }, [3, 4])).toBe(9);
     });
 
-    it("consumes stub deal_damage / apply_condition uses with toast callback", () => {
+    it("applies condition and consumes antitoxin", () => {
         const stored = baseStored({
             selections: {
                 inventory: {
@@ -266,7 +266,7 @@ describe("performConsumableUse", () => {
             "srd_antitoxin-vial"
         )!;
         const consumed: Array<{ slug: string; quantity: number }> = [];
-        const toasts: string[] = [];
+        const conditions: string[] = [];
 
         const started = performConsumableUse({
             action,
@@ -275,11 +275,50 @@ describe("performConsumableUse", () => {
             characterId: stored.id,
             openRollRequest: () => undefined,
             consume: (slug, quantity) => consumed.push({ slug, quantity }),
-            manualEffectToast: (label) => toasts.push(label),
+            applyCondition: (ref) => conditions.push(ref),
         });
 
         expect(started).toBe(true);
         expect(consumed).toEqual([{ slug: "srd_antitoxin-vial", quantity: 1 }]);
-        expect(toasts).toHaveLength(1);
+        expect(conditions).toEqual(["antitoxin"]);
+    });
+
+    it("opens attack_then_damage for holy water and consumes", () => {
+        const stored = baseStored({
+            selections: {
+                inventory: {
+                    ...emptyInventory(),
+                    bag: [{ slug: "srd_holy-water-flask", quantity: 1 }],
+                },
+                choices: {},
+            },
+        });
+        const action = findConsumableAction(
+            stored,
+            createDefaultStats(),
+            "srd_holy-water-flask"
+        )!;
+        const rolls: RollRequest[] = [];
+        const consumed: Array<{ slug: string; quantity: number }> = [];
+
+        const started = performConsumableUse({
+            action,
+            useAction: { kind: "cast", label: "Use" },
+            system: "dnd",
+            characterId: stored.id,
+            openRollRequest: (request) => rolls.push(request),
+            consume: (slug, quantity) => consumed.push({ slug, quantity }),
+        });
+
+        expect(started).toBe(true);
+        expect(rolls[0]).toEqual(
+            expect.objectContaining({
+                kind: "attack_then_damage",
+                label: action.title,
+            })
+        );
+        expect(consumed).toEqual([
+            { slug: "srd_holy-water-flask", quantity: 1 },
+        ]);
     });
 });

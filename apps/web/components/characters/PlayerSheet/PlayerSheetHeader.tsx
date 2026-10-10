@@ -152,6 +152,11 @@ export function PlayerSheetHeader({
             state.characters.find((c) => c.id === stored.id)?.session
                 ?.activeConditions ?? EMPTY_CONDITIONS
     );
+    const exhaustion = useCharacterStore(
+        (state) =>
+            state.characters.find((c) => c.id === stored.id)?.session
+                ?.exhaustion ?? 0
+    );
     const currentHp = useCharacterStore(
         (state) =>
             state.characters.find((c) => c.id === stored.id)?.resources[
@@ -221,15 +226,21 @@ export function PlayerSheetHeader({
         <header className="sticky top-0 z-10 pt-3 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
             <div className="flex flex-col gap-3">
                 <div className="flex flex-wrap items-start gap-2">
-                    <Button asChild size="icon" variant="ghost" aria-label={t("back")}>
+                    <Button
+                        asChild
+                        size="icon"
+                        variant="ghost"
+                        className="shrink-0"
+                        aria-label={t("back")}
+                    >
                         <Link href="/characters/player">
                             <FaArrowLeft />
                         </Link>
                     </Button>
 
-                    <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                            <h1 className="truncate text-lg font-bold sm:text-3xl font-serif">
+                    <div className="min-w-0 flex-1 overflow-hidden">
+                        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                            <h1 className="min-w-0 max-w-full truncate text-lg font-bold sm:text-3xl font-serif">
                                 {stored.name}
                             </h1>
                             <Button
@@ -271,13 +282,28 @@ export function PlayerSheetHeader({
                                 ) : null}
                             </button>
                         ) : null}
-                        {conditionChips.length > 0 ? (
-                            <ul className="mt-1 flex flex-wrap gap-1">
+                        {exhaustion > 0 || conditionChips.length > 0 ? (
+                            <ul className="mt-1 flex max-w-full flex-wrap gap-1">
+                                {exhaustion > 0 ? (
+                                    <li>
+                                        <span
+                                            className="inline-flex max-w-full items-center truncate rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-medium text-amber-900 dark:text-amber-100"
+                                            aria-label={t(
+                                                "combat.exhaustionLevel",
+                                                { level: exhaustion }
+                                            )}
+                                        >
+                                            {t("combat.exhaustionChip", {
+                                                level: exhaustion,
+                                            })}
+                                        </span>
+                                    </li>
+                                ) : null}
                                 {conditionChips.map((chip) => (
-                                    <li key={chip.slug}>
+                                    <li key={chip.slug} className="min-w-0">
                                         <button
                                             type="button"
-                                            className="inline-flex max-w-full items-center rounded-full bg-secondary px-2 py-0.5 text-xs font-medium"
+                                            className="inline-flex max-w-full items-center truncate rounded-full bg-secondary px-2 py-0.5 text-xs font-medium"
                                             onClick={() =>
                                                 setCharacterSession(stored.id, {
                                                     activeConditions:

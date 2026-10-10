@@ -26,6 +26,11 @@ export type ConsumableAction = {
     spell?: SpellAction;
     depleted: boolean;
     consumeQuantity: number;
+    /** Bag instance for charged magic items. */
+    instanceId?: string;
+    /** Charges spent on successful use (default 1 when instance has charges). */
+    chargeSpend?: number;
+    charges?: { current: number; max: number };
 };
 
 function bagQuantityForSlug(
@@ -79,6 +84,8 @@ function consumableFromGrant(params: {
     grantIndex: number;
     quantity: number;
     locale?: Locale;
+    instanceId?: string;
+    charges?: { current: number; max: number };
 }): ConsumableAction | null {
     const {
         stored,
@@ -90,6 +97,8 @@ function consumableFromGrant(params: {
         grantIndex,
         quantity,
         locale,
+        instanceId,
+        charges,
     } = params;
 
     if (!grant.activation || !grant.useEffect) {
@@ -97,10 +106,15 @@ function consumableFromGrant(params: {
     }
 
     const consumeQuantity = grant.activation.consumeQuantity ?? 0;
-    const depleted = consumeQuantity > 0 && quantity < consumeQuantity;
+    const chargeSpend = charges ? 1 : undefined;
+    const depleted = charges
+        ? charges.current < (chargeSpend ?? 1)
+        : consumeQuantity > 0 && quantity < consumeQuantity;
 
     const action: ConsumableAction = {
-        id: `consumable:${itemSlug}:${grantIndex}`,
+        id: instanceId
+            ? `consumable:${itemSlug}:${instanceId}:${grantIndex}`
+            : `consumable:${itemSlug}:${grantIndex}`,
         itemSlug,
         itemName,
         grantIndex,
@@ -111,6 +125,9 @@ function consumableFromGrant(params: {
         description: itemDescription,
         depleted,
         consumeQuantity,
+        ...(instanceId ? { instanceId } : {}),
+        ...(chargeSpend !== undefined ? { chargeSpend } : {}),
+        ...(charges ? { charges } : {}),
     };
 
     if (grant.useEffect.kind === "cast_spell") {
@@ -151,10 +168,9 @@ export function listConsumableActions(
     const actions: ConsumableAction[] = [];
 
     for (const stack of inventory.bag) {
-        if (stack.quantity <= 0 || seen.has(stack.slug)) {
+        if (stack.quantity <= 0) {
             continue;
         }
-        seen.add(stack.slug);
 
         const item = getItem(stack.slug, stored.system, locale);
         if (!item) {
@@ -166,7 +182,17 @@ export function listConsumableActions(
             continue;
         }
 
-        const quantity = bagQuantityForSlug(stored, stack.slug);
+        // Charged instances each get their own action row.
+        if (!stack.instanceId) {
+            if (seen.has(stack.slug)) {
+                continue;
+            }
+            seen.add(stack.slug);
+        }
+
+        const quantity = stack.instanceId
+            ? stack.quantity
+            : bagQuantityForSlug(stored, stack.slug);
 
         useGrants.forEach((grant, grantIndex) => {
             const action = consumableFromGrant({
@@ -179,6 +205,8 @@ export function listConsumableActions(
                 grantIndex,
                 quantity,
                 locale,
+                instanceId: stack.instanceId,
+                charges: stack.charges,
             });
             if (action) {
                 actions.push(action);

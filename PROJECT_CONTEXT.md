@@ -264,9 +264,11 @@ Web tests are the primary integration coverage for the character pipeline.
 ## Next steps
 
 - **Inventory** — equip policy, Posses / Equipamento / Cosmético, add-item picker,
-  and consumable **Use** from bag (scroll + healing potions) are in place. Remaining: slot swap,
-  charges/wands. Roadmap: [docs/INVENTORY.md](docs/INVENTORY.md).
+  consumable **Use** (scroll, heal potions, antitoxin/flasks), slot **swap**, and
+  charged pilots (`rpv_wand-of-magic-missiles`, `rpv_staff-of-healing`) are in place.
+  Roadmap: [docs/INVENTORY.md](docs/INVENTORY.md).
+- **Session UX (Phase B)** — SRD conditions + exhaustion tracker, display-only
+  resistances/immunities. Exhaustion has no auto rules yet.
 - Extend class progression beyond L5 toward L20; expand feats / Variant Human.
-- Player sheet polish (Fase 4) — see [docs/FICHA_JOGADOR.md](docs/FICHA_JOGADOR.md).
 - Optional creation polish: rich currency choices; rich UI for skills/languages (see CHARACTER_CREATION residual).
 - Backend / remote persistence (P3) after the L5 table set is stable.
