@@ -12,6 +12,7 @@ export function readPreparedSpells(choices?: CharacterChoices): string[] {
 type FilterCastableSpellGrantsInput = {
     grants: CharacterGrant[];
     characterClass?: string;
+    subclass?: string;
     preparedSpells?: string[];
     /** When set, only the first N prepared slugs count as prepared. */
     preparedQuota?: number;
@@ -44,7 +45,7 @@ export function filterCastableSpellGrants(
 ): CharacterGrant[] {
     const spellGrants = input.grants.filter((grant) => grant.kind === "spell");
     const mode = input.characterClass
-        ? getClassSpellcastingMode(input.characterClass)
+        ? getClassSpellcastingMode(input.characterClass, input.subclass)
         : undefined;
 
     if (mode !== "spellbook" && mode !== "prepared-list") {

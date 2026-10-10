@@ -41,10 +41,31 @@ export const explorersPackBundle: EquipmentPackBundle = {
     ],
 };
 
+export const burglarsPackBundle: EquipmentPackBundle = {
+    optionType: "inventory_bundle",
+    label: "Burglar's Pack",
+    items: [
+        { ref: "srd_backpack", amount: 1 },
+        { ref: "srd_ball-bearings-bag-of-1000", amount: 1 },
+        { ref: "srd_bell", amount: 1 },
+        { ref: "srd_candle", amount: 5 },
+        { ref: "srd_crowbar", amount: 1 },
+        { ref: "srd_hammer", amount: 1 },
+        { ref: "srd_piton", amount: 10 },
+        { ref: "srd_lantern-hooded", amount: 1 },
+        { ref: "srd_lamp-oil-flask", amount: 2 },
+        { ref: "srd_rations-1-day", amount: 5 },
+        { ref: "srd_tinderbox", amount: 1 },
+        { ref: "srd_waterskin", amount: 1 },
+        { ref: "srd_rope-hempen-50-feet", amount: 1 },
+    ],
+};
+
 /** Authoring keys — not ItemEntry slugs. */
 export const dndEquipmentPackBundles = {
     "dungeoneers-pack": dungeoneersPackBundle,
     "explorers-pack": explorersPackBundle,
+    "burglars-pack": burglarsPackBundle,
 } as const;
 
 export type DndEquipmentPackKey = keyof typeof dndEquipmentPackBundles;

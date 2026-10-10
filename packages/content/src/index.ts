@@ -91,7 +91,9 @@ export {
     getClassPreparedQuotaKind,
     getClassSubclassLevel,
     classGrantSourcesFromEntry,
+    resolveSpellcastingProfile,
 } from "./grant/classGrantSources";
+export type { SpellcastingProfile } from "./grant/classGrantSources";
 
 export {
     getSubclassGrantSourcesForLevel,

@@ -183,7 +183,7 @@ describe("collectPendingDecisions", () => {
         ).toBe(true);
     });
 
-    it("excludes level 4+ missing picks in creation scope for level 5 wizard", () => {
+    it("includes level 4–5 missing picks in creation scope for level 5 wizard", () => {
         const full = collectPendingDecisions(
             {
                 race: "human",
@@ -230,6 +230,7 @@ describe("collectPendingDecisions", () => {
             .map((decision) => decision.id);
 
         expect(fullGrantKeys.some((id) => id.includes(":4:"))).toBe(true);
-        expect(creationGrantKeys.some((id) => id.includes(":4:"))).toBe(false);
+        expect(creationGrantKeys.some((id) => id.includes(":4:"))).toBe(true);
+        expect(creationGrantKeys.some((id) => id.includes(":5:"))).toBe(true);
     });
 });

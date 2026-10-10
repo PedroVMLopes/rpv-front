@@ -1,6 +1,9 @@
 import type { CharacterGrant, StatKey, Stats } from "@rpv/domain";
 import type { ItemEntry, SpellRollProfile } from "@rpv/content";
-import { getClass, itemMatchesWeaponProficiency } from "@rpv/content";
+import {
+    itemMatchesWeaponProficiency,
+    resolveSpellcastingProfile,
+} from "@rpv/content";
 import type { SystemKey } from "@/presets";
 import { formatModifier } from "./skillModifiers";
 import { readCharacterLevel } from "./skillModifiers";
@@ -177,19 +180,25 @@ export function computeNaturalWeaponDamagePreview(
 }
 
 function readSpellcastingAbility(
-    system: SystemKey,
+    _system: SystemKey,
     systemData: Record<string, unknown>
 ): StatKey | null {
     const classSlug =
         typeof systemData.characterClass === "string"
             ? systemData.characterClass
             : undefined;
+    const subclassSlug =
+        typeof systemData.subclass === "string"
+            ? systemData.subclass
+            : undefined;
 
     if (!classSlug) {
         return null;
     }
 
-    return getClass(classSlug)?.spellcastingAbility ?? null;
+    return (
+        resolveSpellcastingProfile(classSlug, subclassSlug).ability ?? null
+    );
 }
 
 export function computeSpellAttackBonus(

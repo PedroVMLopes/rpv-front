@@ -2,7 +2,7 @@
 
 import { useMemo, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { contentRepo } from "@/lib/content/contentRepository";
+import { resolveSpellcastingProfile } from "@rpv/content";
 import {
     canAdjustCombatResource,
     listCombatResources,
@@ -92,13 +92,11 @@ export function MagicSpellbookPanel({
         return [...levels].sort((a, b) => a - b);
     }, [slotEntries, spellsByLevel]);
 
-    const classEntry = stored.selections.characterClass
-        ? contentRepo(stored.system).getClass(
-              stored.selections.characterClass,
-              contentLocale
-          )
-        : undefined;
-    const spellcastingAbility = classEntry?.spellcastingAbility ?? null;
+    const spellcastingAbility =
+        resolveSpellcastingProfile(
+            stored.selections.characterClass,
+            stored.selections.subclass
+        ).ability ?? null;
 
     const adjust = (entry: CombatResourceEntry, delta: number) => {
         if (!canAdjustCombatResource(entry, delta)) {

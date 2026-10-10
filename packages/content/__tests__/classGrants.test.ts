@@ -23,6 +23,8 @@ describe("classGrants.dnd", () => {
                 "monk",
                 "rogue",
                 "cleric",
+                "paladin",
+                "druid",
                 "warlock",
             ])
         );
@@ -352,6 +354,10 @@ describe("wizard spell slot resources", () => {
         expect(getClassSubclassLevel("barbarian")).toBe(3);
         expect(getClassSubclassLevel("monk")).toBe(3);
         expect(getClassSubclassLevel("warlock")).toBe(3);
+        expect(getClassSubclassLevel("rogue")).toBe(3);
+        expect(getClassSubclassLevel("paladin")).toBe(3);
+        expect(getClassSubclassLevel("druid")).toBe(2);
+        expect(getClassSubclassLevel("cleric")).toBe(1);
     });
 });
 

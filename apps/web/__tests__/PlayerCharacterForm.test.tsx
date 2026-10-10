@@ -179,14 +179,14 @@ describe("PlayerCharacterForm", () => {
                 defaultValues={{
                     race: "human",
                     characterClass: "wizard",
-                    level: 5,
+                    level: 8,
                 }}
                 initialStepId="equipment"
             />
         );
 
         expect(
-            screen.getByText(/Choices for levels above 3/i)
+            screen.getByText(/Choices for levels above 5/i)
         ).toBeInTheDocument();
     });
 

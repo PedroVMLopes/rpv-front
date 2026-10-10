@@ -282,6 +282,16 @@ export function resolveSpellPool(
         ) {
             return false;
         }
+
+        if (filter.schools && filter.schools.length > 0) {
+            const allowed = new Set(
+                filter.schools.map((school) => school.toLowerCase())
+            );
+            if (!allowed.has(spell.school.toLowerCase())) {
+                return false;
+            }
+        }
+
         return true;
     });
 }

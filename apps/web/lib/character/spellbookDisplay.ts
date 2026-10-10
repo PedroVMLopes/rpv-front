@@ -63,7 +63,9 @@ export function listMagicSpellbookEntries(
     spells: SpellbookDisplayEntry[];
 } {
     const classSlug = characterClassSlug(stored);
-    const mode = classSlug ? getClassSpellcastingMode(classSlug) : undefined;
+    const mode = classSlug
+        ? getClassSpellcastingMode(classSlug, stored.selections.subclass)
+        : undefined;
 
     if (mode !== "spellbook") {
         return wrapAllCastable(listSpellActions(stored, resolved, locale));

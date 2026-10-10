@@ -7,6 +7,7 @@ describe("grantCatalog subclass options", () => {
         ]);
         expect(listSubclassOptions("wizard", "en")).toEqual([
             { value: "wizard-evocation", label: "Evocation" },
+            { value: "wizard-illusion", label: "Illusion" },
         ]);
     });
 

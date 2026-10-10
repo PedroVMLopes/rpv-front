@@ -201,15 +201,24 @@ When adding content, run `npm run test:packages` and `npm test -w rpv-front`.
 
 ## Pilot content (L1–L5)
 
+Phase A table set (creation wizard walks features through
+`CREATION_PROGRESSION_CAP = 5`):
+
 | Class | Resources | Subclass |
 |-------|-----------|----------|
-| Wizard | Spell slots `4/3/2/1` at L5 | `wizard-evocation` |
-| Cleric | Spell slots L1–3; `prepared-list` | `cleric-life` |
-| Barbarian | `rage-uses`; Unarmored Defense formula | `barbarian-berserker` |
+| Rogue | Sneak Attack; 1/3 caster slots via AT | `rogue-arcane-trickster` |
+| Cleric | Spell slots L1–5; `prepared-list` | `cleric-trickery` (also `cleric-life`) |
+| Paladin | Half-caster slots; `lay-on-hands`; channel | `paladin-oath-of-vengeance` |
+| Wizard | Spell slots + spellbook | `wizard-illusion` (also `wizard-evocation`) |
+| Druid | Full caster slots; `wild-shape` | `druid-circle-of-the-moon` |
 | Monk | `ki-points` | `monk-open-hand` |
-| Fighter | — (regression) | `fighter-champion` |
 
-Wizard spell picks (pilot): 3 cantrips + 6 leveled spell choice slots at L5 (reduced from full SRD).
+Also kept for regression: Fighter (`fighter-champion`), Barbarian (`barbarian-berserker`), Warlock (`warlock-fiend`).
+
+**Races:** `dwarf`, `elf`, `half-elf`, `human`, `tiefling`, `halfling` (Open5e fixtures + `raceGrants.dnd.ts` overlays).
+
+**Spells:** SRD Open5e lists for wizard/cleric/paladin/druid through slot level 3
+(`npm run refresh:spells -w @rpv/content` → `build:catalog`).
 
 **Items (D&D):** Open5e v2 SRD 2014 catalog in `catalog.json` plus RPV overlays in
 [`itemOverlays.dnd.ts`](packages/content/src/curation/itemOverlays.dnd.ts)
@@ -221,10 +230,10 @@ Full SRD class/background/item catalogs are future work (Supabase-backed content
 
 ## Known limitations
 
-- **Catalog spells:** pilot catalog includes wizard cantrips/leveled spells plus a small cleric list (bless, cure wounds, guiding bolt, sacred flame, plus shared entries such as light / detect magic / hold person).
+- **Catalog spells:** SRD lists for wizard/cleric/paladin/druid through 3rd level, plus forced includes (`hellish-rebuke`, `hunters-mark`, `branding-smite`).
 - **Multiclass:** out of scope.
 - **Feat catalog:** `listFeats` / `getFeat` exist on the repository but return empty until SRD feats are authored.
-- **Variant Human** (feat vs ASI): not implemented.
+- **Variant Human** (feat vs ASI): not implemented (standard Human only).
 - **Legacy characters:** `normalizeStoredCharacter` coerces slugs, clears invalid subclass, backfills `schemaVersion` and `selections.inventory`, and strips legacy inventory keys from `systemData`.
 
 ### ContentRepository
@@ -255,10 +264,9 @@ Web tests are the primary integration coverage for the character pipeline.
 ## Next steps
 
 - **Inventory** — equip policy, Posses / Equipamento / Cosmético, add-item picker,
-  and consumable **Use** from bag (scroll) are in place. Remaining: slot swap,
-  potions/charges. Roadmap: [docs/INVENTORY.md](docs/INVENTORY.md).
-- Extend spell catalog beyond wizard L1 toward full SRD coverage.
-- Extend class progression beyond L5 toward L20.
+  and consumable **Use** from bag (scroll + healing potions) are in place. Remaining: slot swap,
+  charges/wands. Roadmap: [docs/INVENTORY.md](docs/INVENTORY.md).
+- Extend class progression beyond L5 toward L20; expand feats / Variant Human.
 - Player sheet polish (Fase 4) — see [docs/FICHA_JOGADOR.md](docs/FICHA_JOGADOR.md).
 - Optional creation polish: rich currency choices; rich UI for skills/languages (see CHARACTER_CREATION residual).
-- Initiative tracker: editable current uses for derived resources — partially addressed by player sheet header.
+- Backend / remote persistence (P3) after the L5 table set is stable.

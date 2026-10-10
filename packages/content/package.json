@@ -9,7 +9,9 @@
     "build:catalog": "tsx scripts/buildCatalog.ts",
     "build:catalog:offline": "tsc -p tsconfig.build.json && CONTENT_PKG_ROOT=\"$PWD\" node dist-tmp/scripts/buildCatalog.js",
     "refresh:items": "tsx scripts/refreshOpen5eItems.ts",
-    "refresh:magic-items": "tsx scripts/refreshOpen5eMagicItems.ts"
+    "refresh:magic-items": "tsx scripts/refreshOpen5eMagicItems.ts",
+    "refresh:races": "tsx scripts/refreshOpen5eRaces.ts",
+    "refresh:spells": "tsx scripts/refreshOpen5eSpells.ts"
   },
   "dependencies": {
     "@rpv/domain": "*"

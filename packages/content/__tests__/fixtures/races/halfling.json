@@ -1,0 +1,67 @@
+{
+  "name": "Halfling",
+  "slug": "halfling",
+  "desc": "## Halfling Traits\nYour halfling character has a number of traits in common with all other halflings.",
+  "asi_desc": "**_Ability Score Increase._** Your Dexterity score increases by 2.",
+  "asi": [
+    {
+      "attributes": [
+        "Dexterity"
+      ],
+      "value": 2
+    }
+  ],
+  "age": "**_Age._** A halfling reaches adulthood at the age of 20 and generally lives into the middle of his or her second century.",
+  "alignment": "**_Alignment._** Most halflings are lawful good. As a rule, they are good-hearted and kind, hate to see others in pain, and have no tolerance for oppression. They are also very orderly and traditional, leaning heavily on the support of their community and the comfort of their old ways.",
+  "size": "**_Size._** Halflings average about 3 feet tall and weigh about 40 pounds. Your size is Small.",
+  "size_raw": "Small",
+  "speed": {
+    "walk": 25
+  },
+  "speed_desc": "**_Speed._** Your base walking speed is 25 feet.",
+  "languages": "**_Languages._** You can speak, read, and write Common and Halfling. The Halfling language isn't secret, but halflings are loath to share it with others. They write very little, so they don't have a rich body of literature. Their oral tradition, however, is very strong. Almost all halflings speak Common to converse with the people in whose lands they dwell or through which they are traveling.",
+  "vision": "",
+  "traits": "**_Lucky._** When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll.\n\n**_Brave._** You have advantage on saving throws against being frightened.\n\n**_Halfling Nimbleness._** You can move through the space of any creature that is of a size larger than yours.",
+  "subraces": [
+    {
+      "name": "Lightfoot",
+      "slug": "lightfoot",
+      "desc": "As a lightfoot halfling, you can easily hide from notice, even using other people as cover. You're inclined to be affable and get along well with others.\nLightfoots are more prone to wanderlust than other halflings, and often dwell alongside other races or take up a nomadic life.",
+      "asi": [
+        {
+          "attributes": [
+            "Charisma"
+          ],
+          "value": 1
+        }
+      ],
+      "traits": "**_Naturally Stealthy._** You can attempt to hide even when you are obscured only by a creature that is at least one size larger than you.",
+      "asi_desc": "**_Ability Score Increase._** Your Charisma score increases by 1.",
+      "document__slug": "wotc-srd",
+      "document__title": "5e Core Rules",
+      "document__url": "http://dnd.wizards.com/articles/features/systems-reference-document-srd"
+    },
+    {
+      "name": "Stoor Halfling",
+      "slug": "stoor-halfling",
+      "desc": "Stoor halflings earn their moniker from an archaic word for \"strong\" or \"large,\" and indeed the average stoor towers some six inches taller than their lightfoot cousins. They are also particularly hardy by halfling standards, famous for being able to hold down the strongest dwarven ales, for which they have also earned a reputation of relative boorishness. Still, most stoor halflings are good natured and simple folk, and any lightfoot would be happy to have a handful of stoor cousins to back them up in a barroom brawl.",
+      "asi": [
+        {
+          "attributes": [
+            "Constitution"
+          ],
+          "value": 1
+        }
+      ],
+      "traits": "**_Stoor Hardiness._** You gain resistance to poison damage, and you make saving throws against poison with advantage.",
+      "asi_desc": "**_Ability Score Increase._** Your Constitution score increases by 1.",
+      "document__slug": "o5e",
+      "document__title": "Open5e Original Content",
+      "document__url": "open5e.com"
+    }
+  ],
+  "document__slug": "wotc-srd",
+  "document__title": "5e Core Rules",
+  "document__license_url": "http://open5e.com/legal",
+  "document__url": "http://dnd.wizards.com/articles/features/systems-reference-document-srd"
+}

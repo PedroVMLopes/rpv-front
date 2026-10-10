@@ -1,3 +1,12 @@
+/** Open5e often stores cone/line area spells as bare "Self"; clarify for the sheet. */
+const dndSpellRangeOverrides: Record<string, string> = {
+    "burning-hands": "Self (15-foot cone)",
+};
+
+export function getSpellRangeOverride(slug: string): string | undefined {
+    return dndSpellRangeOverrides[slug];
+}
+
 /** Hand-curated one-line spell summaries (default locale: en). */
 const dndSpellShortDescriptions: Record<string, string> = {
     "acid-splash":

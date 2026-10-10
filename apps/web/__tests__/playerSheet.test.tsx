@@ -547,7 +547,7 @@ describe("PlayerSheet", () => {
         expect(strCard).toHaveTextContent("+3");
     });
 
-    it("shows combat and inventory content; magic stays coming soon", async () => {
+    it("shows combat and inventory content; omits magic for non-casters", async () => {
         const user = userEvent.setup();
         renderWithProviders(<PlayerSheet stored={storedCharacter} />);
 
@@ -559,8 +559,9 @@ describe("PlayerSheet", () => {
         expect(screen.getByText("Encumbrance")).toBeInTheDocument();
         expect(screen.queryByText("Coming soon")).not.toBeInTheDocument();
 
-        await user.click(screen.getByRole("tab", { name: "Magic" }));
-        expect(screen.getByText("Coming soon")).toBeInTheDocument();
+        expect(
+            screen.queryByRole("tab", { name: "Magic" })
+        ).not.toBeInTheDocument();
     });
 
     it("shows stored persona fields on notes and an empty notes prompt", async () => {

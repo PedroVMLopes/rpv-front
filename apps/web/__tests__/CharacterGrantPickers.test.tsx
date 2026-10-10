@@ -275,7 +275,7 @@ describe("CharacterGrantPickers", () => {
             <GrantPickerHarness
                 defaultValues={{
                     name: "Test Hero",
-                    race: "human",
+                    race: "dwarf",
                     background: "sage",
                     choices: {},
                 }}
@@ -293,11 +293,11 @@ describe("CharacterGrantPickers", () => {
         ).not.toBeInTheDocument();
 
         await user.click(screen.getByRole("button", { name: "Draconic" }));
-        await user.click(screen.getByRole("button", { name: "Dwarvish" }));
+        await user.click(screen.getByRole("button", { name: "Elvish" }));
 
         const output = screen.getByTestId("choices-output").textContent ?? "";
         expect(output).toContain("draconic");
-        expect(output).toContain("dwarvish");
+        expect(output).toContain("elvish");
         expect(output).toContain("background:sage:base:language:0:0");
         expect(output).toContain("background:sage:base:language:0:1");
     });

@@ -1,4 +1,4 @@
-import { getClass, getClassSpellcastingMode } from "@rpv/content";
+import { resolveSpellcastingProfile } from "@rpv/content";
 import type { Locale } from "@rpv/domain";
 import type { SystemKey } from "@/presets";
 import { buildSelectionsFromForm } from "@/lib/character/characterAdapter";
@@ -28,14 +28,17 @@ export function shouldIncludePrepareSpellsStep(
         return false;
     }
 
-    const mode = getClassSpellcastingMode(characterClass);
+    const profile = resolveSpellcastingProfile(
+        characterClass,
+        selections.subclass
+    );
 
-    if (mode !== "spellbook" && mode !== "prepared-list") {
+    if (profile.mode !== "spellbook" && profile.mode !== "prepared-list") {
         return false;
     }
 
-    if (mode === "prepared-list") {
-        return Boolean(getClass(characterClass)?.spellcastingAbility);
+    if (profile.mode === "prepared-list") {
+        return Boolean(profile.ability);
     }
 
     const characterLevel =

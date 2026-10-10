@@ -428,7 +428,7 @@ describe("AbilityScoresField", () => {
             <AbilityScoresHarness
                 defaultValues={{
                     name: "Test Hero",
-                    race: "human",
+                    race: "elf",
                     abilityScoreMethod: "manual",
                     attributes: dndStatConfig.abilities.map((ability) => ({
                         name: ability.name,
@@ -439,7 +439,8 @@ describe("AbilityScoresField", () => {
         );
 
         expect(screen.getByText("Base: 14")).toBeInTheDocument();
-        expect(screen.queryByText(/Racial:/)).not.toBeInTheDocument();
+        const strengthCard = screen.getByText("Base: 14").closest("div");
+        expect(within(strengthCard!).queryByText(/Racial:/)).not.toBeInTheDocument();
     });
 
     it("shows racial bonus preview for elf dexterity", () => {

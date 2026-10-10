@@ -24,9 +24,23 @@ describe("subclassGrants.dnd", () => {
         ]);
         expect(listSubclassesForClass("cleric").map((entry) => entry.slug)).toEqual([
             "cleric-life",
+            "cleric-trickery",
         ]);
         expect(listSubclassesForClass("warlock").map((entry) => entry.slug)).toEqual([
             "warlock-fiend",
+        ]);
+        expect(listSubclassesForClass("wizard").map((entry) => entry.slug)).toEqual([
+            "wizard-evocation",
+            "wizard-illusion",
+        ]);
+        expect(listSubclassesForClass("rogue").map((entry) => entry.slug)).toEqual([
+            "rogue-arcane-trickster",
+        ]);
+        expect(listSubclassesForClass("paladin").map((entry) => entry.slug)).toEqual([
+            "paladin-oath-of-vengeance",
+        ]);
+        expect(listSubclassesForClass("druid").map((entry) => entry.slug)).toEqual([
+            "druid-circle-of-the-moon",
         ]);
     });
 

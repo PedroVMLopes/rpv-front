@@ -5,6 +5,18 @@
     },
     "elf": {
       "name": "Elfo"
+    },
+    "half-elf": {
+      "name": "Meio-elfo"
+    },
+    "human": {
+      "name": "Humano"
+    },
+    "tiefling": {
+      "name": "Tiefling"
+    },
+    "halfling": {
+      "name": "Halfling"
     }
   },
   "spells": {
@@ -326,8 +338,17 @@
     "monk": {
       "name": "Monge"
     },
+    "rogue": {
+      "name": "Ladino"
+    },
     "cleric": {
       "name": "Clérigo"
+    },
+    "paladin": {
+      "name": "Paladino"
+    },
+    "druid": {
+      "name": "Druida"
     },
     "warlock": {
       "name": "Bruxo"
@@ -340,6 +361,9 @@
     "wizard-evocation": {
       "name": "Evocação"
     },
+    "wizard-illusion": {
+      "name": "Ilusão"
+    },
     "barbarian-berserker": {
       "name": "Berserker"
     },
@@ -348,6 +372,18 @@
     },
     "cleric-life": {
       "name": "Vida"
+    },
+    "cleric-trickery": {
+      "name": "Enganação"
+    },
+    "rogue-arcane-trickster": {
+      "name": "Trapaceiro Arcano"
+    },
+    "paladin-oath-of-vengeance": {
+      "name": "Juramento de Vingança"
+    },
+    "druid-circle-of-the-moon": {
+      "name": "Círculo da Lua"
     },
     "warlock-fiend": {
       "name": "O Demônio"

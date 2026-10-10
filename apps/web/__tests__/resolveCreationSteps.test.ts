@@ -139,21 +139,21 @@ describe("resolveCreationSteps", () => {
         );
     });
 
-    it("caps interactive class level steps at 3 when character level is 5", () => {
+    it("caps interactive class level steps at 5 when character level is higher", () => {
         const graph = resolveCreationSteps({
             formValues: {
                 race: "human",
                 characterClass: "wizard",
-                level: 5,
+                level: 8,
             },
             system: "dnd",
             contentLocale: "en",
         });
 
-        expect(graph.steps.some((step) => step.id === "class-level-3")).toBe(
+        expect(graph.steps.some((step) => step.id === "class-level-5")).toBe(
             true
         );
-        expect(graph.steps.some((step) => step.id === "class-level-4")).toBe(
+        expect(graph.steps.some((step) => step.id === "class-level-6")).toBe(
             false
         );
         expect(graph.steps.some((step) => step.id === "subclass")).toBe(true);

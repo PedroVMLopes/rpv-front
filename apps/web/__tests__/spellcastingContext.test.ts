@@ -15,6 +15,7 @@ describe("buildSpellcastingSystemData", () => {
         ).toEqual({
             characterClass: "wizard",
             level: 5,
+            subclass: undefined,
         });
     });
 
@@ -30,6 +31,25 @@ describe("buildSpellcastingSystemData", () => {
         ).toEqual({
             characterClass: "cleric",
             level: 2,
+            subclass: undefined,
+        });
+    });
+
+    it("includes subclass from selections", () => {
+        expect(
+            buildSpellcastingSystemData({
+                selections: {
+                    characterClass: "rogue",
+                    subclass: "rogue-arcane-trickster",
+                    choices: {},
+                    inventory: emptyInventory(),
+                },
+                systemData: { level: 3 },
+            })
+        ).toEqual({
+            characterClass: "rogue",
+            subclass: "rogue-arcane-trickster",
+            level: 3,
         });
     });
 });

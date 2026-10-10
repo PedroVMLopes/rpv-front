@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+import { resolveSpellcastingProfile } from "@rpv/content";
 import type { ModifierSourceType, StatKey } from "@rpv/domain";
 import {
     buildDisplayActions,
@@ -13,7 +14,6 @@ import {
     type DisplayAction,
 } from "@/lib/character/actionDisplay";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
-import { contentRepo } from "@/lib/content/contentRepository";
 import { FeatureActionCard } from "@/components/content/features/FeatureActionCard";
 import { SpellActionCard } from "@/components/content/spells/SpellActionCard";
 import { WeaponActionCard } from "@/components/content/weapons/WeaponActionCard";
@@ -141,13 +141,11 @@ export function AttacksActionsPanel({ stored }: AttacksActionsPanelProps) {
         DEFAULT_ACTION_FILTER_STATE
     );
 
-    const classEntry = stored.selections.characterClass
-        ? contentRepo(stored.system).getClass(
-              stored.selections.characterClass,
-              contentLocale
-          )
-        : undefined;
-    const spellcastingAbility = classEntry?.spellcastingAbility ?? null;
+    const spellcastingAbility =
+        resolveSpellcastingProfile(
+            stored.selections.characterClass,
+            stored.selections.subclass
+        ).ability ?? null;
 
     const actions = useMemo(() => {
         if (!resolved) {

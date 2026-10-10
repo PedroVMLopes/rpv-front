@@ -1,23 +1,18 @@
-import { getClass, getClassSpellcastingMode } from "@rpv/content";
+import { resolveSpellcastingProfile } from "@rpv/content";
 import type { Locale } from "@rpv/domain";
 import { listKnownLeveledSpellRefs } from "./knownLeveledSpells";
 import type { StoredCharacter } from "./storedCharacter";
 
-function classHasSpellcasting(classSlug: string | undefined): boolean {
+function classHasSpellcasting(
+    classSlug: string | undefined,
+    subclassSlug?: string
+): boolean {
     if (!classSlug) {
         return false;
     }
 
-    const entry = getClass(classSlug);
-    if (!entry) {
-        return false;
-    }
-
-    if (entry.spellcastingAbility || entry.spellcastingMode) {
-        return true;
-    }
-
-    return getClassSpellcastingMode(classSlug) !== undefined;
+    const profile = resolveSpellcastingProfile(classSlug, subclassSlug);
+    return Boolean(profile.ability || profile.mode);
 }
 
 function hasSpellSlotResources(
@@ -50,8 +45,13 @@ export function characterHasMagic(stored: StoredCharacter): boolean {
         (typeof stored.systemData.characterClass === "string"
             ? stored.systemData.characterClass
             : undefined);
+    const subclassSlug =
+        stored.selections.subclass ??
+        (typeof stored.systemData.subclass === "string"
+            ? stored.systemData.subclass
+            : undefined);
 
-    if (classHasSpellcasting(classSlug)) {
+    if (classHasSpellcasting(classSlug, subclassSlug)) {
         return true;
     }
 
@@ -71,18 +71,26 @@ export function characterCanPrepareSpells(
         (typeof stored.systemData.characterClass === "string"
             ? stored.systemData.characterClass
             : undefined);
+    const subclassSlug =
+        stored.selections.subclass ??
+        (typeof stored.systemData.subclass === "string"
+            ? stored.systemData.subclass
+            : undefined);
 
     if (!classSlug) {
         return false;
     }
 
-    const mode = getClassSpellcastingMode(classSlug);
-    if (mode !== "spellbook" && mode !== "prepared-list") {
+    const profile = resolveSpellcastingProfile(classSlug, subclassSlug);
+    if (
+        profile.mode !== "spellbook" &&
+        profile.mode !== "prepared-list"
+    ) {
         return false;
     }
 
-    if (mode === "prepared-list") {
-        return Boolean(getClass(classSlug)?.spellcastingAbility);
+    if (profile.mode === "prepared-list") {
+        return Boolean(profile.ability);
     }
 
     return (

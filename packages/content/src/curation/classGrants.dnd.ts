@@ -2,6 +2,7 @@ import type { StatKey } from "@rpv/domain";
 import type { Grant } from "../grant/grant.types";
 import type { LevelFeature } from "../grant/levelFeature.types";
 import {
+    burglarsPackBundle,
     dungeoneersPackBundle,
     explorersPackBundle,
 } from "./equipmentPacks.dnd";
@@ -401,6 +402,7 @@ export const dndClasses: ClassEntry[] = [
                         ref: "spell-slots-3",
                         amount: 1,
                     },
+                    abilityScoreImprovementGrant(),
                     {
                         grantType: "spell",
                         choose: 1,
@@ -701,6 +703,13 @@ export const dndClasses: ClassEntry[] = [
                         recoverOn: "short_rest",
                         amount: 1,
                     },
+                    abilityScoreImprovementGrant(),
+                    {
+                        grantType: "ability",
+                        choose: 0,
+                        description: "Slow Fall",
+                        activation: { cost: "reaction" },
+                    },
                 ],
             },
             {
@@ -735,6 +744,7 @@ export const dndClasses: ClassEntry[] = [
         description:
             "A scoundrel who uses stealth and trickery to overcome obstacles and enemies.",
         hitDie: 8,
+        subclassLevel: 3,
         grants: [
             {
                 grantType: "saving_throw_proficiency",
@@ -761,6 +771,13 @@ export const dndClasses: ClassEntry[] = [
                 ],
             },
             {
+                grantType: "tool_proficiency",
+                choose: 0,
+                options: [
+                    { optionType: "proficiency", ref: "thieves-tools" },
+                ],
+            },
+            {
                 grantType: "skill_proficiency",
                 choose: 4,
                 description: "Choose four skills.",
@@ -778,6 +795,71 @@ export const dndClasses: ClassEntry[] = [
                     { optionType: "skill", ref: "stealth" },
                 ],
             },
+            {
+                grantType: "inventory_item",
+                choose: 0,
+                ref: "srd_rapier",
+                amount: 1,
+                exclusiveGroup: "starting-wealth",
+                exclusiveBranch: "equipment",
+            },
+            {
+                grantType: "inventory_item",
+                choose: 0,
+                ref: "srd_shortbow",
+                amount: 1,
+                exclusiveGroup: "starting-wealth",
+                exclusiveBranch: "equipment",
+            },
+            {
+                grantType: "inventory_item",
+                choose: 0,
+                ref: "srd_quiver",
+                amount: 1,
+                exclusiveGroup: "starting-wealth",
+                exclusiveBranch: "equipment",
+            },
+            {
+                grantType: "inventory_item",
+                choose: 1,
+                description: "Adventuring pack",
+                exclusiveGroup: "starting-wealth",
+                exclusiveBranch: "equipment",
+                options: [burglarsPackBundle, dungeoneersPackBundle, explorersPackBundle],
+            },
+            {
+                grantType: "inventory_item",
+                choose: 0,
+                ref: "srd_leather-armor",
+                amount: 1,
+                exclusiveGroup: "starting-wealth",
+                exclusiveBranch: "equipment",
+            },
+            {
+                grantType: "inventory_item",
+                choose: 0,
+                ref: "srd_dagger",
+                amount: 2,
+                exclusiveGroup: "starting-wealth",
+                exclusiveBranch: "equipment",
+            },
+            {
+                grantType: "inventory_item",
+                choose: 0,
+                ref: "srd_thieves-tools",
+                amount: 1,
+                exclusiveGroup: "starting-wealth",
+                exclusiveBranch: "equipment",
+            },
+            {
+                grantType: "currency",
+                choose: 0,
+                ref: "gold",
+                amount: 100,
+                description: "Starting gold (pilot: 4d4×10 avg)",
+                exclusiveGroup: "starting-wealth",
+                exclusiveBranch: "gold",
+            },
         ],
         featuresByLevel: [
             {
@@ -788,6 +870,48 @@ export const dndClasses: ClassEntry[] = [
                         choose: 2,
                         description: "Expertise",
                         selectionFilter: { fromProficientSkills: true },
+                    },
+                    {
+                        grantType: "ability",
+                        choose: 0,
+                        description: "Sneak Attack",
+                        activation: { cost: "passive" },
+                    },
+                    {
+                        grantType: "ability",
+                        choose: 0,
+                        description: "Thieves Cant",
+                        activation: { cost: "passive" },
+                    },
+                ],
+            },
+            {
+                level: 2,
+                grants: [
+                    {
+                        grantType: "ability",
+                        choose: 0,
+                        description: "Cunning Action",
+                        activation: { cost: "bonus" },
+                    },
+                ],
+            },
+            {
+                level: 3,
+                grants: [],
+            },
+            {
+                level: 4,
+                grants: [abilityScoreImprovementGrant()],
+            },
+            {
+                level: 5,
+                grants: [
+                    {
+                        grantType: "ability",
+                        choose: 0,
+                        description: "Uncanny Dodge",
+                        activation: { cost: "reaction" },
                     },
                 ],
             },
@@ -879,6 +1003,31 @@ export const dndClasses: ClassEntry[] = [
                         ref: "spell-slots-1",
                         amount: 1,
                     },
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "channel-divinity",
+                        recoverOn: "short_rest",
+                        amount: 1,
+                    },
+                    {
+                        grantType: "ability",
+                        choose: 0,
+                        description: "Channel Divinity",
+                        activation: {
+                            cost: "action",
+                            resourceRef: "channel-divinity",
+                        },
+                    },
+                    {
+                        grantType: "ability",
+                        choose: 0,
+                        description: "Turn Undead",
+                        activation: {
+                            cost: "action",
+                            resourceRef: "channel-divinity",
+                        },
+                    },
                 ],
             },
             {
@@ -894,6 +1043,509 @@ export const dndClasses: ClassEntry[] = [
                         grantType: "resource",
                         choose: 0,
                         ref: "spell-slots-2",
+                        amount: 2,
+                    },
+                ],
+            },
+            {
+                level: 4,
+                grants: [
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "spell-slots-2",
+                        amount: 1,
+                    },
+                    abilityScoreImprovementGrant(),
+                ],
+            },
+            {
+                level: 5,
+                grants: [
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "spell-slots-3",
+                        amount: 2,
+                    },
+                    {
+                        grantType: "ability",
+                        choose: 0,
+                        description: "Destroy Undead",
+                        activation: { cost: "passive" },
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        slug: "paladin",
+        name: "Paladin",
+        description:
+            "A holy warrior bound to a sacred oath, blending martial prowess with divine magic.",
+        hitDie: 10,
+        subclassLevel: 3,
+        spellcastingAbility: "charisma",
+        spellcastingMode: "prepared-list",
+        preparedQuota: "half-level-plus-mod",
+        grants: [
+            {
+                grantType: "saving_throw_proficiency",
+                choose: 0,
+                options: [
+                    { optionType: "proficiency", ref: "wisdom" },
+                    { optionType: "proficiency", ref: "charisma" },
+                ],
+            },
+            {
+                grantType: "armor_proficiency",
+                choose: 0,
+                options: [
+                    { optionType: "proficiency", ref: "light-armor" },
+                    { optionType: "proficiency", ref: "medium-armor" },
+                    { optionType: "proficiency", ref: "heavy-armor" },
+                    { optionType: "proficiency", ref: "shields" },
+                ],
+            },
+            {
+                grantType: "weapon_proficiency",
+                choose: 0,
+                options: [
+                    { optionType: "proficiency", ref: "simple-weapons" },
+                    { optionType: "proficiency", ref: "martial-weapons" },
+                ],
+            },
+            {
+                grantType: "skill_proficiency",
+                choose: 2,
+                description: "Choose two skills.",
+                options: [
+                    { optionType: "skill", ref: "athletics" },
+                    { optionType: "skill", ref: "insight" },
+                    { optionType: "skill", ref: "intimidation" },
+                    { optionType: "skill", ref: "medicine" },
+                    { optionType: "skill", ref: "persuasion" },
+                    { optionType: "skill", ref: "religion" },
+                ],
+            },
+            {
+                grantType: "inventory_item",
+                choose: 0,
+                ref: "srd_longsword",
+                amount: 1,
+                exclusiveGroup: "starting-wealth",
+                exclusiveBranch: "equipment",
+            },
+            {
+                grantType: "inventory_item",
+                choose: 0,
+                ref: "srd_shield",
+                amount: 1,
+                exclusiveGroup: "starting-wealth",
+                exclusiveBranch: "equipment",
+            },
+            {
+                grantType: "inventory_item",
+                choose: 0,
+                ref: "srd_chain-mail",
+                amount: 1,
+                exclusiveGroup: "starting-wealth",
+                exclusiveBranch: "equipment",
+            },
+            {
+                grantType: "inventory_item",
+                choose: 1,
+                description: "Adventuring pack",
+                exclusiveGroup: "starting-wealth",
+                exclusiveBranch: "equipment",
+                options: [explorersPackBundle, dungeoneersPackBundle],
+            },
+            {
+                grantType: "inventory_item",
+                choose: 1,
+                description: "Holy symbol",
+                exclusiveGroup: "starting-wealth",
+                exclusiveBranch: "equipment",
+                options: [
+                    { optionType: "item", ref: "srd_amulet" },
+                    { optionType: "item", ref: "srd_emblem" },
+                    { optionType: "item", ref: "srd_reliquary" },
+                ],
+            },
+            {
+                grantType: "currency",
+                choose: 0,
+                ref: "gold",
+                amount: 125,
+                description: "Starting gold (pilot: 5d4×10 avg)",
+                exclusiveGroup: "starting-wealth",
+                exclusiveBranch: "gold",
+            },
+        ],
+        featuresByLevel: [
+            {
+                level: 1,
+                grants: [
+                    {
+                        grantType: "ability",
+                        choose: 0,
+                        description: "Divine Sense",
+                        activation: { cost: "action" },
+                    },
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "lay-on-hands",
+                        recoverOn: "long_rest",
+                        amount: 5,
+                    },
+                    {
+                        grantType: "ability",
+                        choose: 0,
+                        description: "Lay on Hands",
+                        activation: {
+                            cost: "action",
+                            resourceRef: "lay-on-hands",
+                        },
+                    },
+                ],
+            },
+            {
+                level: 2,
+                grants: [
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "spell-slots-1",
+                        amount: 2,
+                    },
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "lay-on-hands",
+                        recoverOn: "long_rest",
+                        amount: 5,
+                    },
+                    {
+                        grantType: "ability",
+                        choose: 1,
+                        description: "Fighting Style",
+                        options: [
+                            {
+                                optionType: "proficiency",
+                                ref: "fighting-style-defense",
+                            },
+                            {
+                                optionType: "proficiency",
+                                ref: "fighting-style-dueling",
+                            },
+                            {
+                                optionType: "proficiency",
+                                ref: "fighting-style-great-weapon",
+                            },
+                            {
+                                optionType: "proficiency",
+                                ref: "fighting-style-protection",
+                            },
+                        ],
+                    },
+                    {
+                        grantType: "ability",
+                        choose: 0,
+                        description: "Divine Smite",
+                        activation: { cost: "special" },
+                    },
+                ],
+            },
+            {
+                level: 3,
+                grants: [
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "spell-slots-1",
+                        amount: 1,
+                    },
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "lay-on-hands",
+                        recoverOn: "long_rest",
+                        amount: 5,
+                    },
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "channel-divinity",
+                        recoverOn: "short_rest",
+                        amount: 1,
+                    },
+                    {
+                        grantType: "ability",
+                        choose: 0,
+                        description: "Divine Health",
+                        activation: { cost: "passive" },
+                    },
+                ],
+            },
+            {
+                level: 4,
+                grants: [
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "lay-on-hands",
+                        recoverOn: "long_rest",
+                        amount: 5,
+                    },
+                    abilityScoreImprovementGrant(),
+                ],
+            },
+            {
+                level: 5,
+                grants: [
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "spell-slots-1",
+                        amount: 1,
+                    },
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "spell-slots-2",
+                        amount: 2,
+                    },
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "lay-on-hands",
+                        recoverOn: "long_rest",
+                        amount: 5,
+                    },
+                    {
+                        grantType: "ability",
+                        choose: 0,
+                        description: "Extra Attack",
+                        activation: { cost: "passive" },
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        slug: "druid",
+        name: "Druid",
+        description:
+            "A priest of the Old Faith, wielding the powers of nature and adopting animal forms.",
+        hitDie: 8,
+        subclassLevel: 2,
+        spellcastingAbility: "wisdom",
+        spellcastingMode: "prepared-list",
+        grants: [
+            {
+                grantType: "saving_throw_proficiency",
+                choose: 0,
+                options: [
+                    { optionType: "proficiency", ref: "intelligence" },
+                    { optionType: "proficiency", ref: "wisdom" },
+                ],
+            },
+            {
+                grantType: "armor_proficiency",
+                choose: 0,
+                options: [
+                    { optionType: "proficiency", ref: "light-armor" },
+                    { optionType: "proficiency", ref: "medium-armor" },
+                    { optionType: "proficiency", ref: "shields" },
+                ],
+            },
+            {
+                grantType: "weapon_proficiency",
+                choose: 0,
+                options: [
+                    { optionType: "proficiency", ref: "clubs" },
+                    { optionType: "proficiency", ref: "daggers" },
+                    { optionType: "proficiency", ref: "darts" },
+                    { optionType: "proficiency", ref: "javelins" },
+                    { optionType: "proficiency", ref: "maces" },
+                    { optionType: "proficiency", ref: "quarterstaffs" },
+                    { optionType: "proficiency", ref: "scimitars" },
+                    { optionType: "proficiency", ref: "sickles" },
+                    { optionType: "proficiency", ref: "slings" },
+                    { optionType: "proficiency", ref: "spears" },
+                ],
+            },
+            {
+                grantType: "tool_proficiency",
+                choose: 0,
+                options: [
+                    { optionType: "proficiency", ref: "herbalism-kit" },
+                ],
+            },
+            {
+                grantType: "skill_proficiency",
+                choose: 2,
+                description: "Choose two skills.",
+                options: [
+                    { optionType: "skill", ref: "arcana" },
+                    { optionType: "skill", ref: "animal-handling" },
+                    { optionType: "skill", ref: "insight" },
+                    { optionType: "skill", ref: "medicine" },
+                    { optionType: "skill", ref: "nature" },
+                    { optionType: "skill", ref: "perception" },
+                    { optionType: "skill", ref: "religion" },
+                    { optionType: "skill", ref: "survival" },
+                ],
+            },
+            {
+                grantType: "inventory_item",
+                choose: 0,
+                ref: "srd_leather-armor",
+                amount: 1,
+                exclusiveGroup: "starting-wealth",
+                exclusiveBranch: "equipment",
+            },
+            {
+                grantType: "inventory_item",
+                choose: 1,
+                description: "Starting weapon",
+                exclusiveGroup: "starting-wealth",
+                exclusiveBranch: "equipment",
+                options: [
+                    { optionType: "item", ref: "srd_scimitar" },
+                    { optionType: "item", ref: "srd_club" },
+                ],
+            },
+            {
+                grantType: "inventory_item",
+                choose: 1,
+                description: "Adventuring pack",
+                exclusiveGroup: "starting-wealth",
+                exclusiveBranch: "equipment",
+                options: [explorersPackBundle],
+            },
+            {
+                grantType: "inventory_item",
+                choose: 1,
+                description: "Druidic focus",
+                exclusiveGroup: "starting-wealth",
+                exclusiveBranch: "equipment",
+                options: [
+                    { optionType: "item", ref: "srd_sprig-of-mistletoe" },
+                    { optionType: "item", ref: "srd_totem" },
+                    { optionType: "item", ref: "srd_yew-wand" },
+                ],
+            },
+            {
+                grantType: "currency",
+                choose: 0,
+                ref: "gold",
+                amount: 50,
+                description: "Starting gold (pilot: 2d4×10 avg)",
+                exclusiveGroup: "starting-wealth",
+                exclusiveBranch: "gold",
+            },
+        ],
+        featuresByLevel: [
+            {
+                level: 1,
+                grants: [
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "spell-slots-1",
+                        amount: 2,
+                    },
+                    {
+                        grantType: "spell",
+                        choose: 2,
+                        description: "Choose cantrips",
+                        selectionFilter: {
+                            spellLists: ["druid"],
+                            levelInt: 0,
+                        },
+                    },
+                    {
+                        grantType: "ability",
+                        choose: 0,
+                        description: "Druidic",
+                        activation: { cost: "passive" },
+                    },
+                ],
+            },
+            {
+                level: 2,
+                grants: [
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "spell-slots-1",
+                        amount: 1,
+                    },
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "wild-shape",
+                        recoverOn: "short_rest",
+                        amount: 2,
+                    },
+                    {
+                        grantType: "ability",
+                        choose: 0,
+                        description: "Wild Shape",
+                        activation: {
+                            cost: "action",
+                            resourceRef: "wild-shape",
+                        },
+                    },
+                ],
+            },
+            {
+                level: 3,
+                grants: [
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "spell-slots-1",
+                        amount: 1,
+                    },
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "spell-slots-2",
+                        amount: 2,
+                    },
+                ],
+            },
+            {
+                level: 4,
+                grants: [
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "spell-slots-2",
+                        amount: 1,
+                    },
+                    {
+                        grantType: "spell",
+                        choose: 1,
+                        description: "Choose a cantrip",
+                        selectionFilter: {
+                            spellLists: ["druid"],
+                            levelInt: 0,
+                        },
+                    },
+                    abilityScoreImprovementGrant(),
+                ],
+            },
+            {
+                level: 5,
+                grants: [
+                    {
+                        grantType: "resource",
+                        choose: 0,
+                        ref: "spell-slots-3",
                         amount: 2,
                     },
                 ],

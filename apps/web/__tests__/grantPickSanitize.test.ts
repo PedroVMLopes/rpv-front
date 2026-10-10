@@ -307,10 +307,10 @@ describe("sanitizeSelections", () => {
                 characterClass: "rogue",
                 choices: {
                     grantPicks: {
-                        "class:rogue:base:skill_proficiency:3:0": "stealth",
-                        "class:rogue:base:skill_proficiency:3:1": "perception",
-                        "class:rogue:base:skill_proficiency:3:2": "acrobatics",
-                        "class:rogue:base:skill_proficiency:3:3": "investigation",
+                        "class:rogue:base:skill_proficiency:4:0": "stealth",
+                        "class:rogue:base:skill_proficiency:4:1": "perception",
+                        "class:rogue:base:skill_proficiency:4:2": "acrobatics",
+                        "class:rogue:base:skill_proficiency:4:3": "investigation",
                         "class:rogue:1:skill_expertise:0:0": "stealth",
                         "class:rogue:1:skill_expertise:0:1": "history",
                     },
@@ -321,10 +321,10 @@ describe("sanitizeSelections", () => {
         );
 
         expect(selections.choices.grantPicks).toEqual({
-            "class:rogue:base:skill_proficiency:3:0": "stealth",
-            "class:rogue:base:skill_proficiency:3:1": "perception",
-            "class:rogue:base:skill_proficiency:3:2": "acrobatics",
-            "class:rogue:base:skill_proficiency:3:3": "investigation",
+            "class:rogue:base:skill_proficiency:4:0": "stealth",
+            "class:rogue:base:skill_proficiency:4:1": "perception",
+            "class:rogue:base:skill_proficiency:4:2": "acrobatics",
+            "class:rogue:base:skill_proficiency:4:3": "investigation",
             "class:rogue:1:skill_expertise:0:0": "stealth",
         });
     });

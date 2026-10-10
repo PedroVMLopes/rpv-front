@@ -72,7 +72,7 @@ describe("SpellChoiceGrid", () => {
 
         const fireBolt = screen.getByRole("button", { name: /Fire Bolt/i });
         const mageHand = screen.getByRole("button", { name: /Mage Hand/i });
-        const light = screen.getByRole("button", { name: /Light/i });
+        const light = screen.getByRole("button", { name: /^Light\b/i });
         const acidSplash = screen.getByRole("button", {
             name: /Acid Splash/i,
         });

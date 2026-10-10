@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { resolveSpellcastingProfile } from "@rpv/content";
 import { contentRepo } from "@/lib/content/contentRepository";
 import {
     computeSpellAttackBonus,
@@ -39,12 +40,14 @@ export function CastingStatsPanel({ stored }: CastingStatsPanelProps) {
         );
 
     const classSlug = stored.selections.characterClass;
+    const subclassSlug = stored.selections.subclass;
     const classEntry = classSlug
         ? contentRepo(stored.system).getClass(classSlug, contentLocale)
         : undefined;
-    const spellcastingAbility = classEntry?.spellcastingAbility ?? null;
+    const spellcastingAbility =
+        resolveSpellcastingProfile(classSlug, subclassSlug).ability ?? null;
 
-    if (!classEntry || !spellcastingAbility) {
+    if (!spellcastingAbility) {
         return null;
     }
 
@@ -64,8 +67,17 @@ export function CastingStatsPanel({ stored }: CastingStatsPanelProps) {
         return null;
     }
 
+    const castingClassName =
+        classEntry?.name ??
+        (subclassSlug
+            ? contentRepo(stored.system).getSubclass(subclassSlug, contentLocale)
+                  ?.name
+            : undefined) ??
+        classSlug ??
+        "";
+
     const rows = [
-        { label: t("castingClass"), value: classEntry.name },
+        { label: t("castingClass"), value: castingClassName },
         { label: t("castingAbility"), value: tAbilities(spellcastingAbility) },
         { label: t("spellSaveDc"), value: String(spellSaveDc) },
         {

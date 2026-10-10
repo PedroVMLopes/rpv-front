@@ -348,6 +348,11 @@ export function listSpellActions(
                   (typeof storedOrGrants.systemData.characterClass === "string"
                       ? storedOrGrants.systemData.characterClass
                       : undefined),
+              subclass:
+                  storedOrGrants.selections.subclass ??
+                  (typeof storedOrGrants.systemData.subclass === "string"
+                      ? storedOrGrants.systemData.subclass
+                      : undefined),
               preparedSpells: storedOrGrants.selections.choices.preparedSpells,
               preparedQuota:
                   computePreparedSpellQuotaForStored(storedOrGrants),

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { contentRepo } from "@/lib/content/contentRepository";
+import { resolveSpellcastingProfile } from "@rpv/content";
 import {
     computeSpellAttackBonus,
     computeSpellSaveDc,
@@ -18,6 +18,7 @@ import { formatModifier } from "@/lib/character/skillModifiers";
 import type { StoredCharacter } from "@/lib/character/storedCharacter";
 import { useCharacterStore } from "@/store/useCharacterStore";
 import { useContentLocale } from "@/store/useContentLocale";
+import { contentRepo } from "@/lib/content/contentRepository";
 import { cn } from "@/lib/utils";
 import { sheetInset } from "../playerSheetSurfaces";
 import { CastingStatsBlock } from "./CastingStatsBlock";
@@ -80,10 +81,13 @@ export function SheetDerivedResourcesPanel({
         return null;
     }
 
+    const spellcastingAbility =
+        resolveSpellcastingProfile(classSlug, stored.selections.subclass)
+            .ability ?? null;
     const classEntry = classSlug
         ? contentRepo(stored.system).getClass(classSlug, contentLocale)
         : undefined;
-    const spellcastingAbility = classEntry?.spellcastingAbility ?? null;
+    const castingClassName = classEntry?.name ?? classSlug ?? "";
 
     const spellcastingSystemData = buildSpellcastingSystemData(stored);
 
@@ -107,9 +111,7 @@ export function SheetDerivedResourcesPanel({
             : t("resourceSlotAvailable", { index, total });
 
     const showCastingHeader =
-        spellSlots.length > 0 &&
-        classEntry !== undefined &&
-        spellcastingAbility !== null;
+        spellSlots.length > 0 && spellcastingAbility !== null;
 
     const handleToggle = (rowKey: string, index: number, total: number) => {
         setUsedCountByKey((current) =>
@@ -129,7 +131,7 @@ export function SheetDerivedResourcesPanel({
                             abilityLabel={t("castingAbility")}
                             saveDcLabel={t("spellSaveDc")}
                             attackLabel={t("spellAttackModifier")}
-                            classNameValue={classEntry.name}
+                            classNameValue={castingClassName}
                             abilityValue={tAbilities(spellcastingAbility)}
                             saveDcValue={spellSaveDc!}
                             attackValue={formatModifier(spellAttackBonus!)}

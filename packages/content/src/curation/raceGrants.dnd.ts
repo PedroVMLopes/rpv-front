@@ -87,6 +87,39 @@ export const dndRaceLevelGrants: Record<string, Grant[]> = {
             description: "One extra language of your choice",
         },
     ],
+    human: [
+        {
+            grantType: "language",
+            choose: 0,
+            options: [{ optionType: "language", ref: "common" }],
+        },
+        {
+            grantType: "language",
+            choose: 1,
+            selectionFilter: { any: true },
+            description: "One extra language of your choice",
+        },
+    ],
+    tiefling: [
+        {
+            grantType: "language",
+            choose: 0,
+            options: [
+                { optionType: "language", ref: "common" },
+                { optionType: "language", ref: "infernal" },
+            ],
+        },
+    ],
+    halfling: [
+        {
+            grantType: "language",
+            choose: 0,
+            options: [
+                { optionType: "language", ref: "common" },
+                { optionType: "language", ref: "halfling" },
+            ],
+        },
+    ],
 };
 
 /**
@@ -201,5 +234,88 @@ export const dndRaceGrantOverrides: Record<
     },
     "hill-dwarf": {
         "dwarven-toughness": { category: "other", grants: [] },
+    },
+    tiefling: {
+        "hellish-resistance": {
+            category: "resistance",
+            grants: [
+                {
+                    grantType: "ability",
+                    choose: 0,
+                    description: "Hellish Resistance",
+                },
+            ],
+        },
+        "infernal-legacy": {
+            category: "spellcasting",
+            grants: [
+                {
+                    grantType: "spell",
+                    choose: 0,
+                    description: "Infernal Legacy",
+                    options: [
+                        { optionType: "spell", ref: "thaumaturgy" },
+                        { optionType: "spell", ref: "hellish-rebuke" },
+                        { optionType: "spell", ref: "darkness" },
+                    ],
+                },
+            ],
+        },
+    },
+    halfling: {
+        lucky: {
+            category: "other",
+            grants: [
+                {
+                    grantType: "ability",
+                    choose: 0,
+                    description: "Lucky",
+                },
+            ],
+        },
+        brave: {
+            category: "resistance",
+            grants: [
+                {
+                    grantType: "ability",
+                    choose: 0,
+                    description: "Brave",
+                },
+            ],
+        },
+        "halfling-nimbleness": {
+            category: "other",
+            grants: [
+                {
+                    grantType: "ability",
+                    choose: 0,
+                    description: "Halfling Nimbleness",
+                },
+            ],
+        },
+    },
+    lightfoot: {
+        "naturally-stealthy": {
+            category: "other",
+            grants: [
+                {
+                    grantType: "ability",
+                    choose: 0,
+                    description: "Naturally Stealthy",
+                },
+            ],
+        },
+    },
+    "stoor-halfling": {
+        "stoor-hardiness": {
+            category: "resistance",
+            grants: [
+                {
+                    grantType: "ability",
+                    choose: 0,
+                    description: "Stoor Hardiness",
+                },
+            ],
+        },
     },
 };

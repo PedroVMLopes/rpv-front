@@ -10,7 +10,10 @@ import type { Catalog } from "../src/catalog/catalog.types";
 import { dndLanguages } from "../src/catalog/languages.seed";
 import { dndSkills } from "../src/catalog/skills.seed";
 import type { Open5eRace, Open5eSpell, Open5eV2Item } from "../src/open5e/open5e.types";
-import { getSpellShortDescription } from "../src/curation/spellShortDescriptions.dnd";
+import {
+    getSpellRangeOverride,
+    getSpellShortDescription,
+} from "../src/curation/spellShortDescriptions.dnd";
 import { withSpellOverlays } from "../src/curation/spellOverlayMerge";
 import { mapOpen5eRace } from "../src/race/race.mapper";
 import { mapOpen5eSpell } from "../src/spell/spell.mapper";
@@ -44,6 +47,7 @@ const catalog: Catalog = {
             const mapped = mapOpen5eSpell(raw);
             return withSpellOverlays({
                 ...mapped,
+                range: getSpellRangeOverride(mapped.slug) ?? mapped.range,
                 shortDescription:
                     getSpellShortDescription(mapped.slug) ??
                     mapped.shortDescription,

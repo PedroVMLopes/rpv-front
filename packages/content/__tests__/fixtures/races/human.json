@@ -1,0 +1,60 @@
+{
+  "name": "Human",
+  "slug": "human",
+  "desc": "## Human Traits\nIt's hard to make generalizations about humans, but your human character has these traits.",
+  "asi_desc": "**_Ability Score Increase._** Your ability scores each increase by 1.",
+  "asi": [
+    {
+      "attributes": [
+        "Strength"
+      ],
+      "value": 1
+    },
+    {
+      "attributes": [
+        "Dexterity"
+      ],
+      "value": 1
+    },
+    {
+      "attributes": [
+        "Constitution"
+      ],
+      "value": 1
+    },
+    {
+      "attributes": [
+        "Intelligence"
+      ],
+      "value": 1
+    },
+    {
+      "attributes": [
+        "Wisdom"
+      ],
+      "value": 1
+    },
+    {
+      "attributes": [
+        "Charisma"
+      ],
+      "value": 1
+    }
+  ],
+  "age": "**_Age._** Humans reach adulthood in their late teens and live less than a century.",
+  "alignment": "**_Alignment._** Humans tend toward no particular alignment. The best and the worst are found among them.",
+  "size": "**_Size._** Humans vary widely in height and build, from barely 5 feet to well over 6 feet tall. Regardless of your position in that range, your size is Medium.",
+  "size_raw": "Medium",
+  "speed": {
+    "walk": 30
+  },
+  "speed_desc": "**_Speed._** Your base walking speed is 30 feet.",
+  "languages": "**_Languages._** You can speak, read, and write Common and one extra language of your choice. Humans typically learn the languages of other peoples they deal with, including obscure dialects. They are fond of sprinkling their speech with words borrowed from other tongues: Orc curses, Elvish musical expressions, Dwarvish military phrases, and so on.",
+  "vision": "",
+  "traits": "",
+  "subraces": [],
+  "document__slug": "wotc-srd",
+  "document__title": "5e Core Rules",
+  "document__license_url": "http://open5e.com/legal",
+  "document__url": "http://dnd.wizards.com/articles/features/systems-reference-document-srd"
+}

@@ -281,7 +281,7 @@ describe("buildSpellContentModel", () => {
         expect(byKey.concentration).toBe("No");
         expect(byKey.ritual).toBe("No");
         expect(byKey.castingTime).toBe("1 action");
-        expect(byKey.spellLists).toBe("Sorcerer, Wizard");
+        expect(byKey.spellLists).toBe("Cleric, Sorcerer, Warlock, Wizard");
         expect(byKey.archetype).toBe("Cleric: Light, Warlock: Fiend");
         expect(byKey.source).toBeUndefined();
         expect(detail.shortDescription).toBe(

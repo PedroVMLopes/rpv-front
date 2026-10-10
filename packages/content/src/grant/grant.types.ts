@@ -32,6 +32,10 @@ export interface SelectionFilter {
      * When set without `levelInt`, matches spells with levelInt in [1, levelIntMax].
      */
     levelIntMax?: number;
+    /**
+     * Match `SpellCatalogEntry.school` (case-insensitive), e.g. `["Illusion", "Enchantment"]`.
+     */
+    schools?: string[];
     any?: boolean;
     /** Choosable ability stats when grantType is ability_score and options omitted. */
     stats?: StatKey[];

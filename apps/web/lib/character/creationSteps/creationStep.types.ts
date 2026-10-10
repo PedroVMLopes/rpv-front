@@ -1,7 +1,7 @@
 import type { Grant } from "@rpv/content";
 import type { ModifierSource } from "@rpv/domain";
 
-export const CREATION_PROGRESSION_CAP = 3;
+export const CREATION_PROGRESSION_CAP = 5;
 
 export type CreationMacroGroupId =
     | "race"

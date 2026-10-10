@@ -1,4 +1,7 @@
-import { getClass, getClassPreparedQuotaKind } from "@rpv/content";
+import {
+    getClassPreparedQuotaKind,
+    resolveSpellcastingProfile,
+} from "@rpv/content";
 import type { PreparedQuotaKind } from "@rpv/content";
 import type { Locale, Stats, StatKey } from "@rpv/domain";
 import { resolveStats } from "@rpv/domain";
@@ -40,7 +43,10 @@ export function resolveSpellcastingAbilityScoreFromForm(
         return undefined;
     }
 
-    const ability = getClass(classSlug)?.spellcastingAbility;
+    const ability = resolveSpellcastingProfile(
+        classSlug,
+        selections.subclass
+    ).ability;
     if (!ability) {
         return undefined;
     }
@@ -66,9 +72,10 @@ export function computePreparedSpellQuotaFromForm(
         return undefined;
     }
 
-    const classSlug = buildSelectionsFromForm(formData).characterClass;
+    const selections = buildSelectionsFromForm(formData);
+    const classSlug = selections.characterClass;
     const kind = classSlug
-        ? getClassPreparedQuotaKind(classSlug)
+        ? getClassPreparedQuotaKind(classSlug, selections.subclass)
         : undefined;
 
     return computePreparedSpellQuota({
@@ -91,9 +98,14 @@ export function computePreparedSpellQuotaForStored(
         return undefined;
     }
 
-    const ability = getClass(classSlug)?.spellcastingAbility as
-        | StatKey
-        | undefined;
+    const subclassSlug =
+        stored.selections.subclass ??
+        (typeof stored.systemData.subclass === "string"
+            ? stored.systemData.subclass
+            : undefined);
+
+    const ability = resolveSpellcastingProfile(classSlug, subclassSlug)
+        .ability as StatKey | undefined;
     if (!ability) {
         return undefined;
     }
@@ -109,7 +121,7 @@ export function computePreparedSpellQuotaForStored(
         characterLevel,
         abilityScore,
         system: stored.system,
-        kind: getClassPreparedQuotaKind(classSlug),
+        kind: getClassPreparedQuotaKind(classSlug, subclassSlug),
     });
 }
 

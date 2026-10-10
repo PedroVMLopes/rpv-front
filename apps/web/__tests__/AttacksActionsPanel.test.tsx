@@ -319,17 +319,18 @@ describe("AttacksActionsPanel roll integration", () => {
         await user.click(screen.getByRole("button", { name: "Use" }));
         expect(toastMock).toHaveBeenCalledWith("Second Wind");
 
+        // From show-all, a category click excludes that category.
         await user.click(screen.getByRole("button", { name: "Spells" }));
 
-        expect(screen.getByText("Fire Bolt")).toBeInTheDocument();
-        expect(screen.queryByText("Longsword")).not.toBeInTheDocument();
-        expect(screen.queryByText("Second Wind")).not.toBeInTheDocument();
+        expect(screen.queryByText("Fire Bolt")).not.toBeInTheDocument();
+        expect(screen.getByText("Longsword")).toBeInTheDocument();
+        expect(screen.getByText("Second Wind")).toBeInTheDocument();
 
         await user.click(screen.getByRole("button", { name: "Weapons" }));
 
-        expect(screen.getByText("Fire Bolt")).toBeInTheDocument();
-        expect(screen.getByText("Longsword")).toBeInTheDocument();
-        expect(screen.queryByText("Second Wind")).not.toBeInTheDocument();
+        expect(screen.queryByText("Fire Bolt")).not.toBeInTheDocument();
+        expect(screen.queryByText("Longsword")).not.toBeInTheDocument();
+        expect(screen.getByText("Second Wind")).toBeInTheDocument();
 
         await user.click(screen.getByRole("button", { name: "All" }));
 
@@ -365,7 +366,10 @@ describe("AttacksActionsPanel roll integration", () => {
         expect(screen.getByText("Dash")).toBeInTheDocument();
         expect(screen.getByText("Second Wind")).toBeInTheDocument();
 
-        await user.click(screen.getByRole("button", { name: "Basics" }));
+        // Isolate basics: exclude the other categories from show-all.
+        await user.click(screen.getByRole("button", { name: "Weapons" }));
+        await user.click(screen.getByRole("button", { name: "Spells" }));
+        await user.click(screen.getByRole("button", { name: "Abilities" }));
 
         expect(screen.getByText("Dash")).toBeInTheDocument();
         expect(screen.queryByText("Second Wind")).not.toBeInTheDocument();

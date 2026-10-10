@@ -1,3 +1,4 @@
+import type { StatKey } from "@rpv/domain";
 import type {
     ClassEntry,
     ClassGrantSourceBlock,
@@ -7,6 +8,42 @@ import type {
 import { getContentRepository } from "../repository/getContentRepository";
 import type { Grant } from "./grant.types";
 import { resolveLevelFeatures } from "./levelFeatures";
+
+export type SpellcastingProfile = {
+    ability?: StatKey;
+    mode?: SpellcastingMode;
+    preparedQuota?: PreparedQuotaKind;
+};
+
+/**
+ * Resolves spellcasting from class, with optional subclass overrides
+ * (e.g. Arcane Trickster INT / known on a non-caster Rogue).
+ */
+export function resolveSpellcastingProfile(
+    classSlug?: string,
+    subclassSlug?: string
+): SpellcastingProfile {
+    const repo = getContentRepository("dnd");
+    const classEntry = classSlug ? repo.getClass(classSlug) : undefined;
+    const subclassEntry = subclassSlug
+        ? repo.getSubclass(subclassSlug)
+        : undefined;
+
+    const ability =
+        subclassEntry?.spellcastingAbility ?? classEntry?.spellcastingAbility;
+    const mode =
+        subclassEntry?.spellcastingMode ?? classEntry?.spellcastingMode;
+    const preparedQuota =
+        subclassEntry?.preparedQuota ??
+        classEntry?.preparedQuota ??
+        (ability ? ("level-plus-mod" as const) : undefined);
+
+    return {
+        ...(ability ? { ability } : {}),
+        ...(mode ? { mode } : {}),
+        ...(preparedQuota ? { preparedQuota } : {}),
+    };
+}
 
 export function classGrantSourcesFromEntry(
     entry: ClassEntry,
@@ -54,26 +91,15 @@ export function getClassHitDie(slug: string): number | undefined {
 }
 
 export function getClassSpellcastingMode(
-    slug: string
+    slug: string,
+    subclassSlug?: string
 ): SpellcastingMode | undefined {
-    return getContentRepository("dnd").getClass(slug)?.spellcastingMode;
+    return resolveSpellcastingProfile(slug, subclassSlug).mode;
 }
 
 export function getClassPreparedQuotaKind(
-    slug: string
+    slug: string,
+    subclassSlug?: string
 ): PreparedQuotaKind | undefined {
-    const entry = getContentRepository("dnd").getClass(slug);
-    if (!entry) {
-        return undefined;
-    }
-
-    if (entry.preparedQuota) {
-        return entry.preparedQuota;
-    }
-
-    if (entry.spellcastingAbility) {
-        return "level-plus-mod";
-    }
-
-    return undefined;
+    return resolveSpellcastingProfile(slug, subclassSlug).preparedQuota;
 }

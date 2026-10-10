@@ -113,7 +113,7 @@ export function listPrepareSpellPool(
 ): string[] {
     const classSlug = input.selections.characterClass;
     const mode = classSlug
-        ? getClassSpellcastingMode(classSlug)
+        ? getClassSpellcastingMode(classSlug, input.selections.subclass)
         : undefined;
 
     if (mode === "prepared-list") {
